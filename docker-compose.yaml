@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  database:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: pass123
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - data:/data
+  notification:
+    build:
+      context: ./
+      dockerfile: Dockerfile.notification
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./apps/notification:/app/apps/notification
+      - /app/node_modules
+    env_file:
+      - ./env/notification.env
+    tty: true
+    stdin_open: true
+    depends_on:
+      - database
+      - redis
+  order:
+    build:
+      context: ./
+      dockerfile: Dockerfile.order
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./apps/order:/app/apps/order
+      - /app/node_modules
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    tty: true
+    stdin_open: true
+    depends_on:
+      - redis
+volumes:
+  data:

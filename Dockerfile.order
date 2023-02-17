@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package.json nest-cli.json tsconfig.build.json tsconfig.json ./
+
+RUN npm install
+
+COPY /apps/order ./apps/order
+
+ENV REDIS_HOST=localhost
+ENV REDIS_PORT=6379
+
+EXPOSE 3001
+
+CMD [ "npm", "run", "start:order" ]
