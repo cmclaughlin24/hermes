@@ -10,9 +10,12 @@ export function setupSwaggerDocument(app: INestApplication) {
         'It allows for more a reliable communication channel between the Notification Service and other services ' +
         'by persisting job data and application state so that task handling can be easily restarted. The Notification ' +
         'Service listens for jobs to be added to the "notification" queue and continues to process each until all ' +
-        'are done. For details on NestJS Queues check out the link below:'
+        'are done. For details on NestJS Queues check out the link below:',
     )
-    .setExternalDoc('NestJS Queues', 'https://docs.nestjs.com/techniques/queues')
+    .setExternalDoc(
+      'NestJS Queues',
+      'https://docs.nestjs.com/techniques/queues',
+    )
     .addTag(
       'Notification',
       'Send a notification via an available delivery method.',
@@ -20,6 +23,10 @@ export function setupSwaggerDocument(app: INestApplication) {
     .addTag(
       'Notification Job',
       'Schedule a notification to be sent by pushing a job with the corresponding delivery method name on to the notification queue.',
+    )
+    .addTag(
+      'Notification Log',
+      'View the history of notification job outcomes.',
     )
     .build();
 
