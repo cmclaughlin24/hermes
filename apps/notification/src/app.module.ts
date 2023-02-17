@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ConsumerModule } from './consumers/consumer.module';
 import { NotificationJobModule } from './resources/notification-job/notification-job.module';
 import { NotificationModule } from './resources/notification/notification.module';
+import { NotificationLogModule } from './resources/notification-log/notification-log.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { NotificationModule } from './resources/notification/notification.module
     ConsumerModule,
     NotificationModule,
     NotificationJobModule,
+    NotificationLogModule,
   ],
   providers: [],
 })
