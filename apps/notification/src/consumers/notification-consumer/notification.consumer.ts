@@ -12,7 +12,7 @@ import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notifi
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
-
+import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 @Processor('notification')
 export class NotificationConsumer {
@@ -22,6 +22,7 @@ export class NotificationConsumer {
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
     private readonly radioService: RadioService,
+    private readonly notificationLogService: NotificationLogService,
   ) {}
 
   @Process('email')
@@ -52,7 +53,9 @@ export class NotificationConsumer {
         `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: ${CreateEmailNotificationDto.name} created, attempting to send ${job.name} notification`,
       );
 
-      const result = await this.emailService.sendEmail(createEmailNotificationDto);
+      const result = await this.emailService.sendEmail(
+        createEmailNotificationDto,
+      );
 
       return result;
     } catch (error) {
@@ -86,7 +89,9 @@ export class NotificationConsumer {
         `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: ${CreatePhoneNotificationDto.name} created, attempting to send ${job.name} notification`,
       );
 
-      const result = await this.phoneService.sendText(createPhoneNotificationDto);
+      const result = await this.phoneService.sendText(
+        createPhoneNotificationDto,
+      );
 
       return result;
     } catch (error) {
@@ -107,18 +112,42 @@ export class NotificationConsumer {
   }
 
   @OnQueueCompleted()
-  onQueueCompleted(job: Job, result: any) {
+  async onQueueCompleted(job: Job, result: any) {
     job.log(
       `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: ${job.name} notification completed`,
     );
-    // Todo: Insert/Update job result in a database table.
+
+    try {
+      const databaseId = await this.notificationLogService.createOrUpdate(
+        job.name,
+      );
+      job.log(
+        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
+      );
+    } catch (error) {
+      job.log(
+        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Failed to store result in database`,
+      );
+    }
   }
 
   @OnQueueFailed()
-  onQueueFailed(job: Job, error: Error) {
+  async onQueueFailed(job: Job, error: Error) {
     job.log(
       `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: ${job.name} notification failed on attempt ${job.attemptsMade}`,
     );
-    // Todo: Insert/Update job result in a database table.
+
+    try {
+      const databaseId = await this.notificationLogService.createOrUpdate(
+        job.name,
+      );
+      job.log(
+        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
+      );
+    } catch (error) {
+      job.log(
+        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Failed to store result in database`,
+      );
+    }
   }
 }
