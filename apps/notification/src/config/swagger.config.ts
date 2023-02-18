@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { API_KEY_HEADER } from '../common/guards/api-key.guard';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
@@ -20,7 +21,7 @@ export function setupSwaggerDocument(app: INestApplication) {
       {
         type: 'apiKey',
         in: 'header',
-        name: 'Notification-Api-Key',
+        name: API_KEY_HEADER,
       },
       'ApiKeyAuth',
     )

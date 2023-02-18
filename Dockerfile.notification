@@ -8,6 +8,7 @@ RUN npm install
 
 COPY /apps/notification ./apps/notification
 
+ENV API_KEY=notification123
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379
 ENV RETRY_ATTEMPTS=5
