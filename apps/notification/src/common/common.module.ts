@@ -1,8 +1,8 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TwilioModule } from 'nestjs-twilio';
+import { EmailTemplateModule } from '../resources/email-template/email-template.module';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
 import { RadioService } from './providers/radio/radio.service';
@@ -22,13 +22,6 @@ import { RadioService } from './providers/radio/radio.service';
               pass: configService.get('MAILER_PASSWORD'),
             },
           },
-          template: {
-            dir: __dirname + '/templates/',
-            adapter: new HandlebarsAdapter(),
-            options: {
-              strict: true,
-            },
-          },
         };
       },
     }),
@@ -40,6 +33,7 @@ import { RadioService } from './providers/radio/radio.service';
         authToken: configService.get('TWILIO_AUTH_TOKEN'),
       }),
     }),
+    EmailTemplateModule
   ],
   providers: [EmailService, PhoneService, RadioService],
   exports: [EmailService, PhoneService, RadioService],

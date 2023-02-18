@@ -7,6 +7,7 @@ import { ConsumerModule } from './consumers/consumer.module';
 import { NotificationJobModule } from './resources/notification-job/notification-job.module';
 import { NotificationLogModule } from './resources/notification-log/notification-log.module';
 import { NotificationModule } from './resources/notification/notification.module';
+import { EmailTemplateModule } from './resources/email-template/email-template.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { NotificationModule } from './resources/notification/notification.module
     NotificationModule,
     NotificationJobModule,
     NotificationLogModule,
+    EmailTemplateModule,
   ],
   providers: [],
 })

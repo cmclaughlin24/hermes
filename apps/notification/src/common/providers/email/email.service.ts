@@ -2,6 +2,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
+import Handlebars from 'handlebars';
+import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 
 @Injectable()
@@ -11,15 +13,19 @@ export class EmailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
+    private readonly emailTemplateService: EmailTemplateService
   ) {}
 
   async sendEmail(createEmailNotification: CreateEmailNotificationDto) {
     try {
+      const template = Handlebars.compile('<h1>{{title}}</h1>');
+
       const result = await this.mailerService.sendMail({
         ...createEmailNotification,
         from:
           createEmailNotification.from ||
           this.configService.get('MAILER_SENDER'),
+        html: template({ title: 'Runtime template' })
       });
 
       return result;
