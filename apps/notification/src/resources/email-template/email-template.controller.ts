@@ -11,6 +11,8 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/decorators/public.decorator';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
+import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
+import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
 
 @ApiTags('Email Template')
@@ -60,8 +62,8 @@ export class EmailTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createEmailTemplateDto: any) {
-    return this.create(createEmailTemplateDto);
+  create(@Body() createEmailTemplateDto: CreateEmailTemplateDto) {
+    return this.emailTemplateService.create(createEmailTemplateDto);
   }
 
   @Patch(':name')
@@ -83,7 +85,10 @@ export class EmailTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  update(@Param('name') name: string, @Body() updateEmailTemplateDto: any) {
+  update(
+    @Param('name') name: string,
+    @Body() updateEmailTemplateDto: UpdateEmailTemplateDto,
+  ) {
     return this.emailTemplateService.update(name, updateEmailTemplateDto);
   }
 

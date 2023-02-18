@@ -27,7 +27,7 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Email Template',
-      'View and configure email templates that may be used when sending emails.',
+      'View and configure Handlebars email templates that may be used when sending emails.',
     )
     .addTag(
       'Notification',
