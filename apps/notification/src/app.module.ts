@@ -5,8 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConsumerModule } from './consumers/consumer.module';
 import { NotificationJobModule } from './resources/notification-job/notification-job.module';
-import { NotificationModule } from './resources/notification/notification.module';
 import { NotificationLogModule } from './resources/notification-log/notification-log.module';
+import { NotificationModule } from './resources/notification/notification.module';
 
 @Module({
   imports: [
@@ -14,6 +14,11 @@ import { NotificationLogModule } from './resources/notification-log/notification
       ignoreEnvFile: true,
       isGlobal: true,
       validationSchema: Joi.object({
+        DB_HOST: Joi.required(),
+        DB_PORT: Joi.number().required(),
+        DB_USERNAME: Joi.required(),
+        DB_PASSWORD: Joi.required(),
+        DB_NAME: Joi.required(),
         MAILER_HOST: Joi.required(),
         MAILER_PORT: Joi.number().required(),
         MAILER_USER: Joi.required(),

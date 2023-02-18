@@ -119,7 +119,10 @@ export class NotificationConsumer {
 
     try {
       const databaseId = await this.notificationLogService.createOrUpdate(
-        job.name,
+        job,
+        'completed',
+        result,
+        null,
       );
       job.log(
         `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
@@ -139,7 +142,10 @@ export class NotificationConsumer {
 
     try {
       const databaseId = await this.notificationLogService.createOrUpdate(
-        job.name,
+        job,
+        'failed',
+        null,
+        error,
       );
       job.log(
         `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
