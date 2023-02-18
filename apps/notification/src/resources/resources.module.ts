@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ApiKeyGuard } from '../common/guards/api-key.guard';
+import { RequestLoggerMiddleware } from '../common/middleware/request-logger.middleware';
 import { EmailTemplateModule } from './email-template/email-template.module';
 import { NotificationJobModule } from './notification-job/notification-job.module';
 import { NotificationLogModule } from './notification-log/notification-log.module';
@@ -15,4 +16,8 @@ import { NotificationModule } from './notification/notification.module';
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
-export class ResourcesModule {}
+export class ResourcesModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}
