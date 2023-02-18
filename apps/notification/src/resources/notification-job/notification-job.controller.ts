@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobStatus } from 'bull';
+import { Public } from '../../common/decorators/public.decorator';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -24,8 +25,10 @@ export class NotificationJobController {
   ) {}
 
   @Get()
+  @Public()
   @ApiOperation({
     summary: 'Find jobs on the notification queue by their status.',
+    security: [],
   })
   @ApiQuery({
     name: 'status',
@@ -46,8 +49,10 @@ export class NotificationJobController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: "Find a job on the notification queue by it's id.",
+    security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -58,6 +63,7 @@ export class NotificationJobController {
   @Post('email')
   @ApiOperation({
     summary: 'Schedule a notification "email" job.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -67,6 +73,10 @@ export class NotificationJobController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
   })
   createEmailNotification(
     @Body() createEmailNotificationDto: CreateEmailNotificationDto,
@@ -79,6 +89,7 @@ export class NotificationJobController {
   @Post('sms')
   @ApiOperation({
     summary: 'Schedule a notification "sms" job.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -88,6 +99,10 @@ export class NotificationJobController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
   })
   createTextNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
@@ -100,6 +115,7 @@ export class NotificationJobController {
   @Post('radio')
   @ApiOperation({
     summary: 'Schedule a notification "radio" job.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -109,6 +125,10 @@ export class NotificationJobController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
   })
   createRadioNotification(
     @Body() createRadioNotification: CreateRadioNotificationDto,

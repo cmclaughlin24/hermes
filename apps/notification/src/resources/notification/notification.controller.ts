@@ -14,6 +14,7 @@ export class NotificationController {
   @Post('email')
   @ApiOperation({
     summary: 'Send an email notification.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -23,6 +24,10 @@ export class NotificationController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource'
   })
   createEmailNotification(
     @Body() createEmailNotificationDto: CreateEmailNotificationDto,
@@ -35,6 +40,7 @@ export class NotificationController {
   @Post('sms')
   @ApiOperation({
     summary: 'Send a SMS notification.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -44,6 +50,10 @@ export class NotificationController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource'
   })
   createTextNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
@@ -56,6 +66,7 @@ export class NotificationController {
   @Post('radio')
   @ApiOperation({
     summary: 'Send a radio notification.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -65,6 +76,10 @@ export class NotificationController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource'
   })
   createRadioNotification(
     @Body() createRadioNotification: CreateRadioNotificationDto,

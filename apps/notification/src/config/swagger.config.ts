@@ -16,6 +16,14 @@ export function setupSwaggerDocument(app: INestApplication) {
       'NestJS Queues',
       'https://docs.nestjs.com/techniques/queues',
     )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        in: 'header',
+        name: 'Notification-Api-Key',
+      },
+      'ApiKeyAuth',
+    )
     .addTag(
       'Email Template',
       'View and configure email templates that may be used when sending emails.',

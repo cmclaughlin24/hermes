@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobStatus } from 'bull';
+import { Public } from '../../common/decorators/public.decorator';
 import { NotificationLogService } from './notification-log.service';
 
 @ApiTags('Notification Log')
@@ -18,8 +19,10 @@ export class NotificationLogController {
   ) {}
 
   @Get()
+  @Public()
   @ApiOperation({
     summary: 'Find logs by their job name or status.',
+    security: []
   })
   @ApiQuery({
     name: 'job',
@@ -51,8 +54,10 @@ export class NotificationLogController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOperation({
     summary: "Find a log by it's id.",
+    security: []
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })

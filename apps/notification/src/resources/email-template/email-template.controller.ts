@@ -9,6 +9,7 @@ import {
   Post
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../../common/decorators/public.decorator';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { EmailTemplateService } from './email-template.service';
 
@@ -18,6 +19,11 @@ export class EmailTemplateController {
   constructor(private readonly emailTemplateService: EmailTemplateService) {}
 
   @Get()
+  @Public()
+  @ApiOperation({
+    summary: 'Find an email templates.',
+    security: [],
+  })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findAll() {
@@ -25,8 +31,10 @@ export class EmailTemplateController {
   }
 
   @Get(':name')
+  @Public()
   @ApiOperation({
     summary: "Find an email template by it's name.",
+    security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -37,6 +45,7 @@ export class EmailTemplateController {
   @Post()
   @ApiOperation({
     summary: 'Create a new email template.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -47,6 +56,10 @@ export class EmailTemplateController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
   create(@Body() createEmailTemplateDto: any) {
     return this.create(createEmailTemplateDto);
   }
@@ -54,6 +67,7 @@ export class EmailTemplateController {
   @Patch(':name')
   @ApiOperation({
     summary: 'Update an email template.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -64,6 +78,10 @@ export class EmailTemplateController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid Request',
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(@Param('name') name: string, @Body() updateEmailTemplateDto: any) {
     return this.emailTemplateService.update(name, updateEmailTemplateDto);
@@ -72,11 +90,16 @@ export class EmailTemplateController {
   @Delete(':name')
   @ApiOperation({
     summary: 'Remove an email template.',
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successful Operation',
     type: ApiResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(@Param('name') name: string) {
