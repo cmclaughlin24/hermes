@@ -1,3 +1,16 @@
-import { Model } from 'sequelize-typescript';
+import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
-export class EmailTemplate extends Model {}
+@Table
+export class EmailTemplate extends Model {
+  @Column({
+    primaryKey: true,
+    unique: true,
+  })
+  name: string;
+
+  @Column({ type: DataType.STRING(2000) })
+  template: string;
+
+  @Column({ type: DataType.JSON })
+  context: string;
+}

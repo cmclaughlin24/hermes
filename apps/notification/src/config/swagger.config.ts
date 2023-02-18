@@ -17,6 +17,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       'https://docs.nestjs.com/techniques/queues',
     )
     .addTag(
+      'Email Template',
+      'View and configure email templates that may be used when sending emails.',
+    )
+    .addTag(
       'Notification',
       'Send a notification via an available delivery method.',
     )

@@ -25,13 +25,13 @@ export class NotificationLog extends Model {
   @Column
   attempts: number;
 
-  @Column({ type: DataType.STRING(1000) })
+  @Column({ type: DataType.JSON })
   data: string;
 
-  @Column({ allowNull: true, type: DataType.STRING(1000) })
+  @Column({ allowNull: true, type: DataType.JSON })
   result: string;
 
-  @Column({ allowNull: true, type: DataType.STRING(1000) })
+  @Column({ allowNull: true, type: DataType.JSON })
   error: string;
 
   @CreatedAt

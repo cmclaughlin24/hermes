@@ -53,9 +53,9 @@ export class NotificationLogService {
       job: job.name,
       status: status,
       attempts: job.attemptsMade,
-      data: JSON.stringify(job.data),
-      result: result ? JSON.stringify(result) : null,
-      error: error ? JSON.stringify(error) : null,
+      data: job.data,
+      result: result,
+      error: error,
     });
 
     return log.id;
