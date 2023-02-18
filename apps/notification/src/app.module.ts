@@ -4,10 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConsumerModule } from './consumers/consumer.module';
-import { NotificationJobModule } from './resources/notification-job/notification-job.module';
-import { NotificationLogModule } from './resources/notification-log/notification-log.module';
-import { NotificationModule } from './resources/notification/notification.module';
-import { EmailTemplateModule } from './resources/email-template/email-template.module';
+import { ResourcesModule } from './resources/resources.module';
 
 @Module({
   imports: [
@@ -67,10 +64,7 @@ import { EmailTemplateModule } from './resources/email-template/email-template.m
       }),
     }),
     ConsumerModule,
-    NotificationModule,
-    NotificationJobModule,
-    NotificationLogModule,
-    EmailTemplateModule,
+    ResourcesModule
   ],
   providers: [],
 })
