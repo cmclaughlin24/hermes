@@ -12,6 +12,14 @@ export class NotificationLogService {
     private readonly notificationLogModel: typeof NotificationLog,
   ) {}
 
+  /**
+   * Yields a list of NotificationLogs filtered by the job name and/or
+   * status. Throws a NotFoundException if the repository returns null,
+   * undefined, or an empty list.
+   * @param {string[]} job 
+   * @param {JobStatus[]} statuses 
+   * @returns {Promise<NotificationLog[]>}
+   */
   async findAll(job: string[], statuses: JobStatus[]) {
     // Fixme: pass the job and status to the findAll options object.
     const notificationLogs = await this.notificationLogModel.findAll();
@@ -23,6 +31,12 @@ export class NotificationLogService {
     return notificationLogs;
   }
 
+  /**
+   * Yields a NotificationLog or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {string} id 
+   * @returns {Promise<NotificationLog>}
+   */
   async findOne(id: string) {
     const notificationLog = await this.notificationLogModel.findByPk(id);
 
@@ -33,6 +47,16 @@ export class NotificationLogService {
     return notificationLog;
   }
 
+  /**
+   * Update a NotificationLog or create a new record if one does not exits. Will not update
+   * a NotificationLog if the number of attempts in the job object are less than the number of
+   * attempts stored in the NotificationLog. 
+   * @param {Job} job 
+   * @param {JobStatus} status 
+   * @param {any} result 
+   * @param {Error} error 
+   * @returns {Promise<string>}
+   */
   async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
@@ -78,11 +102,14 @@ export class NotificationLogService {
       return log.id;
     }
 
+    const data = { ...job.data };
+    delete data.notification_database_id;
+
     log = await log.update({
       job: job.name,
       status: status,
       attempts: job.attemptsMade,
-      data: job.data,
+      data: data,
       result: result,
       error: error,
     });
