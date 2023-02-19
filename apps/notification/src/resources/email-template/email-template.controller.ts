@@ -14,6 +14,7 @@ import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
+import { EmailTemplate } from './entities/email-template.entity';
 
 @ApiTags('Email Template')
 @Controller('email-template')
@@ -52,7 +53,7 @@ export class EmailTemplateController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successful Operation',
-    type: ApiResponseDto,
+    type: ApiResponseDto<EmailTemplate>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -74,7 +75,7 @@ export class EmailTemplateController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successful Operation',
-    type: ApiResponseDto,
+    type: ApiResponseDto<EmailTemplate>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,

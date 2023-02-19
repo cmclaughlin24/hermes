@@ -18,13 +18,43 @@ describe('EmailTemplateController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('findAll()', () => {});
-  
-  describe('findOne()', () => {});
-  
-  describe('create()', () => {});
-  
-  describe('update()', () => {});
-  
-  describe('remove()', () => {});
+  describe('findAll()', () => {
+    it('should yield a list of email templates', () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+  });
+
+  describe('findOne()', () => {
+    it('should yield an email template', () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+  });
+
+  describe('create()', () => {
+    it('should yield an "ApiResponseDto" object', () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+  });
+
+  describe('update()', () => {
+    it('should yield an "ApiResponseDto" object', () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+  });
+
+  describe('remove()', () => {
+    it('should yield an "ApiResponseDto" object', () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+  });
 });

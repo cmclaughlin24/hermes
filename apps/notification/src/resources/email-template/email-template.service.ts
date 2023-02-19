@@ -51,7 +51,7 @@ export class EmailTemplateService {
       ...createEmailTemplateDto,
     });
 
-    return new ApiResponseDto(
+    return new ApiResponseDto<EmailTemplate>(
       `Successfully created email template ${emailTemplate.name}!`,
       emailTemplate,
     );
@@ -69,7 +69,7 @@ export class EmailTemplateService {
       context: updateEmailTemplateDto.context || emailTemplate.context,
     });
 
-    return new ApiResponseDto(
+    return new ApiResponseDto<EmailTemplate>(
       `Successfully updated email template ${emailTemplate.name}`,
       emailTemplate,
     );
@@ -81,6 +81,8 @@ export class EmailTemplateService {
     if (!emailTemplate) {
       throw new NotFoundException(`Email Template with ${name} not found!`);
     }
+
+    await emailTemplate.destroy();
 
     return new ApiResponseDto(`Successfully deleted email template ${name}`);
   }
