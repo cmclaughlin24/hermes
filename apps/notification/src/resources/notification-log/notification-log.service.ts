@@ -36,11 +36,11 @@ export class NotificationLogService {
   async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
-    if (job.attemptsMade === 0) {
+    if (job.attemptsMade === 0 || !job.data.notification_database_id) {
       return this._createLog(job, status, result, error);
     }
 
-    return 'PLACEHOLDER_DATABASE_ID';
+    return this._updateLog(job, status, result, error);
   }
 
   private async _createLog(
@@ -50,6 +50,35 @@ export class NotificationLogService {
     error: Error,
   ) {
     const log = await this.notificationLogModel.create({
+      job: job.name,
+      status: status,
+      attempts: job.attemptsMade,
+      data: job.data,
+      result: result,
+      error: error,
+    });
+
+    return log.id;
+  }
+
+  private async _updateLog(
+    job: Job,
+    status: JobStatus,
+    result: any,
+    error: Error,
+  ) {
+    let log = await this.notificationLogModel.findByPk(
+      job.data.notification_database_id,
+    );
+
+    if (log.attempts > job.attemptsMade) {
+      this.logger.warn(
+        `[${this._updateLog.name}] Notification Log attempts (${log.attempts}) greater than job attemps (${job.attemptsMade}), no update`,
+      );
+      return log.id;
+    }
+
+    log = await log.update({
       job: job.name,
       status: status,
       attempts: job.attemptsMade,

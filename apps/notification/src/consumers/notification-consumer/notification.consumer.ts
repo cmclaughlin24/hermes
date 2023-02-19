@@ -132,6 +132,7 @@ export class NotificationConsumer {
         result,
         null,
       );
+      await job.update({ ...job.data, notification_database_id: databaseId }); 
       job.log(
         `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
       );
@@ -155,6 +156,7 @@ export class NotificationConsumer {
         null,
         error,
       );
+      await job.update({ ...job.data, notification_database_id: databaseId }); 
       job.log(
         `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
       );
