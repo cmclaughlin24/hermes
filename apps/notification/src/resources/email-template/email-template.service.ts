@@ -16,6 +16,11 @@ export class EmailTemplateService {
     private readonly emailTemplateModel: typeof EmailTemplate,
   ) {}
 
+  /**
+   * Yields a list of EmailTemplates or throws a NotFoundException if
+   * the repository returns null, undefined, or an empty list.
+   * @returns {Promise<EmailTemplate[]>}
+   */
   async findAll() {
     const emailTemplates = await this.emailTemplateModel.findAll();
 
@@ -26,6 +31,12 @@ export class EmailTemplateService {
     return emailTemplates;
   }
 
+  /**
+   * Yields an EmailTemplate or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {string} name Template's name
+   * @returns {Promise<EmailTemplate>}
+   */
   async findOne(name: string) {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
@@ -36,6 +47,12 @@ export class EmailTemplateService {
     return emailTemplate;
   }
 
+  /**
+   * Creates a new EmailTemplate or throws a BadRequestException if an
+   * email template name exists in the repository.
+   * @param {CreateEmailTemplateDto} createEmailTemplateDto
+   * @returns {Promise<ApiResponseDto<EmailTemplate>>}
+   */
   async create(createEmailTemplateDto: CreateEmailTemplateDto) {
     const existingTemplate = await this.emailTemplateModel.findByPk(
       createEmailTemplateDto.name,
@@ -57,6 +74,13 @@ export class EmailTemplateService {
     );
   }
 
+  /**
+   * Updates an EmailTemplate or throws a NotFoundException if the
+   * repository null or undefined.
+   * @param {string} name Template's name
+   * @param {UpdateEmailTemplateDto} updateEmailTemplateDto
+   * @returns {Promise<ApiResponseDto<EmailTemplate>>}
+   */
   async update(name: string, updateEmailTemplateDto: UpdateEmailTemplateDto) {
     let emailTemplate = await this.emailTemplateModel.findByPk(name);
 
@@ -70,11 +94,17 @@ export class EmailTemplateService {
     });
 
     return new ApiResponseDto<EmailTemplate>(
-      `Successfully updated email template ${emailTemplate.name}`,
+      `Successfully updated email template ${emailTemplate.name}!`,
       emailTemplate,
     );
   }
 
+  /**
+   * Removes an EmailTemplate or throws a NotFoundException if the
+   * repository null or undefined.
+   * @param {string} name Template's name
+   * @returns {Promise<ApiResponseDto>}
+   */
   async remove(name: string) {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
@@ -84,6 +114,6 @@ export class EmailTemplateService {
 
     await emailTemplate.destroy();
 
-    return new ApiResponseDto(`Successfully deleted email template ${name}`);
+    return new ApiResponseDto(`Successfully deleted email template ${name}!`);
   }
 }
