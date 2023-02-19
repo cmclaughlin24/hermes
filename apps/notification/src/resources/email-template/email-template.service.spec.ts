@@ -15,4 +15,14 @@ describe('EmailTemplateService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('findAll()', () => {});
+  
+  describe('findOne()', () => {});
+  
+  describe('create()', () => {});
+  
+  describe('update()', () => {});
+  
+  describe('remove()', () => {});
 });

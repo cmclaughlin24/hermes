@@ -60,27 +60,22 @@ export class EmailService {
     const templateName = createEmailNotificationDto.template;
     let html = createEmailNotificationDto.html;
 
-    if (templateName && html) {
-      this.logger.warn(
-        `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name} contains both 'html' and 'template' keys, defaulting to 'html' key`,
-      );
-    }
+    if (templateName) {
+      html &&
+        this.logger.warn(
+          `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name}] contains both 'html' and 'template' keys, defaulting to 'template' key`,
+        );
 
-    if (templateName && !html) {
       const emailTemplate = await this.emailTemplateService.findOne(
         createEmailNotificationDto.template,
       );
-
-      if (!emailTemplate) {
-        throw new Error(`Invalid Template: ${templateName} not found!`);
-      }
 
       html = emailTemplate.template;
     }
 
     if (!html) {
       throw new Error(
-        `Invalid Template: Must provide 'html' or 'template' key`,
+        `Invalid Argument: ${CreateEmailNotificationDto.name} must have either 'html' or 'template' keys present`,
       );
     }
 

@@ -1,5 +1,6 @@
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { TemplateExists } from '../decorators/template-exists.decorator';
 
 export class CreateEmailNotificationDto {
   @IsEmail()
@@ -26,6 +27,7 @@ export class CreateEmailNotificationDto {
 
   @IsString()
   @IsOptional()
+  @TemplateExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   template: string;
 

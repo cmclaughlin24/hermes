@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TwilioModule } from 'nestjs-twilio';
 import { EmailTemplateModule } from '../resources/email-template/email-template.module';
+import { TemplateExistsRule } from './decorators/template-exists.decorator';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
 import { RadioService } from './providers/radio/radio.service';
@@ -33,9 +34,9 @@ import { RadioService } from './providers/radio/radio.service';
         authToken: configService.get('TWILIO_AUTH_TOKEN'),
       }),
     }),
-    EmailTemplateModule
+    EmailTemplateModule,
   ],
-  providers: [EmailService, PhoneService, RadioService],
+  providers: [EmailService, PhoneService, RadioService, TemplateExistsRule],
   exports: [EmailService, PhoneService, RadioService],
 })
 export class CommonModule {}

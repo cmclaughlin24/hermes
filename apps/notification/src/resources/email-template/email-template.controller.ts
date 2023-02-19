@@ -108,6 +108,6 @@ export class EmailTemplateController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(@Param('name') name: string) {
-    return this.remove(name);
+    return this.emailTemplateService.remove(name);
   }
 }

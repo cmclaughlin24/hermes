@@ -17,4 +17,14 @@ describe('EmailTemplateController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  describe('findAll()', () => {});
+  
+  describe('findOne()', () => {});
+  
+  describe('create()', () => {});
+  
+  describe('update()', () => {});
+  
+  describe('remove()', () => {});
 });
