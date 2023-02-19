@@ -18,9 +18,11 @@ export class NotificationService {
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
-    const result = await this.emailService.sendEmail(
+    const emailNotificationDto = await this.emailService.createEmailTemplate(
       createEmailNotificationDto,
     );
+
+    const result = await this.emailService.sendEmail(emailNotificationDto);
 
     return new ApiResponseDto(
       `Successfully sent email with subject ${createEmailNotificationDto.subject} to ${createEmailNotificationDto.to}`,

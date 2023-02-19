@@ -50,7 +50,15 @@ export class NotificationConsumer {
       }
 
       job.log(
-        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: ${CreateEmailNotificationDto.name} created, attempting to send ${job.name} notification`,
+        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: ${CreateEmailNotificationDto.name} created, building Handlebars HTML template`,
+      );
+
+      createEmailNotificationDto = await this.emailService.createEmailTemplate(
+        createEmailNotificationDto,
+      );
+
+      job.log(
+        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Handlebars HTML template created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.emailService.sendEmail(

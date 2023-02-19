@@ -13,25 +13,15 @@ export class EmailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-    private readonly emailTemplateService: EmailTemplateService
+    private readonly emailTemplateService: EmailTemplateService,
   ) {}
 
   async sendEmail(createEmailNotification: CreateEmailNotificationDto) {
-    try {
-      const template = Handlebars.compile('<h1>{{title}}</h1>');
-
-      const result = await this.mailerService.sendMail({
-        ...createEmailNotification,
-        from:
-          createEmailNotification.from ||
-          this.configService.get('MAILER_SENDER'),
-        html: template({ title: 'Runtime template' })
-      });
-
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    return this.mailerService.sendMail({
+      ...createEmailNotification,
+      from:
+        createEmailNotification.from || this.configService.get('MAILER_SENDER'),
+    });
   }
 
   async createNotificationDto(data: any) {
@@ -48,6 +38,9 @@ export class EmailService {
     createEmailNotificationDto.from = data.from;
     createEmailNotificationDto.subject = data.subject;
     createEmailNotificationDto.text = data.text;
+    createEmailNotificationDto.template = data.template;
+    createEmailNotificationDto.html = data.html;
+    createEmailNotificationDto.context = data.context;
 
     try {
       await validateOrReject(createEmailNotificationDto);
@@ -57,6 +50,47 @@ export class EmailService {
         .join(', ');
       throw new Error(validationErrors);
     }
+
+    return createEmailNotificationDto;
+  }
+
+  async createEmailTemplate(
+    createEmailNotificationDto: CreateEmailNotificationDto,
+  ) {
+    const templateName = createEmailNotificationDto.template;
+    let html = createEmailNotificationDto.html;
+
+    if (templateName && html) {
+      this.logger.warn(
+        `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name} contains both 'html' and 'template' keys, defaulting to 'html' key`,
+      );
+    }
+
+    if (templateName && !html) {
+      const emailTemplate = await this.emailTemplateService.findOne(
+        createEmailNotificationDto.template,
+      );
+
+      if (!emailTemplate) {
+        throw new Error(`Invalid Template: ${templateName} not found!`);
+      }
+
+      html = emailTemplate.template;
+    }
+
+    if (!html) {
+      throw new Error(
+        `Invalid Template: Must provide 'html' or 'template' key`,
+      );
+    }
+
+    const template = Handlebars.compile(html);
+
+    createEmailNotificationDto.html = template(
+      createEmailNotificationDto.context,
+    );
+    delete createEmailNotificationDto.template;
+    delete createEmailNotificationDto.context;
 
     return createEmailNotificationDto;
   }

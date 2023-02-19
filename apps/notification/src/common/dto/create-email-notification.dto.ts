@@ -1,5 +1,5 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateEmailNotificationDto {
   @IsEmail()
@@ -18,4 +18,18 @@ export class CreateEmailNotificationDto {
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   text: string;
+
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  html: string;
+
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  template: string;
+
+  @IsObject()
+  @IsOptional()
+  context: any;
 }
