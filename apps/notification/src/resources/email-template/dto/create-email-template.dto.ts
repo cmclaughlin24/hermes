@@ -12,6 +12,10 @@ export class CreateEmailTemplateDto {
   @ApiProperty({
     description: 'Handlebars HTML template that can used when an email is sent',
     example: '<body><main><h1>{{firstName}} {{lastName}}</h1></main></body>',
+    externalDocs: {
+      url: 'https://handlebarsjs.com/',
+      description: 'Handlebars'
+    },
   })
   @IsString()
   template: string;
