@@ -2,7 +2,7 @@
   "name": "notification",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Wm. Curtis McLaughlin",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -91,7 +91,8 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       ".module.ts",
-      "./test/"
+      "./test/",
+      "./config/"
     ],
     "roots": [
       "<rootDir>/apps/"

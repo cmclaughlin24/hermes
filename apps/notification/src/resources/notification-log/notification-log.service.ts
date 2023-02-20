@@ -16,13 +16,14 @@ export class NotificationLogService {
    * Yields a list of NotificationLogs filtered by the job name and/or
    * status. Throws a NotFoundException if the repository returns null,
    * undefined, or an empty list.
-   * @param {string[]} job 
-   * @param {JobStatus[]} statuses 
+   * @param {string[]} jobs
+   * @param {JobStatus[]} statuses
    * @returns {Promise<NotificationLog[]>}
    */
-  async findAll(job: string[], statuses: JobStatus[]) {
-    // Fixme: pass the job and status to the findAll options object.
-    const notificationLogs = await this.notificationLogModel.findAll();
+  async findAll(jobs: string[], statuses: JobStatus[]) {
+    const notificationLogs = await this.notificationLogModel.findAll({
+      where: { status: statuses, job: jobs },
+    });
 
     if (!notificationLogs || notificationLogs.length === 0) {
       throw new NotFoundException(`Notification logs not found!`);
@@ -34,7 +35,7 @@ export class NotificationLogService {
   /**
    * Yields a NotificationLog or throws a NotFoundException if the repository
    * returns null or undefined.
-   * @param {string} id 
+   * @param {string} id
    * @returns {Promise<NotificationLog>}
    */
   async findOne(id: string) {
@@ -50,23 +51,31 @@ export class NotificationLogService {
   /**
    * Update a NotificationLog or create a new record if one does not exits. Will not update
    * a NotificationLog if the number of attempts in the job object are less than the number of
-   * attempts stored in the NotificationLog. 
-   * @param {Job} job 
-   * @param {JobStatus} status 
-   * @param {any} result 
-   * @param {Error} error 
+   * attempts stored in the NotificationLog.
+   * @param {Job} job
+   * @param {JobStatus} status
+   * @param {any} result
+   * @param {Error} error
    * @returns {Promise<string>}
    */
   async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
-    if (job.attemptsMade === 0 || !job.data.notification_database_id) {
+    if (!job.data.notification_database_id) {
       return this._createLog(job, status, result, error);
     }
 
     return this._updateLog(job, status, result, error);
   }
 
+  /**
+   * Creates a NotificationLog.
+   * @param {Job} job
+   * @param {JobStatus} status
+   * @param {any} result
+   * @param {Error} error
+   * @returns {Promise<string>}
+   */
   private async _createLog(
     job: Job,
     status: JobStatus,
@@ -85,6 +94,15 @@ export class NotificationLogService {
     return log.id;
   }
 
+  /**
+   * Updates a NotificationLog if the number of attempts in job is greater than
+   * the number of attempts in the record.
+   * @param {Job} job
+   * @param {JobStatus} status
+   * @param {any} result
+   * @param {Error} error
+   * @returns {Promise<string>}
+   */
   private async _updateLog(
     job: Job,
     status: JobStatus,
@@ -102,6 +120,7 @@ export class NotificationLogService {
       return log.id;
     }
 
+    // Note: Remove the database id from the job's data before updating the record.
     const data = { ...job.data };
     delete data.notification_database_id;
 
