@@ -15,6 +15,11 @@ export class NotificationService {
     private readonly radioService: RadioService,
   ) {}
 
+  /**
+   * Sends an email notification.
+   * @param {CreateEmailNotificationDto} createEmailNotificationDto 
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
@@ -30,6 +35,11 @@ export class NotificationService {
     );
   }
 
+  /**
+   * Sends a SMS notification.
+   * @param {CreatePhoneNotificationDto} createTextNotification 
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createTextNotification(
     createTextNotification: CreatePhoneNotificationDto,
   ) {
@@ -41,9 +51,14 @@ export class NotificationService {
     );
   }
 
+  /**
+   * Sends a radio notification.
+   * @param createRadioNotification 
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createRadioNotification(
     createRadioNotification: CreateRadioNotificationDto,
   ) {
-    // Fixme: Call RadioService to directly send a notification.
+    // Todo: Call RadioService to directly send a notification.
   }
 }
