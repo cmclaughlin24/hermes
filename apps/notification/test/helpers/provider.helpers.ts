@@ -2,6 +2,7 @@ import { EmailService } from '../../../notification/src/common/providers/email/e
 import { PhoneService } from '../../../notification/src/common/providers/phone/phone.service';
 import { RadioService } from '../../../notification/src/common/providers/radio/radio.service';
 import { EmailTemplateService } from '../../../notification/src/resources/email-template/email-template.service';
+import { NotificationLogService } from '../../../notification/src/resources/notification-log/notification-log.service';
 
 export type MockEmailTemplateService = Partial<
   Record<keyof EmailTemplateService, jest.Mock>
@@ -42,3 +43,13 @@ export const createRadioServiceMock = (): MockRadioService => ({
   sendText: jest.fn(),
   createNotificationDto: jest.fn(),
 });
+
+export type MockNotificationLogService = Partial<
+  Record<keyof NotificationLogService, jest.Mock>
+>;
+
+export const createNotificationLogServiceMock =
+  (): MockNotificationLogService => ({
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+  });

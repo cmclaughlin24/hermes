@@ -1,17 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+  createNotificationLogServiceMock,
+  MockNotificationLogService
+} from '../../../../notification/test/helpers/provider.helpers';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogController } from './notification-log.controller';
 import { NotificationLogService } from './notification-log.service';
-
-export type MockNotificationLogService = Partial<
-  Record<keyof NotificationLogService, jest.Mock>
->;
-
-export const createNotificationLogServiceMock =
-  (): MockNotificationLogService => ({
-    findAll: jest.fn(),
-    findOne: jest.fn(),
-  });
 
 describe('NotificationLogController', () => {
   let controller: NotificationLogController;
@@ -52,12 +46,12 @@ describe('NotificationLogController', () => {
 
   describe('findAll()', () => {
     it('should yield a list of email templates', async () => {
-    // Arrange.
-    const expectedResult: NotificationLog[] = [notificationLog];
-    service.findAll.mockResolvedValue(expectedResult);
+      // Arrange.
+      const expectedResult: NotificationLog[] = [notificationLog];
+      service.findAll.mockResolvedValue(expectedResult);
 
-    // Act/Assert.
-    await expect(controller.findAll()).resolves.toEqual(expectedResult);
+      // Act/Assert.
+      await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
   });
 

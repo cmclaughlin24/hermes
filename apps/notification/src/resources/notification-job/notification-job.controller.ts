@@ -34,7 +34,9 @@ export class NotificationJobController {
     name: 'status',
     required: false,
     type: String,
-    description: 'A comma seperated list of job statuses',
+    isArray: true,
+    description: 'A list of job statuses',
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
