@@ -51,6 +51,7 @@ export class NotificationConsumer {
         createEmailNotificationDto =
           await this.emailService.createNotificationDto(job.data);
       } catch (error) {
+        // Todo: If job failed because of validation, do not retry.
         throw new Error(
           `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
         );
@@ -102,6 +103,7 @@ export class NotificationConsumer {
         createPhoneNotificationDto =
           await this.phoneService.createNotificationDto(job.data);
       } catch (error) {
+        // Todo: If job failed because of validation, do not retry.
         throw new Error(
           `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
         );
