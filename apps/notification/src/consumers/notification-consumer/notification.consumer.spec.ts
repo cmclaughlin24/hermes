@@ -3,8 +3,14 @@ import {
   createEmailServiceMock,
   createNotificationLogServiceMock,
   createPhoneServiceMock,
-  createRadioServiceMock
+  createRadioServiceMock,
+  MockEmailService,
+  MockNotificationLogService,
+  MockPhoneService,
+  MockRadioService
 } from '../../../../notification/test/helpers/provider.helpers';
+import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
@@ -13,6 +19,12 @@ import { NotificationConsumer } from './notification.consumer';
 
 describe('NotificationService', () => {
   let service: NotificationConsumer;
+  let emailService: MockEmailService;
+  let phoneService: MockPhoneService;
+  let radioService: MockRadioService;
+  let notificationLogService: MockNotificationLogService;
+
+  const job: any = { id: 1, data: {}, log: jest.fn(), update: jest.fn() };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +50,12 @@ describe('NotificationService', () => {
     }).compile();
 
     service = module.get<NotificationConsumer>(NotificationConsumer);
+    emailService = module.get<MockEmailService>(EmailService);
+    phoneService = module.get<MockPhoneService>(PhoneService);
+    radioService = module.get<MockRadioService>(RadioService);
+    notificationLogService = module.get<MockNotificationLogService>(
+      NotificationLogService,
+    );
   });
 
   it('should be defined', () => {
@@ -45,116 +63,312 @@ describe('NotificationService', () => {
   });
 
   describe('processEmail()', () => {
-    it('should yield the created email notification', async () => {
-      // Arrange.
-      // Act.
-      // Assert.
+    const createEmailNotificationDto: CreateEmailNotificationDto = {
+      to: 'john.doe@email.com',
+      from: 'no-reply@email.com',
+      subject: 'Unit Testing',
+      html: '<h1>Unit Testing</h1>',
+      text: 'Unit Testing',
+      template: null,
+      context: null,
+    };
+
+    afterEach(() => {
+      emailService.createNotificationDto.mockClear();
+      emailService.createEmailTemplate.mockClear();
+      emailService.sendEmail.mockClear();
     });
 
-    it('should validate the job\'s payload is valid', async () => {
+    it('should yield the created email notification', async () => {
       // Arrange.
+      const expectedResult = {};
+      emailService.createNotificationDto.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.createEmailTemplate.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.sendEmail.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processEmail(job)).resolves.toEqual(expectedResult);
+    });
+
+    it("should validate the job's payload is valid", async () => {
+      // Arrange.
+      emailService.createNotificationDto.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.createEmailTemplate.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.sendEmail.mockResolvedValue(null);
+
       // Act.
+      await service.processEmail(job);
+
       // Assert.
-    })
+      expect(emailService.createNotificationDto).toHaveBeenCalledWith(job.data);
+    });
 
     it('should throw an "Error" if the job\'s payload is invalid', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const error = new Error('unit testing');
+      const expectedResult = new Error(
+        `[${NotificationConsumer.name} processEmail] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+      );
+      emailService.createNotificationDto.mockRejectedValue(error);
+
+      // Act/Assert.
+      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
     });
 
     it('should generate an email template', async () => {
       // Arrange.
+      emailService.createNotificationDto.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.createEmailTemplate.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.sendEmail.mockResolvedValue(null);
+
       // Act.
+      await service.processEmail(job);
+
       // Assert.
+      expect(emailService.createEmailTemplate).toHaveBeenCalledWith(
+        createEmailNotificationDto,
+      );
     });
 
     it('should throw an "Error" if an email template cannot be generated', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new Error(
+        `Invalid Argument: ${CreateEmailNotificationDto.name} must have either 'html' or 'template' keys present`,
+      );
+      emailService.createNotificationDto.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.createEmailTemplate.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw an "Error" if an email failed to send', async () => {
+      // Arrange.
+      const expectedResult = new Error('Something went wrong');
+      emailService.createNotificationDto.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.createEmailTemplate.mockResolvedValue(
+        createEmailNotificationDto,
+      );
+      emailService.sendEmail.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
     });
   });
 
   describe('processText()', () => {
-    it('should yield the created text notification', async () => {
-      // Arrange.
-      // Act.
-      // Assert.
+    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+      to: '+19999999999',
+      from: '+11111111111',
+      body: 'Unit Testing',
+    };
+
+    afterEach(() => {
+      phoneService.createNotificationDto.mockClear();
+      phoneService.sendText.mockClear();
     });
 
-    it('should validate the job\'s payload is valid', async () => {
+    it('should yield the created text notification', async () => {
       // Arrange.
+      const expectedResult = {};
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendText.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processText(job)).resolves.toEqual(expectedResult);
+    });
+
+    it("should validate the job's payload is valid", async () => {
+      // Arrange.
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendText.mockResolvedValue(null);
+
       // Act.
+      await service.processText(job);
+
       // Assert.
-    })
+      expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
+    });
 
     it('should throw an "Error" if the job\'s payload is invalid', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const error = new Error('unit testing');
+      const expectedResult = new Error(
+        `[${NotificationConsumer.name} processText] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+      );
+      phoneService.createNotificationDto.mockRejectedValue(error);
+      phoneService.sendText.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processText(job)).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw an "Error" if an text failed to send', async () => {
+      // Arrange.
+      const expectedResult = new Error('Something went wrong');
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendText.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processText(job)).rejects.toEqual(expectedResult);
     });
   });
 
   describe('processRadio()', () => {});
 
   describe('onQueueError()', () => {
-    it('should log the error to the console', () => {
-      // Arrange.
-      // Act.
-      // Assert.
-    });
+    it.todo('should log the error to the console');
   });
 
   describe('onQueueCompleted()', () => {
+    afterEach(() => {
+      notificationLogService.createOrUpdate.mockClear();
+      job.update.mockClear();
+      job.log.mockClear();
+    });
+
     it("should create or update the job's notification log in the database", async () => {
       // Arrange.
+      const result = {};
+
       // Act.
+      await service.onQueueCompleted(job, result);
+
       // Assert.
+      expect(notificationLogService.createOrUpdate).toHaveBeenCalledWith(
+        job,
+        'completed',
+        result,
+        null,
+      );
     });
 
     it("should update the job's payload with with the notification log's id", async () => {
       // Arrange.
+      const id = 'test';
+      const expectedResult = {
+        ...job.data,
+        notification_database_id: id,
+      };
+      notificationLogService.createOrUpdate.mockResolvedValue(id);
+
       // Act.
+      await service.onQueueCompleted(job, null);
+
       // Assert.
+      expect(job.update).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {
       // Arrange.
+      const id = 'test';
+      const expectedResult = `[${NotificationConsumer.name} onQueueCompleted] Job ${job.id}: Result stored in database ${id}`;
+      notificationLogService.createOrUpdate.mockResolvedValue(id);
+
       // Act.
+      await service.onQueueCompleted(job, null);
+
       // Assert.
+      expect(job.log).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (fail)", async () => {
       // Arrange.
+      const expectedResult = `[${NotificationConsumer.name} onQueueCompleted] Job ${job.id}: Failed to store result in database`;
+      notificationLogService.createOrUpdate.mockRejectedValue(new Error());
+
       // Act.
+      await service.onQueueCompleted(job, null);
+
       // Assert.
+      expect(job.log).toHaveBeenCalledWith(expectedResult);
     });
   });
 
   describe('onQueueFailed()', () => {
+    afterEach(() => {
+      notificationLogService.createOrUpdate.mockClear();
+      job.update.mockClear();
+      job.log.mockClear();
+    });
+
     it("should create or update the job's notification log in the database", async () => {
       // Arrange.
+      const error = new Error();
+
       // Act.
+      await service.onQueueFailed(job, error);
+
       // Assert.
+      expect(notificationLogService.createOrUpdate).toHaveBeenCalledWith(
+        job,
+        'failed',
+        null,
+        error,
+      );
     });
 
     it("should update the job's payload with with the notification log's id", async () => {
       // Arrange.
+      const id = 'test';
+      const expectedResult = {
+        ...job.data,
+        notification_database_id: id,
+      };
+      notificationLogService.createOrUpdate.mockResolvedValue(id);
+
       // Act.
+      await service.onQueueFailed(job, null);
+
       // Assert.
+      expect(job.update).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {
       // Arrange.
+      const id = 'test';
+      const expectedResult = `[${NotificationConsumer.name} onQueueFailed] Job ${job.id}: Result stored in database ${id}`;
+      notificationLogService.createOrUpdate.mockResolvedValue(id);
+
       // Act.
+      await service.onQueueFailed(job, null);
+
       // Assert.
+      expect(job.log).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (fail)", async () => {
       // Arrange.
+      const expectedResult = `[${NotificationConsumer.name} onQueueFailed] Job ${job.id}: Failed to store result in database`;
+      notificationLogService.createOrUpdate.mockRejectedValue(new Error());
+
       // Act.
+      await service.onQueueFailed(job, null);
+
       // Assert.
+      expect(job.log).toHaveBeenCalledWith(expectedResult);
     });
   });
 });

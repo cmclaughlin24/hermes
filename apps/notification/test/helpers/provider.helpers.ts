@@ -16,9 +16,7 @@ export const createEmailTemplateServiceMock = (): MockEmailTemplateService => ({
   remove: jest.fn(),
 });
 
-export type MockEmailService = Partial<
-  Record<keyof EmailService, jest.Mock>
->;
+export type MockEmailService = Partial<Record<keyof EmailService, jest.Mock>>;
 
 export const createEmailServiceMock = (): MockEmailService => ({
   sendEmail: jest.fn(),
@@ -26,18 +24,14 @@ export const createEmailServiceMock = (): MockEmailService => ({
   createNotificationDto: jest.fn(),
 });
 
-export type MockPhoneService = Partial<
-  Record<keyof PhoneService, jest.Mock>
->;
+export type MockPhoneService = Partial<Record<keyof PhoneService, jest.Mock>>;
 
 export const createPhoneServiceMock = (): MockPhoneService => ({
   sendText: jest.fn(),
   createNotificationDto: jest.fn(),
 });
 
-export type MockRadioService = Partial<
-  Record<keyof RadioService, jest.Mock>
->;
+export type MockRadioService = Partial<Record<keyof RadioService, jest.Mock>>;
 
 export const createRadioServiceMock = (): MockRadioService => ({
   sendText: jest.fn(),
@@ -52,4 +46,5 @@ export const createNotificationLogServiceMock =
   (): MockNotificationLogService => ({
     findAll: jest.fn(),
     findOne: jest.fn(),
+    createOrUpdate: jest.fn(),
   });

@@ -25,6 +25,13 @@ export class NotificationConsumer {
     private readonly notificationLogService: NotificationLogService,
   ) {}
 
+  /**
+   * Processes an 'email' job from the notification queue and yields the sent email
+   * notification. Throws an error if the job payload is an invalid CreateEmailNotificationDto
+   * object, an email template could not be generated, or the notification fails to send.
+   * @param {Job} job
+   * @returns
+   */
   @Process('email')
   async processEmail(job: Job) {
     job.log(
@@ -71,6 +78,13 @@ export class NotificationConsumer {
     }
   }
 
+  /**
+   * Processes a 'sms' job from the notification queue and yields the sent text
+   * notification. Throws an error if the job payload is an invalid CreatePhoneNotificationDto
+   * object or the notification fails to send.
+   * @param {Job} job
+   * @returns
+   */
   @Process('sms')
   async processText(job: Job) {
     job.log(
@@ -107,6 +121,13 @@ export class NotificationConsumer {
     }
   }
 
+  /**
+   * Processes a 'radio' job from the notification queue and yields the sent text
+   * notification. Throws an error if the job payload is an invalid CreateRadioNotificationDto
+   * object or the notification fails to send.
+   * @param {Job} job
+   * @returns
+   */
   @Process('radio')
   async processRadio(job: Job) {
     job.log(
@@ -114,11 +135,23 @@ export class NotificationConsumer {
     );
   }
 
+  /**
+   * Listens for an error event on the notification queue and logs it to
+   * the console.
+   * @param {Error} error
+   */
   @OnQueueError()
   onQueueError(error: Error) {
     this.logger.error(error);
   }
 
+  /**
+   * Listens for a job 'completed' event on the notification queue, creates/updates a log 
+   * for the job in the NotificationLog repository, and appends the 'notification_log_id'
+   * to the job's payload. 
+   * @param {Job} job 
+   * @param {any} result 
+   */
   @OnQueueCompleted()
   async onQueueCompleted(job: Job, result: any) {
     job.log(
@@ -132,7 +165,7 @@ export class NotificationConsumer {
         result,
         null,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId }); 
+      await job.update({ ...job.data, notification_database_id: databaseId });
       job.log(
         `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
       );
@@ -143,6 +176,13 @@ export class NotificationConsumer {
     }
   }
 
+  /**
+   * Listens for a job 'failed' event on the notification queue, creates/updates a log 
+   * for the job in the NotificationLog repository, and appends the 'notification_log_id'
+   * to the job's payload. 
+   * @param {Job} job 
+   * @param {any} result 
+   */
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: Error) {
     job.log(
@@ -156,13 +196,13 @@ export class NotificationConsumer {
         null,
         error,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId }); 
+      await job.update({ ...job.data, notification_database_id: databaseId });
       job.log(
-        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
+        `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: Result stored in database ${databaseId}`,
       );
     } catch (error) {
       job.log(
-        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Failed to store result in database`,
+        `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: Failed to store result in database`,
       );
     }
   }
