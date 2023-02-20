@@ -22,19 +22,23 @@ export class NotificationLogController {
   @Public()
   @ApiOperation({
     summary: 'Find logs by their job name or status.',
-    security: []
+    security: [],
   })
   @ApiQuery({
     name: 'job',
     required: false,
     type: String,
-    description: 'A comma seperated list of notification job names',
+    isArray: true,
+    description: 'A list of notification job names',
+    enum: ['email', 'sms', 'radio']
   })
   @ApiQuery({
     name: 'status',
     required: false,
     type: String,
-    description: 'A comma seperated list of job statuses',
+    isArray: true,
+    description: 'A list of job statuses',
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -57,7 +61,7 @@ export class NotificationLogController {
   @Public()
   @ApiOperation({
     summary: "Find a log by it's id.",
-    security: []
+    security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
