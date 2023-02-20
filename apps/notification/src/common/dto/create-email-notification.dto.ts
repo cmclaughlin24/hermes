@@ -25,7 +25,7 @@ export class CreateEmailNotificationDto {
   })
   @IsEmail()
   @IsOptional()
-  from: string;
+  from?: string;
 
   @ApiProperty({
     description: 'Subject line for the email',
@@ -58,7 +58,7 @@ export class CreateEmailNotificationDto {
   @IsString()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  html: string;
+  html?: string;
 
   @ApiProperty({
     description:
@@ -70,7 +70,7 @@ export class CreateEmailNotificationDto {
   @IsOptional()
   @TemplateExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  template: string;
+  template?: string;
 
   @ApiProperty({
     description: 'Values to be based to the Handlebars HTML template',
@@ -81,5 +81,5 @@ export class CreateEmailNotificationDto {
   })
   @IsObject()
   @IsOptional()
-  context: any;
+  context?: any;
 }
