@@ -21,13 +21,13 @@
         "tsConfigPath": "apps/notification/tsconfig.app.json"
       }
     },
-    "order": {
+    "distribution": {
       "type": "application",
-      "root": "apps/order",
+      "root": "apps/distribution",
       "entryFile": "main",
-      "sourceRoot": "apps/order/src",
+      "sourceRoot": "apps/distribution/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/order/tsconfig.app.json"
+        "tsConfigPath": "apps/distribution/tsconfig.app.json"
       }
     }
   }

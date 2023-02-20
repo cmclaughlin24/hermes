@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Order API Documentation')
+    .setTitle('Distribution Service Documentation')
     .addTag('Order')
     .build();
 

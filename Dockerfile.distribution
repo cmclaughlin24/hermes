@@ -6,11 +6,11 @@ COPY package.json nest-cli.json tsconfig.build.json tsconfig.json ./
 
 RUN npm install
 
-COPY /apps/order ./apps/order
+COPY /apps/distribution ./apps/distribution
 
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379
 
 EXPOSE 3001
 
-CMD [ "npm", "run", "start:order" ]
+CMD [ "npm", "run", "start:distribution" ]

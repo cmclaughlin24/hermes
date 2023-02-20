@@ -28,14 +28,14 @@ services:
     depends_on:
       - database
       - redis
-  order:
+  distribution:
     build:
       context: ./
-      dockerfile: Dockerfile.order
+      dockerfile: Dockerfile.distribution
     ports:
       - '3001:3001'
     volumes:
-      - ./apps/order:/app/apps/order
+      - ./apps/distribution:/app/apps/distribution
       - /app/node_modules
     environment:
       REDIS_HOST: redis
