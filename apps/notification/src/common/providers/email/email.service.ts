@@ -5,9 +5,10 @@ import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
+import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 
 @Injectable()
-export class EmailService {
+export class EmailService implements CreateNotificationDto {
   private readonly logger = new Logger(EmailService.name);
 
   constructor(

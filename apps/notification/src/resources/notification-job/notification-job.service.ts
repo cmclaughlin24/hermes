@@ -5,12 +5,8 @@ import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
+import { NotificationDto } from '../../common/interfaces/create-notification-dto.interface';
 import { queuePool } from '../../config/bull-board.config';
-
-type NotificationDto =
-  | CreateEmailNotificationDto
-  | CreatePhoneNotificationDto
-  | CreateRadioNotificationDto;
 
 @Injectable()
 export class NotificationJobService {

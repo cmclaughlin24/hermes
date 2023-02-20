@@ -3,9 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
 import { TwilioService } from 'nestjs-twilio';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
+import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 
 @Injectable()
-export class PhoneService {
+export class PhoneService implements CreateNotificationDto {
   private readonly logger = new Logger(PhoneService.name);
 
   constructor(

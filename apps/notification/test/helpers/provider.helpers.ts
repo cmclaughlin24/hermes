@@ -1,8 +1,15 @@
+import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../../../notification/src/common/providers/email/email.service';
 import { PhoneService } from '../../../notification/src/common/providers/phone/phone.service';
 import { RadioService } from '../../../notification/src/common/providers/radio/radio.service';
 import { EmailTemplateService } from '../../../notification/src/resources/email-template/email-template.service';
 import { NotificationLogService } from '../../../notification/src/resources/notification-log/notification-log.service';
+
+export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
+
+export const createConfigServiceMock = (): MockConfigService => ({
+  get: jest.fn(),
+});
 
 export type MockEmailTemplateService = Partial<
   Record<keyof EmailTemplateService, jest.Mock>
