@@ -2,7 +2,7 @@ import * as Joi from '@hapi/joi';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { OrderModule } from './order/order.module';
+import { OrderModule } from './resources/order/order.module';
 
 @Module({
   imports: [
