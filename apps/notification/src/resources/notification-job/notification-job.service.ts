@@ -21,6 +21,12 @@ export class NotificationJobService {
     queuePool.add(notificationQueue);
   }
 
+  /**
+   * Yields a Job from the notification queue or throws a NotFoundException if
+   * the queue yields null or undefined.
+   * @param {number} id
+   * @returns {Promoise<Job>}
+   */
   async findOne(id: number) {
     const job = await this.notificationQueue.getJob(id);
 
@@ -33,6 +39,12 @@ export class NotificationJobService {
     return job;
   }
 
+  /**
+   * Yields a list of Jobs filtered by the status from the notification queue or throws
+   * a NotFoundException if the queue yields null, undefined, or an empty list.
+   * @param {JobStatus[]} statuses 
+   * @returns {Promise<Job>}
+   */
   async findAll(statuses: JobStatus[]) {
     const jobs = await this.notificationQueue.getJobs(statuses);
 
@@ -43,24 +55,45 @@ export class NotificationJobService {
     return jobs;
   }
 
+  /**
+   * Adds an 'email' job to the notification queue.
+   * @param {CreateEmailNotificationDto} createEmailNotificationDto
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
     return this._createNotification('email', createEmailNotificationDto);
   }
 
+  /**
+   * Adds a 'sms' job to the notification queue.
+   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto 
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createTextNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
     return this._createNotification('sms', createPhoneNotificationDto);
   }
 
+  /**
+   * Adds a 'radio' job to the notification queue.
+   * @param {CreateRadioNotificationDto} createRadioNotification
+   * @returns {Promise<ApiResponseDto>}
+   */
   async createRadioNotification(
     createRadioNotification: CreateRadioNotificationDto,
   ) {
     return this._createNotification('radio', createRadioNotification);
   }
 
+  /**
+   * Adds a job to the notification queue.
+   * @param {string} name Name of the job
+   * @param {NotificationDto} notificationDto Payload for the job
+   * @returns {Promise<ApiResponseDto>}
+   */
   private async _createNotification(
     name: string,
     notificationDto: NotificationDto,
