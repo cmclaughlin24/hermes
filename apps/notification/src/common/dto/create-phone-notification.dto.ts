@@ -22,7 +22,7 @@ export class CreatePhoneNotificationDto {
   })
   @IsPhoneNumber()
   @IsOptional()
-  from: string;
+  from?: string;
 
   @ApiProperty({
     description: "Notification's content",

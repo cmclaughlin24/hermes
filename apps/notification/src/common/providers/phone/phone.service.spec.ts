@@ -1,7 +1,11 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TwilioService } from 'nestjs-twilio';
-import { createConfigServiceMock } from '../../../../../notification/test/helpers/provider.helpers';
+import {
+  createConfigServiceMock,
+  MockConfigService
+} from '../../../../../notification/test/helpers/provider.helpers';
+import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { PhoneService } from './phone.service';
 
 const createTwilioServiceMock = () => ({
@@ -14,6 +18,8 @@ const createTwilioServiceMock = () => ({
 
 describe('PhoneService', () => {
   let service: PhoneService;
+  let twilioService: any;
+  let configService: MockConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,6 +37,8 @@ describe('PhoneService', () => {
     }).compile();
 
     service = module.get<PhoneService>(PhoneService);
+    twilioService = module.get<any>(TwilioService);
+    configService = module.get<MockConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -38,48 +46,116 @@ describe('PhoneService', () => {
   });
 
   describe('sendText()', () => {
-    it('should send a text notification', () => {
-      // Arrange.
-      // Act.
-      // Assert.
+    afterEach(() => {
+      twilioService.client.messages.create.mockClear();
     });
-    
-    it('should throw an error otherwise', () => {
+
+    it('should send a text notification', async () => {
       // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+12818071479',
+        from: '+12818071479',
+        body: 'Unit Testing',
+      };
+
       // Act.
+      await service.sendText(createPhoneNotificationDto);
+
       // Assert.
+      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
+        createPhoneNotificationDto,
+      );
+    });
+
+    it("should use the environment's phone number if not included in CreatePhoneNotificationDto", async () => {
+      // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+12818071479',
+        body: 'Unit Testing',
+      };
+      const from = '+12918071478';
+      const expectedResult = {
+        ...createPhoneNotificationDto,
+        from,
+      };
+      configService.get.mockReturnValue(from);
+
+      // Act.
+      await service.sendText(createPhoneNotificationDto);
+
+      // Assert.
+      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
+
+    it('should throw an error otherwise', async () => {
+      // Arrange.
+      twilioService.client.messages.create.mockRejectedValue(new Error());
+
+      // Act/Assert.
+      await expect(
+        service.sendText({} as CreatePhoneNotificationDto),
+      ).rejects.toBeInstanceOf(Error);
     });
   });
 
   describe('createNotificationDto()', () => {
     it('should yield a CreatePhoneNotificationDto object', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const payload = {
+        to: '+12818071479',
+        from: '+12818071479',
+        body: 'Unit Testing',
+      };
+
+      // Act/Assert.
+      await expect(
+        service.createNotificationDto(payload),
+      ).resolves.toBeInstanceOf(CreatePhoneNotificationDto);
     });
 
     it('should throw an error if data is null/undefined', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new Error('Payload cannot be null/undefined');
+
+      // Act/Assert.
+      await expect(service.createNotificationDto(null)).rejects.toEqual(
+        expectedResult,
+      );
     });
 
     it('should throw an error if data is not an object (primitive)', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new Error('Payload must be an object');
+
+      // Act/Assert.
+      await expect(service.createNotificationDto('test')).rejects.toEqual(
+        expectedResult,
+      );
     });
 
     it('should throw an error if data is not an object (array)', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new Error('Payload must be an object');
+
+      // Act/Assert.
+      await expect(service.createNotificationDto([])).rejects.toEqual(
+        expectedResult,
+      );
     });
 
     it('should throw an error if data is an invalid CreatePhoneNotificationDto', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const payload = {
+        to: '+12818071479',
+        from: '+12818071479',
+      };
+
+      // Act/Assert.
+      await expect(
+        service.createNotificationDto(payload),
+      ).rejects.toBeInstanceOf(Error);
     });
   });
 });
