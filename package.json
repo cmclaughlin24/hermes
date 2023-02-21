@@ -99,7 +99,11 @@
       "./config/"
     ],
     "roots": [
-      "<rootDir>/apps/"
-    ]
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@notification/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+    }
   }
 }

@@ -1,11 +1,13 @@
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  createConfigServiceMock,
-  MockConfigService
-} from '../../../../notification/test/helpers/provider.helpers';
 import { ApiKeyGuard } from './api-key.guard';
+
+export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
+
+export const createConfigServiceMock = (): MockConfigService => ({
+  get: jest.fn(),
+}); 
 
 describe('ApiKeyGuard', () => {
   let configService: any;

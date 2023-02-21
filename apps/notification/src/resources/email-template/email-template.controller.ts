@@ -9,7 +9,7 @@ import {
   Post
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from '../../common/decorators/public.decorator';
+import { Public } from '@notification/common';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';

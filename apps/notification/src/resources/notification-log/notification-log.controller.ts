@@ -7,8 +7,8 @@ import {
   Query
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '@notification/common';
 import { JobStatus } from 'bull';
-import { Public } from '../../common/decorators/public.decorator';
 import { NotificationLogService } from './notification-log.service';
 
 @ApiTags('Notification Log')

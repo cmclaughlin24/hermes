@@ -7,6 +7,7 @@ COPY package.json nest-cli.json tsconfig.build.json tsconfig.json ./
 RUN npm install
 
 COPY /apps/distribution ./apps/distribution
+COPY /libs ./libs
 
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379

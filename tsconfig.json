@@ -18,6 +18,13 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "paths": {}
+    "paths": {
+      "@notification/common": [
+        "libs/common/src"
+      ],
+      "@notification/common/*": [
+        "libs/common/src/*"
+      ]
+    }
   }
 }

@@ -6,7 +6,9 @@
   "compilerOptions": {
     "webpack": true,
     "tsConfigPath": "apps/notification/tsconfig.app.json",
-    "plugins": ["@nestjs/swagger/plugin"],
+    "plugins": [
+      "@nestjs/swagger/plugin"
+    ],
     "assets": [
       "/templates/*"
     ]
@@ -28,6 +30,15 @@
       "sourceRoot": "apps/distribution/src",
       "compilerOptions": {
         "tsConfigPath": "apps/distribution/tsconfig.app.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     }
   }

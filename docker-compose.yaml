@@ -20,6 +20,7 @@ services:
       - '3000:3000'
     volumes:
       - ./apps/notification:/app/apps/notification
+      - ./libs:/app/libs
       - /app/node_modules
     env_file:
       - ./env/notification.env
@@ -36,6 +37,7 @@ services:
       - '3001:3001'
     volumes:
       - ./apps/distribution:/app/apps/distribution
+      - ./libs:/app/libs
       - /app/node_modules
     environment:
       REDIS_HOST: redis
