@@ -6,7 +6,7 @@ import { CreateEmailNotificationDto } from '../../common/dto/create-email-notifi
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { NotificationDto } from '../../common/interfaces/create-notification-dto.interface';
-import { queuePool } from '../../config/bull-board.config';
+import { queuePool } from '../../config/bull.config';
 
 @Injectable()
 export class NotificationJobService {

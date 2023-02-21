@@ -1,10 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as packageJson from '../../../../package.json';
 import { API_KEY_HEADER } from '../common/guards/api-key.guard';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Notification Service Documentation')
+    .setVersion(packageJson.version)
     .setDescription(
       'The Notification Service implements a Queue design pattern by utilizing the @nestjs/bull package. This ' +
         'package provides a layer of abstraction for the Bull library, a robust queue system based on Redis. ' +

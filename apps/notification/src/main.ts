@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
-import { setupBullBoard } from './config/bull-board.config';
+import { setupBullBoard } from './config/bull.config';
 import { setupSwaggerDocument } from './config/swagger.config';
 import { useGlobalPipes } from './config/use-global.config';
 
