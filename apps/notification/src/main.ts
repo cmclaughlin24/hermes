@@ -7,6 +7,7 @@ import { useGlobalPipes } from './config/use-global.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = process.env.PORT || 3000;
 
   setupBullBoard(app);
   setupSwaggerDocument(app);
@@ -15,6 +16,6 @@ async function bootstrap() {
   //       (required for custom validators that check database)
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();

@@ -10,6 +10,7 @@ COPY /apps/notification ./apps/notification
 COPY /libs ./libs
 
 ENV API_KEY=notification123
+ENV PORT=3000
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379
 ENV RETRY_ATTEMPTS=5
