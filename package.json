@@ -7,10 +7,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build:notification": "nest build notification",
+    "build:distribution": "nest build distribution",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
-    "start:notification": "nest start --watch",
+    "start:notification": "nest start notification --watch",
     "start:distribution": "nest start distribution --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
