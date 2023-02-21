@@ -1,17 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ApiKeyGuard, RequestLoggerMiddleware } from '@notification/common';
-import { EmailTemplateModule } from './email-template/email-template.module';
-import { NotificationJobModule } from './notification-job/notification-job.module';
-import { NotificationLogModule } from './notification-log/notification-log.module';
-import { NotificationModule } from './notification/notification.module';
+import { OrderModule } from './order/order.module';
+
 
 @Module({
   imports: [
-    NotificationModule,
-    NotificationJobModule,
-    NotificationLogModule,
-    EmailTemplateModule,
+    OrderModule
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
