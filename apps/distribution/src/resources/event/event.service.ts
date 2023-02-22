@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class EventService {
-  findAll() {}
+  findAll() {
+    return [
+      'gandalf',
+      'aragorn',
+      'frodo',
+    ]
+  }
 
   findOne(name: string) {}
 

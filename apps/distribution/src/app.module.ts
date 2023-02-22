@@ -41,7 +41,14 @@ import { ResourcesModule } from './resources/resources.module';
     }),
     ResourcesModule,
     CommonModule,
-    EventHandlersModule.forRootAsync(),
+    EventHandlersModule.forRoot({
+      events: [
+        { name: 'gandalf' },
+        { name: 'aragorn' },
+        { name: 'frodo' },
+        { name: 'sam' },
+      ],
+    }),
   ],
 })
 export class AppModule {}

@@ -1,19 +1,25 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { createDefaultEventHandlerController } from './default-event-handler/default-event-handler.controller';
 
-export interface EventHandlersModuleOptions {}
+export interface EventHandlersModuleOptions {
+  events: { name: string; controller?: string }[];
+}
 
 @Module({})
 export class EventHandlersModule {
-  static async forRootAsync(
-    options?: EventHandlersModuleOptions,
-  ): Promise<DynamicModule> {
-    const controllers = [
-      createDefaultEventHandlerController('gandalf'),
-      createDefaultEventHandlerController('aragorn'),
-    ];
+  static forRoot(options: EventHandlersModuleOptions): DynamicModule {
+    const controllers = [];
 
-    // Fixme: Load controller names and class from database and push to controllers array.
+    for (const event of options.events) {
+      let controller;
+
+      switch (event.controller) {
+        default:
+          controller = createDefaultEventHandlerController(event.name);
+      }
+
+      controllers.push(controller);
+    }
 
     return {
       module: EventHandlersModule,
