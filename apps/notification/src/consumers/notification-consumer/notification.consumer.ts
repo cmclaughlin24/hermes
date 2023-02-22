@@ -148,11 +148,11 @@ export class NotificationConsumer {
   }
 
   /**
-   * Listens for a job 'completed' event on the notification queue, creates/updates a log 
+   * Listens for a job 'completed' event on the notification queue, creates/updates a log
    * for the job in the NotificationLog repository, and appends the 'notification_log_id'
-   * to the job's payload. 
-   * @param {Job} job 
-   * @param {any} result 
+   * to the job's payload.
+   * @param {Job} job
+   * @param {any} result
    */
   @OnQueueCompleted()
   async onQueueCompleted(job: Job, result: any) {
@@ -179,11 +179,11 @@ export class NotificationConsumer {
   }
 
   /**
-   * Listens for a job 'failed' event on the notification queue, creates/updates a log 
+   * Listens for a job 'failed' event on the notification queue, creates/updates a log
    * for the job in the NotificationLog repository, and appends the 'notification_log_id'
-   * to the job's payload. 
-   * @param {Job} job 
-   * @param {any} result 
+   * to the job's payload.
+   * @param {Job} job
+   * @param {any} result
    */
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: Error) {

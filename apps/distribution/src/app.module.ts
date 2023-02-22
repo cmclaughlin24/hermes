@@ -2,7 +2,9 @@ import * as Joi from '@hapi/joi';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CommonModule } from './common/common.module';
 import { ResourcesModule } from './resources/resources.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ResourcesModule } from './resources/resources.module';
       }),
     }),
     ResourcesModule,
+    CommonModule,
+    SubscribersModule.forRootAsync(),
   ],
 })
 export class AppModule {}
