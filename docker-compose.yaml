@@ -39,9 +39,8 @@ services:
       - ./apps/distribution:/app/apps/distribution
       - ./libs:/app/libs
       - /app/node_modules
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+    env_file:
+      - ./env/distribution.env
     tty: true
     stdin_open: true
     depends_on:
