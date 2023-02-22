@@ -1,10 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { API_KEY_HEADER } from '@notification/common';
+import * as packageJson from '../../../../package.json';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Distribution Service Documentation')
+    .setVersion(packageJson.version)
     .addApiKey(
       {
         type: 'apiKey',
@@ -13,7 +15,12 @@ export function setupSwaggerDocument(app: INestApplication) {
       },
       'ApiKeyAuth',
     )
-    .addTag('Event')
+    .addTag('Distribution Job')
+    .addTag(
+      'Distribution Log',
+      'View the history of distribution job outcomes.',
+    )
+    .addTag('Job Rules')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

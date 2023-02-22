@@ -5,6 +5,9 @@ import { DistributionConsumer } from './distribution-consumer/distribution.consu
 @Module({
   imports: [
     BullModule.registerQueue({
+      name: 'notification',
+    }),
+    BullModule.registerQueue({
       name: 'distribution_default',
     }),
   ],
