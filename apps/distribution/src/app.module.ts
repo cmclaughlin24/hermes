@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CommonModule } from './common/common.module';
 import { databaseFactory } from './config/database.config';
-import { EventHandlersModule } from './event-handlers/event-handlers.module';
+import { ConsumersModule } from './consumers/consumers.module';
 import { ResourcesModule } from './resources/resources.module';
 
 @Module({
@@ -41,14 +41,7 @@ import { ResourcesModule } from './resources/resources.module';
     }),
     ResourcesModule,
     CommonModule,
-    EventHandlersModule.forRoot({
-      events: [
-        { name: 'gandalf' },
-        { name: 'aragorn' },
-        { name: 'frodo' },
-        { name: 'sam' },
-      ],
-    }),
+    ConsumersModule,
   ],
 })
 export class AppModule {}
