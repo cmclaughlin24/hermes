@@ -1,13 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 
-export function createDefaultSubscriberController(name: string) {
+export function createDefaultEventHandlerController(name: string) {
   @Controller(name)
-  class DefaultSubscriberController {
+  class DefaultEventHandlerController {
     @Get()
     success() {
       return `Successfully made request to ${name}`;
     }
   }
 
-  return DefaultSubscriberController;
+  return DefaultEventHandlerController;
 }

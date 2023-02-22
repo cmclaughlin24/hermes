@@ -5,8 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CommonModule } from './common/common.module';
 import { databaseFactory } from './config/database.config';
+import { EventHandlersModule } from './event-handlers/event-handlers.module';
 import { ResourcesModule } from './resources/resources.module';
-import { SubscribersModule } from './subscribers/subscribers.module';
 
 @Module({
   imports: [
@@ -41,7 +41,7 @@ import { SubscribersModule } from './subscribers/subscribers.module';
     }),
     ResourcesModule,
     CommonModule,
-    SubscribersModule.forRootAsync(),
+    EventHandlersModule.forRootAsync(),
   ],
 })
 export class AppModule {}

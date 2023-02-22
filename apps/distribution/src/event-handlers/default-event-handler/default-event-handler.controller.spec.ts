@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultSubscriberController } from './default-subscriber.controller';
+import { DefaultSubscriberController } from './default-event-handler.controller';
 
 describe('DefaultSubscriberController', () => {
   let controller: DefaultSubscriberController;
