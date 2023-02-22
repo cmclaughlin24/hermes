@@ -13,6 +13,7 @@ export function setupSwaggerDocument(app: INestApplication) {
       },
       'ApiKeyAuth',
     )
+    .addTag('Event')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
