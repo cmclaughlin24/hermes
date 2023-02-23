@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '@notification/common';
 import { DistributionJobService } from './distribution-job.service';
-import { CreateDefaultDistributionJobDto } from './dto/create-distribution-default-job.dto';
+import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
 @ApiTags('Distribution Job')
 @Controller('distribution-job')
@@ -55,7 +55,7 @@ export class DistributionJobController {
     description: 'Forbidden Resource',
   })
   createDefaultDistributionJob(
-    @Body() createDefaultDistributionJob: CreateDefaultDistributionJobDto,
+    @Body() createDefaultDistributionJob: CreateDistributionJobDto,
   ) {
     return this.distributionJobService.createDefaultDistributionJob(
       createDefaultDistributionJob,

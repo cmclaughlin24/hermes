@@ -1,15 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDefaultDistributionJobDto } from './dto/create-distribution-default-job.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DistributionQueues } from '@notification/common';
+import { Queue } from 'bull';
+import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
 @Injectable()
 export class DistributionJobService {
-  constructor() {}
+  constructor(
+    @InjectQueue(DistributionQueues.DEFAULT)
+    private readonly defaultQueue: Queue,
+  ) {}
 
-  findDefaultDistributionJobs() {}
+  async findDefaultDistributionJobs() {}
 
-  findDefaultDistributionJob(id: number) {}
+  async findDefaultDistributionJob(id: number) {
+    const job = await this.defaultQueue.getJob(id);
 
-  createDefaultDistributionJob(
-    createDefaultDistributionJob: CreateDefaultDistributionJobDto,
+    if (!job) {
+      throw new NotFoundException(
+        `Job with ${id} not found in '${this.defaultQueue.name}' queue`,
+      );
+    }
+
+    return job;
+  }
+
+  async createDefaultDistributionJob(
+    createDefaultDistributionJob: CreateDistributionJobDto,
   ) {}
 }
