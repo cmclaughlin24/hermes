@@ -24,7 +24,7 @@ export function setupSwaggerDocument(app: INestApplication) {
       'View the history of distribution job outcomes.',
     )
     .addTag(
-      'Distribution Rules',
+      'Distribution Rule',
       'View and configure the rules that are used for evaluating a distribution job.'
     )
     .build();
