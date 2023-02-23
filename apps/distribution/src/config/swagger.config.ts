@@ -15,6 +15,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       },
       'ApiKeyAuth',
     )
+    .addTag(
+      'Distribution Log',
+      'View the history of distribution job outcomes.',
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
