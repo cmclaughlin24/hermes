@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CommonModule } from './common/common.module';
+import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';
 import { ConsumersModule } from './consumers/consumers.module';
 import { ResourcesModule } from './resources/resources.module';
@@ -22,6 +23,8 @@ import { ResourcesModule } from './resources/resources.module';
         DB_NAME: Joi.required(),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        RETRY_ATTEMPTS: Joi.number().required(),
+        RETRY_DELAY: Joi.number().required(),
       }),
     }),
     SequelizeModule.forRootAsync({
@@ -32,12 +35,7 @@ import { ResourcesModule } from './resources/resources.module';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        redis: {
-          host: configService.get('REDIS_HOST'),
-          port: configService.get('REDIS_PORT'),
-        },
-      }),
+      useFactory: bullFactory,
     }),
     ResourcesModule,
     CommonModule,

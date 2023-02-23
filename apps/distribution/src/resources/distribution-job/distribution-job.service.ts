@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DistributionQueues } from '@notification/common';
 import { Queue } from 'bull';
+import { queuePool } from '../../config/bull.config';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
 @Injectable()
@@ -9,7 +10,9 @@ export class DistributionJobService {
   constructor(
     @InjectQueue(DistributionQueues.DEFAULT)
     private readonly defaultQueue: Queue,
-  ) {}
+  ) {
+    queuePool.add(defaultQueue);
+  }
 
   async findDefaultDistributionJobs() {}
 

@@ -24,7 +24,7 @@ export class EmailTemplateController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find an email templates.',
+    summary: 'Find email templates.',
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })

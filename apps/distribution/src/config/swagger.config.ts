@@ -23,6 +23,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       'Distribution Log',
       'View the history of distribution job outcomes.',
     )
+    .addTag(
+      'Distribution Rules',
+      'View and configure the rules that are used for evaluating a distribution job.'
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
