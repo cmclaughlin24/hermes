@@ -1,13 +1,14 @@
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
+import { DistributionQueues, NotificationQueues } from '@notification/common';
 import { Job, Queue } from 'bull';
 
-@Processor('distribution_default')
+@Processor(DistributionQueues.DEFAULT)
 export class DistributionDefaultConsumer {
   private readonly logger = new Logger(DistributionDefaultConsumer.name);
   
   constructor(
-    @InjectQueue('notification') private readonly notificationQueue: Queue,
+    @InjectQueue(NotificationQueues.DEFAULT) private readonly notificationQueue: Queue,
   ) {}
 
   @Process('*')

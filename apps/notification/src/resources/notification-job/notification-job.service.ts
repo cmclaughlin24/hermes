@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DeliveryMethods } from '@notification/common';
+import { DeliveryMethods, NotificationQueues } from '@notification/common';
 import { JobStatus, Queue } from 'bull';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -12,7 +12,7 @@ import { queuePool } from '../../config/bull.config';
 @Injectable()
 export class NotificationJobService {
   constructor(
-    @InjectQueue('notification') private readonly notificationQueue: Queue,
+    @InjectQueue(NotificationQueues.DEFAULT) private readonly notificationQueue: Queue,
   ) {
     // Note: Add NotificationQueue to Bull Board.
     queuePool.add(notificationQueue);

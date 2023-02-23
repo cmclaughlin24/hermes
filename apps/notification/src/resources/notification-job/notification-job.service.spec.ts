@@ -1,6 +1,7 @@
 import { getQueueToken } from '@nestjs/bull';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotificationQueues } from '@notification/common';
 import { Job, JobStatus } from 'bull';
 import {
   createQueueMock,
@@ -20,14 +21,14 @@ describe('NotificationJobService', () => {
       providers: [
         NotificationJobService,
         {
-          provide: getQueueToken('notification'),
+          provide: getQueueToken(NotificationQueues.DEFAULT),
           useValue: createQueueMock(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationJobService>(NotificationJobService);
-    queue = module.get<MockQueue>(getQueueToken('notification'));
+    queue = module.get<MockQueue>(getQueueToken(NotificationQueues.DEFAULT));
   });
 
   it('should be defined', () => {
