@@ -1,6 +1,6 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
-import { DistributionConsumer } from './distribution-consumer/distribution.consumer';
+import { DistributionDefaultConsumer } from './distribution-default-consumer/distribution-default.consumer';
 
 @Module({
   imports: [
@@ -11,6 +11,6 @@ import { DistributionConsumer } from './distribution-consumer/distribution.consu
       name: 'distribution_default',
     }),
   ],
-  providers: [DistributionConsumer],
+  providers: [DistributionDefaultConsumer],
 })
 export class ConsumersModule {}
