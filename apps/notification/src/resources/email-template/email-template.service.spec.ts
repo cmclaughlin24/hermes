@@ -1,11 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiResponseDto } from '@notification/common';
 import {
   createMockRepository,
   MockRepository
 } from '../../../../notification/test/helpers/database.helpers';
-import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';

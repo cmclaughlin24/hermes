@@ -4,7 +4,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { ApiResponseDto } from '../../common/dto/api-response.dto';
+import { ApiResponseDto } from '@notification/common';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplate } from './entities/email-template.entity';

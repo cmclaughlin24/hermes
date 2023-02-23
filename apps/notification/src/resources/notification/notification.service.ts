@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ApiResponseDto } from '../../common/dto/api-response.dto';
+import { ApiResponseDto } from '@notification/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';

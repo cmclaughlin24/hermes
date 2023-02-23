@@ -1,13 +1,12 @@
 import { getQueueToken } from '@nestjs/bull';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationQueues } from '@notification/common';
+import { ApiResponseDto, NotificationQueues } from '@notification/common';
 import { Job, JobStatus } from 'bull';
 import {
   createQueueMock,
   MockQueue
 } from '../../../../notification/test/helpers/queue.helper';
-import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { NotificationJobService } from './notification-job.service';

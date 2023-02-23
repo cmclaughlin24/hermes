@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiResponseDto } from '@notification/common';
 import { Job } from 'bull';
-import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { NotificationJobController } from './notification-job.controller';

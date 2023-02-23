@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from '@notification/common';
+import { ApiResponseDto, Public } from '@notification/common';
 import { DistributionJobService } from './distribution-job.service';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
@@ -43,8 +43,7 @@ export class DistributionJobController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successful Operation',
-    // Fixme: Move ApiResponsedto into @notification/common library
-    // type: ApiResponseDto,
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
