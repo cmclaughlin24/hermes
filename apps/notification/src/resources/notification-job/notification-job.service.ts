@@ -1,5 +1,6 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { DeliveryMethods } from '@notification/common';
 import { JobStatus, Queue } from 'bull';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -38,14 +39,16 @@ export class NotificationJobService {
   /**
    * Yields a list of Jobs filtered by the status from the notification queue or throws
    * a NotFoundException if the queue yields null, undefined, or an empty list.
-   * @param {JobStatus[]} statuses 
+   * @param {JobStatus[]} statuses
    * @returns {Promise<Job>}
    */
   async findAll(statuses: JobStatus[]) {
     const jobs = await this.notificationQueue.getJobs(statuses);
 
     if (!jobs || jobs.length === 0) {
-      throw new NotFoundException(`Jobs with status(es) ${statuses.join(', ')} not found`);
+      throw new NotFoundException(
+        `Jobs with status(es) ${statuses.join(', ')} not found`,
+      );
     }
 
     return jobs;
@@ -59,18 +62,24 @@ export class NotificationJobService {
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
-    return this._createNotification('email', createEmailNotificationDto);
+    return this._createNotification(
+      DeliveryMethods.EMAIL,
+      createEmailNotificationDto,
+    );
   }
 
   /**
    * Adds a 'sms' job to the notification queue.
-   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto 
+   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
   async createTextNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this._createNotification('sms', createPhoneNotificationDto);
+    return this._createNotification(
+      DeliveryMethods.SMS,
+      createPhoneNotificationDto,
+    );
   }
 
   /**
@@ -81,17 +90,17 @@ export class NotificationJobService {
   async createRadioNotification(
     createRadioNotification: CreateRadioNotificationDto,
   ) {
-    return this._createNotification('radio', createRadioNotification);
+    return this._createNotification(DeliveryMethods.RADIO, createRadioNotification);
   }
 
   /**
    * Adds a job to the notification queue.
-   * @param {string} name Name of the job
+   * @param {DeliveryMethods} name Name of the job
    * @param {NotificationDto} notificationDto Payload for the job
    * @returns {Promise<ApiResponseDto>}
    */
   private async _createNotification(
-    name: string,
+    name: DeliveryMethods,
     notificationDto: NotificationDto,
   ) {
     const job = await this.notificationQueue.add(name, notificationDto);

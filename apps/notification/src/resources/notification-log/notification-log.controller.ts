@@ -30,7 +30,7 @@ export class NotificationLogController {
     type: String,
     isArray: true,
     description: 'A list of notification job names',
-    enum: ['email', 'sms', 'radio']
+    enum: ['email', 'sms', 'radio'],
   })
   @ApiQuery({
     name: 'status',

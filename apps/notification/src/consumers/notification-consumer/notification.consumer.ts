@@ -6,6 +6,7 @@ import {
   Processor
 } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
+import { DeliveryMethods } from '@notification/common';
 import { Job } from 'bull';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -32,7 +33,7 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process('email')
+  @Process(DeliveryMethods.EMAIL)
   async processEmail(job: Job) {
     job.log(
       `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Processing ${job.name} notification`,
@@ -86,7 +87,7 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process('sms')
+  @Process(DeliveryMethods.SMS)
   async processText(job: Job) {
     job.log(
       `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: Processing ${job.name} notification`,
@@ -130,7 +131,7 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process('radio')
+  @Process(DeliveryMethods.RADIO)
   async processRadio(job: Job) {
     job.log(
       `[${NotificationConsumer.name} ${this.processRadio.name}] Job ${job.id}: Processing ${job.name} notification`,

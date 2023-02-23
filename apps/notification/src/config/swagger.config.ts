@@ -8,7 +8,7 @@ export function setupSwaggerDocument(app: INestApplication) {
     .setTitle('Notification Service Documentation')
     .setVersion(packageJson.version)
     .setDescription(
-      'The Notification Service implements a Queue design pattern by utilizing the @nestjs/bull package. This ' +
+      'The Notification Service implements a message queue design pattern by utilizing the @nestjs/bull package. This ' +
         'package provides a layer of abstraction for the Bull library, a robust message queue system based on Redis. ' +
         'It allows for more a reliable communication channel between the Notification Service and other services ' +
         'by persisting job data and application state so that task handling can be easily restarted. The Notification ' +
