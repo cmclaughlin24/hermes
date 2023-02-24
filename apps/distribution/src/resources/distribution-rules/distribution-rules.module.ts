@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
-import { DistributionRulesService } from './distribution-rules.service';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { DistributionRulesController } from './distribution-rules.controller';
+import { DistributionRulesService } from './distribution-rules.service';
+import { DistributionRule } from './entities/distribution-rule.entity';
 
 @Module({
+  imports: [SequelizeModule.forFeature([DistributionRule])],
   controllers: [DistributionRulesController],
-  providers: [DistributionRulesService]
+  providers: [DistributionRulesService],
+  exports: [DistributionRulesService],
 })
 export class DistributionRulesModule {}

@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateDistributionJobDto } from '../../distribution-job/dto/create-distribution-job.dto';
+import { CreateDistributionRuleDto } from './create-distribution-rule.dto';
 
 export class UpdateDistributionRuleDto extends PartialType(
-  CreateDistributionJobDto,
+  CreateDistributionRuleDto,
 ) {}

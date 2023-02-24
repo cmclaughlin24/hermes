@@ -1,2 +1,4 @@
 
-export class CreateDistributionRuleDto {}
+export class CreateDistributionRuleDto {
+  name: string;
+}
