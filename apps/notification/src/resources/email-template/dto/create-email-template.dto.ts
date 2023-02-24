@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject, IsString } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsNotEmpty, IsObject, IsString } from 'class-validator';
 
 export class CreateEmailTemplateDto {
   @ApiProperty({
@@ -7,6 +8,8 @@ export class CreateEmailTemplateDto {
     example: 'template'
   })
   @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   name: string;
 
   @ApiProperty({
@@ -18,6 +21,8 @@ export class CreateEmailTemplateDto {
     },
   })
   @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   template: string;
 
   @ApiProperty({

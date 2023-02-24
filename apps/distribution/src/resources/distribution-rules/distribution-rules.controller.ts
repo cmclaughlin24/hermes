@@ -5,11 +5,17 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseArrayPipe,
   Patch,
-  Post
+  Post,
+  Query
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto, Public } from '@notification/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiResponseDto,
+  DistributionQueues,
+  Public
+} from '@notification/common';
 import { DistributionRulesService } from './distribution-rules.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
@@ -24,23 +30,44 @@ export class DistributionRulesController {
   @Get()
   @Public()
   @ApiOperation({
+    summary: 'Find distribution rules by their queue.',
     security: [],
   })
-  findAll() {
-    return this.distributionRulesService.findAll();
+  @ApiQuery({
+    name: 'queue',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of distribution queues.',
+    enum: DistributionQueues
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  findAll(
+    @Query(
+      'queue',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    queues: DistributionQueues[],
+  ) {
+    return this.distributionRulesService.findAll(queues);
   }
 
   @Get(':name')
   @Public()
   @ApiOperation({
+    summary: "Find a distribution rule by it's name.",
     security: [],
   })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(@Param('name') name: string) {
     return this.distributionRulesService.findOne(name);
   }
 
   @Post()
   @ApiOperation({
+    summary: 'Create a distribution rule',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({
@@ -62,6 +89,7 @@ export class DistributionRulesController {
 
   @Patch(':name')
   @ApiOperation({
+    summary: 'Update a distribution rule',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({
@@ -90,6 +118,7 @@ export class DistributionRulesController {
 
   @Delete(':name')
   @ApiOperation({
+    summary: 'Remove a distribution rule',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({

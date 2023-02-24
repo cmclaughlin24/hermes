@@ -4,7 +4,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { ApiResponseDto } from '@notification/common';
+import { ApiResponseDto, DistributionQueues } from '@notification/common';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
@@ -16,7 +16,8 @@ export class DistributionRulesService {
     private readonly distributionRuleModel: typeof DistributionRule,
   ) {}
 
-  async findAll() {
+  async findAll(queues: DistributionQueues[]) {
+    // Fixme: Configure DistributionRuleModule findAll options.
     const distributionRules = await this.distributionRuleModel.findAll();
 
     if (!distributionRules || distributionRules.length === 0) {

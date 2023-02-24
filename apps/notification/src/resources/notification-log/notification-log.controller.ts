@@ -7,7 +7,7 @@ import {
   Query
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from '@notification/common';
+import { DeliveryMethods, Public } from '@notification/common';
 import { JobStatus } from 'bull';
 import { NotificationLogService } from './notification-log.service';
 
@@ -30,7 +30,7 @@ export class NotificationLogController {
     type: String,
     isArray: true,
     description: 'A list of notification job names',
-    enum: ['email', 'sms', 'radio'],
+    enum: DeliveryMethods,
   })
   @ApiQuery({
     name: 'status',
