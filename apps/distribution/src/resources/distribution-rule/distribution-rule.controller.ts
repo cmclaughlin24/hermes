@@ -16,15 +16,15 @@ import {
   DistributionQueues,
   Public
 } from '@notification/common';
-import { DistributionRulesService } from './distribution-rules.service';
+import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 
 @ApiTags('Distribution Rule')
-@Controller('distribution-rules')
-export class DistributionRulesController {
+@Controller('distribution-rule')
+export class DistributionRuleController {
   constructor(
-    private readonly distributionRulesService: DistributionRulesService,
+    private readonly distributionRuleService: DistributionRuleService,
   ) {}
 
   @Get()
@@ -50,7 +50,7 @@ export class DistributionRulesController {
     )
     queues: DistributionQueues[],
   ) {
-    return this.distributionRulesService.findAll(queues);
+    return this.distributionRuleService.findAll(queues);
   }
 
   @Get(':name')
@@ -62,7 +62,7 @@ export class DistributionRulesController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(@Param('name') name: string) {
-    return this.distributionRulesService.findOne(name);
+    return this.distributionRuleService.findOne(name);
   }
 
   @Post()
@@ -84,7 +84,7 @@ export class DistributionRulesController {
     description: 'Forbidden Resource',
   })
   create(@Body() createDistributionRuleDto: CreateDistributionRuleDto) {
-    return this.distributionRulesService.create(createDistributionRuleDto);
+    return this.distributionRuleService.create(createDistributionRuleDto);
   }
 
   @Patch(':name')
@@ -110,7 +110,7 @@ export class DistributionRulesController {
     @Param('name') name: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
-    return this.distributionRulesService.update(
+    return this.distributionRuleService.update(
       name,
       updateDistributionRuleDto,
     );
@@ -132,6 +132,6 @@ export class DistributionRulesController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(@Param('name') name: string) {
-    return this.distributionRulesService.remove(name);
+    return this.distributionRuleService.remove(name);
   }
 }

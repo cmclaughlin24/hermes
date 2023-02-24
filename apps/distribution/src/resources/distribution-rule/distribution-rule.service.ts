@@ -10,7 +10,7 @@ import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
 
 @Injectable()
-export class DistributionRulesService {
+export class DistributionRuleService {
   constructor(
     @InjectModel(DistributionRule)
     private readonly distributionRuleModel: typeof DistributionRule,
