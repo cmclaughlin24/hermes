@@ -27,6 +27,9 @@ export function setupSwaggerDocument(app: INestApplication) {
       'Distribution Rule',
       'View and configure the rules that are used for evaluating a distribution job.'
     )
+    .addTag(
+      'Subscription'
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
