@@ -6,6 +6,13 @@ services:
       - '5432:5432'
     environment:
       POSTGRES_PASSWORD: pass123
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: secret
+    ports:
+      - '8080:80'
   redis:
     image: redis
     ports:
