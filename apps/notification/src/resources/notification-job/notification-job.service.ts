@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApiResponseDto, DeliveryMethods, NotificationQueues } from '@notification/common';
 import { JobStatus, Queue } from 'bull';
+import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
@@ -44,7 +45,7 @@ export class NotificationJobService {
   async findAll(statuses: JobStatus[]) {
     const jobs = await this.notificationQueue.getJobs(statuses);
 
-    if (!jobs || jobs.length === 0) {
+    if (_.isEmpty(jobs)) {
       throw new NotFoundException(
         `Jobs with status(es) ${statuses.join(', ')} not found`,
       );

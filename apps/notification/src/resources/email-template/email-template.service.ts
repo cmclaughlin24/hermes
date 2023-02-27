@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
+import * as _ from 'lodash';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplate } from './entities/email-template.entity';
@@ -24,7 +25,7 @@ export class EmailTemplateService {
   async findAll() {
     const emailTemplates = await this.emailTemplateModel.findAll();
 
-    if (!emailTemplates || emailTemplates.length === 0) {
+    if (_.isEmpty(emailTemplates)) {
       throw new NotFoundException(`Email templates not found!`);
     }
 

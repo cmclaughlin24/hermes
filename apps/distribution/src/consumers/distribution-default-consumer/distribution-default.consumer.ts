@@ -2,6 +2,7 @@ import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
 import { Job, JobId, Queue } from 'bull';
+import * as _ from 'lodash';
 import { DistributionRuleService } from '../../resources/distribution-rule/distribution-rule.service';
 
 @Processor(DistributionQueues.DEFAULT)
@@ -32,7 +33,7 @@ export class DistributionDefaultConsumer {
 
       const subscriptions = this._getSubscriptions(distributionRule.subscriptions, job.data);
 
-      if (!subscriptions || subscriptions.length === 0) {
+      if (_.isEmpty(subscriptions)) {
         // Fixme: Return if there aren't any subscriptions.
       }
     } catch (error) {
@@ -41,7 +42,7 @@ export class DistributionDefaultConsumer {
   }
 
   private _getSubscriptions(subscriptions: any[], payload: any) {
-    if (!subscriptions || subscriptions.length === 0) {
+    if (_.isElement(subscriptions)) {
       return [];
     }
 
@@ -55,7 +56,7 @@ export class DistributionDefaultConsumer {
 
     // Note: If a subscription does not have filters, assume the subscription should receive a
     //       notification.
-    if (!subscription.filters && subscription.filters === 0) {
+    if (_.isEmpty(subscription)) {
       return true;
     }
 

@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobStatus } from 'bull';
+import * as _ from 'lodash';
 import { NotificationLog } from './entities/notification-log.entity';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class NotificationLogService {
       where: { status: statuses, job: jobs },
     });
 
-    if (!notificationLogs || notificationLogs.length === 0) {
+    if (_.isEmpty(notificationLogs)) {
       throw new NotFoundException(`Notification logs not found!`);
     }
 

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { Subscription } from './entities/subscription.entity';
 
 @Injectable()
 export class SubscriptionService {
-  constructor() {}
+  constructor(
+    @InjectModel(Subscription) private readonly subscription: Subscription,
+  ) {}
 
   findAll() {}
 

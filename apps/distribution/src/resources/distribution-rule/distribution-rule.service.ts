@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto, DistributionQueues } from '@notification/common';
+import * as _ from 'lodash';
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
@@ -22,7 +23,7 @@ export class DistributionRuleService {
     // Fixme: Configure DistributionRuleModule findAll options.
     const distributionRules = await this.distributionRuleModel.findAll();
 
-    if (!distributionRules || distributionRules.length === 0) {
+    if (_.isEmpty(distributionRules)) {
       throw new NotFoundException(`Distribution rules not found!`);
     }
 
