@@ -53,19 +53,24 @@ export class DistributionRuleController {
     return this.distributionRuleService.findAll(queues);
   }
 
-  @Get(':name/:queue')
+  @Get(':queue/:name')
   @Public()
   @ApiOperation({
-    summary: "Find a distribution rule by it's name and queue.",
+    summary: "Find a distribution rule by it's queue and name.",
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(
-    @Param('name') name: string,
     @Param('queue') queue: DistributionQueues,
+    @Param('name') name: string,
+    @Query('subscription') includeSubscriptions: boolean,
   ) {
-    return this.distributionRuleService.findOne(name, queue);
+    return this.distributionRuleService.findOne(
+      queue,
+      name,
+      includeSubscriptions,
+    );
   }
 
   @Post()
@@ -90,7 +95,7 @@ export class DistributionRuleController {
     return this.distributionRuleService.create(createDistributionRuleDto);
   }
 
-  @Patch(':name/:queue')
+  @Patch(':queue/:name')
   @ApiOperation({
     summary: 'Update a distribution rule.',
     security: [{ ApiAuthKey: [] }],
@@ -110,18 +115,18 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
-    @Param('name') name: string,
     @Param('queue') queue: DistributionQueues,
+    @Param('name') name: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     return this.distributionRuleService.update(
-      name,
       queue,
+      name,
       updateDistributionRuleDto,
     );
   }
 
-  @Delete(':name/:queue')
+  @Delete(':queue/:name')
   @ApiOperation({
     summary: 'Remove a distribution rule.',
     security: [{ ApiAuthKey: [] }],
@@ -137,9 +142,9 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(
-    @Param('name') name: string,
     @Param('queue') queue: DistributionQueues,
+    @Param('name') name: string,
   ) {
-    return this.distributionRuleService.remove(name, queue);
+    return this.distributionRuleService.remove(queue, name);
   }
 }

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto, DistributionQueues } from '@notification/common';
+import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
@@ -29,13 +30,15 @@ export class DistributionRuleService {
   }
 
   async findOne(
-    name: string,
     queue: DistributionQueues,
+    name: string,
     includeSubscriptions: boolean = false,
   ) {
     const distributionRule = await this.distributionRuleModel.findOne({
       where: { name, queue },
-      include: includeSubscriptions ? [Subscription] : [],
+      include: includeSubscriptions
+        ? [{ model: Subscription, include: [SubscriptionFilter] }]
+        : [],
     });
 
     if (!distributionRule) {
@@ -70,8 +73,8 @@ export class DistributionRuleService {
   }
 
   async update(
-    name: string,
     queue: DistributionQueues,
+    name: string,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     let distributionRule = await this.distributionRuleModel.findOne({
@@ -90,7 +93,7 @@ export class DistributionRuleService {
     );
   }
 
-  async remove(name: string, queue: DistributionQueues) {
+  async remove(queue: DistributionQueues, name: string) {
     const distributionRule = await this.distributionRuleModel.findOne({
       where: { name, queue },
     });
