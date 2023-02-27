@@ -39,7 +39,7 @@ export class DistributionRuleController {
     type: String,
     isArray: true,
     description: 'A list of distribution queues.',
-    enum: DistributionQueues
+    enum: DistributionQueues,
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -53,21 +53,24 @@ export class DistributionRuleController {
     return this.distributionRuleService.findAll(queues);
   }
 
-  @Get(':name')
+  @Get(':name/:queue')
   @Public()
   @ApiOperation({
-    summary: "Find a distribution rule by it's name.",
+    summary: "Find a distribution rule by it's name and queue.",
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('name') name: string) {
-    return this.distributionRuleService.findOne(name);
+  findOne(
+    @Param('name') name: string,
+    @Param('queue') queue: DistributionQueues,
+  ) {
+    return this.distributionRuleService.findOne(name, queue);
   }
 
   @Post()
   @ApiOperation({
-    summary: 'Create a distribution rule',
+    summary: 'Create a distribution rule.',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({
@@ -87,9 +90,9 @@ export class DistributionRuleController {
     return this.distributionRuleService.create(createDistributionRuleDto);
   }
 
-  @Patch(':name')
+  @Patch(':name/:queue')
   @ApiOperation({
-    summary: 'Update a distribution rule',
+    summary: 'Update a distribution rule.',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({
@@ -108,17 +111,19 @@ export class DistributionRuleController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
     @Param('name') name: string,
+    @Param('queue') queue: DistributionQueues,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     return this.distributionRuleService.update(
       name,
+      queue,
       updateDistributionRuleDto,
     );
   }
 
-  @Delete(':name')
+  @Delete(':name/:queue')
   @ApiOperation({
-    summary: 'Remove a distribution rule',
+    summary: 'Remove a distribution rule.',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({
@@ -131,7 +136,10 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('name') name: string) {
-    return this.distributionRuleService.remove(name);
+  remove(
+    @Param('name') name: string,
+    @Param('queue') queue: DistributionQueues,
+  ) {
+    return this.distributionRuleService.remove(name, queue);
   }
 }

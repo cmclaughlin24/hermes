@@ -6,12 +6,12 @@ export class SubscriptionFilter extends Model {
   @Column({
     primaryKey: true,
   })
+  @ForeignKey(() => Subscription)
   subscriptionId: string;
 
   @Column({
     primaryKey: true,
   })
-  @ForeignKey(() => Subscription)
   field: string;
 
   @Column

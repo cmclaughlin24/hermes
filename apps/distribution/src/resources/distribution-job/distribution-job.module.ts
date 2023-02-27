@@ -9,6 +9,9 @@ import { DistributionJobService } from './distribution-job.service';
     BullModule.registerQueue({
       name: DistributionQueues.DEFAULT,
     }),
+    BullModule.registerQueue({
+      name: 'distribution_subscription'
+    })
   ],
   controllers: [DistributionJobController],
   providers: [DistributionJobService],

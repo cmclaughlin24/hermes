@@ -10,8 +10,11 @@ export class DistributionJobService {
   constructor(
     @InjectQueue(DistributionQueues.DEFAULT)
     private readonly defaultQueue: Queue,
+    @InjectQueue('distribution_subscription')
+    private readonly subscriptionQueue: Queue,
   ) {
     queuePool.add(defaultQueue);
+    queuePool.add(subscriptionQueue);
   }
 
   async findDefaultDistributionJobs() {}

@@ -27,9 +27,15 @@ export class DistributionRuleService {
     return distributionRules;
   }
 
-  async findOne(name: string, includeSubscriptions: boolean = false) {
+  async findOne(
+    name: string,
+    queue: DistributionQueues,
+    includeSubscriptions: boolean = false,
+  ) {
     // Fixme: Check if subscriptions should be included or not.
-    const distributionRule = await this.distributionRuleModel.findByPk(name);
+    const distributionRule = await this.distributionRuleModel.findOne({
+      where: { name, queue },
+    });
 
     if (!distributionRule) {
       throw new NotFoundException(`Distribution Rule with ${name} not found!`);
@@ -39,9 +45,12 @@ export class DistributionRuleService {
   }
 
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
-    const existingRule = await this.distributionRuleModel.findByPk(
-      createDistributionRuleDto.name,
-    );
+    const existingRule = await this.distributionRuleModel.findOne({
+      where: {
+        name: createDistributionRuleDto.name,
+        queue: createDistributionRuleDto.queue,
+      },
+    });
 
     if (existingRule) {
       throw new BadRequestException(
@@ -61,9 +70,12 @@ export class DistributionRuleService {
 
   async update(
     name: string,
+    queue: DistributionQueues,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
-    let distributionRule = await this.distributionRuleModel.findByPk(name);
+    let distributionRule = await this.distributionRuleModel.findOne({
+      where: { name, queue },
+    });
 
     if (!distributionRule) {
       throw new NotFoundException(`Distribution Rule with ${name} not found!`);
@@ -77,8 +89,10 @@ export class DistributionRuleService {
     );
   }
 
-  async remove(name: string) {
-    const distributionRule = await this.distributionRuleModel.findByPk(name);
+  async remove(name: string, queue: DistributionQueues) {
+    const distributionRule = await this.distributionRuleModel.findOne({
+      where: { name, queue },
+    });
 
     if (!distributionRule) {
       throw new NotFoundException(`Distribution Rule with ${name} not found!`);

@@ -26,6 +26,7 @@ export class DistributionDefaultConsumer {
 
       const distributionRule = await this.distributionRuleService.findOne(
         jobName,
+        DistributionQueues.DEFAULT,
         true,
       );
 
