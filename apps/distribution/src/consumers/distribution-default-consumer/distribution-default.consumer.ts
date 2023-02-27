@@ -25,8 +25,8 @@ export class DistributionDefaultConsumer {
       job.log(`${logPrefix}: Retrieving ${jobName} distribution rule`);
 
       const distributionRule = await this.distributionRuleService.findOne(
-        jobName,
         DistributionQueues.DEFAULT,
+        jobName,
         true,
       );
 
