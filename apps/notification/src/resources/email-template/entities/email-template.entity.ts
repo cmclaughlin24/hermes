@@ -1,4 +1,4 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table
 export class EmailTemplate extends Model {
@@ -13,4 +13,10 @@ export class EmailTemplate extends Model {
 
   @Column({ type: DataType.JSON })
   context: string;
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
 }

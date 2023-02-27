@@ -7,7 +7,7 @@ import {
 } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { DeliveryMethods, NotificationQueues } from '@notification/common';
-import { Job } from 'bull';
+import { Job, JobId } from 'bull';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
@@ -35,13 +35,13 @@ export class NotificationConsumer {
    */
   @Process(DeliveryMethods.EMAIL)
   async processEmail(job: Job) {
-    job.log(
-      `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Processing ${job.name} notification`,
-    );
+    const logPrefix = this._createLogPrefix(this.processEmail.name, job.id);
+
+    job.log(`${logPrefix}: Processing ${job.name} notification`);
 
     try {
       job.log(
-        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Creating ${CreateEmailNotificationDto.name} from payload`,
+        `${logPrefix}: Creating ${CreateEmailNotificationDto.name} from payload`,
       );
 
       let createEmailNotificationDto: CreateEmailNotificationDto;
@@ -54,12 +54,12 @@ export class NotificationConsumer {
       } catch (error) {
         // Todo: If job failed because of validation, do not retry.
         throw new Error(
-          `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
         );
       }
 
       job.log(
-        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: ${CreateEmailNotificationDto.name} created, building Handlebars HTML template`,
+        `${logPrefix}: ${CreateEmailNotificationDto.name} created, building Handlebars HTML template`,
       );
 
       createEmailNotificationDto = await this.emailService.createEmailTemplate(
@@ -67,7 +67,7 @@ export class NotificationConsumer {
       );
 
       job.log(
-        `[${NotificationConsumer.name} ${this.processEmail.name}] Job ${job.id}: Handlebars HTML template created, attempting to send ${job.name} notification`,
+        `${logPrefix}: Handlebars HTML template created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.emailService.sendEmail(
@@ -89,13 +89,13 @@ export class NotificationConsumer {
    */
   @Process(DeliveryMethods.SMS)
   async processText(job: Job) {
-    job.log(
-      `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: Processing ${job.name} notification`,
-    );
+    const logPrefix = this._createLogPrefix(this.processText.name, job.id);
+
+    job.log(`${logPrefix}: Processing ${job.name} notification`);
 
     try {
       job.log(
-        `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: Creating ${CreatePhoneNotificationDto.name} from payload`,
+        `${logPrefix}: Creating ${CreatePhoneNotificationDto.name} from payload`,
       );
 
       let createPhoneNotificationDto: CreatePhoneNotificationDto;
@@ -106,12 +106,12 @@ export class NotificationConsumer {
       } catch (error) {
         // Todo: If job failed because of validation, do not retry.
         throw new Error(
-          `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
         );
       }
 
       job.log(
-        `[${NotificationConsumer.name} ${this.processText.name}] Job ${job.id}: ${CreatePhoneNotificationDto.name} created, attempting to send ${job.name} notification`,
+        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.phoneService.sendText(
@@ -133,9 +133,9 @@ export class NotificationConsumer {
    */
   @Process(DeliveryMethods.RADIO)
   async processRadio(job: Job) {
-    job.log(
-      `[${NotificationConsumer.name} ${this.processRadio.name}] Job ${job.id}: Processing ${job.name} notification`,
-    );
+    const logPrefix = this._createLogPrefix(this.processRadio.name, job.id);
+
+    job.log(`${logPrefix}: Processing ${job.name} notification`);
   }
 
   /**
@@ -157,9 +157,9 @@ export class NotificationConsumer {
    */
   @OnQueueCompleted()
   async onQueueCompleted(job: Job, result: any) {
-    job.log(
-      `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: ${job.name} notification completed`,
-    );
+    const logPrefix = this._createLogPrefix(this.onQueueCompleted.name, job.id);
+
+    job.log(`${logPrefix}: ${job.name} notification completed`);
 
     try {
       const databaseId = await this.notificationLogService.createOrUpdate(
@@ -169,13 +169,9 @@ export class NotificationConsumer {
         null,
       );
       await job.update({ ...job.data, notification_database_id: databaseId });
-      job.log(
-        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Result stored in database ${databaseId}`,
-      );
+      job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
-      job.log(
-        `[${NotificationConsumer.name} ${this.onQueueCompleted.name}] Job ${job.id}: Failed to store result in database`,
-      );
+      job.log(`${logPrefix}: Failed to store result in database`);
     }
   }
 
@@ -188,8 +184,10 @@ export class NotificationConsumer {
    */
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: Error) {
+    const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
+
     job.log(
-      `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: ${job.name} notification failed on attempt ${job.attemptsMade}`,
+      `${logPrefix}: ${job.name} notification failed on attempt ${job.attemptsMade}`,
     );
 
     try {
@@ -200,13 +198,20 @@ export class NotificationConsumer {
         error,
       );
       await job.update({ ...job.data, notification_database_id: databaseId });
-      job.log(
-        `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: Result stored in database ${databaseId}`,
-      );
+      job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
-      job.log(
-        `[${NotificationConsumer.name} ${this.onQueueFailed.name}] Job ${job.id}: Failed to store result in database`,
-      );
+      job.log(`${logPrefix}: Failed to store result in database`);
     }
+  }
+
+  /**
+   * Yields a formatted string with the class's name and function's name in square brackets
+   * followed by the Bull job id. (e.g. [ClassName FunctionName] Job JobId)
+   * @param {string} functionName
+   * @param {JobId} jobId
+   * @returns {string}
+   */
+  private _createLogPrefix(functionName: string, jobId: JobId): string {
+    return `[${NotificationConsumer.name} ${functionName}] Job ${jobId}`;
   }
 }

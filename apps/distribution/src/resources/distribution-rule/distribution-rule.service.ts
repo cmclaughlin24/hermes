@@ -27,7 +27,8 @@ export class DistributionRuleService {
     return distributionRules;
   }
 
-  async findOne(name: string) {
+  async findOne(name: string, includeSubscriptions: boolean = false) {
+    // Fixme: Check if subscriptions should be included or not.
     const distributionRule = await this.distributionRuleModel.findByPk(name);
 
     if (!distributionRule) {
@@ -61,7 +62,20 @@ export class DistributionRuleService {
   async update(
     name: string,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
-  ) {}
+  ) {
+    let distributionRule = await this.distributionRuleModel.findByPk(name);
+
+    if (!distributionRule) {
+      throw new NotFoundException(`Distribution Rule with ${name} not found!`);
+    }
+
+    // Fixme: Update distribution rule.
+
+    return new ApiResponseDto<DistributionRule>(
+      `Successfully updated distribution rule ${distributionRule.name}!`,
+      distributionRule,
+    );
+  }
 
   async remove(name: string) {
     const distributionRule = await this.distributionRuleModel.findByPk(name);

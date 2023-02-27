@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
+import { DistributionRuleModule } from '../resources/distribution-rule/distribution-rule.module';
 import { DistributionDefaultConsumer } from './distribution-default-consumer/distribution-default.consumer';
 
 @Module({
@@ -11,6 +12,10 @@ import { DistributionDefaultConsumer } from './distribution-default-consumer/dis
     BullModule.registerQueue({
       name: DistributionQueues.DEFAULT,
     }),
+    BullModule.registerQueue({
+      name: 'distribution_subscription',
+    }),
+    DistributionRuleModule,
   ],
   providers: [DistributionDefaultConsumer],
 })
