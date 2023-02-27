@@ -1,15 +1,27 @@
 import { DeliveryMethods, DistributionQueues } from '@notification/common';
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Subscription } from '../../subscription/entities/subscription.entity';
 
-@Table
+@Table({
+  indexes: [
+    {
+      unique: true,
+      fields: ['name', 'queue'],
+    },
+  ],
+})
 export class DistributionRule extends Model {
   @Column({
     primaryKey: true,
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
   })
+  id: string;
+
+  @Column
   name: string;
 
   @Column({
-    primaryKey: true,
     type: DataType.ENUM(DistributionQueues.DEFAULT),
   })
   queue: string;
@@ -24,4 +36,7 @@ export class DistributionRule extends Model {
     ),
   })
   deliveryMethods: string[];
+
+  @HasMany(() => Subscription)
+  subscriptions: Subscription[]
 }

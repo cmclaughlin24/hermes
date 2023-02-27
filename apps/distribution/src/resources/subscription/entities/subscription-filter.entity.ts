@@ -17,6 +17,6 @@ export class SubscriptionFilter extends Model {
   @Column
   operator: string;
 
-  @BelongsTo(() => Subscription, 'subscriptionId')
+  @BelongsTo(() => Subscription)
   subscription: Subscription;
 }

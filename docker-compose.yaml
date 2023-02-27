@@ -8,17 +8,19 @@ services:
       POSTGRES_PASSWORD: pass123
   pgadmin:
     image: dpage/pgadmin4
+    ports:
+      - '8080:80'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: secret
-    ports:
-      - '8080:80'
   redis:
     image: redis
     ports:
       - '6379:6379'
     volumes:
-      - data:/data
+      - redis:/data
   notification:
     build:
       context: ./
@@ -54,4 +56,5 @@ services:
       - database
       - redis
 volumes:
-  data:
+  pgadmin:
+  redis:

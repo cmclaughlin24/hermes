@@ -30,8 +30,11 @@ export class DistributionDefaultConsumer {
         true,
       );
 
-      // const subscriptions = this._getSubscriptions(distributionRule.subscriptions, job.data);
-      // if (!subscriptions || subscriptions.length === 0) {}
+      const subscriptions = this._getSubscriptions(distributionRule.subscriptions, job.data);
+
+      if (!subscriptions || subscriptions.length === 0) {
+        // Fixme: Return if there aren't any subscriptions.
+      }
     } catch (error) {
       throw error;
     }

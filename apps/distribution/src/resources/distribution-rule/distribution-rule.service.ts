@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto, DistributionQueues } from '@notification/common';
+import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
@@ -32,9 +33,9 @@ export class DistributionRuleService {
     queue: DistributionQueues,
     includeSubscriptions: boolean = false,
   ) {
-    // Fixme: Check if subscriptions should be included or not.
     const distributionRule = await this.distributionRuleModel.findOne({
       where: { name, queue },
+      include: includeSubscriptions ? [Subscription] : [],
     });
 
     if (!distributionRule) {
