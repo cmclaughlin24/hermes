@@ -28,9 +28,35 @@ export class DistributionDefaultConsumer {
         jobName,
         true,
       );
+
+      // const subscriptions = this._getSubscriptions(distributionRule.subscriptions, job.data);
+      // if (!subscriptions || subscriptions.length === 0) {}
     } catch (error) {
       throw error;
     }
+  }
+
+  private _getSubscriptions(subscriptions: any[], payload: any) {
+    if (!subscriptions || subscriptions.length === 0) {
+      return [];
+    }
+
+    return subscriptions.filter((subscription) =>
+      this._isSubscribed(subscription, payload),
+    );
+  }
+
+  private _isSubscribed(subscription: any, payload: any) {
+    let isSubscribed = true;
+
+    // Note: If a subscription does not have filters, assume the subscription should receive a
+    //       notification.
+    if (!subscription.filters && subscription.filters === 0) {
+      return true;
+    }
+
+    // Fixme: Filter subscriptions based on the payload contents.
+    return isSubscribed;
   }
 
   /**
