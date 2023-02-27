@@ -42,7 +42,7 @@ export class DistributionDefaultConsumer {
   }
 
   private _getSubscriptions(subscriptions: any[], payload: any) {
-    if (_.isElement(subscriptions)) {
+    if (_.isEmpty(subscriptions)) {
       return [];
     }
 
