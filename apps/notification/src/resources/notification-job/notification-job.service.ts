@@ -40,7 +40,7 @@ export class NotificationJobService {
    * Yields a list of Jobs filtered by the status from the notification queue or throws
    * a NotFoundException if the queue yields null, undefined, or an empty list.
    * @param {JobStatus[]} statuses
-   * @returns {Promise<Job>}
+   * @returns {Promise<Job[]>}
    */
   async findAll(statuses: JobStatus[]) {
     const jobs = await this.notificationQueue.getJobs(statuses);

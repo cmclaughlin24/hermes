@@ -1,6 +1,16 @@
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseArrayPipe,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
+import { JobStatus } from 'bull';
 import { DistributionJobService } from './distribution-job.service';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
@@ -14,13 +24,27 @@ export class DistributionJobController {
   @Get('default')
   @Public()
   @ApiOperation({
-    summary: 'Find jobs on the distribution_default queue.',
+    summary: 'Find jobs on the distribution_default queue by their status.',
     security: [],
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of job statuses',
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting'],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findDefaultDistributionJobs() {
-    return this.distributionJobService.findDefaultDistributionJobs();
+  findDefaultDistributionJobs(
+    @Query(
+      'status',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    statuses: JobStatus[] = [],
+  ) {
+    return this.distributionJobService.findDefaultDistributionJobs(statuses);
   }
 
   @Get('default/:id')

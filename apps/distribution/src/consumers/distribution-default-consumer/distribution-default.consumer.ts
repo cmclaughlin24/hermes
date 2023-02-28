@@ -31,7 +31,10 @@ export class DistributionDefaultConsumer {
         true,
       );
 
-      const subscriptions = this._getSubscriptions(distributionRule.subscriptions, job.data);
+      const subscriptions = this._filterSubscriptions(
+        distributionRule.subscriptions,
+        job.data,
+      );
 
       if (_.isEmpty(subscriptions)) {
         // Fixme: Return if there aren't any subscriptions.
@@ -41,7 +44,7 @@ export class DistributionDefaultConsumer {
     }
   }
 
-  private _getSubscriptions(subscriptions: any[], payload: any) {
+  private _filterSubscriptions(subscriptions: any[], payload: any) {
     if (_.isEmpty(subscriptions)) {
       return [];
     }
