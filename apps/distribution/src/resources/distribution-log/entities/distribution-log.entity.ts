@@ -1,3 +1,4 @@
+import { DistributionQueues } from '@notification/common';
 import {
   Column,
   CreatedAt,
@@ -16,8 +17,13 @@ export class DistributionLog extends Model {
   })
   id: string;
 
+  @Column({
+    type: DataType.ENUM(DistributionQueues.DEFAULT),
+  })
+  queue: string
+
   @Column
-  job: string;
+  rule: string;
 
   @Column
   status: string;

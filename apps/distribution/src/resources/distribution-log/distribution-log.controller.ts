@@ -1,6 +1,14 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from '@notification/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseArrayPipe,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DistributionQueues, Public } from '@notification/common';
+import { JobStatus } from 'bull';
 import { DistributionLogService } from './distribution-log.service';
 
 @ApiTags('Distribution Log')
@@ -12,10 +20,52 @@ export class DistributionLogController {
 
   @Get()
   @Public()
+  @ApiOperation({
+    summary: 'Find logs by their queue, rule, and/or status.',
+    security: [],
+  })
+  @ApiQuery({
+    name: 'queue',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of distribution queues',
+  })
+  @ApiQuery({
+    name: 'rule',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of distribution rules',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of job statuses',
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
+  })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.distributionLogService.findAll();
+  findAll(
+    @Query(
+      'queue',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    queues: DistributionQueues[],
+    @Query(
+      'rule',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    rules: string[],
+    @Query(
+      'status',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    statuses: JobStatus[],
+  ) {
+    return this.distributionLogService.findAll(queues, rules, statuses);
   }
 
   @Get(':id')

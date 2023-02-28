@@ -20,7 +20,7 @@ export class DistributionJobService {
 
   /**
    * Yields a list of Jobs by the status from the default distribution queue or throws
-   * a NotFoundException if the queue yields null, undefined, or an empty list.
+   * a NotFoundException if the queue returns null, undefined, or an empty list.
    * @param {JobStatus[]} statuses
    * @returns {Promise<Job[]>}
    */
@@ -38,7 +38,7 @@ export class DistributionJobService {
 
   /**
    * Yields a Job from the default distribution queue or throws a NotFoundException
-   * if the queue yields null or undefined.
+   * if the queue returns null or undefined.
    * @param {number} id
    * @returns {Promise<Job>}
    */
