@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
@@ -13,6 +14,7 @@ export class DistributionDefaultConsumer {
     @InjectQueue(NotificationQueues.DEFAULT)
     private readonly notificationQueue: Queue,
     private readonly distributionRuleService: DistributionRuleService,
+    private readonly httpService: HttpService,
   ) {}
 
   @Process('*')
