@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
 import { Job, JobId, Queue } from 'bull';
 import * as _ from 'lodash';
+import { SubscriptionFilterService } from '../../common/providers/subscription-filter/subscription-filter.service';
 import { DistributionRuleService } from '../../resources/distribution-rule/distribution-rule.service';
 
 @Processor(DistributionQueues.DEFAULT)
@@ -13,8 +14,9 @@ export class DistributionDefaultConsumer {
   constructor(
     @InjectQueue(NotificationQueues.DEFAULT)
     private readonly notificationQueue: Queue,
-    private readonly distributionRuleService: DistributionRuleService,
     private readonly httpService: HttpService,
+    private readonly distributionRuleService: DistributionRuleService,
+    private readonly subscriptionFilterService: SubscriptionFilterService,
   ) {}
 
   @Process('*')
@@ -33,7 +35,11 @@ export class DistributionDefaultConsumer {
         true,
       );
 
-      const subscriptions = this._filterSubscriptions(
+      job.log(
+        `${logPrefix}: Distribution rule ${jobName} found, checking subscriptions`,
+      );
+
+      const subscriptions = this.subscriptionFilterService.filter(
         distributionRule.subscriptions,
         job.data,
       );
@@ -44,29 +50,6 @@ export class DistributionDefaultConsumer {
     } catch (error) {
       throw error;
     }
-  }
-
-  private _filterSubscriptions(subscriptions: any[], payload: any) {
-    if (_.isEmpty(subscriptions)) {
-      return [];
-    }
-
-    return subscriptions.filter((subscription) =>
-      this._isSubscribed(subscription, payload),
-    );
-  }
-
-  private _isSubscribed(subscription: any, payload: any) {
-    let isSubscribed = true;
-
-    // Note: If a subscription does not have filters, assume the subscription should receive a
-    //       notification.
-    if (_.isEmpty(subscription)) {
-      return true;
-    }
-
-    // Fixme: Filter subscriptions based on the payload contents.
-    return isSubscribed;
   }
 
   /**

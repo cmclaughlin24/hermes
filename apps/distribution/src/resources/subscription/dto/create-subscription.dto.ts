@@ -1,3 +1,4 @@
+import { SubscriptionFilterJoinOps } from '../../../common/constants/subscription-filter.constants';
 import { SubscriptionFilterDto } from './subscription-filter.dto';
 
 export class CreateSubscriptionDto {
@@ -6,6 +7,8 @@ export class CreateSubscriptionDto {
   rule: string;
 
   url: string;
+
+  filterJoin: SubscriptionFilterJoinOps;
 
   filters: SubscriptionFilterDto[];
 }

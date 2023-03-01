@@ -1,4 +1,5 @@
 import { BelongsTo, Column, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
+import { SubscriptionFilterJoinOps } from '../../../common/constants/subscription-filter.constants';
 import { DistributionRule } from '../../distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';
 
@@ -14,6 +15,9 @@ export class Subscription extends Model {
 
   @Column
   url: string;
+
+  @Column
+  filterJoin: SubscriptionFilterJoinOps;
 
   @BelongsTo(() => DistributionRule)
   distributionRule: DistributionRule;
