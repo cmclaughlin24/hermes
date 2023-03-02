@@ -1,4 +1,11 @@
-import { BelongsTo, Column, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  HasMany,
+  Model,
+  Table
+} from 'sequelize-typescript';
 import { SubscriptionFilterJoinOps } from '../../../common/constants/subscription-filter.constants';
 import { DistributionRule } from '../../distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';

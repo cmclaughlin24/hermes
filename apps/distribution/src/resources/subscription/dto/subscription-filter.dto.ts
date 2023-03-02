@@ -1,19 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsString, Matches } from 'class-validator';
+import { Allow, IsEnum, IsString, Matches } from 'class-validator';
+import { SubscriptionFilterOps } from '../../../common/constants/subscription-filter.constants';
 
 export class SubscriptionFilterDto {
   @ApiProperty({
     description:
-      'Field to run filter against. (Nested fields delimited by ".")',
+      'Object key to run filter against. (Nested keys delimited by ".")',
+    example: 'key.key',
   })
+  @IsString()
   @Matches(/^(([a-zA-Z0-9](\.)?)*)+$/)
   field: string;
 
   @ApiProperty({
     description: 'Operator to use for the filter.',
+    enum: SubscriptionFilterOps,
   })
-  @IsString()
-  operator: string;
+  @IsEnum(SubscriptionFilterOps)
+  operator: SubscriptionFilterOps;
 
   @Allow()
   query: any;

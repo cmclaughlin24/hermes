@@ -22,21 +22,21 @@ export class DistributionDefaultConsumer {
   @Process('*')
   async process(job: Job) {
     const logPrefix = this._createLogPrefix(this.process.name, job.id);
-    const jobName = job.name;
+    const rule = job.name;
 
-    job.log(`${logPrefix}: Processing ${jobName}`);
+    job.log(`${logPrefix}: Processing ${rule}`);
 
     try {
-      job.log(`${logPrefix}: Retrieving ${jobName} distribution rule`);
+      job.log(`${logPrefix}: Retrieving ${rule} distribution rule`);
 
       const distributionRule = await this.distributionRuleService.findOne(
         DistributionQueues.DEFAULT,
-        jobName,
+        rule,
         true,
       );
 
       job.log(
-        `${logPrefix}: Distribution rule ${jobName} found, checking subscriptions`,
+        `${logPrefix}: Distribution rule ${rule} found, checking subscriptions`,
       );
 
       const subscriptions = this.subscriptionFilterService.filter(
@@ -47,6 +47,10 @@ export class DistributionDefaultConsumer {
       if (_.isEmpty(subscriptions)) {
         // Fixme: Return if there aren't any subscriptions.
       }
+
+      job.log(
+        `${logPrefix}: ${subscriptions.length} subscriptions for ${rule}, requesting subscription member(s)`,
+      );
     } catch (error) {
       throw error;
     }

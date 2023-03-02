@@ -61,6 +61,7 @@ export class SubscriptionController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     return this.subscriptionService.create(createSubscriptionDto);
   }

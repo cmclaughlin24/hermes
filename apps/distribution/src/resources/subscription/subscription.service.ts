@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
+import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionFilter } from './entities/subscription-filter.entity';
@@ -12,6 +13,7 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription)
     private readonly subscriptionModel: typeof Subscription,
+    private readonly distributionRuleService: DistributionRuleService,
   ) {}
 
   async findAll() {
@@ -35,21 +37,30 @@ export class SubscriptionService {
   }
 
   async create(createSubscriptionDto: CreateSubscriptionDto) {
-    const subscription = await this.subscriptionModel.create(
-      {
-        ...createSubscriptionDto,
-      },
-      { include: [SubscriptionFilter] },
+    // Note: Throws a NotFoundException if the distribution rule does not exits.
+    const distributionRule = await this.distributionRuleService.findOne(
+      createSubscriptionDto.queue,
+      createSubscriptionDto.rule,
     );
 
+    // Todo: Include SubscriptionFilters in create.
+    const subscription = await this.subscriptionModel.create({
+      id: createSubscriptionDto.id,
+      distributionRuleId: distributionRule.id,
+      url: createSubscriptionDto.url,
+      filterJoin: createSubscriptionDto.filterJoin,
+    });
+
     return new ApiResponseDto<Subscription>(
-      `Successfully create subscription!`,
+      `Successfully created subscription!`,
       subscription,
     );
   }
 
   async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto) {
-    const subscription = await this.subscriptionModel.findByPk(id);
+    const subscription = await this.subscriptionModel.findByPk(id, {
+      include: [SubscriptionFilter],
+    });
 
     if (!subscription) {
       throw new NotFoundException(`Subscription with ${id} not found!`);
