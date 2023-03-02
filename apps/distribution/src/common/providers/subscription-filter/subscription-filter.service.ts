@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
 import { SubscriptionFilter } from '../../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
-import { SubscriptionFilterJoinOps, SubscriptionFilterOps } from '../../constants/subscription-filter.constants';
+import {
+  SubscriptionFilterJoinOps,
+  SubscriptionFilterOps
+} from '../../constants/subscription-filter.constants';
 
 @Injectable()
 export class SubscriptionFilterService {
@@ -21,7 +24,17 @@ export class SubscriptionFilterService {
   }
 
   isSubscribed(subscription: Subscription, payload: any): boolean {
-    let isSubscribed = true;
+    const operators = {
+      [SubscriptionFilterJoinOps.AND]: (results): boolean => {
+        return results.every((result) => result);
+      },
+      [SubscriptionFilterJoinOps.OR]: (results): boolean => {
+        return results.includes(true);
+      },
+      [SubscriptionFilterJoinOps.NOT]: (results): boolean => {
+        return !results.every((result) => result);
+      },
+    };
 
     // Note: If a subscription does not have filters, assume the subscription
     //       is subscribed.
@@ -33,24 +46,13 @@ export class SubscriptionFilterService {
       this._evaluateFilter(filter, payload),
     );
 
-    switch (subscription.filterJoin) {
-      case SubscriptionFilterJoinOps.AND:
-        isSubscribed = filterResults.every(result => result);
-        break;
-      case SubscriptionFilterJoinOps.OR:
-        isSubscribed = filterResults.includes(true);
-        break;
-      case SubscriptionFilterJoinOps.NOT:
-        isSubscribed = !filterResults.every(result => result);
-        break;
-    }
-
-    return isSubscribed;
+    return operators[subscription.filterJoin](filterResults);
   }
 
   private _evaluateFilter(filter: SubscriptionFilter, payload: any): boolean {
     const keys = this._getKeys(filter.field);
 
+    // Todo: Evaulate filter operators.
     switch (filter.operator) {
       case SubscriptionFilterOps.EQUALS:
         break;
