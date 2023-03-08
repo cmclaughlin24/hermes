@@ -23,7 +23,9 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * Processes jobs from the notification queue and yields the result.
+   * Routes jobs from the notification queue by checking the job's name and 
+   * executing the correct process function. Throws an unrecoverable error if
+   * a job name does not have a process function.
    * @param {Job} job
    * @returns {Promise<any>} 
    */
