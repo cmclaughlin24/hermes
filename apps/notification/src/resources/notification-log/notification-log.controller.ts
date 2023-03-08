@@ -21,7 +21,7 @@ export class NotificationLogController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find logs by their job name and/or status.',
+    summary: 'Find logs by their job name and/or states.',
     security: [],
   })
   @ApiQuery({

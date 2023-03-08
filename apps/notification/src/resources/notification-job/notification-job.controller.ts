@@ -26,11 +26,11 @@ export class NotificationJobController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find jobs on the notification queue by their status.',
+    summary: 'Find jobs on the notification queue by their states.',
     security: [],
   })
   @ApiQuery({
-    name: 'status',
+    name: 'state',
     required: false,
     type: String,
     isArray: true,
@@ -41,7 +41,7 @@ export class NotificationJobController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findAll(
     @Query(
-      'status',
+      'state',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
     states: JobState[] = [],

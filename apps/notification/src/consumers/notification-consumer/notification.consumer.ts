@@ -23,7 +23,7 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * 
+   * Processes jobs from the notification queue and yields the result.
    * @param {Job} job
    * @returns {Promise<any>} 
    */
