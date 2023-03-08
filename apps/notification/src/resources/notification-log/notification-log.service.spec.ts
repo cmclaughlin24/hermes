@@ -1,7 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Job, JobStatus } from 'bull';
+import { JobStatus } from 'bull';
+import { Job } from 'bullmq';
 import {
   createMockRepository,
   MockRepository

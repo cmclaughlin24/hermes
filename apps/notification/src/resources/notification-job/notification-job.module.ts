@@ -1,4 +1,4 @@
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { NotificationQueues } from '@notification/common';
 import { NotificationJobController } from './notification-job.controller';

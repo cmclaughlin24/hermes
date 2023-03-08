@@ -1,4 +1,4 @@
-import { Queue } from 'bull';
+import { Queue } from 'bullmq';
 
 export type MockQueue= Partial<
   Record<keyof Queue, jest.Mock>

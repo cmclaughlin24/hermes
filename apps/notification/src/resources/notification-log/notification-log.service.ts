@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Job, JobStatus } from 'bull';
+import { JobStatus } from 'bull';
+import { Job } from 'bullmq';
 import * as _ from 'lodash';
 import { NotificationLog } from './entities/notification-log.entity';
 
@@ -62,6 +63,7 @@ export class NotificationLogService {
   async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
+    // Fixme: Convert Error object to JSON object so that it may be stored in the database.
     if (!job.data.notification_database_id) {
       return this._createLog(job, status, result, error);
     }

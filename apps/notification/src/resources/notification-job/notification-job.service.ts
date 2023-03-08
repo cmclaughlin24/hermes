@@ -1,4 +1,4 @@
-import { InjectQueue } from '@nestjs/bull';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApiResponseDto, DeliveryMethods, NotificationQueues } from '@notification/common';
 import { JobStatus, Queue } from 'bull';
