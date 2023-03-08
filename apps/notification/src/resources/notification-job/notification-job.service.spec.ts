@@ -2,7 +2,7 @@ import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto, NotificationQueues } from '@notification/common';
-import { Job, JobStatus } from 'bull';
+import { Job, JobState } from 'bullmq';
 import {
   createQueueMock,
   MockQueue
@@ -48,9 +48,9 @@ describe('NotificationJobService', () => {
       await expect(service.findAll([])).resolves.toEqual(expectedResult);
     });
 
-    it('should yield a list of jobs filtered by status from the notification queue', async () => {
+    it('should yield a list of jobs filtered by state from the notification queue', async () => {
       // Arrange.
-      const expectedResult: JobStatus[] = ['completed', 'failed'];
+      const expectedResult: JobState[] = ['completed', 'failed'];
       queue.getJobs.mockResolvedValue(expectedResult);
 
       // Act.
@@ -96,12 +96,12 @@ describe('NotificationJobService', () => {
       queue.getJob.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne(0)).resolves.toEqual(expectedResult);
+      await expect(service.findOne('0')).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the queue returns null/undefined', async () => {
       // Arrange.
-      const id = 0;
+      const id = '0';
       const expectedResult = new NotFoundException(
         `Job with ${id} not found in '${queue.name}' queue`,
       );

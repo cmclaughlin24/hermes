@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
-import { JobStatus } from 'bull';
+import { JobState } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
@@ -34,7 +34,7 @@ export class NotificationJobController {
     required: false,
     type: String,
     isArray: true,
-    description: 'A list of job statuses',
+    description: 'A list of job states',
     enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
@@ -44,9 +44,9 @@ export class NotificationJobController {
       'status',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
-    statuses: JobStatus[] = [],
+    states: JobState[] = [],
   ) {
-    return this.notificationJobService.findAll(statuses);
+    return this.notificationJobService.findAll(states);
   }
 
   @Get(':id')
@@ -57,7 +57,7 @@ export class NotificationJobController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.notificationJobService.findOne(id);
   }
 

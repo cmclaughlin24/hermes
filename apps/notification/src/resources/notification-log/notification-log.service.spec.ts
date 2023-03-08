@@ -1,8 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JobStatus } from 'bull';
-import { Job } from 'bullmq';
+import { Job, JobState } from 'bullmq';
 import {
   createMockRepository,
   MockRepository
@@ -76,7 +75,7 @@ describe('NotificationLogService', () => {
 
     it('should yield a list filtered by job status', async () => {
       // Arrange.
-      const statuses: JobStatus[] = ['completed'];
+      const statuses: JobState[] = ['completed'];
       const expectedResult = { where: { status: statuses, job: [] } };
       notificationLogModel.findAll.mockResolvedValue([notificationLog]);
 

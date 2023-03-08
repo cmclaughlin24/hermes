@@ -22,6 +22,11 @@ export class NotificationConsumer extends WorkerHost {
     super();
   }
 
+  /**
+   * 
+   * @param {Job} job
+   * @returns {Promise<any>} 
+   */
   async process(job: Job): Promise<any> {
     let result;
 

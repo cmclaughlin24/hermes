@@ -1,7 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { JobStatus } from 'bull';
-import { Job } from 'bullmq';
+import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
 import { NotificationLog } from './entities/notification-log.entity';
 
@@ -19,12 +18,12 @@ export class NotificationLogService {
    * status. Throws a NotFoundException if the repository returns null,
    * undefined, or an empty list.
    * @param {string[]} jobs
-   * @param {JobStatus[]} statuses
+   * @param {JobState[]} states
    * @returns {Promise<NotificationLog[]>}
    */
-  async findAll(jobs: string[], statuses: JobStatus[]) {
+  async findAll(jobs: string[], states: JobState[]) {
     const notificationLogs = await this.notificationLogModel.findAll({
-      where: { status: statuses, job: jobs },
+      where: { status: states, job: jobs },
     });
 
     if (_.isEmpty(notificationLogs)) {
@@ -55,12 +54,12 @@ export class NotificationLogService {
    * a NotificationLog if the number of attempts in the job object are less than the number of
    * attempts stored in the NotificationLog.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} status
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
-  async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
+  async createOrUpdate(job: Job, status: JobState, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
     // Fixme: Convert Error object to JSON object so that it may be stored in the database.
@@ -74,14 +73,14 @@ export class NotificationLogService {
   /**
    * Creates a NotificationLog.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} status
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _createLog(
     job: Job,
-    status: JobStatus,
+    status: JobState,
     result: any,
     error: Error,
   ) {
@@ -101,14 +100,14 @@ export class NotificationLogService {
    * Updates a NotificationLog if the number of attempts in job is greater than
    * the number of attempts in the record.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} status
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _updateLog(
     job: Job,
-    status: JobStatus,
+    status: JobState,
     result: any,
     error: Error,
   ) {

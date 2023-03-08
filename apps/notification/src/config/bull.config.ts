@@ -4,8 +4,7 @@ import { BaseAdapter } from '@bull-board/api/dist/src/queueAdapters/base';
 import { ExpressAdapter } from '@bull-board/express';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Queue } from 'bull';
-import { QueueOptions } from 'bullmq';
+import { Queue, QueueOptions } from 'bullmq';
 
 export async function bullFactory(
   configService: ConfigService,
@@ -31,7 +30,7 @@ function getBullBoardQueues(): BaseAdapter[] {
   const adapters: BaseAdapter[] = [];
 
   for (const queue of queuePool) {
-    adapters.push(new BullAdapter(queue));
+    adapters.push(new BullAdapter(queue as any));
   }
 
   return adapters;
