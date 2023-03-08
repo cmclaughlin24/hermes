@@ -1,14 +1,14 @@
-import { InjectQueue, Process, Processor } from '@nestjs/bull';
+import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
-import { Job, JobId, Queue } from 'bull';
+import { Job, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { SubscriptionFilterService } from '../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../common/providers/subscription-member/subscription-member.service';
 import { DistributionRuleService } from '../../resources/distribution-rule/distribution-rule.service';
 
 @Processor(DistributionQueues.DEFAULT)
-export class DistributionDefaultConsumer {
+export class DistributionDefaultConsumer extends WorkerHost {
   private readonly logger = new Logger(DistributionDefaultConsumer.name);
 
   constructor(
@@ -17,9 +17,10 @@ export class DistributionDefaultConsumer {
     private readonly distributionRuleService: DistributionRuleService,
     private readonly subscriptionFilterService: SubscriptionFilterService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
-  ) {}
+  ) {
+    super();
+  }
 
-  @Process('*')
   async process(job: Job) {
     const logPrefix = this._createLogPrefix(this.process.name, job.id);
     const rule = job.name;
@@ -70,10 +71,10 @@ export class DistributionDefaultConsumer {
    * Yields a formatted string with the class's name and function's name in square brackets
    * followed by the Bull job id. (e.g. [ClassName FunctionName] Job JobId)
    * @param {string} functionName
-   * @param {JobId} jobId
+   * @param {string} jobId
    * @returns {string}
    */
-  private _createLogPrefix(functionName: string, jobId: JobId): string {
+  private _createLogPrefix(functionName: string, jobId: string): string {
     return `[${DistributionDefaultConsumer.name} ${functionName}] Job ${jobId}`;
   }
 }

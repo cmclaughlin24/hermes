@@ -2,16 +2,15 @@ import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { BaseAdapter } from '@bull-board/api/dist/src/queueAdapters/base';
 import { ExpressAdapter } from '@bull-board/express';
-import { BullRootModuleOptions } from '@nestjs/bull';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Queue } from 'bull';
+import { Queue, QueueOptions } from 'bullmq';
 
 export async function bullFactory(
   configService: ConfigService,
-): Promise<BullRootModuleOptions> {
+): Promise<QueueOptions> {
   return {
-    redis: {
+    connection: {
       host: configService.get('REDIS_HOST'),
       port: configService.get('REDIS_PORT'),
     },
@@ -31,7 +30,7 @@ function getBullBoardQueues(): BaseAdapter[] {
   const adapters: BaseAdapter[] = [];
 
   for (const queue of queuePool) {
-    adapters.push(new BullAdapter(queue));
+    adapters.push(new BullAdapter(queue as any));
   }
 
   return adapters;

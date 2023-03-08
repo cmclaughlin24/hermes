@@ -1,4 +1,4 @@
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { DistributionQueues } from '@notification/common';
 import { DistributionJobController } from './distribution-job.controller';

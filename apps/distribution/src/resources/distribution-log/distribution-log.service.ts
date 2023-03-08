@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { DistributionQueues } from '@notification/common';
-import { Job, JobStatus } from 'bull';
+import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
 import { DistributionLog } from './entities/distribution-log.entity';
 
@@ -16,20 +16,20 @@ export class DistributionLogService {
 
   /**
    * Yields a list of DistributionLogs filtered by the queue, rule name, and/or
-   * status. Throws a NotFoundException if the repository returns null, undefined,
+   * state. Throws a NotFoundException if the repository returns null, undefined,
    * or an empty list.
    * @param {DistributionQueues[]} queues
    * @param {string[]} rules
-   * @param {JobStatus[]} statuses
+   * @param {JobState[]} states
    * @returns {Promise<DistributionLog[]>}
    */
   async findAll(
     queues: DistributionQueues[],
     rules: string[],
-    statuses: JobStatus[],
+    states: JobState[],
   ) {
     const distributionLogs = await this.distritbutionLogModel.findAll({
-      where: { queues, rules, statuses },
+      where: { queues, rules, states },
     });
 
     if (_.isEmpty(distributionLogs)) {
@@ -60,37 +60,37 @@ export class DistributionLogService {
    * a DistributionLog if the number of attempts in the job object are less than the number of
    * attempts stored in the DistributionLog.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
-  async createOrUpdate(job: Job, status: JobStatus, result: any, error: Error) {
+  async createOrUpdate(job: Job, state: JobState, result: any, error: Error) {
     if (!job.data.distribution_database_id) {
-      return this._createLog(job, status, result, error);
+      return this._createLog(job, state, result, error);
     }
 
-    return this._updateLog(job, status, result, error);
+    return this._updateLog(job, state, result, error);
   }
 
   /**
    * Create a DistributionLog.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _createLog(
     job: Job,
-    status: JobStatus,
+    state: JobState,
     result: any,
     error: Error,
   ) {
     const log = await this.distritbutionLogModel.create({
-      queue: job.queue.name,
+      queue: job.queueName,
       rule: job.name,
-      status: status,
+      state: state,
       attemps: job.attemptsMade,
       data: job.data,
       result: result,
@@ -104,14 +104,14 @@ export class DistributionLogService {
    * Updates a DistributionLog if the number of attempts in job is greater than
    * the number of attempts in the record.
    * @param {Job} job
-   * @param {JobStatus} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _updateLog(
     job: Job,
-    status: JobStatus,
+    state: JobState,
     result: any,
     error: Error,
   ) {
@@ -131,9 +131,9 @@ export class DistributionLogService {
     delete data.notification_database_id;
 
     log = await log.update({
-      queue: job.queue.name,
+      queue: job.queueName,
       rule: job.name,
-      status: status,
+      state: state,
       attemps: job.attemptsMade,
       data: job.data,
       result: result,

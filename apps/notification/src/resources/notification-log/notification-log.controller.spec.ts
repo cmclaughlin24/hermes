@@ -14,7 +14,7 @@ describe('NotificationLogController', () => {
   const notificationLog: NotificationLog = {
     id: 'test1',
     job: JSON.stringify({}),
-    status: 'completed',
+    state: 'completed',
     attempts: 0,
     data: JSON.stringify({}),
     result: null,

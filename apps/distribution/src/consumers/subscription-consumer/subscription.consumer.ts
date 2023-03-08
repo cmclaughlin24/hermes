@@ -1,4 +1,4 @@
-import { Processor } from '@nestjs/bull';
+import { Processor } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 
 @Processor('distribution_subscription')

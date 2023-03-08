@@ -1,4 +1,4 @@
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
 import { CommonModule } from '../common/common.module';

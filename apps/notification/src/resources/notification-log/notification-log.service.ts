@@ -15,7 +15,7 @@ export class NotificationLogService {
 
   /**
    * Yields a list of NotificationLogs filtered by the job name and/or
-   * status. Throws a NotFoundException if the repository returns null,
+   * state. Throws a NotFoundException if the repository returns null,
    * undefined, or an empty list.
    * @param {string[]} jobs
    * @param {JobState[]} states
@@ -23,7 +23,7 @@ export class NotificationLogService {
    */
   async findAll(jobs: string[], states: JobState[]) {
     const notificationLogs = await this.notificationLogModel.findAll({
-      where: { status: states, job: jobs },
+      where: { state: states, job: jobs },
     });
 
     if (_.isEmpty(notificationLogs)) {
@@ -54,39 +54,39 @@ export class NotificationLogService {
    * a NotificationLog if the number of attempts in the job object are less than the number of
    * attempts stored in the NotificationLog.
    * @param {Job} job
-   * @param {JobState} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
-  async createOrUpdate(job: Job, status: JobState, result: any, error: Error) {
+  async createOrUpdate(job: Job, state: JobState, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
     // Fixme: Convert Error object to JSON object so that it may be stored in the database.
     if (!job.data.notification_database_id) {
-      return this._createLog(job, status, result, error);
+      return this._createLog(job, state, result, error);
     }
 
-    return this._updateLog(job, status, result, error);
+    return this._updateLog(job, state, result, error);
   }
 
   /**
    * Creates a NotificationLog.
    * @param {Job} job
-   * @param {JobState} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _createLog(
     job: Job,
-    status: JobState,
+    state: JobState,
     result: any,
     error: Error,
   ) {
     const log = await this.notificationLogModel.create({
       job: job.name,
-      status: status,
+      state: state,
       attempts: job.attemptsMade,
       data: job.data,
       result: result,
@@ -100,14 +100,14 @@ export class NotificationLogService {
    * Updates a NotificationLog if the number of attempts in job is greater than
    * the number of attempts in the record.
    * @param {Job} job
-   * @param {JobState} status
+   * @param {JobState} state
    * @param {any} result
    * @param {Error} error
    * @returns {Promise<string>}
    */
   private async _updateLog(
     job: Job,
-    status: JobState,
+    state: JobState,
     result: any,
     error: Error,
   ) {
@@ -128,7 +128,7 @@ export class NotificationLogService {
 
     log = await log.update({
       job: job.name,
-      status: status,
+      state: state,
       attempts: job.attemptsMade,
       data: data,
       result: result,

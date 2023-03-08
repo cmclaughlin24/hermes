@@ -16,7 +16,7 @@ describe('NotificationLogService', () => {
   const notificationLog: NotificationLog = {
     id: 'test1',
     job: JSON.stringify({}),
-    status: 'completed',
+    state: 'completed',
     attempts: 0,
     data: JSON.stringify({}),
     result: null,
@@ -63,7 +63,7 @@ describe('NotificationLogService', () => {
     it('should yield a list filtered by job name', async () => {
       // Arrange.
       const jobs = ['email', 'sms'];
-      const expectedResult = { where: { status: [], job: jobs } };
+      const expectedResult = { where: { state: [], job: jobs } };
       notificationLogModel.findAll.mockResolvedValue([notificationLog]);
 
       // Act.
@@ -73,14 +73,14 @@ describe('NotificationLogService', () => {
       expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
     });
 
-    it('should yield a list filtered by job status', async () => {
+    it('should yield a list filtered by job state', async () => {
       // Arrange.
-      const statuses: JobState[] = ['completed'];
-      const expectedResult = { where: { status: statuses, job: [] } };
+      const states: JobState[] = ['completed'];
+      const expectedResult = { where: { state: states, job: [] } };
       notificationLogModel.findAll.mockResolvedValue([notificationLog]);
 
       // Act.
-      await service.findAll([], statuses);
+      await service.findAll([], states);
 
       // Assert.
       expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
@@ -149,7 +149,7 @@ describe('NotificationLogService', () => {
       const job = { name: 'email', attemptsMade: 2, data: {} } as Job;
       const expectedResult = {
         job: job.name,
-        status: 'completed',
+        state: 'completed',
         attempts: job.attemptsMade,
         data: job.data,
         result: null,
@@ -179,7 +179,7 @@ describe('NotificationLogService', () => {
       };
       const expectedResult = {
         job: job.name,
-        status: 'failed',
+        state: 'failed',
         attempts: job.attemptsMade,
         data: {},
         result: null,

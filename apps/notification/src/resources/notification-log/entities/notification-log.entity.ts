@@ -20,7 +20,7 @@ export class NotificationLog extends Model {
   job: string;
 
   @Column
-  status: string;
+  state: string;
 
   @Column
   attempts: number;

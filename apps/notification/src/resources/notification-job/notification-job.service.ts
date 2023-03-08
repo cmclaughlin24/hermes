@@ -37,7 +37,7 @@ export class NotificationJobService {
   }
 
   /**
-   * Yields a list of Jobs filtered by the status from the notification queue or throws
+   * Yields a list of Jobs filtered by the state from the notification queue or throws
    * a NotFoundException if the queue yields null, undefined, or an empty list.
    * @param {JobState[]} states
    * @returns {Promise<Job[]>}
@@ -47,7 +47,7 @@ export class NotificationJobService {
 
     if (_.isEmpty(jobs)) {
       throw new NotFoundException(
-        `Jobs with status(es) ${states.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
     }
 

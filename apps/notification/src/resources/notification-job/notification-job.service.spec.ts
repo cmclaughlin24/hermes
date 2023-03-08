@@ -62,26 +62,26 @@ describe('NotificationJobService', () => {
 
     it('should throw a "NotFoundException" if queue returns null/undefined', async () => {
       // Arrange.
-      const statuses = [];
+      const states = [];
       const expectedResult = new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
       queue.getJobs.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findAll(statuses)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if queue returns an empty list', async () => {
       // Arrange.
-      const statuses = [];
+      const states = [];
       const expectedResult = new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
       queue.getJobs.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(statuses)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
     });
   });
 

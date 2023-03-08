@@ -26,7 +26,7 @@ export class DistributionLog extends Model {
   rule: string;
 
   @Column
-  status: string;
+  state: string;
 
   @Column
   attempts: number;

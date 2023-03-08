@@ -1,7 +1,7 @@
-import { InjectQueue } from '@nestjs/bull';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApiResponseDto, DistributionQueues } from '@notification/common';
-import { Job, JobStatus, Queue } from 'bull';
+import { Job, JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { queuePool } from '../../config/bull.config';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
@@ -19,17 +19,17 @@ export class DistributionJobService {
   }
 
   /**
-   * Yields a list of Jobs by the status from the default distribution queue or throws
+   * Yields a list of Jobs by the state from the default distribution queue or throws
    * a NotFoundException if the queue returns null, undefined, or an empty list.
-   * @param {JobStatus[]} statuses
+   * @param {JobState[]} states
    * @returns {Promise<Job[]>}
    */
-  async findDefaultDistributionJobs(statuses: JobStatus[]) {
-    const jobs = await this.defaultQueue.getJobs(statuses);
+  async findDefaultDistributionJobs(states: JobState[]) {
+    const jobs = await this.defaultQueue.getJobs(states);
 
     if (_.isEmpty(jobs)) {
       throw new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found!`,
+        `Jobs with state(s) ${states.join(', ')} not found!`,
       );
     }
 
@@ -39,10 +39,10 @@ export class DistributionJobService {
   /**
    * Yields a Job from the default distribution queue or throws a NotFoundException
    * if the queue returns null or undefined.
-   * @param {number} id
+   * @param {string} id
    * @returns {Promise<Job>}
    */
-  async findDefaultDistributionJob(id: number) {
+  async findDefaultDistributionJob(id: string) {
     const job = await this.defaultQueue.getJob(id);
 
     if (!job) {
