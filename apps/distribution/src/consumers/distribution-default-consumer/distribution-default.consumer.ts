@@ -1,10 +1,10 @@
-import { HttpService } from '@nestjs/axios';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
 import { Job, JobId, Queue } from 'bull';
 import * as _ from 'lodash';
 import { SubscriptionFilterService } from '../../common/providers/subscription-filter/subscription-filter.service';
+import { SubscriptionMemberService } from '../../common/providers/subscription-member/subscription-member.service';
 import { DistributionRuleService } from '../../resources/distribution-rule/distribution-rule.service';
 
 @Processor(DistributionQueues.DEFAULT)
@@ -14,9 +14,9 @@ export class DistributionDefaultConsumer {
   constructor(
     @InjectQueue(NotificationQueues.DEFAULT)
     private readonly notificationQueue: Queue,
-    private readonly httpService: HttpService,
     private readonly distributionRuleService: DistributionRuleService,
     private readonly subscriptionFilterService: SubscriptionFilterService,
+    private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
   @Process('*')
@@ -45,11 +45,21 @@ export class DistributionDefaultConsumer {
       );
 
       if (_.isEmpty(subscriptions)) {
-        // Fixme: Return if there aren't any subscriptions.
+        // Fixme: Return a message if there aren't any subscriptions.
       }
 
       job.log(
         `${logPrefix}: ${subscriptions.length} subscriptions for ${rule}, requesting subscription member(s)`,
+      );
+
+      const members = await this.subscriptionMemberService.get(subscriptions);
+
+      if (_.isEmpty(members)) {
+        // Fixme: Return a message if there aren't any subscription members.
+      }
+
+      job.log(
+        `${logPrefix}: Recieved ${members.length} members for ${subscriptions.length} subscriptions`,
       );
     } catch (error) {
       throw error;

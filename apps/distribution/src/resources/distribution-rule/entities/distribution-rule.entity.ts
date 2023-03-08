@@ -35,7 +35,7 @@ export class DistributionRule extends Model {
       ),
     ),
   })
-  deliveryMethods: string[];
+  deliveryMethods: DeliveryMethods[];
 
   @HasMany(() => Subscription)
   subscriptions: Subscription[]

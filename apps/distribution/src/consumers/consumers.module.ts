@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { DistributionQueues, NotificationQueues } from '@notification/common';
@@ -17,7 +16,6 @@ import { DistributionDefaultConsumer } from './distribution-default-consumer/dis
     BullModule.registerQueue({
       name: 'distribution_subscription',
     }),
-    HttpModule,
     DistributionRuleModule,
     CommonModule,
   ],
