@@ -1,4 +1,3 @@
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import * as Joi from '@hapi/joi';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
@@ -7,8 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';
-import { rabbitmqFactory } from './config/rabbitmq.config';
-import { ConsumersModule } from './consumers/consumers.module';
+import { MqModule } from './mq/mq.module';
 import { ResourcesModule } from './resources/resources.module';
 
 @Module({
@@ -40,14 +38,9 @@ import { ResourcesModule } from './resources/resources.module';
       inject: [ConfigService],
       useFactory: bullFactory,
     }),
-    RabbitMQModule.forRootAsync(RabbitMQModule, {
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: rabbitmqFactory,
-    }),
     ResourcesModule,
     CommonModule,
-    ConsumersModule,
+    MqModule,
   ],
 })
 export class AppModule {}

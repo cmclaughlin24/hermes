@@ -6,6 +6,12 @@ export async function rabbitmqFactory(
 ): Promise<RabbitMQConfig> {
   return {
     uri: configService.get('RABBITMQ_URI'),
-    exchanges: [],
+    exchanges: [
+      {
+        name: 'test',
+        type: 'fanout',
+        createExchangeIfNotExists: true,
+      }
+    ],
   };
 }

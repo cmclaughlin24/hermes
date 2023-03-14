@@ -1,9 +1,9 @@
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApiResponseDto, DistributionQueues } from '@notification/common';
 import { Job, JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
-import { queuePool } from '../../config/bull.config';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 
 @Injectable()
@@ -13,10 +13,8 @@ export class DistributionJobService {
     private readonly defaultQueue: Queue,
     @InjectQueue('distribution_subscription')
     private readonly subscriptionQueue: Queue,
-  ) {
-    queuePool.add(defaultQueue);
-    queuePool.add(subscriptionQueue);
-  }
+    private readonly amqpConnection: AmqpConnection,
+  ) {}
 
   /**
    * Yields a list of Jobs by the state from the default distribution queue or throws
@@ -62,14 +60,15 @@ export class DistributionJobService {
   async createDefaultDistributionJob(
     createDefaultDistributionJob: CreateDistributionJobDto,
   ) {
-    const job = await this.defaultQueue.add(
-      createDefaultDistributionJob.rule,
-      createDefaultDistributionJob.payload,
-    );
+    // const job = await this.defaultQueue.add(
+    //   createDefaultDistributionJob.rule,
+    //   createDefaultDistributionJob.payload,
+    // );
+
+    await this.amqpConnection.publish('test', '', createDefaultDistributionJob);
 
     return new ApiResponseDto<Job>(
       `Successfully scheduled ${createDefaultDistributionJob.rule} on ${DistributionQueues.DEFAULT} queue!`,
-      job
     );
   }
 }
