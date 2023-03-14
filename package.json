@@ -25,6 +25,7 @@
   "dependencies": {
     "@bull-board/api": "^4.11.1",
     "@bull-board/express": "^4.11.1",
+    "@golevelup/nestjs-rabbitmq": "^3.5.0",
     "@hapi/joi": "^17.1.1",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/axios": "^2.0.0",
