@@ -1,7 +1,11 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ApiResponseDto, DistributionQueues } from '@notification/common';
+import {
+  ApiResponseDto,
+  DistributionExchanges,
+  DistributionQueues
+} from '@notification/common';
 import { Job, JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
@@ -9,7 +13,7 @@ import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 @Injectable()
 export class DistributionJobService {
   constructor(
-    @InjectQueue(DistributionQueues.DEFAULT)
+    @InjectQueue(DistributionQueues.DISTRIBUTE)
     private readonly defaultQueue: Queue,
     @InjectQueue('distribution_subscription')
     private readonly subscriptionQueue: Queue,
@@ -65,10 +69,14 @@ export class DistributionJobService {
     //   createDefaultDistributionJob.payload,
     // );
 
-    await this.amqpConnection.publish('test', '', createDefaultDistributionJob);
+    await this.amqpConnection.publish(
+      DistributionExchanges.DEFAULT,
+      '',
+      createDefaultDistributionJob,
+    );
 
     return new ApiResponseDto<Job>(
-      `Successfully scheduled ${createDefaultDistributionJob.rule} on ${DistributionQueues.DEFAULT} queue!`,
+      `Successfully scheduled ${createDefaultDistributionJob.rule} on ${DistributionQueues.DISTRIBUTE} queue!`,
     );
   }
 }

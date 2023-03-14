@@ -1,5 +1,8 @@
 export enum DistributionQueues {
-  DEFAULT = 'distribution_default',
+  DISTRIBUTE = 'distribution_distribute',
+  SUBSCRIPTION = 'distribution_subscription',
 }
 
-export enum DistributionExchanges {}
+export enum DistributionExchanges {
+  DEFAULT = 'distribution',
+}

@@ -8,7 +8,7 @@ import { DistributionJobService } from './distribution-job.service';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: DistributionQueues.DEFAULT,
+      name: DistributionQueues.DISTRIBUTE,
     }),
     BullModule.registerQueue({
       name: 'distribution_subscription',
