@@ -13,7 +13,7 @@ import { CreateDistributionJobDto } from './dto/create-distribution-job.dto';
 @Injectable()
 export class DistributionJobService {
   constructor(
-    @InjectQueue(DistributionQueues.DISTRIBUTE)
+    @InjectQueue(DistributionQueues.DISTRIBUTION)
     private readonly defaultQueue: Queue,
     @InjectQueue('distribution_subscription')
     private readonly subscriptionQueue: Queue,
@@ -76,7 +76,7 @@ export class DistributionJobService {
     );
 
     return new ApiResponseDto<Job>(
-      `Successfully scheduled ${createDefaultDistributionJob.rule} on ${DistributionQueues.DISTRIBUTE} queue!`,
+      `Successfully scheduled ${createDefaultDistributionJob.rule} on ${DistributionQueues.DISTRIBUTION} queue!`,
     );
   }
 }

@@ -18,7 +18,7 @@ export class DistributionLog extends Model {
   id: string;
 
   @Column({
-    type: DataType.ENUM(DistributionQueues.DISTRIBUTE),
+    type: DataType.ENUM(DistributionQueues.DISTRIBUTION),
   })
   queue: string
 

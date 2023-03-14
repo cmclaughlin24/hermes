@@ -22,7 +22,7 @@ export class DistributionRule extends Model {
   name: string;
 
   @Column({
-    type: DataType.ENUM(DistributionQueues.DISTRIBUTE),
+    type: DataType.ENUM(DistributionQueues.DISTRIBUTION),
   })
   queue: string;
 

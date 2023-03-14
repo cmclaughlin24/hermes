@@ -19,7 +19,7 @@ export class DistributionConsumer {
     private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
-  @RabbitSubscribe({ queue: DistributionQueues.DISTRIBUTE })
+  @RabbitSubscribe({ queue: DistributionQueues.DISTRIBUTION })
   async subscribe(message: {}) {
     const logPrefix = this._createLogPrefix(this.subscribe.name, '');
     this.logger.log(`${logPrefix}`, JSON.stringify(message));

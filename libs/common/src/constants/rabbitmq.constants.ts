@@ -1,6 +1,6 @@
 export enum DistributionQueues {
-  DISTRIBUTE = 'distribution_distribute',
-  SUBSCRIPTION = 'distribution_subscription',
+  DISTRIBUTION = 'distribution',
+  SUBSCRIPTION = 'subscription',
 }
 
 export enum DistributionExchanges {
