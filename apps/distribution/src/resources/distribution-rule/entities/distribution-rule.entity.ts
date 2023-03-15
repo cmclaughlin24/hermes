@@ -5,7 +5,7 @@ import { Column, DataType, Model, Table } from 'sequelize-typescript';
   indexes: [
     {
       unique: true,
-      fields: ['queue', 'event'],
+      fields: ['queue', 'messageType'],
     },
   ],
 })
@@ -14,7 +14,7 @@ export class DistributionRule extends Model {
   queue: string;
 
   @Column
-  event: string;
+  messageType: string;
 
   @Column({
     type: DataType.ARRAY(

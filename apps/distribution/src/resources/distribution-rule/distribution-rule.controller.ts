@@ -48,16 +48,16 @@ export class DistributionRuleController {
     return this.distributionRuleService.findAll(queues);
   }
 
-  @Get(':queue/:event')
+  @Get(':queue/:messageType')
   @Public()
   @ApiOperation({
-    summary: 'Find a distribution rule for a queue and event.',
+    summary: 'Find a distribution rule for a queue and message type.',
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('queue') queue: string, @Param('event') event: string) {
-    return this.distributionRuleService.findOne(queue, event);
+  findOne(@Param('queue') queue: string, @Param('messageType') messageType: string) {
+    return this.distributionRuleService.findOne(queue, messageType);
   }
 
   @Post()
@@ -82,7 +82,7 @@ export class DistributionRuleController {
     return this.distributionRuleService.create(createDistributionRuleDto);
   }
 
-  @Patch(':queue/:event')
+  @Patch(':queue/:messageType')
   @ApiOperation({
     summary: 'Update a distribution rule.',
     security: [{ ApiAuthKey: [] }],
@@ -103,17 +103,17 @@ export class DistributionRuleController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
     @Param('queue') queue: string,
-    @Param('event') event: string,
+    @Param('messageType') messageType: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     return this.distributionRuleService.update(
       queue,
-      event,
+      messageType,
       updateDistributionRuleDto,
     );
   }
 
-  @Delete(':queue/:event')
+  @Delete(':queue/:messageType')
   @ApiOperation({
     summary: 'Remove a distribution rule.',
     security: [{ ApiAuthKey: [] }],
@@ -128,7 +128,7 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('queue') queue: string, @Param('event') event: string) {
-    return this.distributionRuleService.remove(queue, event);
+  remove(@Param('queue') queue: string, @Param('messageType') messageType: string) {
+    return this.distributionRuleService.remove(queue, messageType);
   }
 }

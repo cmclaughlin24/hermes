@@ -4,12 +4,14 @@ import { ApiKeyGuard, RequestLoggerMiddleware } from '@notification/common';
 import { DistributionLogModule } from './distribution-log/distribution-log.module';
 import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
     DistributionLogModule,
     DistributionRuleModule,
     SubscriptionModule,
+    MessageModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })

@@ -28,14 +28,14 @@ export class DistributionRuleService {
     return distributionRules;
   }
 
-  async findOne(queue: string, event: string) {
+  async findOne(queue: string, messageType: string) {
     const distributionRule = await this.distributionRuleModel.findOne({
-      where: { queue, event },
+      where: { queue, messageType },
     });
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for queue=${queue} event=${event} not found!`,
+        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
       );
     }
 
@@ -46,13 +46,13 @@ export class DistributionRuleService {
     const existingRule = await this.distributionRuleModel.findOne({
       where: {
         queue: createDistributionRuleDto.queue,
-        event: createDistributionRuleDto.event,
+        messageType: createDistributionRuleDto.messageType,
       },
     });
 
     if (existingRule) {
       throw new BadRequestException(
-        `Distribution Rule for queue=${createDistributionRuleDto.queue} event=${createDistributionRuleDto.event} already exists!`,
+        `Distribution Rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType} already exists!`,
       );
     }
 
@@ -61,49 +61,49 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully created distribution rule for queue=${distributionRule.queue} event=${distributionRule.event}!`,
+      `Successfully created distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
       distributionRule,
     );
   }
 
   async update(
     queue: string,
-    event: string,
+    messageType: string,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     let distributionRule = await this.distributionRuleModel.findOne({
-      where: { queue, event },
+      where: { queue, messageType },
     });
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for queue=${queue} event=${event} not found!`,
+        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
       );
     }
 
     // Fixme: Update distribution rule.
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully updated distribution rule for queue=${distributionRule.queue} event=${distributionRule.event}!`,
+      `Successfully updated distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
       distributionRule,
     );
   }
 
-  async remove(queue: string, event: string) {
+  async remove(queue: string, messageType: string) {
     const distributionRule = await this.distributionRuleModel.findOne({
-      where: { queue, event },
+      where: { queue, messageType },
     });
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for queue=${queue} event=${event} not found!`,
+        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
       );
     }
 
     await distributionRule.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted distribution rule for queue=${queue} event=${event}!`,
+      `Successfully deleted distribution rule for queue=${queue} messageType=${messageType}!`,
     );
   }
 }

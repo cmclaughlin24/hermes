@@ -11,7 +11,7 @@ export class CreateDistributionRuleDto {
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  event: string;
+  messageType: string;
 
   @IsEnum(DeliveryMethods, { each: true })
   deliveryMethods: DeliveryMethods[];

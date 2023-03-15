@@ -21,8 +21,9 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Distribution Rule',
-      'View and configure the rules that are used for evaluating an event from a message queue.'
+      'View and configure the rules that are used for evaluating a message from queue.'
     )
+    .addTag('Message')
     .addTag(
       'Subscription'
     )
