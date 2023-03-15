@@ -11,7 +11,7 @@ export class MessageController {
 
   @Post()
   @ApiOperation({
-    summary: 'Send a message to an exchange.',
+    summary: 'Publish a message to an exchange.',
     security: [{ ApiAuthKey: [] }],
   })
   @ApiResponse({

@@ -21,12 +21,13 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Distribution Rule',
-      'View and configure the rules that are used for evaluating a message from queue.'
+      'View and configure the rules that are used for evaluating a message from queue.',
     )
-    .addTag('Message')
     .addTag(
-      'Subscription'
+      'Message',
+      "Publish a message to a Rabbitmq Exchange to be forwarded it's bound exchanges/queues.",
     )
+    .addTag('Subscription')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
