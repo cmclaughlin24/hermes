@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
-import { SubscriptionFilter } from '../../../resources/subscription/entities/subscription-filter.entity';
-import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import {
   SubscriptionFilterJoinOps,
   SubscriptionFilterOps
@@ -13,7 +11,7 @@ export class SubscriptionFilterService {
 
   constructor() {}
 
-  filter(subscriptions: Subscription[], payload: any): Subscription[] {
+  filter(subscriptions: any[], payload: any): any[] {
     if (_.isEmpty(subscriptions)) {
       return [];
     }
@@ -23,7 +21,7 @@ export class SubscriptionFilterService {
     );
   }
 
-  isSubscribed(subscription: Subscription, payload: any): boolean {
+  isSubscribed(subscription: any, payload: any): boolean {
     const operators = {
       [SubscriptionFilterJoinOps.AND]: (results): boolean => {
         return results.every((result) => result);
@@ -49,7 +47,7 @@ export class SubscriptionFilterService {
     return operators[subscription.filterJoin](filterResults);
   }
 
-  private _evaluateFilter(filter: SubscriptionFilter, payload: any): boolean {
+  private _evaluateFilter(filter: any, payload: any): boolean {
     const keys = this._getKeys(filter.field);
 
     // Todo: Evaulate filter operators.

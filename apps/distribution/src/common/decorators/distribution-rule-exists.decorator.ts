@@ -20,10 +20,10 @@ export class DistributionRuleExistsRule implements ValidatorConstraintInterface 
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
-      await this.distributionRuleService.findOne(
-        validationArguments.object['queue'],
-        name,
-      );
+      // await this.distributionRuleService.findOne(
+      //   validationArguments.object['queue'],
+      //   name,
+      // );
     } catch (error) {
       return false;
     }
