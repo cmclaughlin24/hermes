@@ -16,16 +16,12 @@ export function setupSwaggerDocument(app: INestApplication) {
       'ApiKeyAuth',
     )
     .addTag(
-      'Distribution Job',
-      'Schedule a job to be pushed to the corresponding queue.',
-    )
-    .addTag(
       'Distribution Log',
       'View the history of distribution job outcomes.',
     )
     .addTag(
       'Distribution Rule',
-      'View and configure the rules that are used for evaluating a distribution job.'
+      'View and configure the rules that are used for evaluating an event from a message queue.'
     )
     .addTag(
       'Subscription'

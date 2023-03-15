@@ -35,7 +35,7 @@ export class DistributionRuleService {
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for ${queue} ${event} not found!`,
+        `Distribution Rule for queue=${queue} event=${event} not found!`,
       );
     }
 
@@ -52,7 +52,7 @@ export class DistributionRuleService {
 
     if (existingRule) {
       throw new BadRequestException(
-        `Distribution Rule for ${createDistributionRuleDto.queue} ${createDistributionRuleDto.event} already exists!`,
+        `Distribution Rule for queue=${createDistributionRuleDto.queue} event=${createDistributionRuleDto.event} already exists!`,
       );
     }
 
@@ -61,7 +61,7 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully created distribution rule for ${distributionRule.queue} ${distributionRule.event}!`,
+      `Successfully created distribution rule for queue=${distributionRule.queue} event=${distributionRule.event}!`,
       distributionRule,
     );
   }
@@ -77,14 +77,14 @@ export class DistributionRuleService {
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for ${queue} ${event} not found!`,
+        `Distribution Rule for queue=${queue} event=${event} not found!`,
       );
     }
 
     // Fixme: Update distribution rule.
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully updated distribution rule for ${distributionRule.queue} ${distributionRule.event}!`,
+      `Successfully updated distribution rule for queue=${distributionRule.queue} event=${distributionRule.event}!`,
       distributionRule,
     );
   }
@@ -96,14 +96,14 @@ export class DistributionRuleService {
 
     if (!distributionRule) {
       throw new NotFoundException(
-        `Distribution Rule for ${queue} ${event} not found!`,
+        `Distribution Rule for queue=${queue} event=${event} not found!`,
       );
     }
 
     await distributionRule.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted distribution rule for ${queue} ${event}!`,
+      `Successfully deleted distribution rule for queue=${queue} event=${event}!`,
     );
   }
 }
