@@ -5,8 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CommonModule } from '../common/common.module';
 import { rabbitmqFactory } from '../config/rabbitmq.config';
 import { DistributionRuleModule } from '../resources/distribution-rule/distribution-rule.module';
-import { DistributionConsumer } from './consumers/distribution-consumer/distribution-consumer';
-import { SubscriptionConsumer } from './consumers/subscription-consumer/subscription-consumer';
+import { DistributionConsumer } from './consumers/distribution-consumer/distribution.consumer';
+import { SubscriptionConsumer } from './consumers/subscription-consumer/subscription.consumer';
 
 @Module({
   imports: [
