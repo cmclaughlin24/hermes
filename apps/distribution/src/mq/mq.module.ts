@@ -2,7 +2,6 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { NotificationQueues } from '@notification/common';
 import { CommonModule } from '../common/common.module';
 import { rabbitmqFactory } from '../config/rabbitmq.config';
 import { DistributionRuleModule } from '../resources/distribution-rule/distribution-rule.module';
@@ -16,8 +15,10 @@ import { SubscriptionConsumer } from './consumers/subscription-consumer/subscrip
       inject: [ConfigService],
       useFactory: rabbitmqFactory,
     }),
-    BullModule.registerQueue({
-      name: NotificationQueues.DEFAULT,
+    BullModule.registerQueueAsync({
+      // Note: BullModule throws an error when using the ConfigModule to retrieve
+      //       the notification queue name from the environment. 
+      name: process.env.BULLMQ_NOTIFICATION_QUEUE
     }),
     CommonModule,
     DistributionRuleModule,

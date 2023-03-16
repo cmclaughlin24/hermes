@@ -1,5 +1,4 @@
 export * from './constants/delivery-methods.constants';
-export * from './constants/rabbitmq.constants';
 export * from './constants/redis.constants';
 export * from './decorators/public.decorator';
 export * from './dto/api-response.dto';

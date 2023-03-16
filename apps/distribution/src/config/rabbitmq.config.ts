@@ -1,6 +1,5 @@
 import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
 import { ConfigService } from '@nestjs/config';
-import { DistributionExchanges } from '@notification/common';
 
 export async function rabbitmqFactory(
   configService: ConfigService,
@@ -9,7 +8,7 @@ export async function rabbitmqFactory(
     uri: configService.get('RABBITMQ_URI'),
     exchanges: [
       {
-        name: DistributionExchanges.DEFAULT,
+        name: configService.get('RABBITMQ_DISTRIBUTION_EXCHANGE'),
         type: 'direct',
         createExchangeIfNotExists: true,
       }

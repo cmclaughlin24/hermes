@@ -1,7 +1,7 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
-import { DistributionQueues, NotificationQueues } from '@notification/common';
+import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import { SubscriptionFilterService } from '../../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
@@ -12,17 +12,17 @@ export class DistributionConsumer {
   private readonly logger = new Logger(DistributionConsumer.name);
 
   constructor(
-    @InjectQueue(NotificationQueues.DEFAULT)
+    @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionRuleService: DistributionRuleService,
     private readonly subscriptionFilterService: SubscriptionFilterService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
-  @RabbitSubscribe({ queue: DistributionQueues.DISTRIBUTION })
-  async subscribe(message: {}) {
+  @RabbitSubscribe({ queue: process.env.RABBITMQ_DISTRIBUTION_QUEUE })
+  async subscribe(message: {}, amqpMsg: ConsumeMessage) {
     const logPrefix = this._createLogPrefix(this.subscribe.name, '');
-    this.logger.log(`${logPrefix}`, JSON.stringify(message));
+    this.logger.log(`${logPrefix} ${JSON.stringify(message)}`);
   }
 
   /**
