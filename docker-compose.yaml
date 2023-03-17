@@ -32,7 +32,7 @@ services:
   notification:
     build:
       context: ./
-      dockerfile: Dockerfile.notification
+      dockerfile: ./docker/Dockerfile.notification
     ports:
       - '3000:3000'
     volumes:
@@ -49,7 +49,7 @@ services:
   distribution:
     build:
       context: ./
-      dockerfile: Dockerfile.distribution
+      dockerfile: ./docker/Dockerfile.distribution
     ports:
       - '3001:3001'
     volumes:

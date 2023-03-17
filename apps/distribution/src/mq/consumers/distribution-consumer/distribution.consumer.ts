@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
+import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionFilterService } from '../../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { DistributionRuleService } from '../../../resources/distribution-rule/distribution-rule.service';
@@ -30,8 +31,11 @@ export class DistributionConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
-  async subscribe(message: {}, amqpMsg: ConsumeMessage) {
-    const logPrefix = this._createLogPrefix(this.subscribe.name, '');
+  async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
+    const logPrefix = this._createLogPrefix(
+      this.subscribe.name,
+      message.type,
+    );
     this.logger.log(`${logPrefix} ${JSON.stringify(message)}`);
 
     if (this._shouldRetry(amqpMsg)) {
