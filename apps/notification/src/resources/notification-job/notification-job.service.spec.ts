@@ -1,7 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto, NotificationQueues } from '@notification/common';
+import { ApiResponseDto } from '@notification/common';
 import { Job, JobState } from 'bullmq';
 import {
   createQueueMock,
@@ -20,14 +20,16 @@ describe('NotificationJobService', () => {
       providers: [
         NotificationJobService,
         {
-          provide: getQueueToken(NotificationQueues.DEFAULT),
+          provide: getQueueToken(process.env.BULLMQ_NOTIFICATION_QUEUE),
           useValue: createQueueMock(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationJobService>(NotificationJobService);
-    queue = module.get<MockQueue>(getQueueToken(NotificationQueues.DEFAULT));
+    queue = module.get<MockQueue>(
+      getQueueToken(process.env.BULLMQ_NOTIFICATION_QUEUE),
+    );
   });
 
   it('should be defined', () => {

@@ -27,6 +27,7 @@ import { ResourcesModule } from './resources/resources.module';
         MAILER_SENDER: Joi.required(),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        BULLMQ_NOTIFICATION_QUEUE: Joi.required(),
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         TWILIO_SID: Joi.required(),

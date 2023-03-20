@@ -1,6 +1,6 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { DeliveryMethods, NotificationQueues } from '@notification/common';
+import { DeliveryMethods } from '@notification/common';
 import { Job, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -9,7 +9,7 @@ import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
-@Processor(NotificationQueues.DEFAULT)
+@Processor(process.env.BULLMQ_NOTIFICATION_QUEUE)
 export class NotificationConsumer extends WorkerHost {
   private readonly logger = new Logger(NotificationConsumer.name);
 

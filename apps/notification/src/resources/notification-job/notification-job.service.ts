@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ApiResponseDto, DeliveryMethods, NotificationQueues } from '@notification/common';
+import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -12,7 +12,8 @@ import { queuePool } from '../../config/bull.config';
 @Injectable()
 export class NotificationJobService {
   constructor(
-    @InjectQueue(NotificationQueues.DEFAULT) private readonly notificationQueue: Queue,
+    @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
+    private readonly notificationQueue: Queue,
   ) {
     // Note: Add NotificationQueue to Bull Board.
     queuePool.add(notificationQueue);
@@ -90,7 +91,10 @@ export class NotificationJobService {
   async createRadioNotification(
     createRadioNotification: CreateRadioNotificationDto,
   ) {
-    return this._createNotification(DeliveryMethods.RADIO, createRadioNotification);
+    return this._createNotification(
+      DeliveryMethods.RADIO,
+      createRadioNotification,
+    );
   }
 
   /**
