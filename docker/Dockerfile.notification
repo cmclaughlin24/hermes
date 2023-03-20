@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY *.json ./
+COPY *.json .
 
 RUN npm install
 
@@ -10,7 +10,6 @@ COPY /apps/notification ./apps/notification
 COPY /libs ./libs
 
 ENV API_KEY=notification123
-ENV BULLMQ_NOTIFICATION_QUEUE=notification
 ENV PORT=3000
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379

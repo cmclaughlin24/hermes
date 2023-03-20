@@ -1,0 +1,31 @@
+FROM node:18-alpine as BUILD
+
+ARG APPLICATION
+
+WORKDIR /app
+
+COPY *.json ./
+
+RUN npm ci
+
+COPY /apps/${APPLICATION} ./apps/${APPLICATION}
+COPY /libs ./libs
+
+RUN npm run build:${APPLICATION}
+
+FROM node:18-alpine as IMAGE
+
+ARG APPLICATION
+ARG DEFAULT_PORT
+
+WORKDIR /app
+
+COPY --from=BUILD /app/node_modules ./node_modules
+COPY --from=BUILD /app/*.json .
+COPY --from=BUILD /app/dist/apps/${APPLICATION}/main.js ./dist/main.js
+
+ENV PORT=${DEFAULT_PORT}
+
+EXPOSE ${DEFAULT_PORT}
+
+CMD [ "npm", "run", "start:prod" ]

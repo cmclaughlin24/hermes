@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY *.json ./
+COPY *.json .
 
 RUN npm install
 
@@ -10,12 +10,7 @@ COPY /apps/distribution ./apps/distribution
 COPY /libs ./libs
 
 ENV API_KEY=notification123
-ENV BULLMQ_NOTIFICATION_QUEUE=notification
 ENV PORT=3001
-ENV RABBITMQ_DISTRIBUTION_EXCHANGE=distribution
-ENV RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY=dead.letter.distribution
-ENV RABBITMQ_DL_EXCHANGE=dead-letter-exchange
-ENV RABBITMQ_DISTRIBUTION_QUEUE=distribution
 ENV REDIS_HOST=localhost
 ENV REDIS_PORT=6379
 ENV RETRY_ATTEMPTS=5
