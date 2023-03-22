@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
+import _ from 'lodash';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionFilterService } from '../../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
@@ -32,14 +33,35 @@ export class DistributionConsumer {
     },
   })
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
-    const logPrefix = this._createLogPrefix(
-      this.subscribe.name,
-      message.type,
-    );
-    this.logger.log(`${logPrefix} ${JSON.stringify(message)}`);
+    const logPrefix = this._createLogPrefix(this.subscribe.name, message.type);
 
-    if (this._shouldRetry(amqpMsg)) {
-      return new Nack(false);
+    try {
+      const distributionRule = await this.distributionRuleService.findOne(
+        '',
+        message.type,
+        true,
+      );
+
+      const subscriptions = this.subscriptionFilterService.filter(
+        distributionRule.subscriptions,
+        message.payload,
+      );
+
+      if (_.isEmpty(subscriptions)) {
+        // Fixme: Store the result of the operation in the database.
+        return;
+      }
+
+      const members = await this.subscriptionMemberService.get(subscriptions);
+
+      if (_.isEmpty(members)) {
+        // Fixme: Store the result of the operation in the database.
+        return;
+      }
+    } catch (error) {
+      if (this._shouldRetry(amqpMsg)) {
+        return new Nack();
+      }
     }
   }
 
