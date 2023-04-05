@@ -47,4 +47,9 @@ export class CreateDistributionRuleDto {
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   html?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  text: string;
 }

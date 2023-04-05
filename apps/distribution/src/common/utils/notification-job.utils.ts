@@ -81,7 +81,7 @@ export function mapToNotificationJobs(
         data = {
           to: recipient,
           subject: distributionRule.emailSubject,
-          text: 'Test Notification from Distribution',
+          text: distributionRule.text,
           template: distributionRule.emailTemplate,
           html: distributionRule.html,
           context: payload,
@@ -90,7 +90,7 @@ export function mapToNotificationJobs(
       case DeliveryMethods.SMS:
         data = {
           to: recipient,
-          body: 'Test Notification from Distribution',
+          body: distributionRule.text,
           context: payload,
         };
         break;

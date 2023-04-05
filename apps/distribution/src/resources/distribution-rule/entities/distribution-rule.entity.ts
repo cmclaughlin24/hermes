@@ -44,6 +44,9 @@ export class DistributionRule extends Model {
   @Column({ type: DataType.STRING(2000), allowNull: true })
   html: string;
 
+  @Column
+  text: string;
+
   @HasMany(() => Subscription)
   subscriptions: Subscription[];
 }
