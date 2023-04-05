@@ -52,14 +52,14 @@ export class DistributionConsumer {
       const jobs = createNotificationJobs(
         distributionRule,
         subscriptionMembers,
-        message.payload
+        message.payload,
       );
-      
+
       if (_.isEmpty(jobs)) {
         return;
       }
 
-      await this.notificationQueue.addBulk(jobs)
+      await this.notificationQueue.addBulk(jobs);
     } catch (error) {
       if (this._shouldRetry(amqpMsg)) {
         return new Nack();
