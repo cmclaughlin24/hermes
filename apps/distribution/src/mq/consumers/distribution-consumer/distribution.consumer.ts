@@ -54,10 +54,12 @@ export class DistributionConsumer {
         subscriptionMembers,
         message.payload
       );
-
+      
       if (_.isEmpty(jobs)) {
         return;
       }
+
+      await this.notificationQueue.addBulk(jobs)
     } catch (error) {
       if (this._shouldRetry(amqpMsg)) {
         return new Nack();
