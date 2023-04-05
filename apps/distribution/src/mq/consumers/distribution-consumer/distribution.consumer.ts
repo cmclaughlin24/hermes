@@ -6,8 +6,8 @@ import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MessageDto } from '../../../common/dto/message.dto';
-import { SubscriptionFilterService } from '../../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
+import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { DistributionRuleService } from '../../../resources/distribution-rule/distribution-rule.service';
 
 @Injectable()
@@ -19,7 +19,6 @@ export class DistributionConsumer {
     private readonly notificationQueue: Queue,
     private readonly configService: ConfigService,
     private readonly distributionRuleService: DistributionRuleService,
-    private readonly subscriptionFilterService: SubscriptionFilterService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
@@ -42,20 +41,21 @@ export class DistributionConsumer {
         true,
       );
 
-      const subscriptions = this.subscriptionFilterService.filter(
+      const subscriptionMembers = await this.subscriptionMemberService.get(
         distributionRule.subscriptions,
-        message.payload,
       );
 
-      if (_.isEmpty(subscriptions)) {
-        // Fixme: Store the result of the operation in the database.
+      if (_.isEmpty(subscriptionMembers)) {
         return;
       }
 
-      const members = await this.subscriptionMemberService.get(subscriptions);
+      const jobs = createNotificationJobs(
+        distributionRule,
+        subscriptionMembers,
+        message.payload
+      );
 
-      if (_.isEmpty(members)) {
-        // Fixme: Store the result of the operation in the database.
+      if (_.isEmpty(jobs)) {
         return;
       }
     } catch (error) {
