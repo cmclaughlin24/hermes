@@ -22,7 +22,16 @@ export class SubscriptionMemberService {
     // }
 
     return [
-      new SubscriptionMemberDto([DeliveryMethods.EMAIL], 'test@test.com', null),
+      new SubscriptionMemberDto(
+        [DeliveryMethods.EMAIL],
+        'test@gmail.com',
+        null,
+      ),
+      new SubscriptionMemberDto(
+        [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
+        'test@gmail.com',
+        '+1999999999',
+      ),
     ];
   }
 

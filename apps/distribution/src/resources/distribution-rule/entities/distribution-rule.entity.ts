@@ -35,6 +35,15 @@ export class DistributionRule extends Model {
   })
   deliveryMethods: DeliveryMethods[];
 
+  @Column
+  emailSubject: string;
+
+  @Column({ type: DataType.STRING(2000), allowNull: true })
+  emailTemplate: string;
+
+  @Column({ type: DataType.STRING(2000), allowNull: true })
+  html: string;
+
   @HasMany(() => Subscription)
   subscriptions: Subscription[];
 }

@@ -8,7 +8,7 @@ export function createNotificationJobs(
   distributionRule: DistributionRule,
   subscriptionMembers: SubscriptionMemberDto[],
   payload: any,
-): any {
+): { name: string; data: any; opts?: BulkJobOptions }[] {
   return _.chain(subscriptionMembers)
     .filter((member) => hasDeliveryMethods(distributionRule, member))
     .reduce(
@@ -28,11 +28,19 @@ export function createNotificationJobs(
     .value();
 }
 
+/**
+ * Yields true if a subscription member has at least one of the distribution rule delivery
+ * method(s) enabled or false otherwise.
+ * @param {DistributionRule} distributionRule
+ * @param {SubscriptionMemberDto} member
+ * @returns {boolean}
+ */
 export function hasDeliveryMethods(
   distributionRule: DistributionRule,
   member: SubscriptionMemberDto,
 ): boolean {
   return !_.isEmpty(
+    // Example: _.intersection(['email'], ['email', 'sms']) => ['email']
     _.intersection(distributionRule.deliveryMethods, member.deliveryMethods),
   );
 }
@@ -66,6 +74,32 @@ export function mapToNotificationJobs(
   payload: any,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
   return Array.from(recipients).map((recipient) => {
-    return { name: method, data: { to: recipient } };
+    let data;
+
+    switch (method) {
+      case DeliveryMethods.EMAIL:
+        data = {
+          to: recipient,
+          subject: distributionRule.emailSubject,
+          text: 'Test Notification from Distribution',
+          template: distributionRule.emailTemplate,
+          html: distributionRule.html,
+          context: payload,
+        };
+        break;
+      case DeliveryMethods.SMS:
+        data = {
+          to: recipient,
+          body: 'Test Notification from Distribution',
+          context: payload,
+        };
+        break;
+      default:
+        throw new Error(
+          `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,
+        );
+    }
+
+    return { name: method, data: data };
   });
 }
