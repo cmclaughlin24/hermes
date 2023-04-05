@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import {
-  SubscriptionFilterJoinOps,
-  SubscriptionFilterOps
+    SubscriptionFilterJoinOps,
+    SubscriptionFilterOps
 } from '../../constants/subscription-filter.constants';
 
 @Injectable()

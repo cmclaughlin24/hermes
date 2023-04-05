@@ -11,6 +11,11 @@ export async function rabbitmqFactory(
         name: configService.get('RABBITMQ_DISTRIBUTION_EXCHANGE'),
         type: 'direct',
         createExchangeIfNotExists: true,
+      },
+      {
+        name: configService.get('RABBITMQ_DL_EXCHANGE'),
+        type: 'topic',
+        createExchangeIfNotExists: true,
       }
     ],
   };

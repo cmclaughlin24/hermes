@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionFilterService } from '../../../common/providers/subscription-filter/subscription-filter.service';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
@@ -37,7 +37,7 @@ export class DistributionConsumer {
 
     try {
       const distributionRule = await this.distributionRuleService.findOne(
-        '',
+        this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
         message.type,
         true,
       );

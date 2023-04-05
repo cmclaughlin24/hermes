@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobState } from 'bullmq';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { NotificationLog } from './entities/notification-log.entity';
 
 @Injectable()

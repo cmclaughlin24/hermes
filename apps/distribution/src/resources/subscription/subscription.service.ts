@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';

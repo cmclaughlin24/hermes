@@ -1,11 +1,11 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException
+    BadRequestException,
+    Injectable,
+    NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
