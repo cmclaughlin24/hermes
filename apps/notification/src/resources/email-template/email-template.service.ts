@@ -1,7 +1,7 @@
 import {
-    BadRequestException,
-    Injectable,
-    NotFoundException
+  BadRequestException,
+  Injectable,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
@@ -90,6 +90,7 @@ export class EmailTemplateService {
     }
 
     emailTemplate = await emailTemplate.update({
+      subject: updateEmailTemplateDto.subject || emailTemplate.subject,
       template: updateEmailTemplateDto.template || emailTemplate.template,
       context: updateEmailTemplateDto.context || emailTemplate.context,
     });

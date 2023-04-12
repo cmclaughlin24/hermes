@@ -26,8 +26,10 @@ export class CreatePhoneNotificationDto {
   from?: string;
 
   @ApiProperty({
-    description: 'Message template that can accept values from a nested JavaScript object',
-    example: '{{firstName}} {{lastName}} successfully sent a {{message.type}} notification!',
+    description:
+      'Message template that can accept values from a nested JavaScript object',
+    example:
+      '{{firstName}} {{lastName}} successfully sent a {{message.type}} notification!',
   })
   @IsString()
   @IsNotEmpty()
@@ -40,8 +42,8 @@ export class CreatePhoneNotificationDto {
       firstName: 'John',
       lastName: 'Doe',
       message: {
-        type: 'sms'
-      }
+        type: 'sms',
+      },
     },
     required: false,
   })

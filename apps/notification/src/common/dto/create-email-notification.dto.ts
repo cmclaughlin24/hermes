@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsObject,
   IsOptional,
-  IsString
+  IsString,
 } from 'class-validator';
 import { TemplateExists } from '../decorators/template-exists.decorator';
 
@@ -28,13 +28,14 @@ export class CreateEmailNotificationDto {
   from?: string;
 
   @ApiProperty({
-    description: 'Subject line for the email',
-    example: 'My First Notification',
+    description:
+      'Subject template that can accept values from a nested JavaScript object',
+    example: "{{firstName}}'s first notification!",
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  subject: string;
+  subject?: string;
 
   @ApiProperty({
     description: 'Plain text email body',
@@ -76,6 +77,7 @@ export class CreateEmailNotificationDto {
     description: 'Values to be injected into the Handlebars HTML template',
     example: {
       title: "You successfully sent you're first notification!",
+      firstName: 'John',
     },
     required: false,
   })
