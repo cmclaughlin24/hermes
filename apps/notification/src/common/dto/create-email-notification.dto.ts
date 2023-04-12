@@ -73,7 +73,7 @@ export class CreateEmailNotificationDto {
   template?: string;
 
   @ApiProperty({
-    description: 'Values to be based to the Handlebars HTML template',
+    description: 'Values to be injected into the Handlebars HTML template',
     example: {
       title: "You successfully sent you're first notification!",
     },

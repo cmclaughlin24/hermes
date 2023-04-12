@@ -7,6 +7,7 @@ import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notifi
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
+import { compileTextTemplate } from '../../common/utils/template.utils';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 @Processor(process.env.BULLMQ_NOTIFICATION_QUEUE)
@@ -23,11 +24,11 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * Routes jobs from the notification queue by checking the job's name and 
+   * Routes jobs from the notification queue by checking the job's name and
    * executing the correct process function. Throws an unrecoverable error if
    * a job name does not have a process function.
    * @param {Job} job
-   * @returns {Promise<any>} 
+   * @returns {Promise<any>}
    */
   async process(job: Job): Promise<any> {
     let result;
@@ -132,7 +133,16 @@ export class NotificationConsumer extends WorkerHost {
       }
 
       job.log(
-        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, attempting to send ${job.name} notification`,
+        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
+      );
+
+      createPhoneNotificationDto.body = compileTextTemplate(
+        createPhoneNotificationDto.body,
+        createPhoneNotificationDto.context,
+      );
+
+      job.log(
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.phoneService.sendText(
