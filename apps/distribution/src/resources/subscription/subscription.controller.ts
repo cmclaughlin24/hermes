@@ -37,7 +37,7 @@ export class SubscriptionController {
   @Post()
   @ApiOperation({
     summary: 'Create a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -60,7 +60,7 @@ export class SubscriptionController {
   @Patch(':id')
   @ApiOperation({
     summary: 'Update a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -85,7 +85,7 @@ export class SubscriptionController {
   @Delete(':id')
   @ApiOperation({
     summary: 'Remove a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

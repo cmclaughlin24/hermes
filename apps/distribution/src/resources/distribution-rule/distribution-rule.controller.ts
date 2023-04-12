@@ -8,7 +8,7 @@ import {
   ParseArrayPipe,
   Patch,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
@@ -56,14 +56,17 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('queue') queue: string, @Param('messageType') messageType: string) {
+  findOne(
+    @Param('queue') queue: string,
+    @Param('messageType') messageType: string,
+  ) {
     return this.distributionRuleService.findOne(queue, messageType);
   }
 
   @Post()
   @ApiOperation({
     summary: 'Create a distribution rule.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -85,7 +88,7 @@ export class DistributionRuleController {
   @Patch(':queue/:messageType')
   @ApiOperation({
     summary: 'Update a distribution rule.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -116,7 +119,7 @@ export class DistributionRuleController {
   @Delete(':queue/:messageType')
   @ApiOperation({
     summary: 'Remove a distribution rule.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -128,7 +131,10 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('queue') queue: string, @Param('messageType') messageType: string) {
+  remove(
+    @Param('queue') queue: string,
+    @Param('messageType') messageType: string,
+  ) {
     return this.distributionRuleService.remove(queue, messageType);
   }
 }
