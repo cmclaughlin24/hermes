@@ -95,8 +95,6 @@ export class EmailService implements CreateNotificationDto {
     delete createEmailNotificationDto.template;
     delete createEmailNotificationDto.context;
 
-    console.log(createEmailNotificationDto);
-
     return createEmailNotificationDto;
   }
 }

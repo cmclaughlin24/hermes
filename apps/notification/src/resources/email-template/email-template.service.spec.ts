@@ -3,8 +3,8 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
 import {
+  MockRepository,
   createMockRepository,
-  MockRepository
 } from '../../../../notification/test/helpers/database.helpers';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
@@ -115,6 +115,7 @@ describe('EmailTemplateService', () => {
   describe('create()', () => {
     const createEmailTemplateDto: CreateEmailTemplateDto = {
       name: 'test',
+      subject: 'title',
       template: '<h1>{{title}}</h1>',
       context: {
         title: 'string',
