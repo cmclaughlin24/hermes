@@ -28,6 +28,8 @@ spec:
       containers:
         - name: notification
           image: cmclaughlin24/notification:latest
+          ports:
+            - containerPort: 3000
           env:
             - name: API_KEY
               value: ''
