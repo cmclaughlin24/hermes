@@ -8,6 +8,6 @@ data:
   dbUsername: 'postgres'
   dbPassword: 'pass123'
   dbName: 'postgres'
-  redisHost: 'http://localhost'
+  redisHost: 'redis-service.default'
   redisPort: '6379'
   notificationQueue: 'notification'
