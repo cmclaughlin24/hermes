@@ -1,3 +1,5 @@
+# Initialize Cluster: kubectl exec -it redis-cluster-0 -n default -- redis-cli --cluster create --cluster-replicas 1 [POD IP_ADDRESS:PORT]
+# View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n default -- redis-cli role; echo; done 
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,6 +12,11 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
+      name: client
+    - protocol: TCP
+      port: 16379
+      targetPort: 16379
+      name: gossip
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -42,6 +49,9 @@ spec:
           image: redis
           ports:
             - containerPort: 6379
+              name: client
+            - containerPort: 16379
+              name: gossip
           volumeMounts:
             - name: redis-config
               mountPath: /config
