@@ -11,3 +11,4 @@ data:
   redisHost: 'redis-service.default'
   redisPort: '6379'
   notificationQueue: 'notification'
+  notificationPrefix: '{notification}'

@@ -83,6 +83,11 @@ spec:
                 configMapKeyRef:
                   name: env-store
                   key: notificationQueue
+            - name: BULLMQ_NOTIFICATION_QUEUE_PREFIX
+              valueFrom:
+                configMapKeyRef:
+                  name: env-store
+                  key: notificationPrefix
             - name: TWILIO_SID
               value: ${TWILIO_SID}
             - name: TWILIO_AUTH_TOKEN
