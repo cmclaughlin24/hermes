@@ -32,7 +32,7 @@ spec:
             - containerPort: 3000
           env:
             - name: API_KEY
-              value: ''
+              value: ${API_KEY}
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -59,15 +59,15 @@ spec:
                   name: env-store
                   key: dbName
             - name: MAILER_HOST
-              value: ''
+              value: ${MAILER_HOST}
             - name: MAILER_PORT
-              value: ''
+              value: ${MAILER_PORT}
             - name: MAILER_USER
-              value: ''
+              value: ${MAILER_USER}
             - name: MAILER_PASSWORD
-              value: ''
+              value: ${MAILER_PASSWORD}
             - name: MAILER_SENDER
-              value: ''
+              value: ${MAILER_SENDER}
             - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
@@ -84,8 +84,8 @@ spec:
                   name: env-store
                   key: notificationQueue
             - name: TWILIO_SID
-              value: ''
+              value: ${TWILIO_SID}
             - name: TWILIO_AUTH_TOKEN
-              value: ''
+              value: ${TWILIO_AUTH_TOKEN}
             - name: TWILIO_PHONE_NUMBER
-              value: ''
+              value: ${TWILIO_PHONE_NUMBER}

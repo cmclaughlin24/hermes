@@ -3,11 +3,11 @@ kind: ConfigMap
 metadata:
   name: env-store
 data:
-  dbHost: 'http://localhost'
-  dbPort: '5432'
-  dbUsername: 'postgres'
-  dbPassword: 'pass123'
-  dbName: 'postgres'
+  dbHost: ${DB_HOST}
+  dbPort: ${DB_PORT}
+  dbUsername: ${DB_USERNAME}
+  dbPassword: ${DB_PASSWORD}
+  dbName: ${DB_NAME}
   redisHost: 'redis-service.default'
   redisPort: '6379'
   notificationQueue: 'notification'
