@@ -5,15 +5,23 @@ import { ExpressAdapter } from '@bull-board/express';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue, QueueOptions } from 'bullmq';
+import Redis from 'ioredis';
 
 export async function bullFactory(
   configService: ConfigService,
 ): Promise<QueueOptions> {
+  const host = configService.get('REDIS_HOST');
+  const port = configService.get('REDIS_PORT');
+  let connection: any = { host, port };
+
+  if (configService.get('ENABLE_REDIS_CLUSTER') === 'true') {
+    // Note: Redis requires one start up node and will use it to identify other nodes
+    //       within the cluster. 
+    connection = new Redis.Cluster([{ host, port }]);
+  }
+
   return {
-    connection: {
-      host: configService.get('REDIS_HOST'),
-      port: configService.get('REDIS_PORT'),
-    },
+    connection,
     defaultJobOptions: {
       attempts: configService.get('RETRY_ATTEMPTS'),
       backoff: {
