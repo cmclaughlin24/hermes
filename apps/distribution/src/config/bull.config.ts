@@ -9,7 +9,7 @@ export async function bullFactory(
   const port = configService.get('REDIS_PORT');
   let connection: any = { host, port };
 
-  if (configService.get('ENABLE_REDIS_CLUSTER') === 'true') {
+  if (configService.get('ENABLE_REDIS_CLUSTER')) {
     // Note: Redis requires one start up node and will use it to identify other nodes
     //       within the cluster. 
     connection = new Redis.Cluster([{ host, port }]);

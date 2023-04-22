@@ -26,6 +26,7 @@ import { ResourcesModule } from './resources/resources.module';
         RABBITMQ_DISTRIBUTION_QUEUE: Joi.required(),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        ENABLE_REDIS_CLUSTER: Joi.boolean().default(false),
         BULLMQ_NOTIFICATION_QUEUE: Joi.required(),
         BULLMQ_NOTIFICATION_QUEUE_PREFIX: Joi.required(),
         RETRY_ATTEMPTS: Joi.number().required(),
