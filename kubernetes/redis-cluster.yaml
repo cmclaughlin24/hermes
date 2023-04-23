@@ -1,5 +1,6 @@
-# Initialize Cluster: kubectl exec -it redis-cluster-0 -n default -- redis-cli --cluster create --cluster-replicas 1 [POD IP_ADDRESS:PORT]
-# View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n default -- redis-cli role; echo; done 
+# 1) Add Redis Resources to Kubernetes Cluster: kubectl apply -f redis-cluster.yaml
+# 2) Initialize Cluster: kubectl exec -it redis-cluster-0 -n [CLUSTER NAMESPACE] -- redis-cli --cluster create --cluster-replicas 1 [POD IP_ADDRESS:PORT]
+# 3) View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n [CLUSTER NAMESPACE] -- redis-cli role; echo; done 
 apiVersion: v1
 kind: Service
 metadata:
@@ -55,8 +56,19 @@ spec:
           volumeMounts:
             - name: redis-config
               mountPath: /config
+            - name: redis-data
+              mountPath: /data
           command: ['redis-server', '/config/redis.conf']
       volumes:
         - name: redis-config
           configMap:
             name: redis-config
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
