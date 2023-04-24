@@ -1,6 +1,7 @@
 # 1) Add Redis Resources to Kubernetes Cluster: kubectl apply -f redis-cluster.yaml
-# 2) Initialize Cluster: kubectl exec -it redis-cluster-0 -n [CLUSTER NAMESPACE] -- redis-cli --cluster create --cluster-replicas 1 [POD IP_ADDRESS:PORT]
-# 3) View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n [CLUSTER NAMESPACE] -- redis-cli role; echo; done 
+# 2) Get Pod IP Address: kubectl get pods -o wide
+# 3) Initialize Cluster: kubectl exec -it redis-cluster-0 -n [CLUSTER NAMESPACE] -- redis-cli --cluster create --cluster-replicas 1 [POD IP_ADDRESS:PORT]
+# 4) View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n [CLUSTER NAMESPACE] -- redis-cli role; echo; done 
 apiVersion: v1
 kind: Service
 metadata:
