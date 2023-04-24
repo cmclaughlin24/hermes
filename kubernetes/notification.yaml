@@ -78,6 +78,11 @@ spec:
                 configMapKeyRef:
                   name: env-store
                   key: redisPort
+            - name: ENABLE_REDIS_CLUSTER
+              valueFrom:
+                configMapKeyRef:
+                  name: env-store
+                  key: enableRedisCluster
             - name: BULLMQ_NOTIFICATION_QUEUE
               valueFrom:
                 configMapKeyRef:
