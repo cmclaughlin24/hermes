@@ -17,27 +17,27 @@ export function createNotificationJobs(
   subscriptionMembers: SubscriptionMemberDto[],
   payload: any,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
-  return (
-    _.chain(subscriptionMembers)
-      // Todo: Check if the distribution rule respects delivery window. If yes, check member's
-      //       delivery window for the current day and time.
-      .filter((member) => hasDeliveryMethods(distributionRule, member))
-      .reduce(
-        reduceToDeliveryMethodsMap(distributionRule.deliveryMethods),
-        new Map<DeliveryMethods, Set<string>>(),
-      )
-      .toPairs()
-      .map(([method, recipients]) =>
-        mapToNotificationJobs(
-          method as DeliveryMethods,
-          recipients,
-          distributionRule,
-          payload,
-        ),
-      )
-      .flatten()
-      .value()
-  );
+  return _.chain(subscriptionMembers)
+    .filter(
+      (member) =>
+        hasDeliveryMethods(distributionRule, member) &&
+        hasDeliveryWindow(distributionRule, member),
+    )
+    .reduce(
+      reduceToDeliveryMethodsMap(distributionRule.deliveryMethods),
+      new Map<DeliveryMethods, Set<string>>(),
+    )
+    .toPairs()
+    .map(([method, recipients]) =>
+      mapToNotificationJobs(
+        method as DeliveryMethods,
+        recipients,
+        distributionRule,
+        payload,
+      ),
+    )
+    .flatten()
+    .value();
 }
 
 /**
@@ -58,9 +58,36 @@ export function hasDeliveryMethods(
 }
 
 /**
- * Yields a preconfigured function with the delivery methods. The resulting preconfigured function reduces a
- * list of subscription members into a Map where the key is the delivery method and the value is a Set
- * of recipients.
+ * Yields true if the current day and time falls within a subscription member's delivery window settings
+ * or if the distribution rule does not check the delivery window. Yields false otherwise.
+ * @param {DistributionRule} distributionRule
+ * @param {SubscriptionMemberDto} member
+ * @returns
+ */
+export function hasDeliveryWindow(
+  distributionRule: DistributionRule,
+  member: SubscriptionMemberDto,
+): boolean {
+  if (!distributionRule.checkDeliveryWindow) {
+    return true;
+  }
+
+  // Fixme: Implement getDeliveryWindow method.
+  const deliveryWindow = member.getDeliveryWindow();
+
+  if (!deliveryWindow) {
+    return false;
+  }
+
+  // Todo: Check if the distribution rule respects delivery window. If yes, check member's
+  //       delivery window for the current day and time.
+  return false;
+}
+
+/**
+ * Yields a preconfigured function with the delivery methods. The resulting preconfigured function
+ * reduces a list of subscription members into a Map where the key is the delivery method and the
+ * value is a Set of recipients.
  * @param {DeliveryMethods[]} deliveryMethods
  * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionMemberDto) => Map<DeliveryMethods, Set<string>>}
  */
@@ -75,7 +102,7 @@ export function reduceToDeliveryMethodsMap(
     member: SubscriptionMemberDto,
   ) => {
     for (const method of deliveryMethods) {
-      const value = member.get(method);
+      const value = member.getDeliveryMethod(method);
 
       if (!value) {
         continue;

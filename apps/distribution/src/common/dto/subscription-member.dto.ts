@@ -7,7 +7,7 @@ export class SubscriptionMemberDto {
     public phoneNumber: string,
   ) {}
 
-  get(deliveryMethod: DeliveryMethods): string {
+  getDeliveryMethod(deliveryMethod: DeliveryMethods): string {
     switch (deliveryMethod) {
       case DeliveryMethods.EMAIL:
         return this.email;
@@ -17,4 +17,6 @@ export class SubscriptionMemberDto {
 
     return null;
   }
+
+  getDeliveryWindow(): any {}
 }

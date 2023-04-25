@@ -47,6 +47,9 @@ export class DistributionRule extends Model {
   @Column
   text: string;
 
+  @Column
+  checkDeliveryWindow: boolean;
+
   @HasMany(() => Subscription)
   subscriptions: Subscription[];
 }
