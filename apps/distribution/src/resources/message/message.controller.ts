@@ -20,6 +20,10 @@ export class MessageController {
     type: ApiResponseDto,
   })
   @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })

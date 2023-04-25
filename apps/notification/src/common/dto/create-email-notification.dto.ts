@@ -19,7 +19,6 @@ export class CreateEmailNotificationDto {
 
   @ApiProperty({
     description: "Verified email sender (defaults to environment's sender)",
-
     example: 'example@email.com',
     required: false,
   })
