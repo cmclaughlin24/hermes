@@ -77,18 +77,19 @@ export function hasDeliveryWindow(
   }
 
   const zoneNow = utcToZonedTime(new Date(), member.timeZone);
-  const deliveryWindow = member.getDeliveryWindow(zoneNow.getDay());
+  const deliveryWindows = member.getDeliveryWindow(zoneNow.getDay());
 
-  if (!deliveryWindow) {
+  if (_.isEmpty(deliveryWindows)) {
     return false;
   }
 
-  const startTime = new Date();
-  startTime.setDate(zoneNow.getDate());
-  startTime.setHours(deliveryWindow.atHour);
-  startTime.setMinutes(deliveryWindow.atMinute);
-
-  return isBetweenTimes(zoneNow, startTime, deliveryWindow.duration);
+  return deliveryWindows.some((window) => {
+    const startTime = new Date();
+    startTime.setDate(zoneNow.getDate());
+    startTime.setHours(window.atHour);
+    startTime.setMinutes(window.atMinute);
+    return isBetweenTimes(zoneNow, startTime, window.duration);
+  });
 }
 
 /**

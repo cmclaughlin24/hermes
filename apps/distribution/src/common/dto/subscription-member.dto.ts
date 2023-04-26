@@ -1,11 +1,19 @@
 import { DeliveryMethods } from '@notification/common';
 
+interface DeliveryWindow {
+  dayOfWeek: number;
+  atHour: number;
+  atMinute: number;
+  duration: number;
+}
+
 export class SubscriptionMemberDto {
   constructor(
     public deliveryMethods: DeliveryMethods[],
     public email: string,
     public phoneNumber: string,
     public timeZone: string,
+    public deliveryWindows: DeliveryWindow[],
   ) {}
 
   getDeliveryMethod(deliveryMethod: DeliveryMethods): string {
@@ -19,7 +27,9 @@ export class SubscriptionMemberDto {
     return null;
   }
 
-  getDeliveryWindow(dayOfWeek: number): any {
-    // Fixme: Implement getDeliveryWindow method.
+  getDeliveryWindow(dayOfWeek: number): DeliveryWindow[] {
+    return this.deliveryWindows?.filter(
+      (window) => window.dayOfWeek === dayOfWeek,
+    );
   }
 }
