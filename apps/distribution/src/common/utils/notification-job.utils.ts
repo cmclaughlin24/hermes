@@ -1,8 +1,12 @@
 import { DeliveryMethods } from '@notification/common';
 import { BulkJobOptions } from 'bullmq';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import * as _ from 'lodash';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
+
+const SECONDS_PER_MINUTE = 60;
+const MILLISECONDS_PER_SECOND = 1000;
 
 /**
  * Yields a list of notification jobs for a list of subscription members based on the
@@ -82,6 +86,30 @@ export function hasDeliveryWindow(
   // Todo: Check if the distribution rule respects delivery window. If yes, check member's
   //       delivery window for the current day and time.
   return false;
+}
+
+/**
+ * Yields true if the time argument is greater than or equal to the start time and less than or equal
+ * to the end time (startTime + duration in minutes) or false otherwise.
+ * @param {Date} time
+ * @param {Date} startTime
+ * @param {number} duration
+ * @param {string} timeZone
+ * @returns {boolean}
+ */
+export function isBetweenZonedTimes(
+  time: Date,
+  startTime: Date,
+  duration: number,
+  timeZone: string,
+): boolean {
+  const durationInMilliseconds =
+    duration * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+  const endTime = new Date(startTime.getTime() + durationInMilliseconds);
+  const utcStartTime = zonedTimeToUtc(startTime, timeZone).getTime();
+  const utcEndTime = zonedTimeToUtc(endTime, timeZone).getTime();
+
+  return time.getTime() >= utcStartTime && time.getTime() <= utcEndTime;
 }
 
 /**
