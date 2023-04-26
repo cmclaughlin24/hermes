@@ -5,6 +5,7 @@ export class SubscriptionMemberDto {
     public deliveryMethods: DeliveryMethods[],
     public email: string,
     public phoneNumber: string,
+    public timeZone: string,
   ) {}
 
   getDeliveryMethod(deliveryMethod: DeliveryMethods): string {
@@ -18,5 +19,7 @@ export class SubscriptionMemberDto {
     return null;
   }
 
-  getDeliveryWindow(): any {}
+  getDeliveryWindow(dayOfWeek: number): any {
+    // Fixme: Implement getDeliveryWindow method.
+  }
 }

@@ -1,6 +1,6 @@
 import { DeliveryMethods } from '@notification/common';
 import { BulkJobOptions } from 'bullmq';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz';
 import * as _ from 'lodash';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
@@ -76,16 +76,19 @@ export function hasDeliveryWindow(
     return true;
   }
 
-  // Fixme: Implement getDeliveryWindow method.
-  const deliveryWindow = member.getDeliveryWindow();
+  const zoneNow = utcToZonedTime(new Date(), member.timeZone);
+  const deliveryWindow = member.getDeliveryWindow(zoneNow.getDay());
 
   if (!deliveryWindow) {
     return false;
   }
 
-  // Todo: Check if the distribution rule respects delivery window. If yes, check member's
-  //       delivery window for the current day and time.
-  return false;
+  const startTime = new Date();
+  startTime.setDate(zoneNow.getDate());
+  startTime.setHours(deliveryWindow.atHour);
+  startTime.setMinutes(deliveryWindow.atMinute);
+
+  return isBetweenTimes(zoneNow, startTime, deliveryWindow.duration);
 }
 
 /**
@@ -94,22 +97,20 @@ export function hasDeliveryWindow(
  * @param {Date} time
  * @param {Date} startTime
  * @param {number} duration
- * @param {string} timeZone
  * @returns {boolean}
  */
-export function isBetweenZonedTimes(
+export function isBetweenTimes(
   time: Date,
   startTime: Date,
   duration: number,
-  timeZone: string,
 ): boolean {
   const durationInMilliseconds =
     duration * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
   const endTime = new Date(startTime.getTime() + durationInMilliseconds);
-  const utcStartTime = zonedTimeToUtc(startTime, timeZone).getTime();
-  const utcEndTime = zonedTimeToUtc(endTime, timeZone).getTime();
 
-  return time.getTime() >= utcStartTime && time.getTime() <= utcEndTime;
+  return (
+    time.getTime() >= startTime.getTime() && time.getTime() <= endTime.getTime()
+  );
 }
 
 /**
