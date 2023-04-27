@@ -8,5 +8,5 @@ export class MessageDto {
   type: string;
 
   @Allow()
-  payload: {};
+  payload: any;
 }
