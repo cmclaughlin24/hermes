@@ -77,7 +77,7 @@ export function hasDeliveryWindow(
   }
 
   const zoneNow = utcToZonedTime(new Date(), member.timeZone);
-  const deliveryWindows = member.getDeliveryWindow(zoneNow.getDay());
+  const deliveryWindows = member.getDeliveryWindows(zoneNow.getDay());
 
   if (_.isEmpty(deliveryWindows)) {
     return false;

@@ -27,7 +27,7 @@ export class SubscriptionMemberDto {
     return null;
   }
 
-  getDeliveryWindow(dayOfWeek: number): DeliveryWindow[] {
+  getDeliveryWindows(dayOfWeek: number): DeliveryWindow[] {
     return this.deliveryWindows?.filter(
       (window) => window.dayOfWeek === dayOfWeek,
     );
