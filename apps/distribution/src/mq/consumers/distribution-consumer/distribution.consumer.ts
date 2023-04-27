@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
+import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionRuleService } from '../../../resources/distribution-rule/distribution-rule.service';
 
 @Injectable()
@@ -40,6 +41,15 @@ export class DistributionConsumer {
         message.type,
         true,
       );
+
+      const subscriptions = filterSubscriptions(
+        distributionRule.subscriptions,
+        message.payload,
+      );
+
+      if (_.isEmpty(subscriptions)) {
+        return;
+      }
 
       const subscriptionMembers = await this.subscriptionMemberService.get(
         distributionRule.subscriptions,
