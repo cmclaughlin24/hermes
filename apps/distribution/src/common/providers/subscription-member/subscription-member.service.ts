@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { DeliveryMethods } from '@notification/common';
 import * as _ from 'lodash';
-import { map, Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import { SubscriptionMemberDto } from '../../dto/subscription-member.dto';
 
@@ -22,15 +22,17 @@ export class SubscriptionMemberService {
     // }
 
     return [
-      new SubscriptionMemberDto(
-        [DeliveryMethods.EMAIL],
-        'test@gmail.com',
-        null,
-      ),
+      // new SubscriptionMemberDto(
+      //   [DeliveryMethods.EMAIL],
+      //   'curtismclaughlin24@gmail.com',
+      //   null,
+      // ),
       new SubscriptionMemberDto(
         [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
-        'test@gmail.com',
-        '+1999999999',
+        'curtismclaughlin24@gmail.com',
+        '+12815362118',
+        'America/Chicago',
+        []
       ),
     ];
   }
@@ -76,6 +78,8 @@ export class SubscriptionMemberService {
               item.deliveryMethods,
               item.email,
               item.phoneNumber,
+              item.timeZone,
+              item.deliveryWindows,
             ),
         );
       }),

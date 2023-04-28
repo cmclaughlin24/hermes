@@ -1,7 +1,32 @@
 // Note: File used for development and testing of utility functions in isolation.
 const flatten = require('flat');
+const _ = require('lodash');
+
+const startTime = new Date();
+
+function elapsedTime() {
+  return new Date().getTime() - startTime.getTime();
+}
+
+function hasFilterMatch(joinOperator, filters, payload) {
+  console.log(`${hasFilterMatch.name} ${elapsedTime()}ms`);
+
+  if (_.isEmpty(filters)) {
+    return true;
+  }
+
+  return _.chain(filters)
+    .map((filter) => evaluateFilter(filter, payload))
+    .reduce(
+      (accumulator, result) => joinFilters(joinOperator, accumulator, result),
+      null,
+    )
+    .value();
+}
 
 function evaluateFilter(filter, payload) {
+  console.log(`${evaluateFilter.name} ${elapsedTime()}ms`);
+
   const flatPayload = flatten(payload);
   let isMatch = false;
 
@@ -31,11 +56,34 @@ function evaluateFilter(filter, payload) {
   return isMatch;
 }
 
+function joinFilters(joinOperator, accumulator, result) {
+  console.log(`${joinFilters.name} ${elapsedTime()}ms`);
+
+  switch (joinOperator) {
+    case 'AND':
+      return accumulator !== null ? accumulator && result : result;
+    case 'OR':
+      // Note: Nullish value will be overwritten automatically by OR operator.
+      return accumulator || result;
+    case 'NOT':
+      // Note: Accumulator will already be have been inverted.
+      return accumulator !== null ? accumulator && !result : !result;
+    default:
+      throw new Error(
+        `Invalid Argument: Filter join operation ${joinOperator} not defined`,
+      );
+  }
+}
+
 function hasArrayNotation(field) {
+  console.log(`${hasArrayNotation.name} ${elapsedTime()}ms`);
+
   return /\.?\*\.?/g.test(field);
 }
 
 function compare(operator, query, value) {
+  console.log(`${compare.name}  ${elapsedTime()}ms`);
+
   switch (operator) {
     case 'EQUALS':
       return equals(query, value);
@@ -86,14 +134,25 @@ function matches(query, value) {
   return new RegExp(query).test(value);
 }
 
-const filter = {
-  field: '*.name',
-  query: {
-    type: 'string',
-    value: 'Charles$',
+const filters = [
+  {
+    field: '*.name',
+    query: {
+      type: 'string',
+      value: 'Charles$',
+    },
+    operator: 'MATCHES',
   },
-  operator: 'MATCHES',
-};
+  {
+    field: '*.gender',
+    query: {
+      type: 'string',
+      value: 'male',
+    },
+    operator: 'EQUALS',
+  },
+
+];
 
 const data = [
   {
@@ -350,4 +409,4 @@ const data = [
   },
 ];
 
-console.log(evaluateFilter(filter, data));
+console.log(hasFilterMatch('AND', filters, data));
