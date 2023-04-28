@@ -35,7 +35,6 @@ export function hasFilterMatch(
 
   return _.chain(subscription.filters)
     .map((filter) => evaluateFilter(filter, payload))
-    .uniq()
     .reduce((accumulator, result) => {
       if (accumulator === null) {
         return result;
@@ -58,7 +57,7 @@ export function evaluateFilter(
     isMatch = compare(filter.operator, filter.query, flatPayload[filter.field]);
   } else {
     const keyPattern = '^' + filter.field.replace('*', '[0-9]+') + '$';
-    const keyRegex = new RegExp(keyPattern);
+    const keyRegex = new RegExp(keyPattern, 'g');
 
     for (const key of Object.keys(flatPayload)) {
       if (!keyRegex.test(key)) {
@@ -85,34 +84,51 @@ export function compare(
   query: any,
   value: any,
 ): boolean {
-  // Todo: Refactor each comparison clause into a seperate function w/improved error handling.
   switch (operator) {
     case SubscriptionFilterOps.EQUALS:
-      return query === value;
+      return equals(query, value);
     case SubscriptionFilterOps.NEQUALS:
-      return query !== value;
+      return nequals(query, value);
     case SubscriptionFilterOps.OR:
-      if (!Array.isArray(query)) {
-        throw new Error(
-          `Invalid Argument: When using ${SubscriptionFilterOps.OR}, query must be array; recieved ${typeof query}`,
-        );
-      }
-      return query.includes(value);
+      return or(query, value);
     case SubscriptionFilterOps.MATCHES:
-      if (typeof query !== 'string') {
-        throw new Error(
-          `Invalid Argument: When using ${SubscriptionFilterOps.MATCHES}, query must be string; recieved ${typeof query}`
-        );
-      }
-      if (typeof value !== 'string') {
-        throw new Error(
-          `Invalid Argument: When using ${SubscriptionFilterOps.MATCHES}, value must be string; recieved ${typeof value}`
-        );
-      }
-      return new RegExp(query).test(value);
+      return matches(query, value);
     default:
       throw new Error(
-        `Invalid Argument: Comparison for operator=${operator} cannot be evaluated`,
+        `Invalid Argument: Comparison for operator=${operator} is not defined`,
       );
   }
+}
+
+export function equals(query: any, value: any): boolean {
+  return query === value;
+}
+
+export function nequals(query: any, value: any): boolean {
+  return query !== value;
+}
+
+export function or(query: any[], value: any): boolean {
+  if (!Array.isArray(query)) {
+    throw new Error(
+      `Invalid Argument: When using OR, query must be array; recieved ${typeof query} instead`,
+    );
+  }
+  return query.includes(value);
+}
+
+export function matches(query: string, value: string): boolean {
+  if (typeof query !== 'string') {
+    throw new Error(
+      `Invalid Argument: When using MATCHES, query must be string; recieved ${typeof query} instead`,
+    );
+  }
+
+  if (typeof value !== 'string') {
+    throw new Error(
+      `Invalid Argument: When using MATCHES, value must be string; recieved ${typeof value} instead`,
+    );
+  }
+
+  return new RegExp(query).test(value);
 }
