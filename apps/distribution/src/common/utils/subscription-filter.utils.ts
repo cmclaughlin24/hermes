@@ -66,7 +66,7 @@ export function evaluateFilter(
       }
 
       isMatch = compare(filter.operator, filter.query, flatPayload[key]);
-    
+
       if (isMatch) {
         break;
       }
@@ -82,9 +82,37 @@ export function hasArrayNotation(field: string): boolean {
 
 export function compare(
   operator: SubscriptionFilterOps,
-  x: any,
-  y: any,
+  query: any,
+  value: any,
 ): boolean {
-  // Fixme: Evaluate values based on the fitler operator.
-  return true;
+  // Todo: Refactor each comparison clause into a seperate function w/improved error handling.
+  switch (operator) {
+    case SubscriptionFilterOps.EQUALS:
+      return query === value;
+    case SubscriptionFilterOps.NEQUALS:
+      return query !== value;
+    case SubscriptionFilterOps.OR:
+      if (!Array.isArray(query)) {
+        throw new Error(
+          `Invalid Argument: When using ${SubscriptionFilterOps.OR}, query must be array; recieved ${typeof query}`,
+        );
+      }
+      return query.includes(value);
+    case SubscriptionFilterOps.MATCHES:
+      if (typeof query !== 'string') {
+        throw new Error(
+          `Invalid Argument: When using ${SubscriptionFilterOps.MATCHES}, query must be string; recieved ${typeof query}`
+        );
+      }
+      if (typeof value !== 'string') {
+        throw new Error(
+          `Invalid Argument: When using ${SubscriptionFilterOps.MATCHES}, value must be string; recieved ${typeof value}`
+        );
+      }
+      return new RegExp(query).test(value);
+    default:
+      throw new Error(
+        `Invalid Argument: Comparison for operator=${operator} cannot be evaluated`,
+      );
+  }
 }
