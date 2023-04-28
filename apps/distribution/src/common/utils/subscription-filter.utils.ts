@@ -2,7 +2,10 @@ import * as flatten from 'flat';
 import * as _ from 'lodash';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
-import { SubscriptionFilterOps } from '../constants/subscription-filter.constants';
+import {
+  SubscriptionFilterJoinOps,
+  SubscriptionFilterOps,
+} from '../constants/subscription-filter.constants';
 
 export function filterSubscriptions(
   subscriptions: Subscription[],
@@ -35,14 +38,11 @@ export function hasFilterMatch(
 
   return _.chain(subscription.filters)
     .map((filter) => evaluateFilter(filter, payload))
-    .reduce((accumulator, result) => {
-      if (accumulator === null) {
-        return result;
-      }
-
-      // Fixme: Evaluate accumulator and result based on the filter join operation defined in the subscription.
-      return accumulator && result;
-    }, null)
+    .reduce(
+      (accumulator, next) =>
+        joinFilters(subscription.filterJoin, accumulator, next),
+      null,
+    )
     .value();
 }
 
@@ -73,6 +73,27 @@ export function evaluateFilter(
   }
 
   return isMatch;
+}
+
+export function joinFilters(
+  join: SubscriptionFilterJoinOps,
+  accumulator: boolean,
+  next: boolean,
+): boolean {
+  switch (join) {
+    case SubscriptionFilterJoinOps.AND:
+      return accumulator !== null ? accumulator && next : next;
+    case SubscriptionFilterJoinOps.OR:
+      // Note: Nullish value will be overwritten automatically by OR operator.
+      return accumulator || next;
+    case SubscriptionFilterJoinOps.NOT:
+      // Note: Accumulator will already be have been inverted.
+      return accumulator !== null ? accumulator && !next : !next;
+    default:
+      throw new Error(
+        `Invalid Argument: Filter join operation ${join} not defined`,
+      );
+  }
 }
 
 export function hasArrayNotation(field: string): boolean {
