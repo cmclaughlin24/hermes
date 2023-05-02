@@ -1,5 +1,6 @@
 import * as flatten from 'flat';
 import * as _ from 'lodash';
+import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
 import {
@@ -102,18 +103,20 @@ export function hasArrayNotation(field: string): boolean {
 
 export function compare(
   operator: SubscriptionFilterOps,
-  query: any,
+  query: SubscriptionQueryDto,
   value: any,
 ): boolean {
+  // Todo: Improve compare function by adding type conversion/validation based on the "dataType"
+  //       field of the SubscriptionQueryDto.
   switch (operator) {
     case SubscriptionFilterOps.EQUALS:
-      return equals(query, value);
+      return equals(query.value, value);
     case SubscriptionFilterOps.NEQUALS:
-      return nequals(query, value);
+      return nequals(query.value, value);
     case SubscriptionFilterOps.OR:
-      return or(query, value);
+      return or(query.value, value);
     case SubscriptionFilterOps.MATCHES:
-      return matches(query, value);
+      return matches(query.value, value);
     default:
       throw new Error(
         `Invalid Argument: Comparison for operator=${operator} is not defined`,

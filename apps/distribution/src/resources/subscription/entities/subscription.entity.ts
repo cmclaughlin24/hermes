@@ -29,6 +29,6 @@ export class Subscription extends Model {
   @BelongsTo(() => DistributionRule)
   distributionRule: DistributionRule;
 
-  @HasMany(() => SubscriptionFilter)
+  @HasMany(() => SubscriptionFilter, { onDelete: 'CASCADE' })
   filters: SubscriptionFilter[];
 }

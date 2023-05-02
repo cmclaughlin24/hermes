@@ -77,7 +77,7 @@ export class EmailTemplateService {
 
   /**
    * Updates an EmailTemplate or throws a NotFoundException if the
-   * repository null or undefined.
+   * repository returns null or undefined.
    * @param {string} name Template's name
    * @param {UpdateEmailTemplateDto} updateEmailTemplateDto
    * @returns {Promise<ApiResponseDto<EmailTemplate>>}
@@ -103,7 +103,7 @@ export class EmailTemplateService {
 
   /**
    * Removes an EmailTemplate or throws a NotFoundException if the
-   * repository null or undefined.
+   * repository returns null or undefined.
    * @param {string} name Template's name
    * @returns {Promise<ApiResponseDto>}
    */
