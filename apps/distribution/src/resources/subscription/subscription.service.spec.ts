@@ -1,6 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiResponseDto } from '@notification/common';
 import { Sequelize } from 'sequelize-typescript';
 import {
   MockRepository,
@@ -12,6 +13,8 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { SubscriptionFilterJoinOps } from '../../common/constants/subscription-filter.constants';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
+import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { Subscription } from './entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
 
@@ -121,46 +124,127 @@ describe('SubscriptionService', () => {
   });
 
   describe('create()', () => {
+    const createSubscriptionDto: CreateSubscriptionDto = {
+      id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
+      filterJoin: SubscriptionFilterJoinOps.NOT,
+      queue: 'distribution',
+      messageType: 'test',
+      url: 'http://localhost:9999/subscriptions',
+    };
+    const subscription = {
+      id: createSubscriptionDto.id,
+      distributionRuleId: '',
+      filterJoin: createSubscriptionDto.filterJoin,
+      url: createSubscriptionDto.url,
+    } as Subscription;
+
     afterEach(() => {
       subscriptionModel.create.mockClear();
     });
 
-    it('should create a subscription', () => {
+    it('should create a subscription', async () => {
       // Arrange.
+      distributionRuleService.findOne.mockResolvedValue({
+        id: 'test',
+      } as DistributionRule);
+      subscriptionModel.findByPk.mockResolvedValue(null);
+
       // Act.
+      await service.create(createSubscriptionDto);
+
       // Assert.
+      expect(subscriptionModel.create).toHaveBeenCalled();
     });
 
-    it('should yeild an "ApiResponseDto" object with the created subscription', () => {
+    it('should yield an "ApiResponseDto" object with the created subscription', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new ApiResponseDto(
+        `Successfully created subscription!`,
+        subscription,
+      );
+      distributionRuleService.findOne.mockResolvedValue({
+        id: 'test',
+      } as DistributionRule);
+      subscriptionModel.findByPk.mockResolvedValue(null);
+      subscriptionModel.create.mockResolvedValue(subscription);
+
+      // Act/Assert.
+      await expect(service.create(createSubscriptionDto)).resolves.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "NotFoundExcpetion" if the distribution rule does not exist', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution Rule for queue=${createSubscriptionDto.queue} messageType=${createSubscriptionDto.messageType} not found!`,
+      );
+      distributionRuleService.findOne.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.create(createSubscriptionDto)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "BadRequestException" if a subscription already exists', async () => {
+      // Arrange.
+      const expectedResult = new BadRequestException(
+        `Subscription ${createSubscriptionDto.id} already exists!`,
+      );
+      distributionRuleService.findOne.mockResolvedValue({
+        id: 'test',
+      } as DistributionRule);
+      subscriptionModel.findByPk.mockResolvedValue({} as Subscription);
+
+      // Act/Assert.
+      await expect(service.create(createSubscriptionDto)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 
   describe('update()', () => {});
 
   describe('remove()', () => {
+    const id = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
+    const subscription = { destroy: jest.fn() };
+
     afterEach(() => {
-      subscriptionModel.destroy.mockClear();
+      subscription.destroy.mockClear();
     });
 
-    it('should remove a subscription', () => {
+    it('should remove a subscription', async () => {
       // Arrange.
+      subscriptionModel.findByPk.mockResolvedValue(subscription);
+
       // Act.
+      await service.remove(id);
+
       // Assert.
+      expect(subscription.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new ApiResponseDto(
+        `Successfully deleted subscription ${id}!`,
+      );
+      subscriptionModel.findByPk.mockResolvedValue(subscription);
+
+      // Act/Assert.
+      await expect(service.remove(id)).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', () => {
+    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const expectedResult = new NotFoundException(
+        `Subscription with ${id} not found!`,
+      );
+      subscriptionModel.findByPk.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(service.remove(id)).rejects.toEqual(expectedResult);
     });
   });
 });

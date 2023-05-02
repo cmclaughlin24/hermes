@@ -33,5 +33,5 @@ export class CreateSubscriptionDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => SubscriptionFilterDto)
-  filters: SubscriptionFilterDto[];
+  filters?: SubscriptionFilterDto[];
 }
