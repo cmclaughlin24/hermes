@@ -40,30 +40,30 @@ describe('SubscriptionController', () => {
   });
 
   describe('findAll()', () => {
-    it('should yield a list of subscriptions', () => {
+    it('should yield a list of subscriptions', async () => {
       // Arrange.
       const expectedResult: Subscription[] = [subscription];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.findAll()).resolves.toEqual(expectedResult);
+      await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
   });
 
   describe('findOne()', () => {
-    it('should yield a subscription', () => {
+    it('should yield a subscription', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(subscription);
 
       // Act/Assert.
-      expect(controller.findOne(subscription.id)).resolves.toEqual(
+      await expect(controller.findOne(subscription.id)).resolves.toEqual(
         subscription,
       );
     });
   });
 
   describe('create()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<Subscription>(
         `Successfully created subscription!`,
@@ -72,14 +72,14 @@ describe('SubscriptionController', () => {
       service.create.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.create({} as CreateSubscriptionDto)).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(
+        controller.create({} as CreateSubscriptionDto),
+      ).resolves.toEqual(expectedResult);
     });
   });
 
   describe('update()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<Subscription>(
         `Successfully updated subscription!`,
@@ -88,14 +88,14 @@ describe('SubscriptionController', () => {
       service.update.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(
+      await expect(
         controller.update(subscription.id, {} as UpdateSubscriptionDto),
       ).resolves.toEqual(expectedResult);
     });
   });
 
   describe('remove()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
         `Successfully deleted subscription ${subscription.id}!`,
@@ -103,7 +103,7 @@ describe('SubscriptionController', () => {
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.remove(subscription.id)).resolves.toEqual(
+      await expect(controller.remove(subscription.id)).resolves.toEqual(
         expectedResult,
       );
     });

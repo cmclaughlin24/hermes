@@ -40,30 +40,30 @@ describe('EmailTemplateController', () => {
   });
 
   describe('findAll()', () => {
-    it('should yield a list of email templates', () => {
+    it('should yield a list of email templates', async () => {
       // Arrange.
       const expectedResult: EmailTemplate[] = [emailTemplate];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.findAll()).resolves.toEqual(expectedResult);
+      await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
   });
 
   describe('findOne()', () => {
-    it('should yield an email template', () => {
+    it('should yield an email template', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(emailTemplate);
 
       // Act/Assert.
-      expect(controller.findOne(emailTemplate.name)).resolves.toEqual(
+      await expect(controller.findOne(emailTemplate.name)).resolves.toEqual(
         emailTemplate,
       );
     });
   });
 
   describe('create()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully created email template ${emailTemplate.name}!`,
@@ -72,14 +72,14 @@ describe('EmailTemplateController', () => {
       service.create.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.create({} as CreateEmailTemplateDto)).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(
+        controller.create({} as CreateEmailTemplateDto),
+      ).resolves.toEqual(expectedResult);
     });
   });
 
   describe('update()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully updated email template ${emailTemplate.name}!`,
@@ -88,14 +88,14 @@ describe('EmailTemplateController', () => {
       service.update.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(
+      await expect(
         controller.update(emailTemplate.name, {} as UpdateEmailTemplateDto),
       ).resolves.toEqual(expectedResult);
     });
   });
 
   describe('remove()', () => {
-    it('should yield an "ApiResponseDto" object', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully deleted email template ${emailTemplate.name}!`,
@@ -103,7 +103,7 @@ describe('EmailTemplateController', () => {
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      expect(controller.remove(emailTemplate.name)).resolves.toEqual(
+      await expect(controller.remove(emailTemplate.name)).resolves.toEqual(
         expectedResult,
       );
     });
