@@ -5,7 +5,7 @@
 #   - artillery report <filename>.json
 #   - artillery --help
 config:
-  target: 'http://localhost:3000'
+  target: 'http://127.0.0.1:50606'
   http:
     timeout: 100
   phases:
