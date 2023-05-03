@@ -55,5 +55,5 @@ export class CreateDistributionRuleDto {
 
   @IsBoolean()
   @IsOptional()
-  checkDeliveryWindow: boolean;
+  checkDeliveryWindow?: boolean;
 }
