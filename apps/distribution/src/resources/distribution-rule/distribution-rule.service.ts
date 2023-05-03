@@ -1,7 +1,7 @@
 import {
-    BadRequestException,
-    Injectable,
-    NotFoundException
+  BadRequestException,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
@@ -19,6 +19,12 @@ export class DistributionRuleService {
     private readonly distributionRuleModel: typeof DistributionRule,
   ) {}
 
+  /**
+   * Yields a list of DistributionRules or throws a NotFoundException if
+   * the repository returns null, undefined, or an empty list.
+   * @param {string[]} queues
+   * @returns {Promise<DistributionRule[]>}
+   */
   async findAll(queues: string[]) {
     // Fixme: Configure DistributionRuleModule findAll options.
     const distributionRules = await this.distributionRuleModel.findAll();
@@ -30,6 +36,14 @@ export class DistributionRuleService {
     return distributionRules;
   }
 
+  /**
+   * Yields a DistributionRule or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {string} queue
+   * @param {string} messageType 
+   * @param {boolean} includeSubscriptions 
+   * @returns 
+   */
   async findOne(
     queue: string,
     messageType: string,
@@ -51,6 +65,12 @@ export class DistributionRuleService {
     return distributionRule;
   }
 
+  /**
+   * Creates a DistributionRule or throws a BadRequestException if a distribution rule
+   * for a queue and messageType exist in the repository.
+   * @param {CreateDistributionRuleDto} createDistributionRuleDto
+   * @returns {Promise<ApiResponseDto<DistributionRule>>}
+   */
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
     const existingRule = await this.distributionRuleModel.findOne({
       where: {
@@ -75,6 +95,14 @@ export class DistributionRuleService {
     );
   }
 
+  /**
+   * Updates a DistributionRule or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {string} queue
+   * @param {string} messageType 
+   * @param {UpdateDistributionRuleDto} updateDistributionRuleDto 
+   * @returns {Promise<ApiResponseDto<DistributionRule>>}
+   */
   async update(
     queue: string,
     messageType: string,
@@ -90,7 +118,21 @@ export class DistributionRuleService {
       );
     }
 
-    // Fixme: Update distribution rule.
+    distributionRule = await distributionRule.update({
+      deliveryMethods:
+        updateDistributionRuleDto.deliveryMethods ??
+        distributionRule.deliveryMethods,
+      emailSubject:
+        updateDistributionRuleDto.emailSubject ?? distributionRule.emailSubject,
+      emailTemplate:
+        updateDistributionRuleDto.emailTemplate ??
+        distributionRule.emailTemplate,
+      html: updateDistributionRuleDto.html ?? distributionRule.html,
+      text: updateDistributionRuleDto.text ?? distributionRule.text,
+      checkDeliveryWindow:
+        updateDistributionRuleDto.checkDeliveryWindow ??
+        distributionRule.checkDeliveryWindow,
+    });
 
     return new ApiResponseDto<DistributionRule>(
       `Successfully updated distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
@@ -98,6 +140,13 @@ export class DistributionRuleService {
     );
   }
 
+  /**
+   * Removes a DistributionRule or throws a NotFoundFoundException if the repository
+   * returns null or undefined.
+   * @param {string} queue
+   * @param {string} messageType 
+   * @returns {Promise<ApiResponseDto>}
+   */
   async remove(queue: string, messageType: string) {
     const distributionRule = await this.distributionRuleModel.findOne({
       where: { queue, messageType },

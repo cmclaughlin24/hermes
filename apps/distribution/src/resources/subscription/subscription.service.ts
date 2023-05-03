@@ -130,8 +130,8 @@ export class SubscriptionService {
     }
 
     subscription = await subscription.update({
-      url: updateSubscriptionDto.url,
-      filterJoin: updateSubscriptionDto.filterJoin,
+      url: updateSubscriptionDto.url ?? subscription.url,
+      filterJoin: updateSubscriptionDto.filterJoin ?? subscription.filterJoin,
     });
 
     return new ApiResponseDto<Subscription>(
@@ -142,7 +142,7 @@ export class SubscriptionService {
 
   /**
    * Removes a Subscription or throws a NotFoundException if the repository
-   * return null or undefined.
+   * returns null or undefined.
    * @param {string} id
    * @returns {Promise<ApiResponseDto>}
    */

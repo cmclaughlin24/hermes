@@ -90,9 +90,9 @@ export class EmailTemplateService {
     }
 
     emailTemplate = await emailTemplate.update({
-      subject: updateEmailTemplateDto.subject || emailTemplate.subject,
-      template: updateEmailTemplateDto.template || emailTemplate.template,
-      context: updateEmailTemplateDto.context || emailTemplate.context,
+      subject: updateEmailTemplateDto.subject ?? emailTemplate.subject,
+      template: updateEmailTemplateDto.template ?? emailTemplate.template,
+      context: updateEmailTemplateDto.context ?? emailTemplate.context,
     });
 
     return new ApiResponseDto<EmailTemplate>(
