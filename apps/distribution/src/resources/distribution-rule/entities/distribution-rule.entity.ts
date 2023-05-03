@@ -1,5 +1,12 @@
 import { DeliveryMethods } from '@notification/common';
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  Default,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Subscription } from '../../subscription/entities/subscription.entity';
 
 @Table({
@@ -47,6 +54,7 @@ export class DistributionRule extends Model {
   @Column
   text: string;
 
+  @Default(false)
   @Column
   checkDeliveryWindow: boolean;
 

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DeliveryMethods } from '@notification/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateDistributionRuleDto {
   @IsString()
@@ -52,4 +52,8 @@ export class CreateDistributionRuleDto {
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   text: string;
+
+  @IsBoolean()
+  @IsOptional()
+  checkDeliveryWindow: boolean;
 }
