@@ -6,6 +6,7 @@ import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notifi
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
+import { compileTextTemplate } from '../../common/utils/template.utils';
 
 @Injectable()
 export class NotificationService {
@@ -17,7 +18,7 @@ export class NotificationService {
 
   /**
    * Sends an email notification.
-   * @param {CreateEmailNotificationDto} createEmailNotificationDto 
+   * @param {CreateEmailNotificationDto} createEmailNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
   async createEmailNotification(
@@ -37,12 +38,17 @@ export class NotificationService {
 
   /**
    * Sends a SMS notification.
-   * @param {CreatePhoneNotificationDto} createTextNotification 
+   * @param {CreatePhoneNotificationDto} createTextNotification
    * @returns {Promise<ApiResponseDto>}
    */
   async createTextNotification(
     createTextNotification: CreatePhoneNotificationDto,
   ) {
+    createTextNotification.body = compileTextTemplate(
+      createTextNotification.body,
+      createTextNotification.context,
+    );
+
     const result = await this.phoneService.sendText(createTextNotification);
 
     return new ApiResponseDto(
@@ -53,7 +59,7 @@ export class NotificationService {
 
   /**
    * Sends a radio notification.
-   * @param createRadioNotification 
+   * @param createRadioNotification
    * @returns {Promise<ApiResponseDto>}
    */
   async createRadioNotification(

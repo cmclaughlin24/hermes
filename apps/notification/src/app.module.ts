@@ -1,5 +1,5 @@
 import * as Joi from '@hapi/joi';
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -27,6 +27,9 @@ import { ResourcesModule } from './resources/resources.module';
         MAILER_SENDER: Joi.required(),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        ENABLE_REDIS_CLUSTER: Joi.boolean().default(false),
+        BULLMQ_NOTIFICATION_QUEUE: Joi.required(),
+        BULLMQ_NOTIFICATION_QUEUE_PREFIX: Joi.required(),
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         TWILIO_SID: Joi.required(),

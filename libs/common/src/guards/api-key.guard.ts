@@ -1,3 +1,4 @@
+import { isRabbitContext } from '@golevelup/nestjs-rabbitmq';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
@@ -19,7 +20,7 @@ export class ApiKeyGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.get(IS_PUBLIC_KEY, context.getHandler());
 
-    if (isPublic) {
+    if (isPublic || isRabbitContext(context)) {
       return true;
     }
 

@@ -1,8 +1,8 @@
-import { getQueueToken } from '@nestjs/bull';
+import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto, NotificationQueues } from '@notification/common';
-import { Job, JobStatus } from 'bull';
+import { ApiResponseDto } from '@notification/common';
+import { Job, JobState } from 'bullmq';
 import {
   createQueueMock,
   MockQueue
@@ -20,14 +20,16 @@ describe('NotificationJobService', () => {
       providers: [
         NotificationJobService,
         {
-          provide: getQueueToken(NotificationQueues.DEFAULT),
+          provide: getQueueToken(process.env.BULLMQ_NOTIFICATION_QUEUE),
           useValue: createQueueMock(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationJobService>(NotificationJobService);
-    queue = module.get<MockQueue>(getQueueToken(NotificationQueues.DEFAULT));
+    queue = module.get<MockQueue>(
+      getQueueToken(process.env.BULLMQ_NOTIFICATION_QUEUE),
+    );
   });
 
   it('should be defined', () => {
@@ -48,9 +50,9 @@ describe('NotificationJobService', () => {
       await expect(service.findAll([])).resolves.toEqual(expectedResult);
     });
 
-    it('should yield a list of jobs filtered by status from the notification queue', async () => {
+    it('should yield a list of jobs filtered by state from the notification queue', async () => {
       // Arrange.
-      const expectedResult: JobStatus[] = ['completed', 'failed'];
+      const expectedResult: JobState[] = ['completed', 'failed'];
       queue.getJobs.mockResolvedValue(expectedResult);
 
       // Act.
@@ -62,26 +64,26 @@ describe('NotificationJobService', () => {
 
     it('should throw a "NotFoundException" if queue returns null/undefined', async () => {
       // Arrange.
-      const statuses = [];
+      const states = [];
       const expectedResult = new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
       queue.getJobs.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findAll(statuses)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if queue returns an empty list', async () => {
       // Arrange.
-      const statuses = [];
+      const states = [];
       const expectedResult = new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
       queue.getJobs.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(statuses)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
     });
   });
 
@@ -96,12 +98,12 @@ describe('NotificationJobService', () => {
       queue.getJob.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne(0)).resolves.toEqual(expectedResult);
+      await expect(service.findOne('0')).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the queue returns null/undefined', async () => {
       // Arrange.
-      const id = 0;
+      const id = '0';
       const expectedResult = new NotFoundException(
         `Job with ${id} not found in '${queue.name}' queue`,
       );

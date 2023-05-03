@@ -37,3 +37,6 @@ lerna-debug.log*
 # Environment Files
 distribution.env
 notification.env
+
+# Kubernetes
+*-local.yaml

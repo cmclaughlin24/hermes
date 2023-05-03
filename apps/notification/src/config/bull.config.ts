@@ -2,19 +2,26 @@ import { createBullBoard } from '@bull-board/api';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { BaseAdapter } from '@bull-board/api/dist/src/queueAdapters/base';
 import { ExpressAdapter } from '@bull-board/express';
-import { BullRootModuleOptions } from '@nestjs/bull';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Queue } from 'bull';
+import { Queue, QueueOptions } from 'bullmq';
+import Redis from 'ioredis';
 
 export async function bullFactory(
   configService: ConfigService,
-): Promise<BullRootModuleOptions> {
+): Promise<QueueOptions> {
+  const host = configService.get('REDIS_HOST');
+  const port = configService.get('REDIS_PORT');
+  let connection: any = { host, port };
+
+  if (configService.get('ENABLE_REDIS_CLUSTER')) {
+    // Note: Redis requires one start up node and will use it to identify other nodes
+    //       within the cluster. 
+    connection = new Redis.Cluster([{ host, port }]);
+  }
+
   return {
-    redis: {
-      host: configService.get('REDIS_HOST'),
-      port: configService.get('REDIS_PORT'),
-    },
+    connection,
     defaultJobOptions: {
       attempts: configService.get('RETRY_ATTEMPTS'),
       backoff: {
@@ -31,7 +38,7 @@ function getBullBoardQueues(): BaseAdapter[] {
   const adapters: BaseAdapter[] = [];
 
   for (const queue of queuePool) {
-    adapters.push(new BullAdapter(queue));
+    adapters.push(new BullAdapter(queue as any));
   }
 
   return adapters;

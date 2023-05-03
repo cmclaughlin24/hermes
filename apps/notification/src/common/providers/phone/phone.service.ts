@@ -42,6 +42,7 @@ export class PhoneService implements CreateNotificationDto {
     createPhoneNotificationDto.to = data.to;
     createPhoneNotificationDto.from = data.from;
     createPhoneNotificationDto.body = data.body;
+    createPhoneNotificationDto.context = data.context;
 
     try {
       await validateOrReject(createPhoneNotificationDto);

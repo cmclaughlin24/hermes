@@ -1,22 +1,17 @@
-import {
-  OnQueueCompleted,
-  OnQueueError,
-  OnQueueFailed,
-  Process,
-  Processor
-} from '@nestjs/bull';
+import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { DeliveryMethods, NotificationQueues } from '@notification/common';
-import { Job, JobId } from 'bull';
+import { DeliveryMethods } from '@notification/common';
+import { Job, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { RadioService } from '../../common/providers/radio/radio.service';
+import { compileTextTemplate } from '../../common/utils/template.utils';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
-@Processor(NotificationQueues.DEFAULT)
-export class NotificationConsumer {
+@Processor(process.env.BULLMQ_NOTIFICATION_QUEUE)
+export class NotificationConsumer extends WorkerHost {
   private readonly logger = new Logger(NotificationConsumer.name);
 
   constructor(
@@ -24,7 +19,38 @@ export class NotificationConsumer {
     private readonly phoneService: PhoneService,
     private readonly radioService: RadioService,
     private readonly notificationLogService: NotificationLogService,
-  ) {}
+  ) {
+    super();
+  }
+
+  /**
+   * Routes jobs from the notification queue by checking the job's name and
+   * executing the correct process function. Throws an unrecoverable error if
+   * a job name does not have a process function.
+   * @param {Job} job
+   * @returns {Promise<any>}
+   */
+  async process(job: Job): Promise<any> {
+    let result;
+
+    switch (job.name) {
+      case DeliveryMethods.EMAIL:
+        result = await this.processEmail(job);
+        break;
+      case DeliveryMethods.SMS:
+        result = await this.processText(job);
+        break;
+      case DeliveryMethods.RADIO:
+        result = await this.processRadio(job);
+        break;
+      default:
+        throw new UnrecoverableError(
+          `Invalid Delivery Method: ${job.name} is not an available delievery method`,
+        );
+    }
+
+    return result;
+  }
 
   /**
    * Processes an 'email' job from the notification queue and yields the sent email
@@ -33,7 +59,6 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process(DeliveryMethods.EMAIL)
   async processEmail(job: Job) {
     const logPrefix = this._createLogPrefix(this.processEmail.name, job.id);
 
@@ -52,8 +77,7 @@ export class NotificationConsumer {
         createEmailNotificationDto =
           await this.emailService.createNotificationDto(job.data);
       } catch (error) {
-        // Todo: If job failed because of validation, do not retry.
-        throw new Error(
+        throw new UnrecoverableError(
           `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
         );
       }
@@ -87,7 +111,6 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process(DeliveryMethods.SMS)
   async processText(job: Job) {
     const logPrefix = this._createLogPrefix(this.processText.name, job.id);
 
@@ -104,14 +127,22 @@ export class NotificationConsumer {
         createPhoneNotificationDto =
           await this.phoneService.createNotificationDto(job.data);
       } catch (error) {
-        // Todo: If job failed because of validation, do not retry.
-        throw new Error(
+        throw new UnrecoverableError(
           `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
         );
       }
 
       job.log(
-        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, attempting to send ${job.name} notification`,
+        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
+      );
+
+      createPhoneNotificationDto.body = compileTextTemplate(
+        createPhoneNotificationDto.body,
+        createPhoneNotificationDto.context,
+      );
+
+      job.log(
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.phoneService.sendText(
@@ -131,7 +162,6 @@ export class NotificationConsumer {
    * @param {Job} job
    * @returns
    */
-  @Process(DeliveryMethods.RADIO)
   async processRadio(job: Job) {
     const logPrefix = this._createLogPrefix(this.processRadio.name, job.id);
 
@@ -143,7 +173,7 @@ export class NotificationConsumer {
    * the console.
    * @param {Error} error
    */
-  @OnQueueError()
+  @OnWorkerEvent('error')
   onQueueError(error: Error) {
     this.logger.error(error);
   }
@@ -155,7 +185,7 @@ export class NotificationConsumer {
    * @param {Job} job
    * @param {any} result
    */
-  @OnQueueCompleted()
+  @OnWorkerEvent('completed')
   async onQueueCompleted(job: Job, result: any) {
     const logPrefix = this._createLogPrefix(this.onQueueCompleted.name, job.id);
 
@@ -182,7 +212,7 @@ export class NotificationConsumer {
    * @param {Job} job
    * @param {any} result
    */
-  @OnQueueFailed()
+  @OnWorkerEvent('failed')
   async onQueueFailed(job: Job, error: Error) {
     const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
 
@@ -211,7 +241,7 @@ export class NotificationConsumer {
    * @param {JobId} jobId
    * @returns {string}
    */
-  private _createLogPrefix(functionName: string, jobId: JobId): string {
+  private _createLogPrefix(functionName: string, jobId: any): string {
     return `[${NotificationConsumer.name} ${functionName}] Job ${jobId}`;
   }
 }

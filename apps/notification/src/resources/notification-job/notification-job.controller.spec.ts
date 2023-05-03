@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { NotificationJobController } from './notification-job.controller';
@@ -62,7 +62,7 @@ describe('NotificationJobController', () => {
       service.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.findOne(0)).resolves.toEqual(expectedResult);
+      await expect(controller.findOne('0')).resolves.toEqual(expectedResult);
     });
   });
 

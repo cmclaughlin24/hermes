@@ -1,7 +1,7 @@
-import { InjectQueue } from '@nestjs/bull';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ApiResponseDto, DeliveryMethods, NotificationQueues } from '@notification/common';
-import { JobStatus, Queue } from 'bull';
+import { ApiResponseDto, DeliveryMethods } from '@notification/common';
+import { JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -12,7 +12,8 @@ import { queuePool } from '../../config/bull.config';
 @Injectable()
 export class NotificationJobService {
   constructor(
-    @InjectQueue(NotificationQueues.DEFAULT) private readonly notificationQueue: Queue,
+    @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
+    private readonly notificationQueue: Queue,
   ) {
     // Note: Add NotificationQueue to Bull Board.
     queuePool.add(notificationQueue);
@@ -21,10 +22,10 @@ export class NotificationJobService {
   /**
    * Yields a Job from the notification queue or throws a NotFoundException if
    * the queue yields null or undefined.
-   * @param {number} id
+   * @param {string} id
    * @returns {Promoise<Job>}
    */
-  async findOne(id: number) {
+  async findOne(id: string) {
     const job = await this.notificationQueue.getJob(id);
 
     if (!job) {
@@ -37,17 +38,17 @@ export class NotificationJobService {
   }
 
   /**
-   * Yields a list of Jobs filtered by the status from the notification queue or throws
+   * Yields a list of Jobs filtered by the state from the notification queue or throws
    * a NotFoundException if the queue yields null, undefined, or an empty list.
-   * @param {JobStatus[]} statuses
+   * @param {JobState[]} states
    * @returns {Promise<Job[]>}
    */
-  async findAll(statuses: JobStatus[]) {
-    const jobs = await this.notificationQueue.getJobs(statuses);
+  async findAll(states: JobState[]) {
+    const jobs = await this.notificationQueue.getJobs(states);
 
     if (_.isEmpty(jobs)) {
       throw new NotFoundException(
-        `Jobs with status(es) ${statuses.join(', ')} not found`,
+        `Jobs with state(s) ${states.join(', ')} not found`,
       );
     }
 
@@ -90,7 +91,10 @@ export class NotificationJobService {
   async createRadioNotification(
     createRadioNotification: CreateRadioNotificationDto,
   ) {
-    return this._createNotification(DeliveryMethods.RADIO, createRadioNotification);
+    return this._createNotification(
+      DeliveryMethods.RADIO,
+      createRadioNotification,
+    );
   }
 
   /**

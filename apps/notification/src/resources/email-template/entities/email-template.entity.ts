@@ -8,6 +8,9 @@ export class EmailTemplate extends Model {
   })
   name: string;
 
+  @Column
+  subject: string;
+
   @Column({ type: DataType.STRING(2000) })
   template: string;
 

@@ -10,19 +10,21 @@ import { DistributionRuleService } from '../../resources/distribution-rule/distr
 
 @ValidatorConstraint({ name: 'DistributionRuleExists', async: true })
 @Injectable()
-export class DistributionRuleExistsRule implements ValidatorConstraintInterface {
+export class DistributionRuleExistsRule
+  implements ValidatorConstraintInterface
+{
   constructor(
     private readonly distributionRuleService: DistributionRuleService,
   ) {}
 
   async validate(
-    name: string,
+    messageType: string,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
       await this.distributionRuleService.findOne(
         validationArguments.object['queue'],
-        name,
+        messageType,
       );
     } catch (error) {
       return false;
@@ -32,7 +34,7 @@ export class DistributionRuleExistsRule implements ValidatorConstraintInterface 
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `Distribution Rule ${validationArguments.value} doesn't exist`;
+    return `Distribution Rule for queue=${validationArguments.object['queue']} messageType=${validationArguments.value} doesn't exist`;
   }
 }
 

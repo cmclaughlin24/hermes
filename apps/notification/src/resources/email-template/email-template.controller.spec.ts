@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
 import {
+  MockEmailTemplateService,
   createEmailTemplateServiceMock,
-  MockEmailTemplateService
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
@@ -103,9 +103,9 @@ describe('EmailTemplateController', () => {
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(
-        controller.remove(emailTemplate.name),
-      ).resolves.toEqual(expectedResult);
+      await expect(controller.remove(emailTemplate.name)).resolves.toEqual(
+        expectedResult,
+      );
     });
   });
 });

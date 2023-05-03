@@ -13,6 +13,5 @@ import { SubscriptionService } from './subscription.service';
   ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
-  exports: [SequelizeModule],
 })
 export class SubscriptionModule {}

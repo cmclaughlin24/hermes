@@ -1,12 +1,19 @@
-import { DeliveryMethods, DistributionQueues } from '@notification/common';
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { DeliveryMethods } from '@notification/common';
+import {
+  Column,
+  DataType,
+  Default,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Subscription } from '../../subscription/entities/subscription.entity';
 
 @Table({
   indexes: [
     {
       unique: true,
-      fields: ['name', 'queue'],
+      fields: ['queue', 'messageType'],
     },
   ],
 })
@@ -19,12 +26,10 @@ export class DistributionRule extends Model {
   id: string;
 
   @Column
-  name: string;
-
-  @Column({
-    type: DataType.ENUM(DistributionQueues.DEFAULT),
-  })
   queue: string;
+
+  @Column
+  messageType: string;
 
   @Column({
     type: DataType.ARRAY(
@@ -37,6 +42,22 @@ export class DistributionRule extends Model {
   })
   deliveryMethods: DeliveryMethods[];
 
+  @Column
+  emailSubject: string;
+
+  @Column({ type: DataType.STRING(2000), allowNull: true })
+  emailTemplate: string;
+
+  @Column({ type: DataType.STRING(2000), allowNull: true })
+  html: string;
+
+  @Column
+  text: string;
+
+  @Default(false)
+  @Column
+  checkDeliveryWindow: boolean;
+
   @HasMany(() => Subscription)
-  subscriptions: Subscription[]
+  subscriptions: Subscription[];
 }

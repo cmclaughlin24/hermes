@@ -1,0 +1,63 @@
+# Resources:
+#   - https://www.artillery.io/docs
+# Useful Commands:
+#   - artillery run -o <filename>.json artillery.yaml
+#   - artillery report <filename>.json
+#   - artillery --help
+config:
+  target: 'http://127.0.0.1:50606'
+  http:
+    timeout: 100
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: 'Warm-up (5 arrivals/sec)'
+    - duration: 60
+      rampTo: 50
+      arrivalRate: 50
+      name: 'Ramp-up to Sustained Load (50 arrivals/sec)'
+    - duration: 300
+      arrivalRate: 50
+      name: 'Sustained Load (50 arrivals/sec)'
+    - duration: 60
+      rampTo: 200
+      arrivalRate: 200
+      name: 'Ramp-up to Stress (200 arrivals/sec)'
+    - duration: 300
+      arrivalRate: 200
+      name: 'Stress (200 arrivals/sec)'
+    - duration: 60
+      rampTo: 500
+      arrivalRate: 500
+      name: 'Ramp-up to Break Point (500 arrivals/sec)'
+    - duration: 300
+      arrivalRate: 500
+      name: 'Break Point (500 arrivals/sec)'
+scenarios:
+  - name: 'Email Notification'
+    flow:
+      - post:
+          url: '/notification-job/email'
+          headers:
+            Content-Type: 'application/json'
+            Notification-Api-Key: 'notification123'
+          json:
+            to: 'curtismclaughlin24@gmail.com'
+            text: 'Order \{\{ product \}\} recieved!'
+            template: 'order'
+            context:
+              product: 'Legend of Zelda: Tears of the Kingdom'
+    weight: 1
+  - name: 'SMS Notification'
+    flow:
+      - post:
+          url: '/notification-job/sms'
+          headers:
+            Content-Type: 'application/json'
+            Notification-Api-Key: 'notification123'
+          json:
+            to: '+12815362118'
+            body: 'Order {{ product }} recieved!'
+            context:
+              product: 'Legend of Zelda: Tears of the Kingdom'
+    weight: 1

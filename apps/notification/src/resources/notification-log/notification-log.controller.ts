@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeliveryMethods, Public } from '@notification/common';
-import { JobStatus } from 'bull';
+import { JobState } from 'bullmq';
 import { NotificationLogService } from './notification-log.service';
 
 @ApiTags('Notification Log')
@@ -21,7 +21,7 @@ export class NotificationLogController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find logs by their job name and/or status.',
+    summary: 'Find logs by their job name and/or states.',
     security: [],
   })
   @ApiQuery({
@@ -33,11 +33,11 @@ export class NotificationLogController {
     enum: DeliveryMethods,
   })
   @ApiQuery({
-    name: 'status',
+    name: 'state',
     required: false,
     type: String,
     isArray: true,
-    description: 'A list of job statuses',
+    description: 'A list of job states.',
     enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
@@ -49,12 +49,12 @@ export class NotificationLogController {
     )
     jobs: string[] = [],
     @Query(
-      'status',
+      'state',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
-    statuses: JobStatus[] = [],
+    states: JobState[] = [],
   ) {
-    return this.notificationLogService.findAll(jobs, statuses);
+    return this.notificationLogService.findAll(jobs, states);
   }
 
   @Get(':id')

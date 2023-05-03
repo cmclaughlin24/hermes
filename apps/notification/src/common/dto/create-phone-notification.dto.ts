@@ -2,9 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import {
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsPhoneNumber,
-  IsString
+  IsString,
 } from 'class-validator';
 
 export class CreatePhoneNotificationDto {
@@ -25,11 +26,28 @@ export class CreatePhoneNotificationDto {
   from?: string;
 
   @ApiProperty({
-    description: "Notification's content",
-    example: "You successfully sent you're first notification!",
+    description:
+      'Message template that can accept values from a nested JavaScript object',
+    example:
+      '{{firstName}} {{lastName}} successfully sent a {{message.type}} notification!',
   })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   body: string;
+
+  @ApiProperty({
+    description: 'Values to be injected into the message template',
+    example: {
+      firstName: 'John',
+      lastName: 'Doe',
+      message: {
+        type: 'sms',
+      },
+    },
+    required: false,
+  })
+  @IsObject()
+  @IsOptional()
+  context?: any;
 }

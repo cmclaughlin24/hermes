@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEnum, IsString, Matches } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsString, Matches, ValidateNested } from 'class-validator';
 import { SubscriptionFilterOps } from '../../../common/constants/subscription-filter.constants';
+import { SubscriptionQueryDto } from './subscription-query.dto';
 
 export class SubscriptionFilterDto {
   @ApiProperty({
     description:
-      'Object key to run filter against. (Nested keys delimited by ".")',
+      'Object key to run filter against. (Nested keys delimited by ".", Array\'s delimited by "*")',
     example: 'key.key',
   })
   @IsString()
@@ -19,6 +21,7 @@ export class SubscriptionFilterDto {
   @IsEnum(SubscriptionFilterOps)
   operator: SubscriptionFilterOps;
 
-  @Allow()
-  query: any;
+  @ValidateNested()
+  @Type(() => SubscriptionQueryDto)
+  query: SubscriptionQueryDto;
 }

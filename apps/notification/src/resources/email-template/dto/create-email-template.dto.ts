@@ -5,7 +5,7 @@ import { IsNotEmpty, IsObject, IsString } from 'class-validator';
 export class CreateEmailTemplateDto {
   @ApiProperty({
     description: 'Name of the email template',
-    example: 'template'
+    example: 'template',
   })
   @IsString()
   @IsNotEmpty()
@@ -13,11 +13,22 @@ export class CreateEmailTemplateDto {
   name: string;
 
   @ApiProperty({
+    description:
+      'Subject template that can accept values from a nested JavaScript object',
+    example: 'Order Confirmation for {{product.type}}',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  subject: string;
+
+  @ApiProperty({
     description: 'Handlebars HTML template that can used when an email is sent',
-    example: '<body><main><h1>{{firstName}} {{lastName}}</h1></main></body>',
+    example:
+      '<body><main><h1>{{firstName}} {{lastName}} placed an order!</h1></main></body>',
     externalDocs: {
       url: 'https://handlebarsjs.com/',
-      description: 'Handlebars'
+      description: 'Handlebars',
     },
   })
   @IsString()
@@ -28,7 +39,11 @@ export class CreateEmailTemplateDto {
   @ApiProperty({
     description:
       'Example of the values to be passed to the template by Handlebars',
-    example: { firstName: 'string', lastName: 'string' },
+    example: {
+      firstName: 'string',
+      lastName: 'string',
+      product: { type: 'string' },
+    },
   })
   @IsObject()
   context: any;

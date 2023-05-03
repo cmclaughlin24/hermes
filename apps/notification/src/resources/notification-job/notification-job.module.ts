@@ -1,13 +1,17 @@
-import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { NotificationQueues } from '@notification/common';
 import { NotificationJobController } from './notification-job.controller';
 import { NotificationJobService } from './notification-job.service';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: NotificationQueues.DEFAULT,
+      // Note: BullModule throws an error when using the ConfigModule to retrieve
+      //       the notification queue name from the environment.
+      name: process.env.BULLMQ_NOTIFICATION_QUEUE,
+      // Note: Bullmq requires the prefix option as a cluster "hash tag". See
+      //       https://docs.bullmq.io/bull/patterns/redis-cluster for more information.
+      prefix: process.env.BULLMQ_NOTIFICATION_QUEUE_PREFIX,
     }),
   ],
   providers: [NotificationJobService],

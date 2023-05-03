@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -46,7 +37,7 @@ export class SubscriptionController {
   @Post()
   @ApiOperation({
     summary: 'Create a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -69,7 +60,7 @@ export class SubscriptionController {
   @Patch(':id')
   @ApiOperation({
     summary: 'Update a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -94,7 +85,7 @@ export class SubscriptionController {
   @Delete(':id')
   @ApiOperation({
     summary: 'Remove a subscription.',
-    security: [{ ApiAuthKey: [] }],
+    security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

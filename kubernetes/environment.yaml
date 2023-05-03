@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-store
+data:
+  dbHost: ${DB_HOST}
+  dbPort: ${DB_PORT}
+  dbUsername: ${DB_USERNAME}
+  dbPassword: ${DB_PASSWORD}
+  dbName: ${DB_NAME}
+  redisHost: 'redis-cluster-service.default'
+  redisPort: '6379'
+  enableRedisCluster: 'true'
+  notificationQueue: 'notification'
+  notificationPrefix: '{notification}'

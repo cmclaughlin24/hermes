@@ -16,19 +16,20 @@ export function setupSwaggerDocument(app: INestApplication) {
       'ApiKeyAuth',
     )
     .addTag(
-      'Distribution Job',
-      'Schedule a job to be pushed to the corresponding queue.',
-    )
-    .addTag(
       'Distribution Log',
       'View the history of distribution job outcomes.',
     )
     .addTag(
       'Distribution Rule',
-      'View and configure the rules that are used for evaluating a distribution job.'
+      'View and configure the rules that are used for evaluating a message type from a queue.',
     )
     .addTag(
-      'Subscription'
+      'Message',
+      "Publish a message to a Rabbitmq Exchange to be forwarded it's bound exchanges/queues.",
+    )
+    .addTag(
+      'Subscription',
+      'View and configure subscriptions for a queue and message type.',
     )
     .build();
 

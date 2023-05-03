@@ -20,7 +20,7 @@ export class NotificationLog extends Model {
   job: string;
 
   @Column
-  status: string;
+  state: string;
 
   @Column
   attempts: number;
@@ -32,7 +32,7 @@ export class NotificationLog extends Model {
   result: string;
 
   @Column({ allowNull: true, type: DataType.JSON })
-  error: string;
+  error: Error;
 
   @CreatedAt
   createdAt: Date;
