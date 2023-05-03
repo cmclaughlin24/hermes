@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
+import { Op } from 'sequelize';
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
@@ -26,8 +27,15 @@ export class DistributionRuleService {
    * @returns {Promise<DistributionRule[]>}
    */
   async findAll(queues: string[]) {
-    // Fixme: Configure DistributionRuleModule findAll options.
-    const distributionRules = await this.distributionRuleModel.findAll();
+    const distributionRules = await this.distributionRuleModel.findAll({
+      where: _.isEmpty(queues)
+        ? {}
+        : {
+            queue: {
+              [Op.or]: queues,
+            },
+          },
+    });
 
     if (_.isEmpty(distributionRules)) {
       throw new NotFoundException(`Distribution rules not found!`);
@@ -40,9 +48,9 @@ export class DistributionRuleService {
    * Yields a DistributionRule or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType 
-   * @param {boolean} includeSubscriptions 
-   * @returns 
+   * @param {string} messageType
+   * @param {boolean} includeSubscriptions
+   * @returns
    */
   async findOne(
     queue: string,
@@ -99,8 +107,8 @@ export class DistributionRuleService {
    * Updates a DistributionRule or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType 
-   * @param {UpdateDistributionRuleDto} updateDistributionRuleDto 
+   * @param {string} messageType
+   * @param {UpdateDistributionRuleDto} updateDistributionRuleDto
    * @returns {Promise<ApiResponseDto<DistributionRule>>}
    */
   async update(
@@ -144,7 +152,7 @@ export class DistributionRuleService {
    * Removes a DistributionRule or throws a NotFoundFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType 
+   * @param {string} messageType
    * @returns {Promise<ApiResponseDto>}
    */
   async remove(queue: string, messageType: string) {
