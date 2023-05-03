@@ -46,7 +46,9 @@ export class SubscriptionService {
    * @returns {Promise<Subscription>}
    */
   async findOne(id: string) {
-    const subscription = await this.subscriptionModel.findByPk(id);
+    const subscription = await this.subscriptionModel.findByPk(id, {
+      include: [SubscriptionFilter],
+    });
 
     if (!subscription) {
       throw new NotFoundException(`Subscription with ${id} not found!`);
