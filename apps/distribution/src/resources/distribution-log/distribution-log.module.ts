@@ -8,5 +8,6 @@ import { DistributionLog } from './entities/distribution-log.entity';
   imports: [SequelizeModule.forFeature([DistributionLog])],
   controllers: [DistributionLogController],
   providers: [DistributionLogService],
+  exports: [DistributionLogService],
 })
 export class DistributionLogModule {}

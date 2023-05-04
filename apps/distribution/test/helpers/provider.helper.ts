@@ -1,5 +1,14 @@
 import { SubscriptionService } from '../../src/resources/subscription/subscription.service';
 
+export type MockDistributionLogService = Partial<
+  Record<keyof SubscriptionService, jest.Mock>
+>;
+
+export const createDistributionLogServiceMock = (): MockDistributionLogService => ({
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+});
+
 export type MockDistributionRuleService = Partial<
   Record<keyof SubscriptionService, jest.Mock>
 >;
