@@ -10,7 +10,7 @@ export class DistributionLogService {
     private readonly distributionLogModel: typeof DistributionLog,
   ) {}
 
-  async findAll() {
+  async findAll(queues: string[], messageTypes: string[], states: string[]) {
     const distributionLogs = await this.distributionLogModel.findAll();
 
     if (_.isEmpty(distributionLogs)) {

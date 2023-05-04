@@ -1,4 +1,11 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseArrayPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '@notification/common';
 import { DistributionLogService } from './distribution-log.service';
@@ -13,13 +20,29 @@ export class DistributionLogController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find logs by their queue/messageType and/or states.',
+    summary: 'Find logs by their queue, message type, and/or states.',
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.distributionLogService.findAll();
+  findAll(
+    @Query(
+      'queue',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    queues: string[],
+    @Query(
+      'messageType',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    messageTypes: string[],
+    @Query(
+      'state',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    states: string[],
+  ) {
+    return this.distributionLogService.findAll(queues, messageTypes, states);
   }
 
   @Get(':id')
