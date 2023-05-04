@@ -11,6 +11,14 @@ export class DistributionLogService {
     private readonly distributionLogModel: typeof DistributionLog,
   ) {}
 
+  /**
+   * Yields a list of DistributionLogs or throws a NotFoundExceptions if
+   * the repository returns null, undefined, or an empty list.
+   * @param {string[]} queues
+   * @param {string[]} messageTypes 
+   * @param {string[]} states 
+   * @returns {Promise<DistributionLog[]>}
+   */
   async findAll(queues: string[], messageTypes: string[], states: string[]) {
     const distributionLogs = await this.distributionLogModel.findAll({
       where: this._buildWhereClause(queues, messageTypes, states),
@@ -23,6 +31,12 @@ export class DistributionLogService {
     return distributionLogs;
   }
 
+  /**
+   * Yields a DistributionLog or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {string} id
+   * @returns {Promise<DistributionLog>}
+   */
   async findOne(id: string) {
     const distributionLog = await this.distributionLogModel.findByPk(id);
 
@@ -33,6 +47,14 @@ export class DistributionLogService {
     return distributionLog;
   }
 
+  /**
+   * Yields an object containing key-value pairs with the filter(s) (queues, messsageTypes,
+   * and/or states) that should be applied on a DistributionLog repository query.
+   * @param {string[]} queues
+   * @param {string[]} messageTypes 
+   * @param {string[]} states 
+   * @returns
+   */
   private _buildWhereClause(
     queues: string[],
     messageTypes: string[],
