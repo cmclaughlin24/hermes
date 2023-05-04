@@ -51,7 +51,7 @@ export class SubscriptionService {
     });
 
     if (!subscription) {
-      throw new NotFoundException(`Subscription with ${id} not found!`);
+      throw new NotFoundException(`Subscription with id=${id} not found!`);
     }
 
     return subscription;
@@ -111,7 +111,7 @@ export class SubscriptionService {
     });
 
     if (!subscription) {
-      throw new NotFoundException(`Subscription with ${id} not found!`);
+      throw new NotFoundException(`Subscription with id=${id} not found!`);
     }
 
     if (!_.isEmpty(updateSubscriptionDto.filters)) {
@@ -150,7 +150,7 @@ export class SubscriptionService {
     const subscription = await this.subscriptionModel.findByPk(id);
 
     if (!subscription) {
-      throw new NotFoundException(`Subscription with ${id} not found!`);
+      throw new NotFoundException(`Subscription with id=${id} not found!`);
     }
 
     // Note: The delete is cascaded to the SubscriptionFilters table.

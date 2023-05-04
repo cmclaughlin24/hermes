@@ -114,7 +114,7 @@ describe('SubscriptionService', () => {
       // Arrange.
       const id = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
       const expectedResult = new NotFoundException(
-        `Subscription with ${id} not found!`,
+        `Subscription with id=${id} not found!`,
       );
       subscriptionModel.findByPk.mockResolvedValue(null);
 
@@ -239,7 +239,7 @@ describe('SubscriptionService', () => {
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Subscription with ${id} not found!`,
+        `Subscription with id=${id} not found!`,
       );
       subscriptionModel.findByPk.mockResolvedValue(null);
 
