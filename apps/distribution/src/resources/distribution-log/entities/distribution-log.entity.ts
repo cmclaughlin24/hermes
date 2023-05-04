@@ -2,10 +2,12 @@ import {
   Column,
   CreatedAt,
   DataType,
+  HasMany,
   Model,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { DistributionAttempt } from './distribution-attempt.entity';
 
 @Table
 export class DistributionLog extends Model {
@@ -36,4 +38,7 @@ export class DistributionLog extends Model {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @HasMany(() => DistributionAttempt, { onDelete: 'CASCADE' })
+  attemptHistory: DistributionAttempt[];
 }

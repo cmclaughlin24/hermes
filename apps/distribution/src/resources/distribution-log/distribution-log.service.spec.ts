@@ -7,6 +7,7 @@ import {
   createMockRepository,
 } from '../../../test/helpers/database.helpers';
 import { DistributionLogService } from './distribution-log.service';
+import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
 
 describe('DistributionLogService', () => {
@@ -69,6 +70,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { queue: { [Op.or]: queues } },
+        include: [DistributionAttempt]
       });
     });
 
@@ -83,6 +85,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { messageType: { [Op.or]: messageTypes } },
+        include: [DistributionAttempt]
       });
     });
 
@@ -97,6 +100,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { state: { [Op.or]: states } },
+        include: [DistributionAttempt]
       });
     });
 
