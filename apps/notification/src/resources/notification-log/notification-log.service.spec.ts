@@ -2,9 +2,10 @@ import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobState } from 'bullmq';
+import { Op } from 'sequelize';
 import {
   MockRepository,
-  createMockRepository
+  createMockRepository,
 } from '../../../../notification/test/helpers/database.helpers';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
@@ -20,8 +21,6 @@ describe('NotificationLogService', () => {
     state: 'completed',
     attempts: 0,
     data: JSON.stringify({}),
-    result: null,
-    error: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   } as NotificationLog;
@@ -65,10 +64,15 @@ describe('NotificationLogService', () => {
       await expect(service.findAll([], [])).resolves.toEqual(expectedResult);
     });
 
-    it('should yield a list filtered by job name', async () => {
+    it('should yield a list filtered by job name(s)', async () => {
       // Arrange.
       const jobs = ['email', 'sms'];
-      const expectedResult = { where: { state: [], job: jobs } };
+      const expectedResult = {
+        where: { job: { [Op.or]: jobs } },
+        include: [
+          { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
+        ],
+      };
       notificationLogModel.findAll.mockResolvedValue([notificationLog]);
 
       // Act.
@@ -78,10 +82,15 @@ describe('NotificationLogService', () => {
       expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
     });
 
-    it('should yield a list filtered by job state', async () => {
+    it('should yield a list filtered by job state(s)', async () => {
       // Arrange.
       const states: JobState[] = ['completed'];
-      const expectedResult = { where: { state: states, job: [] } };
+      const expectedResult = {
+        where: { state: { [Op.or]: states } },
+        include: [
+          { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
+        ],
+      };
       notificationLogModel.findAll.mockResolvedValue([notificationLog]);
 
       // Act.
@@ -206,9 +215,9 @@ describe('NotificationLogService', () => {
       notificationLogModel.create.mockResolvedValue({ id: 'test' });
 
       // Act/Assert.
-      await expect(
-        service.log(job, 'completed', null, null),
-      ).resolves.toBe(expectedId);
+      await expect(service.log(job, 'completed', null, null)).resolves.toBe(
+        expectedId,
+      );
     });
 
     it("should yield the notification log's database id (update)", async () => {
@@ -226,9 +235,9 @@ describe('NotificationLogService', () => {
       notificationLogModel.findByPk.mockResolvedValue(log);
 
       // Act/Assert.
-      await expect(
-        service.log(job, 'failed', null, null),
-      ).resolves.toBe(expectedResult);
+      await expect(service.log(job, 'failed', null, null)).resolves.toBe(
+        expectedResult,
+      );
     });
 
     it('should not update a notification log if the number of attempts in the notification log are greater than the number attempts in the job', async () => {
