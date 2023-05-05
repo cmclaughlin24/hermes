@@ -59,7 +59,7 @@ export class NotificationLogService {
    * @param {Error} error
    * @returns {Promise<string>}
    */
-  async createOrUpdate(job: Job, state: JobState, result: any, error: Error) {
+  async log(job: Job, state: JobState, result: any, error: Error) {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
     // Fixme: Convert Error object to JSON object so that it may be stored in the database.

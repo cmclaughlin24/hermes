@@ -199,7 +199,7 @@ export class NotificationConsumer extends WorkerHost {
     job.log(`${logPrefix}: ${job.name} notification completed`);
 
     try {
-      const databaseId = await this.notificationLogService.createOrUpdate(
+      const databaseId = await this.notificationLogService.log(
         job,
         'completed',
         result,
@@ -228,7 +228,7 @@ export class NotificationConsumer extends WorkerHost {
     );
 
     try {
-      const databaseId = await this.notificationLogService.createOrUpdate(
+      const databaseId = await this.notificationLogService.log(
         job,
         'failed',
         null,

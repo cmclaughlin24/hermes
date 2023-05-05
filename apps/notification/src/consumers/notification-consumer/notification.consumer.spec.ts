@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  MockEmailService,
+  MockNotificationLogService,
+  MockPhoneService,
+  MockRadioService,
   createEmailServiceMock,
   createNotificationLogServiceMock,
   createPhoneServiceMock,
   createRadioServiceMock,
-  MockEmailService,
-  MockNotificationLogService,
-  MockPhoneService,
-  MockRadioService
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -244,7 +244,7 @@ describe('NotificationService', () => {
 
   describe('onQueueCompleted()', () => {
     afterEach(() => {
-      notificationLogService.createOrUpdate.mockClear();
+      notificationLogService.log.mockClear();
       job.update.mockClear();
       job.log.mockClear();
     });
@@ -257,7 +257,7 @@ describe('NotificationService', () => {
       await service.onQueueCompleted(job, result);
 
       // Assert.
-      expect(notificationLogService.createOrUpdate).toHaveBeenCalledWith(
+      expect(notificationLogService.log).toHaveBeenCalledWith(
         job,
         'completed',
         result,
@@ -272,7 +272,7 @@ describe('NotificationService', () => {
         ...job.data,
         notification_database_id: id,
       };
-      notificationLogService.createOrUpdate.mockResolvedValue(id);
+      notificationLogService.log.mockResolvedValue(id);
 
       // Act.
       await service.onQueueCompleted(job, null);
@@ -285,7 +285,7 @@ describe('NotificationService', () => {
       // Arrange.
       const id = 'test';
       const expectedResult = `[${NotificationConsumer.name} onQueueCompleted] Job ${job.id}: Result stored in database ${id}`;
-      notificationLogService.createOrUpdate.mockResolvedValue(id);
+      notificationLogService.log.mockResolvedValue(id);
 
       // Act.
       await service.onQueueCompleted(job, null);
@@ -297,7 +297,7 @@ describe('NotificationService', () => {
     it("should add the method's result to the job (fail)", async () => {
       // Arrange.
       const expectedResult = `[${NotificationConsumer.name} onQueueCompleted] Job ${job.id}: Failed to store result in database`;
-      notificationLogService.createOrUpdate.mockRejectedValue(new Error());
+      notificationLogService.log.mockRejectedValue(new Error());
 
       // Act.
       await service.onQueueCompleted(job, null);
@@ -309,7 +309,7 @@ describe('NotificationService', () => {
 
   describe('onQueueFailed()', () => {
     afterEach(() => {
-      notificationLogService.createOrUpdate.mockClear();
+      notificationLogService.log.mockClear();
       job.update.mockClear();
       job.log.mockClear();
     });
@@ -322,7 +322,7 @@ describe('NotificationService', () => {
       await service.onQueueFailed(job, error);
 
       // Assert.
-      expect(notificationLogService.createOrUpdate).toHaveBeenCalledWith(
+      expect(notificationLogService.log).toHaveBeenCalledWith(
         job,
         'failed',
         null,
@@ -337,7 +337,7 @@ describe('NotificationService', () => {
         ...job.data,
         notification_database_id: id,
       };
-      notificationLogService.createOrUpdate.mockResolvedValue(id);
+      notificationLogService.log.mockResolvedValue(id);
 
       // Act.
       await service.onQueueFailed(job, null);
@@ -350,7 +350,7 @@ describe('NotificationService', () => {
       // Arrange.
       const id = 'test';
       const expectedResult = `[${NotificationConsumer.name} onQueueFailed] Job ${job.id}: Result stored in database ${id}`;
-      notificationLogService.createOrUpdate.mockResolvedValue(id);
+      notificationLogService.log.mockResolvedValue(id);
 
       // Act.
       await service.onQueueFailed(job, null);
@@ -362,7 +362,7 @@ describe('NotificationService', () => {
     it("should add the method's result to the job (fail)", async () => {
       // Arrange.
       const expectedResult = `[${NotificationConsumer.name} onQueueFailed] Job ${job.id}: Failed to store result in database`;
-      notificationLogService.createOrUpdate.mockRejectedValue(new Error());
+      notificationLogService.log.mockRejectedValue(new Error());
 
       // Act.
       await service.onQueueFailed(job, null);

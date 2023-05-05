@@ -3,8 +3,8 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobState } from 'bullmq';
 import {
-  createMockRepository,
-  MockRepository
+  MockRepository,
+  createMockRepository
 } from '../../../../notification/test/helpers/database.helpers';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogService } from './notification-log.service';
@@ -138,7 +138,7 @@ describe('NotificationLogService', () => {
     });
   });
 
-  describe('createOrUpdate()', () => {
+  describe('log()', () => {
     afterEach(() => {
       notificationLogModel.create.mockClear();
       notificationLogModel.update.mockClear();
@@ -158,7 +158,7 @@ describe('NotificationLogService', () => {
       notificationLogModel.create.mockResolvedValue({ id: 'test' });
 
       // Act.
-      await service.createOrUpdate(job, 'completed', null, null);
+      await service.log(job, 'completed', null, null);
 
       // Assert.
       expect(notificationLogModel.create).toHaveBeenLastCalledWith(
@@ -188,7 +188,7 @@ describe('NotificationLogService', () => {
       notificationLogModel.findByPk.mockResolvedValue(log);
 
       // Act.
-      await service.createOrUpdate(job, 'failed', null, null);
+      await service.log(job, 'failed', null, null);
 
       // Assert.
       expect(log.update).toHaveBeenCalledWith(expectedResult);
@@ -202,7 +202,7 @@ describe('NotificationLogService', () => {
 
       // Act/Assert.
       await expect(
-        service.createOrUpdate(job, 'completed', null, null),
+        service.log(job, 'completed', null, null),
       ).resolves.toBe(expectedId);
     });
 
@@ -222,7 +222,7 @@ describe('NotificationLogService', () => {
 
       // Act/Assert.
       await expect(
-        service.createOrUpdate(job, 'failed', null, null),
+        service.log(job, 'failed', null, null),
       ).resolves.toBe(expectedResult);
     });
 
@@ -240,7 +240,7 @@ describe('NotificationLogService', () => {
       notificationLogModel.findByPk.mockResolvedValue(log);
 
       // Act.
-      await service.createOrUpdate(job, 'failed', null, null);
+      await service.log(job, 'failed', null, null);
 
       // Assert.
       expect(log.update).not.toHaveBeenCalled();

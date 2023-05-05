@@ -53,5 +53,5 @@ export const createNotificationLogServiceMock =
   (): MockNotificationLogService => ({
     findAll: jest.fn(),
     findOne: jest.fn(),
-    createOrUpdate: jest.fn(),
+    log: jest.fn(),
   });
