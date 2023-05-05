@@ -1,7 +1,7 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { DeliveryMethods } from '@notification/common';
-import { Job, UnrecoverableError } from 'bullmq';
+import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
@@ -10,7 +10,14 @@ import { RadioService } from '../../common/providers/radio/radio.service';
 import { compileTextTemplate } from '../../common/utils/template.utils';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
-@Processor(process.env.BULLMQ_NOTIFICATION_QUEUE)
+const KEEP_JOB_OPTIONS: KeepJobs = {
+  age: +process.env.BULLMQ_NOTIFICATION_JOB_AGE,
+};
+
+@Processor(process.env.BULLMQ_NOTIFICATION_QUEUE, {
+  removeOnComplete: KEEP_JOB_OPTIONS,
+  removeOnFail: KEEP_JOB_OPTIONS,
+})
 export class NotificationConsumer extends WorkerHost {
   private readonly logger = new Logger(NotificationConsumer.name);
 

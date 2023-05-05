@@ -30,6 +30,7 @@ import { ResourcesModule } from './resources/resources.module';
         ENABLE_REDIS_CLUSTER: Joi.boolean().default(false),
         BULLMQ_NOTIFICATION_QUEUE: Joi.required(),
         BULLMQ_NOTIFICATION_QUEUE_PREFIX: Joi.required(),
+        BULLMQ_NOTIFICATION_JOB_AGE: Joi.number().required(),
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         TWILIO_SID: Joi.required(),

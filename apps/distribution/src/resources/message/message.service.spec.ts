@@ -36,6 +36,7 @@ describe('MessageService', () => {
       exchange: 'test',
       routingKey: 'test.*',
       message: {
+        id: '',
         type: 'test',
         payload: null,
       },

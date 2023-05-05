@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
+import { MessageDto } from '../../common/dto/message.dto';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
 
@@ -49,6 +50,22 @@ export class DistributionLogService {
     }
 
     return distributionLog;
+  }
+
+  async log(
+    queue: string,
+    message: MessageDto,
+    state: string,
+    result: any,
+    error: any,
+  ) {
+    const log = await this.distributionLogModel.findByPk(message.id);
+
+    if (!log) {
+      // Todo: Create a new distribution log.
+    }
+
+    // Todo: Update an existing distribution log.
   }
 
   /**
