@@ -2,6 +2,8 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
+import { Op } from 'sequelize';
+import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
 
 @Injectable()
@@ -11,6 +13,8 @@ export class NotificationLogService {
   constructor(
     @InjectModel(NotificationLog)
     private readonly notificationLogModel: typeof NotificationLog,
+    @InjectModel(NotificationAttempt)
+    private readonly notificationAttemptModel: typeof NotificationAttempt,
   ) {}
 
   /**
@@ -23,7 +27,10 @@ export class NotificationLogService {
    */
   async findAll(jobs: string[], states: JobState[]) {
     const notificationLogs = await this.notificationLogModel.findAll({
-      where: { state: states, job: jobs },
+      where: this._buildWhereClause(jobs, states),
+      include: [
+        { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
+      ],
     });
 
     if (_.isEmpty(notificationLogs)) {
@@ -40,7 +47,11 @@ export class NotificationLogService {
    * @returns {Promise<NotificationLog>}
    */
   async findOne(id: string) {
-    const notificationLog = await this.notificationLogModel.findByPk(id);
+    const notificationLog = await this.notificationLogModel.findByPk(id, {
+      include: [
+        { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
+      ],
+    });
 
     if (!notificationLog) {
       throw new NotFoundException(`Notification Log with ${id} not found!`);
@@ -71,6 +82,31 @@ export class NotificationLogService {
   }
 
   /**
+   * Yields an object containing key-value pairs with the filter(s) (queues and/or
+   * states) that should be applied on a NotificationLog repository query.
+   * @param {string[]} jobs
+   * @param {string[]} states
+   * @returns
+   */
+  private _buildWhereClause(jobs: string[], states: string[]) {
+    const where: any = {};
+
+    if (!_.isEmpty(jobs)) {
+      where.job = {
+        [Op.or]: jobs,
+      };
+    }
+
+    if (!_.isEmpty(states)) {
+      where.state = {
+        [Op.or]: states,
+      };
+    }
+
+    return Object.keys(where).length > 0 ? where : null;
+  }
+
+  /**
    * Creates a NotificationLog.
    * @param {Job} job
    * @param {JobState} state
@@ -84,14 +120,26 @@ export class NotificationLogService {
     result: any,
     error: Error,
   ) {
+    // Fixme: Run update on Sequelize transaction.
     const log = await this.notificationLogModel.create({
       job: job.name,
       state: state,
       attempts: job.attemptsMade,
       data: job.data,
-      result: result,
-      error: error,
+      addedAt: new Date(job.timestamp),
+      finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
     });
+
+    // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
+    if (state === 'completed' || state === 'failed') {
+      await this.notificationAttemptModel.create({
+        logId: log.id,
+        attempt: job.attemptsMade,
+        processedOn: new Date(job.processedOn),
+        result: result,
+        error: error,
+      });
+    }
 
     return log.id;
   }
@@ -126,14 +174,24 @@ export class NotificationLogService {
     const data = { ...job.data };
     delete data.notification_database_id;
 
+    // Fixme: Run update on Sequelize transaction.
     log = await log.update({
-      job: job.name,
       state: state,
       attempts: job.attemptsMade,
       data: data,
-      result: result,
-      error: error,
+      finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
     });
+
+    // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
+    if (state === 'completed' || state === 'failed') {
+      await this.notificationAttemptModel.create({
+        logId: log.id,
+        attempt: job.attemptsMade,
+        processedOn: new Date(job.processedOn),
+        result: result,
+        error: error,
+      });
+    }
 
     return log.id;
   }

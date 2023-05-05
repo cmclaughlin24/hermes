@@ -6,6 +6,7 @@ import {
   MockRepository,
   createMockRepository
 } from '../../../../notification/test/helpers/database.helpers';
+import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogService } from './notification-log.service';
 
@@ -32,6 +33,10 @@ describe('NotificationLogService', () => {
         {
           provide: getModelToken(NotificationLog),
           useValue: createMockRepository<NotificationLog>(),
+        },
+        {
+          provide: getModelToken(NotificationAttempt),
+          useValue: createMockRepository<NotificationAttempt>(),
         },
       ],
     }).compile();

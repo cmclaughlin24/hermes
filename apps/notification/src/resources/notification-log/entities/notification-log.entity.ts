@@ -2,10 +2,12 @@ import {
   Column,
   CreatedAt,
   DataType,
+  HasMany,
   Model,
   Table,
   UpdatedAt
 } from 'sequelize-typescript';
+import { NotificationAttempt } from './notification-attempt.entity';
 
 @Table
 export class NotificationLog extends Model {
@@ -28,15 +30,18 @@ export class NotificationLog extends Model {
   @Column({ type: DataType.JSON })
   data: string;
 
-  @Column({ allowNull: true, type: DataType.JSON })
-  result: string;
+  @Column
+  addedAt: Date;
 
-  @Column({ allowNull: true, type: DataType.JSON })
-  error: Error;
+  @Column({ allowNull: true })
+  finishedOn: Date;
 
   @CreatedAt
   createdAt: Date;
 
   @UpdatedAt
   updatedAt: Date;
+
+  @HasMany(() => NotificationAttempt)
+  attemptHistory: NotificationAttempt[];
 }
