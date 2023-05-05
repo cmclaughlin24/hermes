@@ -93,6 +93,8 @@ spec:
                 configMapKeyRef:
                   name: env-store
                   key: notificationPrefix
+            - name: BULLMQ_NOTIFICATION_JOB_AGE
+              value: '86400'
             - name: TWILIO_SID
               value: ${TWILIO_SID}
             - name: TWILIO_AUTH_TOKEN

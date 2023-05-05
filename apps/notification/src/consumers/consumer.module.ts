@@ -12,7 +12,7 @@ import { NotificationConsumer } from './notification-consumer/notification.consu
       name: process.env.BULLMQ_NOTIFICATION_QUEUE,
       // Note: Bullmq requires the prefix option as a cluster "hash tag". See
       //       https://docs.bullmq.io/bull/patterns/redis-cluster for more information.
-      prefix: process.env.BULLMQ_NOTIFICATION_QUEUE_PREFIX
+      prefix: process.env.BULLMQ_NOTIFICATION_QUEUE_PREFIX,
     }),
     CommonModule,
     NotificationLogModule,

@@ -41,7 +41,11 @@ describe('MessageController', () => {
       const createMessageDto: CreateMessageDto = {
         exchange: '',
         routingKey: '',
-        message: { type: '', payload: null },
+        message: {
+          id: '',
+          type: '',
+          payload: null,
+        },
       };
       const expectedResult = new ApiResponseDto(
         `Successfully sent message to ${createMessageDto.exchange}!`,
