@@ -10,6 +10,7 @@ import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionFilter } from './entities/subscription-filter.entity';
 import { Subscription } from './entities/subscription.entity';
@@ -131,9 +132,11 @@ export class SubscriptionService {
       if (updateSubscriptionDto.filters) {
         await this._updateSubscriptionFilters(
           subscription,
-          updateSubscriptionDto,
+          updateSubscriptionDto.filters,
           transaction,
         );
+
+        subscription = await subscription.reload({ transaction });
       }
 
       return new ApiResponseDto<Subscription>(
@@ -162,12 +165,31 @@ export class SubscriptionService {
     return new ApiResponseDto(`Successfully deleted subscription ${id}!`);
   }
 
+  /**
+   * Creates, updates, or removes filters for a subscription.
+   * @param {Subscription} subscription
+   * @param {SubscriptionFilterDto} filters
+   * @param {Transaction} transaction
+   */
   private async _updateSubscriptionFilters(
     subscription: Subscription,
-    updateSubscriptionDto: UpdateSubscriptionDto,
+    filters: SubscriptionFilterDto[],
     transaction: Transaction,
   ) {
-    for (const filter of updateSubscriptionDto.filters) {
+    // Todo: Refactor add/update/remove logic into one for-of loop if possible.
+    for (const existingFilter of subscription.filters) {
+      const filter = filters.find(
+        (filterDto) => filterDto.field === existingFilter.field,
+      );
+
+      if (filter) {
+        continue;
+      }
+
+      await existingFilter.destroy({ transaction });
+    }
+
+    for (const filter of filters) {
       const existingFilter = subscription.filters.find(
         (curr) => curr.field === filter.field,
       );
@@ -192,6 +214,5 @@ export class SubscriptionService {
         );
       }
     }
-    // Todo: Remove filters that are no longer defined.
   }
 }
