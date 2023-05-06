@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  createNotificationLogServiceMock,
-  MockNotificationLogService
+  MockNotificationLogService,
+  createNotificationLogServiceMock
 } from '../../../../notification/test/helpers/provider.helpers';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogController } from './notification-log.controller';
@@ -17,8 +17,6 @@ describe('NotificationLogController', () => {
     state: 'completed',
     attempts: 0,
     data: JSON.stringify({}),
-    result: null,
-    error: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   } as NotificationLog;
