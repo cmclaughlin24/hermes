@@ -1,15 +1,14 @@
 import {
   BelongsTo,
   Column,
-  CreatedAt,
   DataType,
   ForeignKey,
   Model,
-  Table,
+  Table
 } from 'sequelize-typescript';
 import { DistributionLog } from './distribution-log.entity';
 
-@Table({ updatedAt: false })
+@Table({ updatedAt: false, createdAt: false })
 export class DistributionAttempt extends Model {
   @Column({
     primaryKey: true,
@@ -26,9 +25,6 @@ export class DistributionAttempt extends Model {
 
   @Column({ type: DataType.JSON, allowNull: true })
   error: any;
-
-  @CreatedAt
-  createdAt: Date;
 
   @BelongsTo(() => DistributionLog)
   log: DistributionLog;
