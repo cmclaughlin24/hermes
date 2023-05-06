@@ -8,11 +8,12 @@ export function setupSwaggerDocument(app: INestApplication) {
     .setVersion(packageJson.version)
     .setDescription(
       'The Notification Service implements a message queue design pattern by utilizing the @nestjs/bullmq package. This ' +
-        'package provides a layer of abstraction for the Bull library, a robust message queue system based on Redis. ' +
+        'package provides a layer of abstraction for the BullMQ library, a robust message queue system based on Redis. ' +
         'It allows for more a reliable communication channel between the Notification Service and other services ' +
         'by persisting job data and application state so that task handling can be easily restarted. The Notification ' +
-        'Service listens for jobs to be added to the "notification" queue and continues to process each until all ' +
-        'are done. For details on NestJS Queues check out the link below:',
+        `Service listens for jobs to be added to the "${process.env.BULLMQ_NOTIFICATION_QUEUE}" queue and continues to process ` +
+        "each until all are done. It's role is to send a notification to the delivery method specified in the job. For " +
+        'details on NestJS Queues check out the link below:',
     )
     .setExternalDoc(
       'NestJS Queues',
