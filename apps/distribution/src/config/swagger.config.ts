@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { API_KEY_HEADER } from '@notification/common';
 import * as packageJson from '../../../../package.json';
 
 export function setupSwaggerDocument(app: INestApplication) {
@@ -11,7 +10,7 @@ export function setupSwaggerDocument(app: INestApplication) {
       {
         type: 'apiKey',
         in: 'header',
-        name: API_KEY_HEADER,
+        name: process.env.API_KEY_HEADER,
       },
       'ApiKeyAuth',
     )

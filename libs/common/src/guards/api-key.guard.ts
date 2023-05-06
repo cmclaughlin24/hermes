@@ -6,8 +6,6 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-export const API_KEY_HEADER = 'Notification-Api-Key';
-
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   constructor(
@@ -25,7 +23,8 @@ export class ApiKeyGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
+    const apiKeyHeader = this.configService.get('API_KEY_HEADER');
 
-    return request.header(API_KEY_HEADER) === this.configService.get('API_KEY');
+    return request.header(apiKeyHeader) === this.configService.get('API_KEY');
   }
 }
