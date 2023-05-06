@@ -1,6 +1,8 @@
-import { Repository } from 'sequelize-typescript';
+import { Repository, Sequelize } from 'sequelize-typescript';
 
-export type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+export type MockRepository<T = any> = Partial<
+  Record<keyof Repository<T>, jest.Mock>
+>;
 
 export const createMockRepository = <T = any>(): MockRepository<T> => ({
   findAll: jest.fn(),
@@ -8,4 +10,10 @@ export const createMockRepository = <T = any>(): MockRepository<T> => ({
   create: jest.fn(),
   update: jest.fn(),
   destroy: jest.fn(),
+});
+
+export type MockSequelize = Partial<Record<keyof Sequelize, jest.Mock>>;
+
+export const createMockSequelize = (): MockSequelize => ({
+  transaction: jest.fn(),
 });

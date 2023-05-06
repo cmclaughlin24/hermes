@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
 
@@ -15,6 +16,7 @@ export class NotificationLogService {
     private readonly notificationLogModel: typeof NotificationLog,
     @InjectModel(NotificationAttempt)
     private readonly notificationAttemptModel: typeof NotificationAttempt,
+    private readonly sequelize: Sequelize,
   ) {}
 
   /**
@@ -120,28 +122,35 @@ export class NotificationLogService {
     result: any,
     error: Error,
   ) {
-    // Fixme: Run update on Sequelize transaction.
-    const log = await this.notificationLogModel.create({
-      job: job.name,
-      state: state,
-      attempts: job.attemptsMade,
-      data: job.data,
-      addedAt: new Date(job.timestamp),
-      finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+    return this.sequelize.transaction(async (transaction) => {
+      const log = await this.notificationLogModel.create(
+        {
+          job: job.name,
+          state: state,
+          attempts: job.attemptsMade,
+          data: job.data,
+          addedAt: new Date(job.timestamp),
+          finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+        },
+        { transaction },
+      );
+
+      // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
+      if (state === 'completed' || state === 'failed') {
+        await this.notificationAttemptModel.create(
+          {
+            logId: log.id,
+            attempt: job.attemptsMade,
+            processedOn: new Date(job.processedOn),
+            result: result,
+            error: error,
+          },
+          { transaction },
+        );
+      }
+
+      return log.id;
     });
-
-    // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
-    if (state === 'completed' || state === 'failed') {
-      await this.notificationAttemptModel.create({
-        logId: log.id,
-        attempt: job.attemptsMade,
-        processedOn: new Date(job.processedOn),
-        result: result,
-        error: error,
-      });
-    }
-
-    return log.id;
   }
 
   /**
@@ -159,40 +168,48 @@ export class NotificationLogService {
     result: any,
     error: Error,
   ) {
-    let log = await this.notificationLogModel.findByPk(
-      job.data.notification_database_id,
-    );
-
-    if (log.attempts > job.attemptsMade) {
-      this.logger.warn(
-        `[${this._updateLog.name}] Notification Log attempts (${log.attempts}) greater than job attemps (${job.attemptsMade}), no update`,
+    return this.sequelize.transaction(async (transaction) => {
+      let log = await this.notificationLogModel.findByPk(
+        job.data.notification_database_id,
+        { transaction },
       );
+
+      if (log.attempts > job.attemptsMade) {
+        this.logger.warn(
+          `[${this._updateLog.name}] Notification Log attempts (${log.attempts}) greater than job attemps (${job.attemptsMade}), no update`,
+        );
+        return log.id;
+      }
+
+      // Note: Remove the database id from the job's data before updating the record.
+      const data = { ...job.data };
+      delete data.notification_database_id;
+
+      log = await log.update(
+        {
+          state: state,
+          attempts: job.attemptsMade,
+          data: data,
+          finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+        },
+        { transaction },
+      );
+
+      // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
+      if (state === 'completed' || state === 'failed') {
+        await this.notificationAttemptModel.create(
+          {
+            logId: log.id,
+            attempt: job.attemptsMade,
+            processedOn: new Date(job.processedOn),
+            result: result,
+            error: error,
+          },
+          { transaction },
+        );
+      }
+
       return log.id;
-    }
-
-    // Note: Remove the database id from the job's data before updating the record.
-    const data = { ...job.data };
-    delete data.notification_database_id;
-
-    // Fixme: Run update on Sequelize transaction.
-    log = await log.update({
-      state: state,
-      attempts: job.attemptsMade,
-      data: data,
-      finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
     });
-
-    // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
-    if (state === 'completed' || state === 'failed') {
-      await this.notificationAttemptModel.create({
-        logId: log.id,
-        attempt: job.attemptsMade,
-        processedOn: new Date(job.processedOn),
-        result: result,
-        error: error,
-      });
-    }
-
-    return log.id;
   }
 }
