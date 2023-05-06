@@ -19,6 +19,8 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription)
     private readonly subscriptionModel: typeof Subscription,
+    @InjectModel(SubscriptionFilter)
+    private readonly subscriptionFilterModel: typeof SubscriptionFilter,
     private readonly distributionRuleService: DistributionRuleService,
     private readonly sequelize: Sequelize,
   ) {}
@@ -171,9 +173,23 @@ export class SubscriptionService {
       );
 
       if (!existingFilter) {
-        // Todo: Create a new filter for the subscription.
+        await this.subscriptionFilterModel.create(
+          {
+            subscriptionId: subscription.id,
+            field: filter.field,
+            operator: filter.operator,
+            query: filter.query,
+          },
+          { transaction },
+        );
       } else {
-        // Todo: Update the existing filter.
+        await existingFilter.update(
+          {
+            operator: filter.operator ?? existingFilter.operator,
+            query: filter.query ?? existingFilter.query,
+          },
+          { transaction },
+        );
       }
     }
     // Todo: Remove filters that are no longer defined.
