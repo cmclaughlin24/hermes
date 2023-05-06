@@ -27,11 +27,17 @@ export class DistributionLog extends Model {
   @Column
   state: string;
 
+  @Column
+  attempts: number;
+
   @Column({ type: DataType.JSON, allowNull: true })
   data: string;
 
   @Column
-  attempts: number;
+  addedAt: Date;
+
+  @Column({ allowNull: true })
+  finishedOn: Date;
 
   @CreatedAt
   createdAt: Date;

@@ -20,6 +20,9 @@ export class DistributionAttempt extends Model {
   @Column({ primaryKey: true })
   attempt: number;
 
+  @Column
+  processedOn: Date;
+
   @Column({ type: DataType.JSON, allowNull: true })
   result: any;
 
