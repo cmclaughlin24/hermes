@@ -1,15 +1,14 @@
 import {
   BelongsTo,
   Column,
-  CreatedAt,
   DataType,
   ForeignKey,
   Model,
-  Table,
+  Table
 } from 'sequelize-typescript';
 import { NotificationLog } from './notification-log.entity';
 
-@Table({ updatedAt: false })
+@Table({ updatedAt: false, createdAt: false })
 export class NotificationAttempt extends Model {
   @Column({
     primaryKey: true,
@@ -29,9 +28,6 @@ export class NotificationAttempt extends Model {
 
   @Column({ type: DataType.JSON, allowNull: true })
   error: Error;
-
-  @CreatedAt
-  createdAt: Date;
 
   @BelongsTo(() => NotificationLog)
   log: NotificationLog;

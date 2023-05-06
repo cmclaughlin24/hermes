@@ -4,9 +4,9 @@ import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscript
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
 import {
-  SubscriptionFilterJoinOps,
-  SubscriptionFilterOps,
-} from '../constants/subscription-filter.constants';
+  FilterJoinOps,
+  FilterOps,
+} from '../constants/filter.constants';
 
 export function filterSubscriptions(
   subscriptions: Subscription[],
@@ -57,6 +57,10 @@ export function evaluateFilter(
   if (!hasArrayNotation(filter.field)) {
     isMatch = compare(filter.operator, filter.query, flatPayload[filter.field]);
   } else {
+    // Bug: When using an array notation, the FilterJoinOps will match across objects in arrays. For example,
+    //      object.*.hello equals world and object.*.test equals test will return true object.[0].hello and
+    //      object.[0].test contain the value or if object.[0].hello and object.[1].test each have one or more
+    //      values.
     const keyPattern = '^' + filter.field.replace('*', '[0-9]+') + '$';
     const keyRegex = new RegExp(keyPattern, 'g');
 
@@ -77,17 +81,17 @@ export function evaluateFilter(
 }
 
 export function joinFilters(
-  join: SubscriptionFilterJoinOps,
+  join: FilterJoinOps,
   accumulator: boolean,
   next: boolean,
 ): boolean {
   switch (join) {
-    case SubscriptionFilterJoinOps.AND:
+    case FilterJoinOps.AND:
       return accumulator !== null ? accumulator && next : next;
-    case SubscriptionFilterJoinOps.OR:
+    case FilterJoinOps.OR:
       // Note: Nullish value will be overwritten automatically by OR operator.
       return accumulator || next;
-    case SubscriptionFilterJoinOps.NOT:
+    case FilterJoinOps.NOT:
       // Note: Accumulator will already be have been inverted.
       return accumulator !== null ? accumulator && !next : !next;
     default:
@@ -102,20 +106,20 @@ export function hasArrayNotation(field: string): boolean {
 }
 
 export function compare(
-  operator: SubscriptionFilterOps,
+  operator: FilterOps,
   query: SubscriptionQueryDto,
   value: any,
 ): boolean {
   // Todo: Improve compare function by adding type conversion/validation based on the "dataType"
   //       field of the SubscriptionQueryDto.
   switch (operator) {
-    case SubscriptionFilterOps.EQUALS:
+    case FilterOps.EQUALS:
       return equals(query.value, value);
-    case SubscriptionFilterOps.NEQUALS:
+    case FilterOps.NEQUALS:
       return nequals(query.value, value);
-    case SubscriptionFilterOps.OR:
+    case FilterOps.OR:
       return or(query.value, value);
-    case SubscriptionFilterOps.MATCHES:
+    case FilterOps.MATCHES:
       return matches(query.value, value);
     default:
       throw new Error(

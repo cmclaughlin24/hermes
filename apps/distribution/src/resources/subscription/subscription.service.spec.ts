@@ -6,12 +6,13 @@ import { Sequelize } from 'sequelize-typescript';
 import {
   MockRepository,
   createMockRepository,
+  createMockSequelize,
 } from '../../../test/helpers/database.helpers';
 import {
   MockDistributionRuleService,
   createDistributionRuleServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { SubscriptionFilterJoinOps } from '../../common/constants/subscription-filter.constants';
+import { FilterJoinOps } from '../../common/constants/filter.constants';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -37,7 +38,7 @@ describe('SubscriptionService', () => {
         },
         {
           provide: Sequelize,
-          useValue: {},
+          useValue: createMockSequelize(),
         },
       ],
     }).compile();
@@ -63,7 +64,7 @@ describe('SubscriptionService', () => {
       const expectedResult: Subscription[] = [
         {
           id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
-          filterJoin: SubscriptionFilterJoinOps.AND,
+          filterJoin: FilterJoinOps.AND,
           url: 'http://localhost:9999/subscriptions',
         } as Subscription,
       ];
@@ -101,7 +102,7 @@ describe('SubscriptionService', () => {
       // Arrange.
       const expectedResult: Subscription = {
         id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
-        filterJoin: SubscriptionFilterJoinOps.AND,
+        filterJoin: FilterJoinOps.AND,
         url: 'http://localhost:9999/subscriptions',
       } as Subscription;
       subscriptionModel.findByPk.mockResolvedValue(expectedResult);
@@ -126,7 +127,7 @@ describe('SubscriptionService', () => {
   describe('create()', () => {
     const createSubscriptionDto: CreateSubscriptionDto = {
       id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
-      filterJoin: SubscriptionFilterJoinOps.NOT,
+      filterJoin: FilterJoinOps.NOT,
       queue: 'distribution',
       messageType: 'test',
       url: 'http://localhost:9999/subscriptions',

@@ -1,11 +1,11 @@
-export enum SubscriptionFilterOps {
+export enum FilterOps {
   EQUALS = 'equals',
   NEQUALS = 'nequals',
   OR = 'or',
   MATCHES = 'matches',
 }
 
-export enum SubscriptionFilterJoinOps {
+export enum FilterJoinOps {
   AND = 'and',
   OR = 'or',
   NOT = 'not',

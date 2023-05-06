@@ -7,7 +7,7 @@ import {
   IsUUID,
   ValidateNested
 } from 'class-validator';
-import { SubscriptionFilterJoinOps } from '../../../common/constants/subscription-filter.constants';
+import { FilterJoinOps } from '../../../common/constants/filter.constants';
 import { DistributionRuleExists } from '../../../common/decorators/distribution-rule-exists.decorator';
 import { SubscriptionFilterDto } from './subscription-filter.dto';
 
@@ -27,8 +27,8 @@ export class CreateSubscriptionDto {
   @IsString()
   url: string;
 
-  @IsEnum(SubscriptionFilterJoinOps)
-  filterJoin: SubscriptionFilterJoinOps;
+  @IsEnum(FilterJoinOps)
+  filterJoin: FilterJoinOps;
 
   @IsOptional()
   @ValidateNested()

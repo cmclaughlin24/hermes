@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
+import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -105,39 +106,39 @@ export class SubscriptionService {
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
   async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto) {
-    // Fixme: Run update operation on a transaction.
-    let subscription = await this.subscriptionModel.findByPk(id, {
-      include: [SubscriptionFilter],
-    });
+    return this.sequelize.transaction(async (transaction) => {
+      let subscription = await this.subscriptionModel.findByPk(id, {
+        include: [SubscriptionFilter],
+        transaction,
+      });
 
-    if (!subscription) {
-      throw new NotFoundException(`Subscription with id=${id} not found!`);
-    }
-
-    if (!_.isEmpty(updateSubscriptionDto.filters)) {
-      for (const filter of updateSubscriptionDto.filters) {
-        const existingFilter = subscription.filters.find(
-          (curr) => curr.field === filter.field,
-        );
-
-        if (!existingFilter) {
-          // Todo: Create a new filter for the subscription.
-        } else {
-          // Todo: Update the existing filter.
-        }
+      if (!subscription) {
+        throw new NotFoundException(`Subscription with id=${id} not found!`);
       }
-      // Todo: Remove filters that are no longer defined.
-    }
 
-    subscription = await subscription.update({
-      url: updateSubscriptionDto.url ?? subscription.url,
-      filterJoin: updateSubscriptionDto.filterJoin ?? subscription.filterJoin,
+      subscription = await subscription.update(
+        {
+          url: updateSubscriptionDto.url ?? subscription.url,
+          filterJoin:
+            updateSubscriptionDto.filterJoin ?? subscription.filterJoin,
+        },
+        { transaction },
+      );
+
+      // Note: All existing SubscriptionFilters should be removed on an empty array.
+      if (updateSubscriptionDto.filters) {
+        await this._updateSubscriptionFilters(
+          subscription,
+          updateSubscriptionDto,
+          transaction,
+        );
+      }
+
+      return new ApiResponseDto<Subscription>(
+        `Successfully updated subscription!`,
+        subscription,
+      );
     });
-
-    return new ApiResponseDto<Subscription>(
-      `Successfully updated subscription!`,
-      subscription,
-    );
   }
 
   /**
@@ -157,5 +158,24 @@ export class SubscriptionService {
     await subscription.destroy();
 
     return new ApiResponseDto(`Successfully deleted subscription ${id}!`);
+  }
+
+  private async _updateSubscriptionFilters(
+    subscription: Subscription,
+    updateSubscriptionDto: UpdateSubscriptionDto,
+    transaction: Transaction,
+  ) {
+    for (const filter of updateSubscriptionDto.filters) {
+      const existingFilter = subscription.filters.find(
+        (curr) => curr.field === filter.field,
+      );
+
+      if (!existingFilter) {
+        // Todo: Create a new filter for the subscription.
+      } else {
+        // Todo: Update the existing filter.
+      }
+    }
+    // Todo: Remove filters that are no longer defined.
   }
 }
