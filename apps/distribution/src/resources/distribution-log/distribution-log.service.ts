@@ -13,6 +13,8 @@ export class DistributionLogService {
   constructor(
     @InjectModel(DistributionLog)
     private readonly distributionLogModel: typeof DistributionLog,
+    @InjectModel(DistributionAttempt)
+    private readonly distributionAttemptModel: typeof DistributionAttempt,
     private readonly sequelize: Sequelize,
   ) {}
 
@@ -110,20 +112,38 @@ export class DistributionLogService {
   private async _createLog(state: MessageState) {
     return this.sequelize.transaction(async (transaction) => {
       // Todo: Create a new distribution log.
+      const log = await this.distributionLogModel.create({}, { transaction });
 
       if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
         // Todo: Create a new distribution attempt.
+        await this.distributionAttemptModel.create(
+          { logId: log.id },
+          { transaction },
+        );
       }
+
+      return log;
     });
   }
 
   private async _updateLog(state: MessageState) {
     return this.sequelize.transaction(async (transaction) => {
       // Todo: Update an existing distribution log.
+      let log = await this.distributionLogModel.findByPk('', { transaction });
+      
+      await log.update({}, { transaction });
 
       if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
         // Todo: Create a new distribution attempt.
+        await this.distributionAttemptModel.create(
+          { logId: log.id },
+          { transaction },
+        );
+
+        await log.reload({ transaction });
       }
+
+      return log;
     });
   }
 }

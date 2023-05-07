@@ -33,6 +33,10 @@ describe('DistributionLogService', () => {
           useValue: createMockRepository(),
         },
         {
+          provide: getModelToken(DistributionAttempt),
+          useValue: createMockRepository(),
+        },
+        {
           provide: Sequelize,
           useValue: createMockSequelize(),
         },
