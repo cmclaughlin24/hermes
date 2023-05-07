@@ -2,10 +2,13 @@ import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import {
   MockRepository,
   createMockRepository,
+  createMockSequelize,
 } from '../../../test/helpers/database.helpers';
+import { MessageState } from '../../common/constants/message-state.constants';
 import { DistributionLogService } from './distribution-log.service';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
@@ -17,8 +20,7 @@ describe('DistributionLogService', () => {
   const log = {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
     queue: 'unit-test',
-    state: 'complete',
-    data: {},
+    state: MessageState.COMPLETED,
     attempts: 2,
   } as DistributionLog;
 
@@ -29,6 +31,10 @@ describe('DistributionLogService', () => {
         {
           provide: getModelToken(DistributionLog),
           useValue: createMockRepository(),
+        },
+        {
+          provide: Sequelize,
+          useValue: createMockSequelize(),
         },
       ],
     }).compile();
@@ -70,7 +76,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { queue: { [Op.or]: queues } },
-        include: [DistributionAttempt]
+        include: [DistributionAttempt],
       });
     });
 
@@ -85,7 +91,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { messageType: { [Op.or]: messageTypes } },
-        include: [DistributionAttempt]
+        include: [DistributionAttempt],
       });
     });
 
@@ -100,7 +106,7 @@ describe('DistributionLogService', () => {
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
         where: { state: { [Op.or]: states } },
-        include: [DistributionAttempt]
+        include: [DistributionAttempt],
       });
     });
 
@@ -156,4 +162,6 @@ describe('DistributionLogService', () => {
       await expect(service.findOne(id)).rejects.toEqual(expectedResult);
     });
   });
+
+  describe('log()', () => {});
 });

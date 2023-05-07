@@ -7,6 +7,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { MessageState } from '../../../common/constants/message-state.constants';
 import { DistributionAttempt } from './distribution-attempt.entity';
 
 @Table
@@ -25,7 +26,7 @@ export class DistributionLog extends Model {
   messageType: string;
 
   @Column
-  state: string;
+  state: MessageState;
 
   @Column
   attempts: number;
