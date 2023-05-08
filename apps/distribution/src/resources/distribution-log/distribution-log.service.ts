@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { MessageState } from '../../common/constants/message-state.constants';
 import { MessageDto } from '../../common/dto/message.dto';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
@@ -11,6 +13,9 @@ export class DistributionLogService {
   constructor(
     @InjectModel(DistributionLog)
     private readonly distributionLogModel: typeof DistributionLog,
+    @InjectModel(DistributionAttempt)
+    private readonly distributionAttemptModel: typeof DistributionAttempt,
+    private readonly sequelize: Sequelize,
   ) {}
 
   /**
@@ -55,17 +60,17 @@ export class DistributionLogService {
   async log(
     queue: string,
     message: MessageDto,
-    state: string,
+    state: MessageState,
     result: any,
     error: any,
   ) {
     const log = await this.distributionLogModel.findByPk(message.id);
 
     if (!log) {
-      // Todo: Create a new distribution log.
+      return this._createLog(state);
     }
 
-    // Todo: Update an existing distribution log.
+    return this._updateLog(state);
   }
 
   /**
@@ -102,5 +107,43 @@ export class DistributionLogService {
     }
 
     return Object.keys(where).length > 0 ? where : null;
+  }
+
+  private async _createLog(state: MessageState) {
+    return this.sequelize.transaction(async (transaction) => {
+      // Todo: Create a new distribution log.
+      const log = await this.distributionLogModel.create({}, { transaction });
+
+      if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
+        // Todo: Create a new distribution attempt.
+        await this.distributionAttemptModel.create(
+          { logId: log.id },
+          { transaction },
+        );
+      }
+
+      return log;
+    });
+  }
+
+  private async _updateLog(state: MessageState) {
+    return this.sequelize.transaction(async (transaction) => {
+      // Todo: Update an existing distribution log.
+      let log = await this.distributionLogModel.findByPk('', { transaction });
+      
+      await log.update({}, { transaction });
+
+      if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
+        // Todo: Create a new distribution attempt.
+        await this.distributionAttemptModel.create(
+          { logId: log.id },
+          { transaction },
+        );
+
+        await log.reload({ transaction });
+      }
+
+      return log;
+    });
   }
 }
