@@ -3,6 +3,7 @@ import {
   MockDistributionLogService,
   createDistributionLogServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { MessageState } from '../../common/types/message-state.types';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
 import { DistributionLog } from './entities/distribution-log.entity';
@@ -13,7 +14,7 @@ describe('DistributionLogController', () => {
 
   const log = {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
-    state: 'complete',
+    state: MessageState.COMPLETED,
     data: {},
     attempts: 2,
   } as DistributionLog;
