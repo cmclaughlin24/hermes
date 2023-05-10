@@ -6,7 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CreateDistributionRuleDto } from '../../distribution-rule/dto/create-distribution-rule.dto';
+import { DistributionEventRuleDto } from './distribution-event-rule.dto';
 
 export class CreateDistributionEventDto {
   @IsString()
@@ -25,6 +25,6 @@ export class CreateDistributionEventDto {
 
   @ValidateNested()
   @ArrayMinSize(1)
-  @Type(() => CreateDistributionRuleDto)
-  rules: CreateDistributionRuleDto[];
+  @Type(() => DistributionEventRuleDto)
+  rules: DistributionEventRuleDto[];
 }

@@ -69,8 +69,8 @@ export class DistributionRuleService {
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
-      '',
-      '',
+      createDistributionRuleDto.queue,
+      createDistributionRuleDto.messageType,
     );
 
     const distributionRule = await this.distributionRuleModel.create({

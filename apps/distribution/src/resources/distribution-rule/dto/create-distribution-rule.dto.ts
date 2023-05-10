@@ -9,8 +9,20 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
 
 export class CreateDistributionRuleDto {
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  queue: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  @DistributionEventExists()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  messageType: string;
+
   @IsJSON()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) =>
