@@ -5,67 +5,64 @@ import {
   Get,
   HttpStatus,
   Param,
-  ParseArrayPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
-import { DistributionRuleService } from './distribution-rule.service';
-import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
-import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
+import { DistributionEventService } from './distribution-event.service';
+import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
+import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 
-@ApiTags('Distribution Rule')
-@Controller('distribution-rule')
-export class DistributionRuleController {
+@ApiTags('Distribution Event')
+@Controller('distribution-event')
+export class DistributionEventController {
   constructor(
-    private readonly distributionRuleService: DistributionRuleService,
+    private readonly distributionEventService: DistributionEventService,
   ) {}
 
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find distribution rule(s) by their queue(s).',
+    summary: 'Find distribution event(s).',
     security: [],
-  })
-  @ApiQuery({
-    name: 'queue',
-    required: false,
-    type: String,
-    isArray: true,
-    description: 'A list of distribution queues.',
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
-    @Query(
-      'queue',
-      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
-    )
-    queues: string[],
-  ) {
-    return this.distributionRuleService.findAll(queues);
+  findAll() {
+    return this.distributionEventService.findAll();
   }
 
   @Get(':queue/:messageType')
   @Public()
   @ApiOperation({
-    summary: 'Find a distribution rule for a queue and message type.',
+    summary: 'Find a distribution event for a queue and message type.',
     security: [],
+  })
+  @ApiQuery({
+    name: 'includeRules',
+    required: false,
+    type: Boolean,
+    description: 'Include the list of distribution rules for an event.',
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(
     @Param('queue') queue: string,
     @Param('messageType') messageType: string,
+    @Query('includeRules') includeRules: boolean,
   ) {
-    return this.distributionRuleService.findOne(queue, messageType);
+    return this.distributionEventService.findOne(
+      queue,
+      messageType,
+      includeRules,
+    );
   }
 
   @Post()
   @ApiOperation({
-    summary: 'Create a distribution rule.',
+    summary: 'Create a distribution event.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
@@ -81,13 +78,14 @@ export class DistributionRuleController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createDistributionRuleDto: CreateDistributionRuleDto) {
-    return this.distributionRuleService.create(createDistributionRuleDto);
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  create(@Body() createDistributionEventDto: CreateDistributionEventDto) {
+    return this.distributionEventService.create(createDistributionEventDto);
   }
 
   @Patch(':queue/:messageType')
   @ApiOperation({
-    summary: 'Update a distribution rule.',
+    summary: 'Update a distribution event.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
@@ -107,18 +105,18 @@ export class DistributionRuleController {
   update(
     @Param('queue') queue: string,
     @Param('messageType') messageType: string,
-    @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
+    @Body() updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
-    return this.distributionRuleService.update(
+    return this.distributionEventService.update(
       queue,
       messageType,
-      updateDistributionRuleDto,
+      updateDistributionEventDto,
     );
   }
 
   @Delete(':queue/:messageType')
   @ApiOperation({
-    summary: 'Remove a distribution rule.',
+    summary: 'Remove a distribution event.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
@@ -135,6 +133,6 @@ export class DistributionRuleController {
     @Param('queue') queue: string,
     @Param('messageType') messageType: string,
   ) {
-    return this.distributionRuleService.remove(queue, messageType);
+    return this.distributionEventService.remove(queue, messageType);
   }
 }
