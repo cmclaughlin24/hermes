@@ -6,7 +6,7 @@ import {
   Model,
   Table
 } from 'sequelize-typescript';
-import { FilterJoinOps } from '../../../common/constants/filter.constants';
+import { FilterJoinOps } from '../../../common/types/filter.types';
 import { DistributionRule } from '../../distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';
 

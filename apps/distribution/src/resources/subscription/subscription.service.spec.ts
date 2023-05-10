@@ -4,15 +4,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
 import { Sequelize } from 'sequelize-typescript';
 import {
-  MockRepository,
-  createMockRepository,
-  createMockSequelize,
+    MockRepository,
+    createMockRepository,
+    createMockSequelize,
 } from '../../../test/helpers/database.helpers';
 import {
-  MockDistributionRuleService,
-  createDistributionRuleServiceMock,
+    MockDistributionRuleService,
+    createDistributionRuleServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { FilterJoinOps } from '../../common/constants/filter.constants';
+import { FilterJoinOps } from '../../common/types/filter.types';
 import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
