@@ -28,10 +28,28 @@ export class DistributionEventController {
     summary: 'Find distribution event(s).',
     security: [],
   })
+  @ApiQuery({
+    name: 'includeRules',
+    required: false,
+    type: Boolean,
+    description: 'Include the list of distribution rules for each event.',
+  })
+  @ApiQuery({
+    name: 'includeSubscriptions',
+    required: false,
+    type: Boolean,
+    description: 'Include the list of subscriptions for each event.',
+  })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.distributionEventService.findAll();
+  findAll(
+    @Query('includeRules') includeRules: boolean,
+    @Query('includeSubscriptions') includeSubscriptions: boolean,
+  ) {
+    return this.distributionEventService.findAll(
+      includeRules,
+      includeSubscriptions,
+    );
   }
 
   @Get(':queue/:messageType')
@@ -46,17 +64,25 @@ export class DistributionEventController {
     type: Boolean,
     description: 'Include the list of distribution rules for an event.',
   })
+  @ApiQuery({
+    name: 'includeSubscriptions',
+    required: false,
+    type: Boolean,
+    description: 'Include the list of subscriptions for an event.',
+  })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(
     @Param('queue') queue: string,
     @Param('messageType') messageType: string,
     @Query('includeRules') includeRules: boolean,
+    @Query('includeSubscriptions') includeSubscriptions: boolean,
   ) {
     return this.distributionEventService.findOne(
       queue,
       messageType,
       includeRules,
+      includeSubscriptions,
     );
   }
 

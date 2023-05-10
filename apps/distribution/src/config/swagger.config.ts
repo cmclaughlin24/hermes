@@ -41,7 +41,7 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Subscription',
-      'View and configure subscriptions for a queue and message type.',
+      'View and configure subscriptions for a distribution event.',
     )
     .build();
 

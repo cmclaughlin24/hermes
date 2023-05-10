@@ -7,7 +7,7 @@ import {
   Table
 } from 'sequelize-typescript';
 import { FilterJoinOps } from '../../../common/types/filter.types';
-import { DistributionRule } from '../../distribution-rule/entities/distribution-rule.entity';
+import { DistributionEvent } from '../../distribution-event/entities/distribution-event.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';
 
 @Table
@@ -17,8 +17,8 @@ export class Subscription extends Model {
   })
   id: string;
 
-  @ForeignKey(() => DistributionRule)
-  distributionRuleId: string;
+  @ForeignKey(() => DistributionEvent)
+  distributionEventId: string;
 
   @Column
   url: string;
@@ -26,8 +26,8 @@ export class Subscription extends Model {
   @Column
   filterJoin: FilterJoinOps;
 
-  @BelongsTo(() => DistributionRule)
-  distributionRule: DistributionRule;
+  @BelongsTo(() => DistributionEvent)
+  distributionEvent: DistributionEvent;
 
   @HasMany(() => SubscriptionFilter, { onDelete: 'CASCADE' })
   filters: SubscriptionFilter[];

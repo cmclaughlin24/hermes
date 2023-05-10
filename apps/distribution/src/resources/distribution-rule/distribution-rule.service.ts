@@ -98,7 +98,7 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully created distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+      `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType}!`,
       distributionRule,
     );
   }
@@ -143,7 +143,7 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully updated distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+      `Successfully updated distribution rule for queue=${updateDistributionRuleDto.queue} messageType=${updateDistributionRuleDto.messageType}!`,
       distributionRule,
     );
   }

@@ -1,4 +1,6 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { DistributionRule } from '../../distribution-rule/entities/distribution-rule.entity';
+import { Subscription } from '../../subscription/entities/subscription.entity';
 
 @Table({
   indexes: [
@@ -24,4 +26,10 @@ export class DistributionEvent extends Model {
 
   @Column(DataType.ARRAY(DataType.STRING))
   metadataLabels: string[];
+
+  @HasMany(() => DistributionRule)
+  rules: DistributionRule[];
+
+  @HasMany(() => Subscription)
+  subscriptions: Subscription[];
 }

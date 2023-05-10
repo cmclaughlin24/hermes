@@ -7,6 +7,7 @@ import { DistributionEvent } from './entities/distribution-event.entity';
 @Module({
   imports: [SequelizeModule.forFeature([DistributionEvent])],
   controllers: [DistributionEventController],
-  providers: [DistributionEventService]
+  providers: [DistributionEventService],
+  exports: [DistributionEventService],
 })
 export class DistributionEventModule {}

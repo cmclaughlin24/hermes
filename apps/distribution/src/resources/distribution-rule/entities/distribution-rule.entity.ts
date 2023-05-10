@@ -1,35 +1,33 @@
 import { DeliveryMethods } from '@notification/common';
 import {
+  BelongsTo,
   Column,
   DataType,
   Default,
-  HasMany,
+  ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Subscription } from '../../subscription/entities/subscription.entity';
+import { DistributionEvent } from '../../distribution-event/entities/distribution-event.entity';
 
 @Table({
   indexes: [
     {
       unique: true,
-      fields: ['queue', 'messageType'],
+      fields: ['distributionEventId', 'metadata'],
     },
   ],
 })
 export class DistributionRule extends Model {
+  @Column({ primaryKey: true, type: DataType.UUID })
+  @ForeignKey(() => DistributionEvent)
+  distributionEventId: string;
+
   @Column({
+    allowNull: true,
     primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
   })
-  id: string;
-
-  @Column
-  queue: string;
-
-  @Column
-  messageType: string;
+  metadata: string;
 
   @Column({
     type: DataType.ARRAY(
@@ -58,6 +56,6 @@ export class DistributionRule extends Model {
   @Column
   checkDeliveryWindow: boolean;
 
-  @HasMany(() => Subscription)
-  subscriptions: Subscription[];
+  @BelongsTo(() => DistributionEvent)
+  event: DistributionEvent;
 }

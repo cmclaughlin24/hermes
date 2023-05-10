@@ -6,15 +6,15 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
-import { DistributionRuleService } from '../../resources/distribution-rule/distribution-rule.service';
+import { DistributionEventService } from '../../resources/distribution-event/distribution-event.service';
 
-@ValidatorConstraint({ name: 'DistributionRuleExists', async: true })
+@ValidatorConstraint({ name: 'DistributionEventExists', async: true })
 @Injectable()
-export class DistributionRuleExistsRule
+export class DistributionEventExistsRule
   implements ValidatorConstraintInterface
 {
   constructor(
-    private readonly distributionRuleService: DistributionRuleService,
+    private readonly distributionEventService: DistributionEventService,
   ) {}
 
   async validate(
@@ -22,7 +22,7 @@ export class DistributionRuleExistsRule
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
-      await this.distributionRuleService.findOne(
+      await this.distributionEventService.findOne(
         validationArguments.object['queue'],
         messageType,
       );
@@ -34,18 +34,18 @@ export class DistributionRuleExistsRule
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `Distribution Rule for queue=${validationArguments.object['queue']} messageType=${validationArguments.value} doesn't exist`;
+    return `Distribution Event for queue=${validationArguments.object['queue']} messageType=${validationArguments.value} doesn't exist`;
   }
 }
 
-export function DistributionRuleExists(validationOptions?: ValidationOptions) {
+export function DistributionEventExists(validationOptions?: ValidationOptions) {
   return function (object: any, propertyName) {
     registerDecorator({
-      name: 'DistributionRuleExists',
+      name: 'DistributionEventExists',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      validator: DistributionRuleExistsRule,
+      validator: DistributionEventExistsRule,
     });
   };
 }

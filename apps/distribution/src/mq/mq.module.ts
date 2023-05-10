@@ -4,8 +4,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CommonModule } from '../common/common.module';
 import { rabbitmqFactory } from '../config/rabbitmq.config';
+import { DistributionEventModule } from '../resources/distribution-event/distribution-event.module';
 import { DistributionLogModule } from '../resources/distribution-log/distribution-log.module';
-import { DistributionRuleModule } from '../resources/distribution-rule/distribution-rule.module';
 import { DistributionConsumer } from './consumers/distribution-consumer/distribution.consumer';
 import { SubscriptionConsumer } from './consumers/subscription-consumer/subscription.consumer';
 
@@ -25,7 +25,7 @@ import { SubscriptionConsumer } from './consumers/subscription-consumer/subscrip
       prefix: process.env.BULLMQ_NOTIFICATION_QUEUE_PREFIX,
     }),
     CommonModule,
-    DistributionRuleModule,
+    DistributionEventModule,
     DistributionLogModule,
   ],
   providers: [DistributionConsumer, SubscriptionConsumer],
