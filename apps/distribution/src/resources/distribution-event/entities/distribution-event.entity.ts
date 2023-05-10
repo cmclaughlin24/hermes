@@ -27,9 +27,9 @@ export class DistributionEvent extends Model {
   @Column(DataType.ARRAY(DataType.STRING))
   metadataLabels: string[];
 
-  @HasMany(() => DistributionRule)
+  @HasMany(() => DistributionRule, { onDelete: 'CASCADE' })
   rules: DistributionRule[];
 
-  @HasMany(() => Subscription)
+  @HasMany(() => Subscription, { onDelete: 'CASCADE' })
   subscriptions: Subscription[];
 }

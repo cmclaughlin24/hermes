@@ -162,7 +162,7 @@ export class SubscriptionService {
     // Note: The delete is cascaded to the SubscriptionFilters table.
     await subscription.destroy();
 
-    return new ApiResponseDto(`Successfully deleted subscription ${id}!`);
+    return new ApiResponseDto(`Successfully deleted subscription id=${id}!`);
   }
 
   /**
