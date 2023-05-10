@@ -1,14 +1,11 @@
 import {
-  BadRequestException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
-import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
-import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
@@ -47,27 +44,14 @@ export class DistributionRuleService {
   /**
    * Yields a DistributionRule or throws a NotFoundException if the repository
    * returns null or undefined.
-   * @param {string} queue
-   * @param {string} messageType
-   * @param {boolean} includeSubscriptions
+   * @param {string} id
    * @returns
    */
-  async findOne(
-    queue: string,
-    messageType: string,
-    includeSubscriptions: boolean = false,
-  ) {
-    const distributionRule = await this.distributionRuleModel.findOne({
-      where: { queue, messageType },
-      include: includeSubscriptions
-        ? [{ model: Subscription, include: [SubscriptionFilter] }]
-        : [],
-    });
+  async findOne(id: string) {
+    const distributionRule = await this.distributionRuleModel.findByPk(id);
 
     if (!distributionRule) {
-      throw new NotFoundException(
-        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
-      );
+      throw new NotFoundException(`Distribution Rule for id=${id} not found!`);
     }
 
     return distributionRule;
@@ -80,25 +64,25 @@ export class DistributionRuleService {
    * @returns {Promise<ApiResponseDto<DistributionRule>>}
    */
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
-    const existingRule = await this.distributionRuleModel.findOne({
-      where: {
-        queue: createDistributionRuleDto.queue,
-        messageType: createDistributionRuleDto.messageType,
-      },
-    });
+    // const existingRule = await this.distributionRuleModel.findOne({
+    //   where: {
+    //     queue: createDistributionRuleDto.queue,
+    //     messageType: createDistributionRuleDto.messageType,
+    //   },
+    // });
 
-    if (existingRule) {
-      throw new BadRequestException(
-        `Distribution Rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType} already exists!`,
-      );
-    }
+    // if (existingRule) {
+    //   throw new BadRequestException(
+    //     `Distribution Rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType} already exists!`,
+    //   );
+    // }
 
     const distributionRule = await this.distributionRuleModel.create({
       ...createDistributionRuleDto,
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType}!`,
+      `Successfully created distribution rule for queue=!`,
       distributionRule,
     );
   }
@@ -143,7 +127,7 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto<DistributionRule>(
-      `Successfully updated distribution rule for queue=${updateDistributionRuleDto.queue} messageType=${updateDistributionRuleDto.messageType}!`,
+      `Successfully updated distribution rule for queue=!`,
       distributionRule,
     );
   }

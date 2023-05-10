@@ -1,18 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DeliveryMethods } from '@notification/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsJSON,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateDistributionRuleDto {
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
-  queue: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
-  messageType: string;
+  @IsJSON()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) =>
+    value ? JSON.stringify(value) : null,
+  )
+  metadata: string;
 
   @IsEnum(DeliveryMethods, { each: true })
   deliveryMethods: DeliveryMethods[];

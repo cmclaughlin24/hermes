@@ -19,14 +19,17 @@ import { DistributionEvent } from '../../distribution-event/entities/distributio
   ],
 })
 export class DistributionRule extends Model {
-  @Column({ primaryKey: true, type: DataType.UUID })
+  @Column({
+    primaryKey: true,
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4
+  })
+  id: string;
+
   @ForeignKey(() => DistributionEvent)
   distributionEventId: string;
 
-  @Column({
-    allowNull: true,
-    primaryKey: true,
-  })
+  @Column
   metadata: string;
 
   @Column({

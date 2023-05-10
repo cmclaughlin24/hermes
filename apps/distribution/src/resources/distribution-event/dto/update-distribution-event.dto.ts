@@ -1,6 +1,8 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 import { CreateDistributionEventDto } from './create-distribution-event.dto';
 
-export class UpdateDistributionEventDto extends PartialType(
+export class UpdateDistributionEventDto extends OmitType(
   CreateDistributionEventDto,
-) {}
+  ['queue', 'messageType', 'rules']
+) {
+}

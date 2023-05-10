@@ -87,9 +87,12 @@ export class DistributionEventService {
       );
     }
 
-    const distributionEvent = await this.distributionEventModel.create({
-      ...createDistributionEventDto,
-    });
+    const distributionEvent = await this.distributionEventModel.create(
+      {
+        ...createDistributionEventDto,
+      },
+      { include: [DistributionRule] },
+    );
 
     return new ApiResponseDto<DistributionEvent>(
       `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,

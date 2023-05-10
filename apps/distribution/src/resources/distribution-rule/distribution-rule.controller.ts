@@ -48,19 +48,16 @@ export class DistributionRuleController {
     return this.distributionRuleService.findAll(queues);
   }
 
-  @Get(':queue/:messageType')
+  @Get(':id')
   @Public()
   @ApiOperation({
-    summary: 'Find a distribution rule for a queue and message type.',
+    summary: "Find a distribution rule by it's id.",
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(
-    @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
-  ) {
-    return this.distributionRuleService.findOne(queue, messageType);
+  findOne(@Param('id') id: string) {
+    return this.distributionRuleService.findOne(id);
   }
 
   @Post()
