@@ -1,6 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiResponseDto } from '@notification/common';
 import {
   MockRepository,
   createMockRepository,
@@ -9,6 +10,7 @@ import { DistributionRule } from '../distribution-rule/entities/distribution-rul
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { DistributionEventService } from './distribution-event.service';
+import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 import { DistributionEvent } from './entities/distribution-event.entity';
 
 describe('DistributionEventService', () => {
@@ -272,6 +274,8 @@ describe('DistributionEventService', () => {
 
   describe('update()', () => {
     const distributionEvent = { update: jest.fn() };
+    const queue = 'unit-test';
+    const messageType = 'unit-test';
 
     afterEach(() => {
       distributionEvent.update.mockClear();
@@ -279,23 +283,52 @@ describe('DistributionEventService', () => {
 
     it('should update a distribution event', async () => {
       // Arrange.
-      // Act
-      //Assert.
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
+      // Act.
+      await service.update(
+        queue,
+        messageType,
+        {} as UpdateDistributionEventDto,
+      );
+
+      // Assert.
+      expect(distributionEvent.update).toHaveBeenCalled();
     });
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
+      const expectedResult = new ApiResponseDto<DistributionEvent>(
+        `Successfully updated distribution event for queue=${queue} messageType=${messageType}!`,
+        distributionEvent,
+      );
+      distributionEvent.update.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
       // Act/Assert.
+      await expect(
+        service.update(queue, messageType, {} as UpdateDistributionEventDto),
+      ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+      );
+      distributionEventModel.findOne.mockResolvedValue(null);
+
       // Act/Assert.
+      await expect(
+        service.update(queue, messageType, {} as UpdateDistributionEventDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
   describe('remove()', () => {
     const distributionEvent = { destroy: jest.fn() };
+    const queue = 'unit-test';
+    const messageType = 'unit-test';
 
     afterEach(() => {
       distributionEvent.destroy.mockClear();
@@ -303,18 +336,39 @@ describe('DistributionEventService', () => {
 
     it('should remove a distribution event', async () => {
       // Arrange.
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
       // Act.
+      await service.remove(queue, messageType);
+
       // Assert.
+      expect(distributionEvent.destroy).toHaveBeenCalled();
     });
 
     it('should yield an "ApiResposneDto" object', async () => {
       // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully deleted distribution event for queue=${queue} messageType=${messageType}!`,
+      );
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
       // Act/Assert.
+      await expect(service.remove(queue, messageType)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should yield a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+      );
+      distributionEventModel.findOne.mockResolvedValue(null);
+
       // Act/Assert.
+      await expect(service.remove(queue, messageType)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 });
