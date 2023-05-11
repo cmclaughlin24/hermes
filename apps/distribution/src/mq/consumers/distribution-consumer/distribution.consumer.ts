@@ -59,9 +59,11 @@ export class DistributionConsumer {
       if (_.isEmpty(subscriptionMembers)) {
         return;
       }
-
+      
+      // Fixme: Determine with rule should be used based on the metadata labels.
+      const distributionRule = distributionEvent.rules[0];
+      
       const jobs = createNotificationJobs(
-        // Fixme: Determine with rule should be used based on the metadata labels.
         distributionEvent.rules[0],
         subscriptionMembers,
         message.payload,
