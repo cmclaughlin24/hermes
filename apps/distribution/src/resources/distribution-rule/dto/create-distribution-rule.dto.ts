@@ -31,8 +31,8 @@ export class CreateDistributionRuleDto {
 
   @ApiProperty({
     description:
-      'Label selectors used to identify which rule should be applied for an event (for a ' +
-      'rule to be selected, all selectors must match)',
+      'Label selectors (key-value pairs) used to identify which rule should be applied for an ' +
+      'event (for a rule to be selected, all selectors must match or the default rule will be applied)',
     example: {
       languageCode: 'en-US',
     },
