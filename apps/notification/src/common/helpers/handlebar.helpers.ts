@@ -1,5 +1,5 @@
 import Handlebars from 'handlebars';
-import * as moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 // Note: Handlebars Helpers registered for use in templates in the app.module.ts
 //       on application start.
@@ -9,5 +9,7 @@ Handlebars.registerHelper('formatDate', (date, timeZone, format) => {
     return null;
   }
 
-  return moment(date).tz(timeZone).format(format);
+  return DateTime.fromJSDate(new Date(date), { zone: timeZone }).toFormat(
+    format,
+  );
 });
