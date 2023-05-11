@@ -1,7 +1,7 @@
 import { DeliveryMethods } from '@notification/common';
 import { BulkJobOptions } from 'bullmq';
-import { utcToZonedTime } from 'date-fns-tz';
 import * as _ from 'lodash';
+import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
 
@@ -76,19 +76,19 @@ export function hasDeliveryWindow(
     return true;
   }
 
-  const zoneNow = utcToZonedTime(new Date(), member.timeZone);
-  const deliveryWindows = member.getDeliveryWindows(zoneNow.getDay());
+  const zonedNow = DateTime.now().setZone(member.timeZone);
+  const deliveryWindows = member.getDeliveryWindows(zonedNow.weekday - 1);
 
   if (_.isEmpty(deliveryWindows)) {
     return false;
   }
 
   return deliveryWindows.some((window) => {
-    const startTime = new Date();
-    startTime.setDate(zoneNow.getDate());
-    startTime.setHours(window.atHour);
-    startTime.setMinutes(window.atMinute);
-    return isBetweenTimes(zoneNow, startTime, window.duration);
+    const startTime = zonedNow.set({
+      hour: window.atHour,
+      minute: window.atMinute,
+    });
+    return isBetweenTimes(zonedNow, startTime, window.duration);
   });
 }
 
@@ -101,16 +101,17 @@ export function hasDeliveryWindow(
  * @returns {boolean}
  */
 export function isBetweenTimes(
-  time: Date,
-  startTime: Date,
+  time: DateTime,
+  startTime: DateTime,
   duration: number,
 ): boolean {
   const durationInMilliseconds =
     duration * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
-  const endTime = new Date(startTime.getTime() + durationInMilliseconds);
+  const endTime = startTime.plus({ milliseconds: durationInMilliseconds });
 
   return (
-    time.getTime() >= startTime.getTime() && time.getTime() <= endTime.getTime()
+    time.diff(startTime).toObject().milliseconds >= 0 &&
+    time.diff(endTime).toObject().milliseconds <= 0
   );
 }
 
