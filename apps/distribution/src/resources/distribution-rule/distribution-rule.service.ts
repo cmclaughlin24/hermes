@@ -144,7 +144,7 @@ export class DistributionRuleService {
     await distributionRule.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted distribution rules id=${id}`,
+      `Successfully deleted distribution rule id=${id}`,
     );
   }
 

@@ -15,8 +15,8 @@ describe('DistributionRuleController', () => {
   let service: MockDistributionRuleService;
 
   const distributionRule: DistributionRule = {
-    queue: 'unit-test',
-    messageType: 'unit-test',
+    id: '',
+    distributionEventId: '',
     emailTemplate: 'unit-test',
     deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
     checkDeliveryWindow: false,
@@ -50,7 +50,7 @@ describe('DistributionRuleController', () => {
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.findAll([])).resolves.toEqual(expectedResult);
+      await expect(controller.findAll([], [])).resolves.toEqual(expectedResult);
     });
   });
 
@@ -61,15 +61,19 @@ describe('DistributionRuleController', () => {
       service.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.findOne('', '')).resolves.toEqual(expectedResult);
+      await expect(controller.findOne('')).resolves.toEqual(expectedResult);
     });
   });
 
   describe('create()', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
+      const createDistributionRuleDto = {
+        queue: 'unit-test',
+        messageType: 'unit-test',
+      } as CreateDistributionRuleDto;
       const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully created distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType}!`,
         distributionRule,
       );
       service.create.mockResolvedValue(expectedResult);
@@ -85,14 +89,14 @@ describe('DistributionRuleController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully updated distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+        `Successfully updated distribution rule!`,
         distributionRule,
       );
       service.update.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        controller.update('', '', {} as UpdateDistributionRuleDto),
+        controller.update('', {} as UpdateDistributionRuleDto),
       ).resolves.toEqual(expectedResult);
     });
   });
@@ -101,14 +105,12 @@ describe('DistributionRuleController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+        `Successfully deleted distribution rule id=${distributionRule.id}!`,
       );
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.remove('', '')).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(controller.remove('')).resolves.toEqual(expectedResult);
     });
   });
 });
