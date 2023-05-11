@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
@@ -10,6 +10,7 @@ import { DistributionRule } from '../distribution-rule/entities/distribution-rul
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { DistributionEventService } from './distribution-event.service';
+import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 import { DistributionEvent } from './entities/distribution-event.entity';
 
@@ -251,24 +252,55 @@ describe('DistributionEventService', () => {
   });
 
   describe('create()', () => {
+    const distributionEvent = {
+      queue: 'unit-test',
+      messageType: 'unit-test',
+    };
+
     afterEach(() => {
       distributionEventModel.create.mockClear();
     });
 
     it('should create a distribution event', async () => {
       // Arrange.
+      distributionEventModel.create.mockResolvedValue(distributionEvent);
+
       // Act.
+      await service.create({} as CreateDistributionEventDto);
+
       // Assert.
+      expect(distributionEventModel.create).toHaveBeenCalled();
     });
 
     it('should yield an "ApiResponseDto" object with the create distribution event', async () => {
       // Arrange.
+      const expectedResult = new ApiResponseDto<DistributionEvent>(
+        `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,
+        distributionEvent,
+      );
+      distributionEventModel.create.mockResolvedValue(distributionEvent);
+
       // Act/Assert.
+      await expect(
+        service.create({} as CreateDistributionEventDto),
+      ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "BadRequestException" if a distribution event already exists', async () => {
       // Arrange.
+      const createDistributionEventDto = {
+        queue: 'unit-test',
+        messageType: 'unit-test',
+      } as CreateDistributionEventDto;
+      const expectedResult = new BadRequestException(
+        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} already exists!`,
+      );
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
       // Act/Assert.
+      await expect(service.create(createDistributionEventDto)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 
