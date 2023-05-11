@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';
 import { ConsumerModule } from './consumers/consumer.module';
