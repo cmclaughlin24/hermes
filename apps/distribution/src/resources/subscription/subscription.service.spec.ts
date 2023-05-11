@@ -234,7 +234,7 @@ describe('SubscriptionService', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription ${id}!`,
+        `Successfully deleted subscription id=${id}!`,
       );
       subscriptionModel.findByPk.mockResolvedValue(subscription);
 

@@ -73,13 +73,16 @@ export class DistributionRuleService {
       createDistributionRuleDto.messageType,
     );
 
+    // Bug: Because of the way constraints are handled, if the metadata is equal to null,
+    //      the constraint for a unique combination of distributionEventId and metadata
+    //      will not be applied.
     const distributionRule = await this.distributionRuleModel.create({
       distributionEventId: distributionEvent.id,
       ...createDistributionRuleDto,
     });
 
     return new ApiResponseDto(
-      `Successfully created new distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}`,
+      `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,
       distributionRule,
     );
   }
@@ -144,7 +147,7 @@ export class DistributionRuleService {
     await distributionRule.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted distribution rule id=${id}`,
+      `Successfully deleted distribution rule id=${id}!`,
     );
   }
 
