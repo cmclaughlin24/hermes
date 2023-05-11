@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
+import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
@@ -175,7 +176,7 @@ export class DistributionEventService {
     }
 
     if (includeSubscriptions) {
-      includes.push({ model: Subscription });
+      includes.push({ model: Subscription, include: [SubscriptionFilter] });
     }
 
     return includes;

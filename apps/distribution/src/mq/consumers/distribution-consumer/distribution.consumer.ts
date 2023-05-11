@@ -2,6 +2,7 @@ import { Nack, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { hasMetadata } from '@notification/common';
 import { ConsumeMessage } from 'amqplib';
 import { DistributionEventService } from 'apps/distribution/src/resources/distribution-event/distribution-event.service';
 import { Queue } from 'bullmq';
@@ -10,6 +11,7 @@ import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
+import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 
 @Injectable()
 export class DistributionConsumer {
@@ -59,12 +61,14 @@ export class DistributionConsumer {
       if (_.isEmpty(subscriptionMembers)) {
         return;
       }
-      
-      // Fixme: Determine with rule should be used based on the metadata labels.
-      const distributionRule = distributionEvent.rules[0];
-      
+
+      const distributionRuleIdx = this._getDistributionRuleIdx(
+        distributionEvent,
+        message.metadata,
+      );
+
       const jobs = createNotificationJobs(
-        distributionEvent.rules[0],
+        distributionEvent.rules[distributionRuleIdx],
         subscriptionMembers,
         message.payload,
       );
@@ -109,5 +113,26 @@ export class DistributionConsumer {
    */
   private _createLogPrefix(functionName: string, messageId: string): string {
     return `[${DistributionConsumer.name} ${functionName}] Message ${messageId}`;
+  }
+
+  private _getDistributionRuleIdx(
+    distributionEvent: DistributionEvent,
+    metadata: any,
+  ): number {
+    let idx = distributionEvent.rules.findIndex((rule) =>
+      hasMetadata(distributionEvent.metadataLabels, JSON.parse(rule.metadata), metadata),
+    );
+
+    if (idx < 0) {
+      idx = distributionEvent.rules.findIndex((rule) => rule.metadata === null);
+
+      if (idx < 0) {
+        throw new Error(
+          `Distribution Event queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} does not have a default distribution rule defined!`,
+        );
+      }
+    }
+
+    return idx;
   }
 }
