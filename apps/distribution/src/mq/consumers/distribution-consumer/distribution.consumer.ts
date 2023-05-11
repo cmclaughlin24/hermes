@@ -2,14 +2,16 @@ import { Nack, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { hasMetadata } from '@notification/common';
 import { ConsumeMessage } from 'amqplib';
+import { DistributionEventService } from 'apps/distribution/src/resources/distribution-event/distribution-event.service';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
-import { DistributionRuleService } from '../../../resources/distribution-rule/distribution-rule.service';
+import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 
 @Injectable()
 export class DistributionConsumer {
@@ -19,7 +21,7 @@ export class DistributionConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly configService: ConfigService,
-    private readonly distributionRuleService: DistributionRuleService,
+    private readonly distributionEventService: DistributionEventService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
@@ -36,14 +38,15 @@ export class DistributionConsumer {
     const logPrefix = this._createLogPrefix(this.subscribe.name, message.type);
 
     try {
-      const distributionRule = await this.distributionRuleService.findOne(
+      const distributionEvent = await this.distributionEventService.findOne(
         this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
         message.type,
+        true,
         true,
       );
 
       const subscriptions = filterSubscriptions(
-        distributionRule.subscriptions,
+        distributionEvent.subscriptions,
         message.payload,
       );
 
@@ -52,15 +55,20 @@ export class DistributionConsumer {
       }
 
       const subscriptionMembers = await this.subscriptionMemberService.get(
-        distributionRule.subscriptions,
+        subscriptions,
       );
 
       if (_.isEmpty(subscriptionMembers)) {
         return;
       }
 
+      const distributionRuleIdx = this._getDistributionRuleIdx(
+        distributionEvent,
+        message.metadata,
+      );
+
       const jobs = createNotificationJobs(
-        distributionRule,
+        distributionEvent.rules[distributionRuleIdx],
         subscriptionMembers,
         message.payload,
       );
@@ -105,5 +113,26 @@ export class DistributionConsumer {
    */
   private _createLogPrefix(functionName: string, messageId: string): string {
     return `[${DistributionConsumer.name} ${functionName}] Message ${messageId}`;
+  }
+
+  private _getDistributionRuleIdx(
+    distributionEvent: DistributionEvent,
+    metadata: any,
+  ): number {
+    let idx = distributionEvent.rules.findIndex((rule) =>
+      hasMetadata(distributionEvent.metadataLabels, JSON.parse(rule.metadata), metadata),
+    );
+
+    if (idx < 0) {
+      idx = distributionEvent.rules.findIndex((rule) => rule.metadata === null);
+
+      if (idx < 0) {
+        throw new Error(
+          `Distribution Event queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} does not have a default distribution rule defined!`,
+        );
+      }
+    }
+
+    return idx;
   }
 }

@@ -12,4 +12,7 @@ export class MessageDto {
 
   @Allow()
   payload: any;
+
+  @Allow()
+  metadata: any;
 }

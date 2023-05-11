@@ -45,6 +45,7 @@ describe('MessageController', () => {
           id: '',
           type: '',
           payload: null,
+          metadata: null,
         },
       };
       const expectedResult = new ApiResponseDto(

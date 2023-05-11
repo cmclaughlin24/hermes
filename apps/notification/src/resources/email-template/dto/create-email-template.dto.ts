@@ -23,9 +23,11 @@ export class CreateEmailTemplateDto {
   subject: string;
 
   @ApiProperty({
-    description: 'Handlebars HTML template that can used when an email is sent',
+    description:
+      'Handlebars HTML template that can used when an email is sent. Date formatting ' +
+      'supported through the "formatDate" Handlerbars helper.',
     example:
-      '<body><main><h1>{{firstName}} {{lastName}} placed an order!</h1></main></body>',
+      '<body><main><h1>{{firstName}} {{lastName}} placed an order on {{ formatDate receivedOn timeZone format }}!</h1></main></body>',
     externalDocs: {
       url: 'https://handlebarsjs.com/',
       description: 'Handlebars',

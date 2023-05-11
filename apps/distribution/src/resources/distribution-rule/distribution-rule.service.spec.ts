@@ -6,7 +6,11 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../test/helpers/database.helpers';
-import { Subscription } from '../subscription/entities/subscription.entity';
+import {
+  MockDistributionEventService,
+  createDistributionEventServiceMock,
+} from '../../../test/helpers/provider.helper';
+import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
@@ -14,6 +18,7 @@ import { DistributionRule } from './entities/distribution-rule.entity';
 describe('DistributionRuleService', () => {
   let service: DistributionRuleService;
   let distributionRuleModel: MockRepository;
+  let distributionEventService: MockDistributionEventService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,12 +28,19 @@ describe('DistributionRuleService', () => {
           provide: getModelToken(DistributionRule),
           useValue: createMockRepository(),
         },
+        {
+          provide: DistributionEventService,
+          useValue: createDistributionEventServiceMock(),
+        },
       ],
     }).compile();
 
     service = module.get<DistributionRuleService>(DistributionRuleService);
     distributionRuleModel = module.get<MockRepository>(
       getModelToken(DistributionRule),
+    );
+    distributionEventService = module.get<MockDistributionEventService>(
+      DistributionEventService,
     );
   });
 
@@ -37,44 +49,36 @@ describe('DistributionRuleService', () => {
   });
 
   describe('findAll()', () => {
+    const distributionRule = {
+      deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
+      emailTemplate: 'unit-test',
+      checkDeliveryWindow: false,
+    } as DistributionRule;
+
     afterEach(() => {
       distributionRuleModel.findAll.mockClear();
     });
 
     it('should yield a list of distribution rules (w/o query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [
-        {
-          queue: 'unit-test',
-          messageType: 'unit-test',
-          deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
-          emailTemplate: 'unit-test',
-          checkDeliveryWindow: false,
-        } as DistributionRule,
-      ];
+      const expectedResult: DistributionRule[] = [distributionRule];
       distributionRuleModel.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll(null)).resolves.toEqual(expectedResult);
+      await expect(service.findAll(null, null)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should yield a filtered list of distribution rules (w/query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [
-        {
-          queue: 'unit-test',
-          messageType: 'unit-test',
-          deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
-          emailTemplate: 'unit-test',
-          checkDeliveryWindow: false,
-        } as DistributionRule,
-      ];
+      const expectedResult: DistributionRule[] = [distributionRule];
       distributionRuleModel.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll(['unit-test'])).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(
+        service.findAll(['unit-test'], ['unit-test']),
+      ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
@@ -85,7 +89,7 @@ describe('DistributionRuleService', () => {
       distributionRuleModel.findAll.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findAll(null)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(null, null)).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
@@ -96,61 +100,43 @@ describe('DistributionRuleService', () => {
       distributionRuleModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(null)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(null, null)).rejects.toEqual(expectedResult);
     });
   });
 
   describe('findOne()', () => {
+    const expectedResult: DistributionRule = {
+      id: 'unit-test',
+      metadata: null,
+      deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
+      emailTemplate: 'unit-test',
+      checkDeliveryWindow: false,
+    } as DistributionRule;
+
     afterEach(() => {
-      distributionRuleModel.findOne.mockClear();
+      distributionRuleModel.findByPk.mockClear();
     });
 
-    it('should yield a distribution rule (w/o subscriptions)', async () => {
+    it('should yield a distribution rule', async () => {
       // Arrange.
-      const expectedResult: DistributionRule = {
-        queue: 'unit-test',
-        messageType: 'unit-test',
-        deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
-        emailTemplate: 'unit-test',
-        checkDeliveryWindow: false,
-      } as DistributionRule;
-      distributionRuleModel.findOne.mockResolvedValue(expectedResult);
+      distributionRuleModel.findByPk.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne('', '')).resolves.toEqual(expectedResult);
-    });
-
-    it('should yield a distribution rule (w/subscriptions)', async () => {
-      // Arrange.
-      const expectedResult: DistributionRule = {
-        queue: 'unit-test',
-        messageType: 'unit-test',
-        deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
-        emailTemplate: 'unit-test',
-        checkDeliveryWindow: false,
-        subscriptions: [{} as Subscription],
-      } as DistributionRule;
-      distributionRuleModel.findOne.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(service.findOne('', '', true)).resolves.toEqual(
+      await expect(service.findOne(expectedResult.id)).resolves.toEqual(
         expectedResult,
       );
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const queue = 'unit-test';
-      const messageType = 'unit-test';
+      const id = 'unit-test';
       const expectedResult = new NotFoundException(
-        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution rule for id=${id} not found!`,
       );
-      distributionRuleModel.findOne.mockResolvedValue(null);
+      distributionRuleModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(queue, messageType)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(service.findOne(id)).rejects.toEqual(expectedResult);
     });
   });
 
@@ -158,6 +144,7 @@ describe('DistributionRuleService', () => {
     const createDistributionRuleDto: CreateDistributionRuleDto = {
       queue: 'unit-test',
       messageType: 'unit-test',
+      metadata: null,
       deliveryMethods: [DeliveryMethods.EMAIL],
       text: 'This is a unit test.',
       checkDeliveryWindow: false,
@@ -165,6 +152,11 @@ describe('DistributionRuleService', () => {
     const distributionRule = { ...createDistributionRuleDto };
 
     beforeEach(() => {
+      distributionEventService.findOne.mockResolvedValue({
+        id: '',
+        queue: createDistributionRuleDto.queue,
+        messageType: createDistributionRuleDto.messageType,
+      });
       distributionRuleModel.create.mockResolvedValue(distributionRule);
     });
 
@@ -196,19 +188,6 @@ describe('DistributionRuleService', () => {
         expectedResult,
       );
     });
-
-    it('should throw a "BadRequestException" if a distribution rule already exists', async () => {
-      // Arrange.
-      const expectedResult = new BadRequestException(
-        `Distribution Rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType} already exists!`,
-      );
-      distributionRuleModel.findOne.mockResolvedValue({} as DistributionRule);
-
-      // Act/Assert.
-      await expect(service.create(createDistributionRuleDto)).rejects.toEqual(
-        expectedResult,
-      );
-    });
   });
 
   describe('update()', () => {
@@ -231,20 +210,20 @@ describe('DistributionRuleService', () => {
   });
 
   describe('remove()', () => {
-    const distributionRule = { destroy: jest.fn() };
-    const queue = 'unit-test';
-    const messageType = 'unit-test';
+    const distributionRule = { destroy: jest.fn(), metadata: {} };
+    const id = 'unit-test';
 
     afterEach(() => {
       distributionRule.destroy.mockClear();
+      distributionRule.metadata = {};
     });
 
     it('should remove a distribution rule', async () => {
       // Arrange.
-      distributionRuleModel.findOne.mockResolvedValue(distributionRule);
+      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
 
       // Act.
-      await service.remove('', '');
+      await service.remove(id);
 
       // Assert.
       expect(distributionRule.destroy).toHaveBeenCalled();
@@ -253,27 +232,35 @@ describe('DistributionRuleService', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted distribution rule for queue=${queue} messageType=${messageType}!`,
+        `Successfully deleted distribution rule id=${id}!`,
       );
-      distributionRuleModel.findOne.mockResolvedValue(distributionRule);
+      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
 
       // Act/Assert.
-      await expect(service.remove(queue, messageType)).resolves.toEqual(
-        expectedResult,
+      await expect(service.remove(id)).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" if the attempting to delete the default distribution rule', async () => {
+      // Arrange.
+      const expectedResult = new BadRequestException(
+        `Distribution rule id=${id} is the default distribution rule and cannot be deleted!`,
       );
+      distributionRule.metadata = null;
+      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+
+      // Act/Assert.
+      await expect(service.remove(id)).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution rule for id=${id} not found!`,
       );
-      distributionRuleModel.findOne.mockResolvedValue(null);
+      distributionRuleModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.remove(queue, messageType)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(service.remove(id)).rejects.toEqual(expectedResult);
     });
   });
 });

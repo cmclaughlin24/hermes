@@ -8,7 +8,7 @@ import { ApiResponseDto } from '@notification/common';
 import * as _ from 'lodash';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
+import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
@@ -22,7 +22,7 @@ export class SubscriptionService {
     private readonly subscriptionModel: typeof Subscription,
     @InjectModel(SubscriptionFilter)
     private readonly subscriptionFilterModel: typeof SubscriptionFilter,
-    private readonly distributionRuleService: DistributionRuleService,
+    private readonly distributionEventService: DistributionEventService,
     private readonly sequelize: Sequelize,
   ) {}
 
@@ -62,15 +62,15 @@ export class SubscriptionService {
   }
 
   /**
-   * Creates a Subscription. Throws a NotFoundException if a DistributionRule does
+   * Creates a Subscription. Throws a NotFoundException if a DistributionEvent does
    * not exist in the repository for the queue and messageType or BadRequestException
    * if a subscription id exists in the repository.
    * @param {CreateSubscriptionDto} createSubscriptionDto
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
   async create(createSubscriptionDto: CreateSubscriptionDto) {
-    // Note: Throws a NotFoundException if the distribution rule does not exits.
-    const distributionRule = await this.distributionRuleService.findOne(
+    // Note: Throws a NotFoundException if the distribution event does not exits.
+    const distributionRule = await this.distributionEventService.findOne(
       createSubscriptionDto.queue,
       createSubscriptionDto.messageType,
     );
@@ -87,7 +87,7 @@ export class SubscriptionService {
     const subscription = await this.subscriptionModel.create(
       {
         id: createSubscriptionDto.id,
-        distributionRuleId: distributionRule.id,
+        distributionEventId: distributionRule.id,
         url: createSubscriptionDto.url,
         filterJoin: createSubscriptionDto.filterJoin,
         filters: createSubscriptionDto.filters,
@@ -162,7 +162,7 @@ export class SubscriptionService {
     // Note: The delete is cascaded to the SubscriptionFilters table.
     await subscription.destroy();
 
-    return new ApiResponseDto(`Successfully deleted subscription ${id}!`);
+    return new ApiResponseDto(`Successfully deleted subscription id=${id}!`);
   }
 
   /**

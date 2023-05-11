@@ -6,7 +6,7 @@ import { Subscription } from '../../resources/subscription/entities/subscription
 import {
   FilterJoinOps,
   FilterOps,
-} from '../constants/filter.constants';
+} from '../types/filter.types';
 
 export function filterSubscriptions(
   subscriptions: Subscription[],

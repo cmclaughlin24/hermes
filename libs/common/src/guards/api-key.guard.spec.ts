@@ -1,13 +1,16 @@
+import { isRabbitContext } from '@golevelup/nestjs-rabbitmq';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiKeyGuard } from './api-key.guard';
 
-export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
+type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
 
-export const createConfigServiceMock = (): MockConfigService => ({
+const createConfigServiceMock = (): MockConfigService => ({
   get: jest.fn(),
-}); 
+});
+
+jest.mock('@golevelup/nestjs-rabbitmq');
 
 describe('ApiKeyGuard', () => {
   let configService: any;
@@ -59,6 +62,21 @@ describe('ApiKeyGuard', () => {
     it('should yield true if the context metadata includes the "IS_PUBLIC_KEY"', () => {
       // Arrange.
       reflector.get.mockReturnValue(true);
+      // @ts-ignore
+      isRabbitContext.mockReturnValue(false);
+
+      // Act.
+      const result = apiKeyGuard.canActivate(context);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield true if the context is Rabbitmq', () => {
+      // Arrange.
+      reflector.get.mockReturnValue(false);
+      // @ts-ignore
+      isRabbitContext.mockReturnValue(true);
 
       // Act.
       const result = apiKeyGuard.canActivate(context);
@@ -71,6 +89,8 @@ describe('ApiKeyGuard', () => {
       // Arrange.
       reflector.get.mockReturnValue(false);
       configService.get.mockReturnValue(apiKey);
+      // @ts-ignore
+      isRabbitContext.mockReturnValue(false);
 
       // Act.
       const result = apiKeyGuard.canActivate(context);
@@ -82,7 +102,9 @@ describe('ApiKeyGuard', () => {
     it('should yield false otherwise', () => {
       // Arrange.
       reflector.get.mockReturnValue(false);
-      configService.get.mockReturnValue('invalid')
+      configService.get.mockReturnValue('invalid');
+      // @ts-ignore
+      isRabbitContext.mockReturnValue(false);
 
       // Act.
       const result = apiKeyGuard.canActivate(context);

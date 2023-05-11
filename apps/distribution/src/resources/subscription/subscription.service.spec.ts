@@ -9,20 +9,21 @@ import {
   createMockSequelize,
 } from '../../../test/helpers/database.helpers';
 import {
-  MockDistributionRuleService,
-  createDistributionRuleServiceMock,
+  MockDistributionEventService,
+  createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { FilterJoinOps } from '../../common/constants/filter.constants';
-import { DistributionRuleService } from '../distribution-rule/distribution-rule.service';
+import { FilterJoinOps } from '../../common/types/filter.types';
+import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { SubscriptionFilter } from './entities/subscription-filter.entity';
 import { Subscription } from './entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
   let subscriptionModel: MockRepository;
-  let distributionRuleService: MockDistributionRuleService;
+  let distributionEventService: MockDistributionEventService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,8 +34,12 @@ describe('SubscriptionService', () => {
           useValue: createMockRepository<Subscription>(),
         },
         {
-          provide: DistributionRuleService,
-          useValue: createDistributionRuleServiceMock(),
+          provide: getModelToken(SubscriptionFilter),
+          useValue: createMockRepository<SubscriptionFilter>(),
+        },
+        {
+          provide: DistributionEventService,
+          useValue: createDistributionEventServiceMock(),
         },
         {
           provide: Sequelize,
@@ -45,8 +50,8 @@ describe('SubscriptionService', () => {
 
     service = module.get<SubscriptionService>(SubscriptionService);
     subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
-    distributionRuleService = module.get<MockDistributionRuleService>(
-      DistributionRuleService,
+    distributionEventService = module.get<MockDistributionEventService>(
+      DistributionEventService,
     );
   });
 
@@ -134,7 +139,7 @@ describe('SubscriptionService', () => {
     };
     const subscription = {
       id: createSubscriptionDto.id,
-      distributionRuleId: '',
+      distributionEventId: '',
       filterJoin: createSubscriptionDto.filterJoin,
       url: createSubscriptionDto.url,
     } as Subscription;
@@ -145,7 +150,7 @@ describe('SubscriptionService', () => {
 
     it('should create a subscription', async () => {
       // Arrange.
-      distributionRuleService.findOne.mockResolvedValue({
+      distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
       subscriptionModel.findByPk.mockResolvedValue(null);
@@ -163,7 +168,7 @@ describe('SubscriptionService', () => {
         `Successfully created subscription!`,
         subscription,
       );
-      distributionRuleService.findOne.mockResolvedValue({
+      distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
       subscriptionModel.findByPk.mockResolvedValue(null);
@@ -180,7 +185,7 @@ describe('SubscriptionService', () => {
       const expectedResult = new NotFoundException(
         `Distribution Rule for queue=${createSubscriptionDto.queue} messageType=${createSubscriptionDto.messageType} not found!`,
       );
-      distributionRuleService.findOne.mockRejectedValue(expectedResult);
+      distributionEventService.findOne.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createSubscriptionDto)).rejects.toEqual(
@@ -193,7 +198,7 @@ describe('SubscriptionService', () => {
       const expectedResult = new BadRequestException(
         `Subscription ${createSubscriptionDto.id} already exists!`,
       );
-      distributionRuleService.findOne.mockResolvedValue({
+      distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
       subscriptionModel.findByPk.mockResolvedValue({} as Subscription);
@@ -229,7 +234,7 @@ describe('SubscriptionService', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription ${id}!`,
+        `Successfully deleted subscription id=${id}!`,
       );
       subscriptionModel.findByPk.mockResolvedValue(subscription);
 

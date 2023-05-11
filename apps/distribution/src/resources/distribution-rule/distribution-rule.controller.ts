@@ -26,7 +26,7 @@ export class DistributionRuleController {
   @Get()
   @Public()
   @ApiOperation({
-    summary: 'Find distribution rules by their queue(s).',
+    summary: 'Find distribution rules(s) by queue and/or message type.',
     security: [],
   })
   @ApiQuery({
@@ -34,7 +34,14 @@ export class DistributionRuleController {
     required: false,
     type: String,
     isArray: true,
-    description: 'A list of distribution queues.',
+    description: 'A list of Rabbitmq queues.',
+  })
+  @ApiQuery({
+    name: 'messageType',
+    required: false,
+    type: String,
+    isArray: true,
+    description: 'A list of message types.',
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -44,23 +51,25 @@ export class DistributionRuleController {
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
     queues: string[],
+    @Query(
+      'messageType',
+      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
+    )
+    messageTypes: string[],
   ) {
-    return this.distributionRuleService.findAll(queues);
+    return this.distributionRuleService.findAll(queues, messageTypes);
   }
 
-  @Get(':queue/:messageType')
+  @Get(':id')
   @Public()
   @ApiOperation({
-    summary: 'Find a distribution rule for a queue and message type.',
+    summary: "Find a distribution rule by it's id.",
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(
-    @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
-  ) {
-    return this.distributionRuleService.findOne(queue, messageType);
+  findOne(@Param('id') id: string) {
+    return this.distributionRuleService.findOne(id);
   }
 
   @Post()
@@ -85,7 +94,7 @@ export class DistributionRuleController {
     return this.distributionRuleService.create(createDistributionRuleDto);
   }
 
-  @Patch(':queue/:messageType')
+  @Patch(':id')
   @ApiOperation({
     summary: 'Update a distribution rule.',
     security: [{ ApiKeyAuth: [] }],
@@ -103,20 +112,14 @@ export class DistributionRuleController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
-    @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('id') id: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
-    return this.distributionRuleService.update(
-      queue,
-      messageType,
-      updateDistributionRuleDto,
-    );
+    return this.distributionRuleService.update(id, updateDistributionRuleDto);
   }
 
-  @Delete(':queue/:messageType')
+  @Delete(':id')
   @ApiOperation({
     summary: 'Remove a distribution rule.',
     security: [{ ApiKeyAuth: [] }],
@@ -127,14 +130,15 @@ export class DistributionRuleController {
     type: ApiResponseDto,
   })
   @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(
-    @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
-  ) {
-    return this.distributionRuleService.remove(queue, messageType);
+  remove(@Param('id') id: string) {
+    return this.distributionRuleService.remove(id);
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsString, Matches, ValidateNested } from 'class-validator';
-import { FilterOps } from '../../../common/constants/filter.constants';
+import { FilterOps } from '../../../common/types/filter.types';
 import { SubscriptionQueryDto } from './subscription-query.dto';
 
 export class SubscriptionFilterDto {

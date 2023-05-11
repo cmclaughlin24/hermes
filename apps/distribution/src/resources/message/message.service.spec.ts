@@ -39,6 +39,7 @@ describe('MessageService', () => {
         id: '',
         type: 'test',
         payload: null,
+        metadata: null,
       },
     };
 

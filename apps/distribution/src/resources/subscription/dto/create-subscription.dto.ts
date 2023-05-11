@@ -7,8 +7,8 @@ import {
   IsUUID,
   ValidateNested
 } from 'class-validator';
-import { FilterJoinOps } from '../../../common/constants/filter.constants';
-import { DistributionRuleExists } from '../../../common/decorators/distribution-rule-exists.decorator';
+import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
+import { FilterJoinOps } from '../../../common/types/filter.types';
 import { SubscriptionFilterDto } from './subscription-filter.dto';
 
 export class CreateSubscriptionDto {
@@ -20,7 +20,7 @@ export class CreateSubscriptionDto {
 
   @IsString()
   @IsNotEmpty()
-  @DistributionRuleExists()
+  @DistributionEventExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   messageType: string;
 

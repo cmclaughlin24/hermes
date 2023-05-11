@@ -1,11 +1,5 @@
 import { DeliveryMethods } from '@notification/common';
-
-interface DeliveryWindow {
-  dayOfWeek: number;
-  atHour: number;
-  atMinute: number;
-  duration: number;
-}
+import { DeliveryWindow } from '../types/delivery-window.types';
 
 export class SubscriptionMemberDto {
   constructor(
