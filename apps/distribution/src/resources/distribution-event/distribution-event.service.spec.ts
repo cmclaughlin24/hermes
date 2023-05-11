@@ -1,7 +1,13 @@
+import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockRepository } from 'apps/notification/test/helpers/database.helpers';
-import { createMockRepository } from '../../../test/helpers/database.helpers';
+import {
+  MockRepository,
+  createMockRepository,
+} from '../../../test/helpers/database.helpers';
+import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
+import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
+import { Subscription } from '../subscription/entities/subscription.entity';
 import { DistributionEventService } from './distribution-event.service';
 import { DistributionEvent } from './entities/distribution-event.entity';
 
@@ -31,49 +37,214 @@ describe('DistributionEventService', () => {
   });
 
   describe('findAll', () => {
+    const distributionEvent = {
+      id: 'unit-test',
+      queue: 'unit-test',
+      messageType: 'unit-test',
+    } as DistributionEvent;
+
     afterEach(() => {
       distributionEventModel.findAll.mockClear();
     });
 
-    it('should yield a list of distribution events (no rules/subscriptions)', async () => {
+    it('should yield a list of distribution events (w/o rules & subscriptions)', async () => {
       // Arrange.
+      const expectedResult = [distributionEvent];
+      distributionEventModel.findAll.mockResolvedValue(expectedResult);
+
       // Act/Assert.
+      await expect(service.findAll(false, false)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should yield a list of distribution events (w/rules)', async () => {
       // Arrange.
-      // Act/Assert.
+      const expectedResult = {
+        include: [{ model: DistributionRule }],
+      };
+      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+
+      // Act
+      await service.findAll(true, false);
+
+      // Assert.
+      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should yield a list of distribution events (w/subscriptions)', async () => {
       // Arrange.
-      // Act/Assert.
+      const expectedResult = {
+        include: [{ model: Subscription, include: [SubscriptionFilter] }],
+      };
+      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+
+      // Act
+      await service.findAll(false, true);
+
+      // Assert.
+      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
+
+    it('should yield a list of distribution events (w/rules & subscriptions)', async () => {
+      // Arrange.
+      const expectedResult = {
+        include: [
+          { model: DistributionRule },
+          { model: Subscription, include: [SubscriptionFilter] },
+        ],
+      };
+      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+
+      // Act
+      await service.findAll(true, true);
+
+      // Assert.
+      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const expectedResult = new NotFoundException(
+        'Distribution events not found!',
+      );
+      distributionEventModel.findAll.mockResolvedValue(null);
+
       // Act/Assert.
+      await expect(service.findAll(false, false)).rejects.toEqual(
+        expectedResult,
+      );
     });
 
     it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
       // Arrange.
+      const expectedResult = new NotFoundException(
+        'Distribution events not found!',
+      );
+      distributionEventModel.findAll.mockResolvedValue([]);
+
       // Act/Assert.
+      await expect(service.findAll(false, false)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 
   describe('findOne()', () => {
+    const distributionEvent = {
+      id: 'unit-test',
+      queue: 'unit-test',
+      messageType: 'unit-test',
+    } as DistributionEvent;
+
     afterEach(() => {
       distributionEventModel.findOne.mockClear();
     });
 
-    it('should yield a distribution event', async () => {
+    it('should yield a distribution event (w/o rules & subscriptions)', async () => {
       // Arrange.
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
       // Act/Assert.
+      await expect(
+        service.findOne(distributionEvent.queue, distributionEvent.messageType),
+      ).resolves.toEqual(distributionEvent);
+    });
+
+    it('should yield a distribution event (w/rules)', async () => {
+      // Arrange.
+      const expectedResult = {
+        where: {
+          queue: distributionEvent.queue,
+          messageType: distributionEvent.messageType,
+        },
+        include: [{ model: DistributionRule }],
+      };
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
+      // Act.
+      await service.findOne(
+        distributionEvent.queue,
+        distributionEvent.messageType,
+        true,
+      );
+
+      // Assert.
+      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
+
+    it('should yield a distribution event (w/subscriptions)', async () => {
+      // Arrange.
+      const expectedResult = {
+        where: {
+          queue: distributionEvent.queue,
+          messageType: distributionEvent.messageType,
+        },
+        include: [{ model: Subscription, include: [SubscriptionFilter] }],
+      };
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
+      // Act.
+      await service.findOne(
+        distributionEvent.queue,
+        distributionEvent.messageType,
+        false,
+        true,
+      );
+
+      // Assert.
+      await expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
+
+    it('should yield a distribution event (w/rules & subscriptions)', async () => {
+      // Arrange.
+      const expectedResult = {
+        where: {
+          queue: distributionEvent.queue,
+          messageType: distributionEvent.messageType,
+        },
+        include: [
+          { model: DistributionRule },
+          { model: Subscription, include: [SubscriptionFilter] },
+        ],
+      };
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
+      // Act.
+      await service.findOne(
+        distributionEvent.queue,
+        distributionEvent.messageType,
+        true,
+        true,
+      );
+
+      // Assert.
+      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution Event for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} not found!`,
+      );
+      distributionEventModel.findOne.mockResolvedValue(null);
+
       // Act/Assert.
+      expect(
+        service.findOne(distributionEvent.queue, distributionEvent.messageType),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
