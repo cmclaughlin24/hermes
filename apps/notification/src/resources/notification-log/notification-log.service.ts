@@ -130,7 +130,7 @@ export class NotificationLogService {
           attempts: job.attemptsMade,
           data: job.data,
           addedAt: new Date(job.timestamp),
-          finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+          finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
         },
         { transaction },
       );
@@ -141,7 +141,7 @@ export class NotificationLogService {
           {
             logId: log.id,
             attempt: job.attemptsMade,
-            processedOn: new Date(job.processedOn),
+            processedAt: new Date(job.processedOn),
             result: result,
             error: error,
           },
@@ -190,7 +190,7 @@ export class NotificationLogService {
           state: state,
           attempts: job.attemptsMade,
           data: data,
-          finishedOn: job.finishedOn ? new Date(job.finishedOn) : null,
+          finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
         },
         { transaction },
       );
@@ -201,7 +201,7 @@ export class NotificationLogService {
           {
             logId: log.id,
             attempt: job.attemptsMade,
-            processedOn: new Date(job.processedOn),
+            processedAt: new Date(job.processedOn),
             result: result,
             error: error,
           },

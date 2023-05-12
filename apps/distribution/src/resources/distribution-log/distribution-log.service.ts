@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { MessageDto } from '../../common/dto/message.dto';
+import { DistributionJob } from '../../common/types/distribution-job.types';
 import { MessageState } from '../../common/types/message-state.types';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
@@ -58,19 +58,18 @@ export class DistributionLogService {
   }
 
   async log(
-    queue: string,
-    message: MessageDto,
+    distributionJob: DistributionJob,
     state: MessageState,
-    result: any,
-    error: any,
+    result?: any,
+    error?: any,
   ) {
-    const log = await this.distributionLogModel.findByPk(message.id);
+    const log = await this.distributionLogModel.findByPk(distributionJob.id);
 
     if (!log) {
-      return this._createLog(state);
+      return this._createLog(distributionJob, state, result, error);
     }
 
-    return this._updateLog(state);
+    return this._updateLog(distributionJob, state, result, error);
   }
 
   /**
@@ -109,38 +108,80 @@ export class DistributionLogService {
     return Object.keys(where).length > 0 ? where : null;
   }
 
-  private async _createLog(state: MessageState) {
+  private async _createLog(
+    distributionJob: DistributionJob,
+    state: MessageState,
+    result: any,
+    error: any,
+  ) {
     return this.sequelize.transaction(async (transaction) => {
-      // Todo: Create a new distribution log.
-      const log = await this.distributionLogModel.create({}, { transaction });
+      const log = await this.distributionLogModel.create(
+        {
+          id: distributionJob.id,
+          queue: distributionJob.queue,
+          messageType: distributionJob.type,
+          state,
+          attempts: distributionJob.attemptsMade,
+          data: distributionJob.payload,
+          metadata: distributionJob.metadata,
+          addedAt: distributionJob.addedAt,
+          finshedAt: distributionJob.finishedAt,
+        },
+        { transaction },
+      );
 
       if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
-        // Todo: Create a new distribution attempt.
         await this.distributionAttemptModel.create(
-          { logId: log.id },
+          {
+            logId: log.id,
+            result,
+            error,
+            attempt: distributionJob.attemptsMade,
+            processedOn: distributionJob.processedAt,
+          },
           { transaction },
         );
+
+        await log.reload({ transaction, include: [DistributionAttempt] });
       }
 
       return log;
     });
   }
 
-  private async _updateLog(state: MessageState) {
+  private async _updateLog(
+    distributionJob: DistributionJob,
+    state: MessageState,
+    result: any,
+    error: any,
+  ) {
     return this.sequelize.transaction(async (transaction) => {
-      // Todo: Update an existing distribution log.
-      let log = await this.distributionLogModel.findByPk('', { transaction });
-      
-      await log.update({}, { transaction });
+      let log = await this.distributionLogModel.findByPk(distributionJob.id, {
+        transaction,
+      });
+
+      await log.update(
+        {
+          state,
+          attempts: distributionJob.attemptsMade,
+          finshedAt: distributionJob.finishedAt,
+        },
+        { transaction },
+      );
 
       if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
-        // Todo: Create a new distribution attempt.
         await this.distributionAttemptModel.create(
-          { logId: log.id },
+          {
+            logId: log.id,
+            result,
+            error,
+            attempt: distributionJob.attemptsMade,
+            processedOn: distributionJob.processedAt,
+          },
           { transaction },
         );
 
-        await log.reload({ transaction });
+        await log.reload({ transaction, include: [DistributionAttempt] });
       }
 
       return log;

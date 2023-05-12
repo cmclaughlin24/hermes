@@ -4,6 +4,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { hasMetadata } from '@notification/common';
 import { ConsumeMessage } from 'amqplib';
+import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.types';
+import { MessageState } from 'apps/distribution/src/common/types/message-state.types';
 import { DistributionEventService } from 'apps/distribution/src/resources/distribution-event/distribution-event.service';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
@@ -12,6 +14,7 @@ import { SubscriptionMemberService } from '../../../common/providers/subscriptio
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
+import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
 
 @Injectable()
 export class DistributionConsumer {
@@ -22,6 +25,7 @@ export class DistributionConsumer {
     private readonly notificationQueue: Queue,
     private readonly configService: ConfigService,
     private readonly distributionEventService: DistributionEventService,
+    private readonly distributionLogService: DistributionLogService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
   ) {}
 
@@ -36,6 +40,7 @@ export class DistributionConsumer {
   })
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
     const logPrefix = this._createLogPrefix(this.subscribe.name, message.type);
+    let result, error;
 
     try {
       const distributionEvent = await this.distributionEventService.findOne(
@@ -82,6 +87,18 @@ export class DistributionConsumer {
       if (this._shouldRetry(amqpMsg)) {
         return new Nack();
       }
+    } finally {
+      // Todo: Set correct values for distribution log.
+      const state = error ? MessageState.FAILED : MessageState.COMPLETED;
+      const job: DistributionJob = {
+        queue: this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
+        attemptsMade: 0,
+        processedAt: new Date(),
+        finishedAt: new Date(),
+        ...message,
+      };
+      
+      await this.distributionLogService.log(job, state, result, error);
     }
   }
 
@@ -120,7 +137,11 @@ export class DistributionConsumer {
     metadata: any,
   ): number {
     let idx = distributionEvent.rules.findIndex((rule) =>
-      hasMetadata(distributionEvent.metadataLabels, JSON.parse(rule.metadata), metadata),
+      hasMetadata(
+        distributionEvent.metadataLabels,
+        JSON.parse(rule.metadata),
+        metadata,
+      ),
     );
 
     if (idx < 0) {

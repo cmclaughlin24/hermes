@@ -1,5 +1,5 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import { Allow, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Allow, IsDateString, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class MessageDto {
   @IsUUID('4')
@@ -15,4 +15,7 @@ export class MessageDto {
 
   @Allow()
   metadata: any;
+
+  @IsDateString()
+  addedAt: Date;
 }

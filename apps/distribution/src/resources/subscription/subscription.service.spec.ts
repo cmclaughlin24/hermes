@@ -210,7 +210,35 @@ describe('SubscriptionService', () => {
     });
   });
 
-  describe('update()', () => {});
+  describe('update()', () => {
+    const subscription = { update: jest.fn() };
+
+    afterEach(() => {
+      subscription.update.mockClear();
+    })
+
+    it('should update a subscription (w/o filters)', async () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+
+    it('should update the subscription (w/filters)', async () => {
+      // Arrange.
+      // Act.
+      // Assert.
+    });
+
+    it('should yield an "ApiResponseDto" object with the updated subscription', async () => {
+      // Arrange.
+      // Act/Assert.
+    });
+
+    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+      // Arrange.
+      // Act/Assert.
+    });
+  });
 
   describe('remove()', () => {
     const id = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
