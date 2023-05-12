@@ -32,6 +32,9 @@ export class DistributionLog extends Model {
   attempts: number;
 
   @Column({ type: DataType.JSON, allowNull: true })
+  metadata: string;
+
+  @Column({ type: DataType.JSON, allowNull: true })
   data: string;
 
   @Column
