@@ -190,7 +190,7 @@ describe('NotificationLogService', () => {
         attempts: job.attemptsMade,
         data: job.data,
         addedAt: new Date(job.timestamp),
-        finishedOn: null,
+        finishedAt: null,
       };
       notificationLogModel.create.mockResolvedValue({ id: 'test' });
 
@@ -216,7 +216,7 @@ describe('NotificationLogService', () => {
       const expectedResult = {
         logId: 'test',
         attempt: job.attemptsMade,
-        processedOn: new Date(job.processedOn),
+        processedAt: new Date(job.processedOn),
         result: null,
         error: null,
       };
@@ -246,7 +246,7 @@ describe('NotificationLogService', () => {
       const expectedResult = {
         logId: 'test',
         attempt: job.attemptsMade,
-        processedOn: new Date(job.processedOn),
+        processedAt: new Date(job.processedOn),
         result: null,
         error: null,
       };
@@ -279,7 +279,7 @@ describe('NotificationLogService', () => {
         state: 'delayed',
         attempts: job.attemptsMade,
         data: {},
-        finishedOn: null,
+        finishedAt: null,
       };
       notificationLogModel.findByPk.mockResolvedValue(log);
 

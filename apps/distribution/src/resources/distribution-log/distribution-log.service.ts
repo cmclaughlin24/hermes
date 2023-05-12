@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
+import { DistributionJob } from '../../common/types/distribution-job.types';
 import { MessageState } from '../../common/types/message-state.types';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
@@ -57,8 +58,7 @@ export class DistributionLogService {
   }
 
   async log(
-    // Todo: Improve TypeScript support for Distribution Job.
-    distributionJob: any,
+    distributionJob: DistributionJob,
     state: MessageState,
     result?: any,
     error?: any,
@@ -109,7 +109,7 @@ export class DistributionLogService {
   }
 
   private async _createLog(
-    distributionJob: any,
+    distributionJob: DistributionJob,
     state: MessageState,
     result: any,
     error: any,
@@ -125,6 +125,7 @@ export class DistributionLogService {
           data: distributionJob.payload,
           metadata: distributionJob.metadata,
           addedAt: distributionJob.addedAt,
+          finshedAt: distributionJob.finishedAt,
         },
         { transaction },
       );
@@ -136,7 +137,7 @@ export class DistributionLogService {
             result,
             error,
             attempt: distributionJob.attemptsMade,
-            processedOn: distributionJob.processedOn,
+            processedOn: distributionJob.processedAt,
           },
           { transaction },
         );
@@ -149,7 +150,7 @@ export class DistributionLogService {
   }
 
   private async _updateLog(
-    distributionJob: any,
+    distributionJob: DistributionJob,
     state: MessageState,
     result: any,
     error: any,
@@ -163,6 +164,7 @@ export class DistributionLogService {
         {
           state,
           attempts: distributionJob.attemptsMade,
+          finshedAt: distributionJob.finishedAt,
         },
         { transaction },
       );
@@ -174,7 +176,7 @@ export class DistributionLogService {
             result,
             error,
             attempt: distributionJob.attemptsMade,
-            processedOn: distributionJob.processedOn,
+            processedOn: distributionJob.processedAt,
           },
           { transaction },
         );

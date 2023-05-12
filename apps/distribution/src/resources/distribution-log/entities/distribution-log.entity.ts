@@ -41,7 +41,7 @@ export class DistributionLog extends Model {
   addedAt: Date;
 
   @Column({ allowNull: true })
-  finishedOn: Date;
+  finishedAt: Date;
 
   @CreatedAt
   createdAt: Date;

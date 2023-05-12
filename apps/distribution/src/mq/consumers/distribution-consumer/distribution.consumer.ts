@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { hasMetadata } from '@notification/common';
 import { ConsumeMessage } from 'amqplib';
+import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.types';
 import { MessageState } from 'apps/distribution/src/common/types/message-state.types';
 import { DistributionEventService } from 'apps/distribution/src/resources/distribution-event/distribution-event.service';
 import { Queue } from 'bullmq';
@@ -87,16 +88,17 @@ export class DistributionConsumer {
         return new Nack();
       }
     } finally {
+      // Todo: Set correct values for distribution log.
       const state = error ? MessageState.FAILED : MessageState.COMPLETED;
-      const log = {
+      const job: DistributionJob = {
         queue: this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
         attemptsMade: 0,
-        processedOn: new Date(),
-        finishedOn: new Date(),
+        processedAt: new Date(),
+        finishedAt: new Date(),
         ...message,
       };
       
-      await this.distributionLogService.log(log, state, result, error);
+      await this.distributionLogService.log(job, state, result, error);
     }
   }
 

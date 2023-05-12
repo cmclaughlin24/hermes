@@ -21,7 +21,7 @@ export class NotificationAttempt extends Model {
   attempt: number;
 
   @Column
-  processedOn: Date;
+  processedAt: Date;
 
   @Column({ type: DataType.JSON, allowNull: true })
   result: any;
