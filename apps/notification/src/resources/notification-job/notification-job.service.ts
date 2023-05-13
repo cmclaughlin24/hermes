@@ -84,15 +84,15 @@ export class NotificationJobService {
 
   /**
    * Adds a 'call' job to the notification queue.
-   * @param {CreatePhoneNotificationDto} createCallNotification
+   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
   async createCallNotification(
-    createCallNotification: CreatePhoneNotificationDto,
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
     return this._createNotification(
       DeliveryMethods.CALL,
-      createCallNotification,
+      createPhoneNotificationDto,
     );
   }
 

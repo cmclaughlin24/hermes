@@ -39,29 +39,34 @@ export class NotificationService {
    * @returns {Promise<ApiResponseDto>}
    */
   async createTextNotification(
-    createTextNotification: CreatePhoneNotificationDto,
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    createTextNotification.body = compileTextTemplate(
-      createTextNotification.body,
-      createTextNotification.context,
+    createPhoneNotificationDto.body = compileTextTemplate(
+      createPhoneNotificationDto.body,
+      createPhoneNotificationDto.context,
     );
 
-    const result = await this.phoneService.sendText(createTextNotification);
+    const result = await this.phoneService.sendText(createPhoneNotificationDto);
 
     return new ApiResponseDto(
-      `Successfully sent SMS with body ${createTextNotification.body} to ${createTextNotification.to}`,
+      `Successfully sent SMS with body ${createPhoneNotificationDto.body} to ${createPhoneNotificationDto.to}`,
       result,
     );
   }
 
   /**
    * Sends a call notification.
-   * @param createCallNotification
+   * @param createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
   async createCallNotification(
-    createCallNotification: CreatePhoneNotificationDto,
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    // Todo: Call PhoneService to directly send a notification.
+    const result = await this.phoneService.sendCall(createPhoneNotificationDto);
+
+    return new ApiResponseDto(
+      `Successfully made call with to ${createPhoneNotificationDto.to}`,
+      result,
+    );
   }
 }

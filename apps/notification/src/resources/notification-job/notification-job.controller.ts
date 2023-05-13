@@ -131,10 +131,10 @@ export class NotificationJobController {
     description: 'Forbidden Resource',
   })
   createCallNotification(
-    @Body() createCallNotification: CreatePhoneNotificationDto,
+    @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
     return this.notificationJobService.createCallNotification(
-      createCallNotification,
+      createPhoneNotificationDto,
     );
   }
 }

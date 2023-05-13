@@ -31,7 +31,18 @@ export class PhoneService implements CreateNotificationDto {
 
   async sendCall(createPhoneNotificationDto: CreatePhoneNotificationDto) {
     try {
-    } catch (error) {}
+      const result = await this.twilioService.client.calls.create({
+        twiml: '<Response><Say>Hello there!</Say></Response>',
+        to: createPhoneNotificationDto.to,
+        from:
+          createPhoneNotificationDto.from ||
+          this.configService.get('TWILIO_PHONE_NUMBER'),
+      });
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async createNotificationDto(data: any) {
