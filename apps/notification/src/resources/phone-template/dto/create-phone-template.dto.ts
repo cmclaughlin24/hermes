@@ -1,1 +1,3 @@
-export class CreatePhoneTemplateDto {}
+export class CreatePhoneTemplateDto {
+  name: string;
+}

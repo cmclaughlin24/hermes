@@ -1,3 +1,7 @@
-import { Model } from 'sequelize-typescript';
+import { Column, Model, Table } from 'sequelize-typescript';
 
-export class PhoneTemplate extends Model {}
+@Table
+export class PhoneTemplate extends Model {
+  @Column({ primaryKey: true })
+  name: string;
+}
