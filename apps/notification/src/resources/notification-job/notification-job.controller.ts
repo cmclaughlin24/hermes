@@ -11,9 +11,9 @@ import {
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
 import { JobState } from 'bullmq';
+import { CreateCallNotificationDto } from '../../common/dto/create-call-notification.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { NotificationJobService } from './notification-job.service';
 
 @ApiTags('Notification Job')
@@ -113,9 +113,9 @@ export class NotificationJobController {
     );
   }
 
-  @Post('radio')
+  @Post('call')
   @ApiOperation({
-    summary: 'Schedule a notification "radio" job.',
+    summary: 'Schedule a notification "call" job.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
@@ -131,11 +131,11 @@ export class NotificationJobController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createRadioNotification(
-    @Body() createRadioNotification: CreateRadioNotificationDto,
+  createCallNotification(
+    @Body() createCallNotification: CreateCallNotificationDto,
   ) {
-    return this.notificationJobService.createRadioNotification(
-      createRadioNotification,
+    return this.notificationJobService.createCallNotification(
+      createCallNotification,
     );
   }
 }

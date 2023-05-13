@@ -33,5 +33,5 @@ describe('[Feature] Notification Job', () => {
 
   it.todo('Create SMS Job [POST /sms]');
 
-  it.todo('Create Radio Job [POST /radio]');
+  it.todo('Create Call Job [POST /call]');
 });

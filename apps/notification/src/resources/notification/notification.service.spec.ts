@@ -1,25 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
 import {
-  createEmailServiceMock,
-  createPhoneServiceMock,
-  createRadioServiceMock,
   MockEmailService,
   MockPhoneService,
-  MockRadioService
+  createEmailServiceMock,
+  createPhoneServiceMock,
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { RadioService } from '../../common/providers/radio/radio.service';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
-  let radioService: MockRadioService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,17 +29,12 @@ describe('NotificationService', () => {
           provide: PhoneService,
           useValue: createPhoneServiceMock(),
         },
-        {
-          provide: RadioService,
-          useValue: createRadioServiceMock(),
-        },
       ],
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);
     emailService = module.get<MockEmailService>(EmailService);
     phoneService = module.get<MockPhoneService>(PhoneService);
-    radioService = module.get<MockRadioService>(RadioService);
   });
 
   it('should be defined', () => {
@@ -133,8 +124,8 @@ describe('NotificationService', () => {
     });
   });
 
-  describe('createRadioNotification()', () => {
-    it.todo('should send a radio notification');
+  describe('createCalloNotification()', () => {
+    it.todo('should send a call notification');
 
     it.todo(
       'should yield an "ApiResponseDto" object with the created notification',

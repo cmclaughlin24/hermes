@@ -3,17 +3,14 @@ import {
   MockEmailService,
   MockNotificationLogService,
   MockPhoneService,
-  MockRadioService,
   createEmailServiceMock,
   createNotificationLogServiceMock,
-  createPhoneServiceMock,
-  createRadioServiceMock,
+  createPhoneServiceMock
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { RadioService } from '../../common/providers/radio/radio.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 import { NotificationConsumer } from './notification.consumer';
 
@@ -21,7 +18,6 @@ describe('NotificationService', () => {
   let service: NotificationConsumer;
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
-  let radioService: MockRadioService;
   let notificationLogService: MockNotificationLogService;
 
   const job: any = { id: 1, data: {}, log: jest.fn(), update: jest.fn() };
@@ -39,10 +35,6 @@ describe('NotificationService', () => {
           useValue: createPhoneServiceMock(),
         },
         {
-          provide: RadioService,
-          useValue: createRadioServiceMock(),
-        },
-        {
           provide: NotificationLogService,
           useValue: createNotificationLogServiceMock(),
         },
@@ -52,7 +44,6 @@ describe('NotificationService', () => {
     service = module.get<NotificationConsumer>(NotificationConsumer);
     emailService = module.get<MockEmailService>(EmailService);
     phoneService = module.get<MockPhoneService>(PhoneService);
-    radioService = module.get<MockRadioService>(RadioService);
     notificationLogService = module.get<MockNotificationLogService>(
       NotificationLogService,
     );
@@ -236,7 +227,7 @@ describe('NotificationService', () => {
     });
   });
 
-  describe('processRadio()', () => {});
+  describe('processCall()', () => {});
 
   describe('onQueueError()', () => {
     it.todo('should log the error to the console');

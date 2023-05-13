@@ -6,7 +6,6 @@ import { EmailTemplateModule } from '../resources/email-template/email-template.
 import { TemplateExistsRule } from './decorators/template-exists.decorator';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
-import { RadioService } from './providers/radio/radio.service';
 
 @Module({
   imports: [
@@ -36,7 +35,7 @@ import { RadioService } from './providers/radio/radio.service';
     }),
     EmailTemplateModule,
   ],
-  providers: [EmailService, PhoneService, RadioService, TemplateExistsRule],
-  exports: [EmailService, PhoneService, RadioService],
+  providers: [EmailService, PhoneService, TemplateExistsRule],
+  exports: [EmailService, PhoneService],
 })
 export class CommonModule {}

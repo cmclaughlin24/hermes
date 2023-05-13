@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ApiResponseDto } from '@notification/common';
+import { CreateCallNotificationDto } from '../../common/dto/create-call-notification.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { RadioService } from '../../common/providers/radio/radio.service';
 import { compileTextTemplate } from '../../common/utils/template.utils';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class NotificationService {
   constructor(
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
-    private readonly radioService: RadioService,
   ) {}
 
   /**
@@ -58,13 +56,13 @@ export class NotificationService {
   }
 
   /**
-   * Sends a radio notification.
-   * @param createRadioNotification
+   * Sends a call notification.
+   * @param createCallNotification
    * @returns {Promise<ApiResponseDto>}
    */
-  async createRadioNotification(
-    createRadioNotification: CreateRadioNotificationDto,
+  async createCallNotification(
+    createCallNotification: CreateCallNotificationDto,
   ) {
-    // Todo: Call RadioService to directly send a notification.
+    // Todo: Call PhoneService to directly send a notification.
   }
 }

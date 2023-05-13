@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseDto } from '@notification/common';
 import { Job, JobState } from 'bullmq';
 import {
-  createQueueMock,
-  MockQueue
+  MockQueue,
+  createQueueMock
 } from '../../../../notification/test/helpers/queue.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -191,12 +191,12 @@ describe('NotificationJobService', () => {
     });
   });
 
-  describe('createRadioNotfication()', () => {
+  describe('createCallNotfication()', () => {
     afterEach(() => {
       queue.add.mockClear();
     });
 
-    it.todo('should add a "radio" job to the notification queue');
+    it.todo('should add a "call" job to the notification queue');
 
     it.todo('should yield an "ApiResposneDto" object with the job');
   });
