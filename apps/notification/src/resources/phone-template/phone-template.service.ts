@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { ApiResponseDto } from '@notification/common';
+import { ApiResponseDto, PhoneMethods } from '@notification/common';
 import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
@@ -17,6 +17,11 @@ export class PhoneTemplateService {
     private readonly phoneTemplateModel: typeof PhoneTemplate,
   ) {}
 
+  /**
+   * Yields a list of PhoneTemplates or throws a NotFoundException if
+   * the repository returns null, undefined, or an empty list.
+   * @returns {Promise<PhoneTemplate[]>}
+   */
   async findAll() {
     const phoneTemplates = await this.phoneTemplateModel.findAll();
 
@@ -27,24 +32,44 @@ export class PhoneTemplateService {
     return phoneTemplates;
   }
 
-  async findOne(name: string) {
-    const phoneTemplate = await this.phoneTemplateModel.findByPk(name);
+  /**
+   * Yields a PhoneTemplate or throws a NotFoundException if the repository
+   * returns null or undefined.
+   * @param {PhoneTemplate} deliveryMethod
+   * @param {string} name 
+   * @returns {Promise<PhoneTemplate>}
+   */
+  async findOne(deliveryMethod: PhoneMethods, name: string) {
+    const phoneTemplate = await this.phoneTemplateModel.findOne({
+      where: { name, deliveryMethod },
+    });
 
     if (!phoneTemplate) {
-      throw new NotFoundException(`Phone template name=${name} not found!`);
+      throw new NotFoundException(
+        `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
+      );
     }
 
     return phoneTemplate;
   }
 
+  /**
+   * Creates a new PhoneTemplate or throws a BadRequestException if a phone
+   * template name for a phone delivery method exists in the repository.
+   * @param {CreatePhoneTemplateDto} createPhoneTemplateDto
+   * @returns {Promise<ApiResponseDto<PhoneTemplate>>}
+   */
   async create(createPhoneTemplateDto: CreatePhoneTemplateDto) {
-    const existingTemplate = await this.phoneTemplateModel.findByPk(
-      createPhoneTemplateDto.name,
-    );
+    const existingTemplate = await this.phoneTemplateModel.findOne({
+      where: {
+        name: createPhoneTemplateDto.name,
+        deliveryMethod: createPhoneTemplateDto.deliveryMethod,
+      },
+    });
 
     if (existingTemplate) {
       throw new BadRequestException(
-        `Phone template name=${createPhoneTemplateDto.name} already exists!`,
+        `Phone template name=${createPhoneTemplateDto.name} for deliveryMethod=${createPhoneTemplateDto.deliveryMethod} already exists!`,
       );
     }
 
@@ -58,15 +83,33 @@ export class PhoneTemplateService {
     );
   }
 
-  async update(name: string, updatePhoneTemplateDto: UpdatePhoneTemplateDto) {
-    let phoneTemplate = await this.phoneTemplateModel.findByPk(name);
+  /**
+   * Updates a PhoneTemplate or throws a NotFoundException if the
+   * repository returns null or undefined.
+   * @param {PhoneMethods} deliveryMethod
+   * @param {string} name
+   * @param {UpdatePhoneTemplateDto} updatePhoneTemplateDto
+   * @returns {Promise<ApiResponseDto<PhoneTemplate>>}
+   */
+  async update(
+    deliveryMethod: PhoneMethods,
+    name: string,
+    updatePhoneTemplateDto: UpdatePhoneTemplateDto,
+  ) {
+    let phoneTemplate = await this.phoneTemplateModel.findOne({
+      where: { name, deliveryMethod },
+    });
 
     if (!phoneTemplate) {
-      throw new NotFoundException(`Phone template name=${name} not found!`);
+      throw new NotFoundException(
+        `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
+      );
     }
 
-    // Fixme: Only update parameters with defined values.
-    phoneTemplate = await phoneTemplate.update({ ...updatePhoneTemplateDto });
+    phoneTemplate = await phoneTemplate.update({
+      template: updatePhoneTemplateDto.template ?? phoneTemplate.template,
+      context: updatePhoneTemplateDto.context,
+    });
 
     return new ApiResponseDto<PhoneTemplate>(
       `Successfully updated phone template ${phoneTemplate.name}`,
@@ -74,11 +117,22 @@ export class PhoneTemplateService {
     );
   }
 
-  async remove(name: string) {
-    const phoneTemplate = await this.phoneTemplateModel.findByPk(name);
+  /**
+   * Removes a PhoneTemplate or throws a NotFoundException if the repository
+   * return null or undefined.
+   * @param {PhoneMethods} deliveryMethod
+   * @param {string} name
+   * @returns {Promise<ApiResponseDto}
+   */
+  async remove(deliveryMethod: PhoneMethods, name: string) {
+    const phoneTemplate = await this.phoneTemplateModel.findOne({
+      where: { name, deliveryMethod },
+    });
 
     if (!phoneTemplate) {
-      throw new NotFoundException(`Phone template name=${name} not found!`);
+      throw new NotFoundException(
+        `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
+      );
     }
 
     await phoneTemplate.destroy();

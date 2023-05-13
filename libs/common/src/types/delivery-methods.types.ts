@@ -3,3 +3,5 @@ export enum DeliveryMethods {
   SMS = 'sms',
   CALL = 'call',
 }
+
+export type PhoneMethods = DeliveryMethods.CALL | DeliveryMethods.SMS;

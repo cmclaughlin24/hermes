@@ -9,7 +9,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto, Public } from '@notification/common';
+import { ApiResponseDto, PhoneMethods, Public } from '@notification/common';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
@@ -32,7 +32,7 @@ export class PhoneTemplateController {
     return this.phoneTemplateService.findAll();
   }
 
-  @Get(':name')
+  @Get(':deliveryMethod/:name')
   @Public()
   @ApiOperation({
     summary: "Find a phone template by it's name.",
@@ -40,8 +40,11 @@ export class PhoneTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('name') name: string) {
-    return this.phoneTemplateService.findOne(name);
+  findOne(
+    @Param('deliveryMethod') deliveryMethod: PhoneMethods,
+    @Param('name') name: string,
+  ) {
+    return this.phoneTemplateService.findOne(deliveryMethod, name);
   }
 
   @Post()
@@ -66,7 +69,7 @@ export class PhoneTemplateController {
     return this.phoneTemplateService.create(createPhoneTemplateDto);
   }
 
-  @Patch(':name')
+  @Patch(':deliveryMethod/:name')
   @ApiOperation({
     summary: 'Update a phone template.',
     security: [{ ApiKeyAuth: [] }],
@@ -86,13 +89,18 @@ export class PhoneTemplateController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
+    @Param('deliveryMethod') deliveryMethod: PhoneMethods,
     @Param('name') name: string,
     @Body() updatePhoneTemplateDto: UpdatePhoneTemplateDto,
   ) {
-    return this.phoneTemplateService.update(name, updatePhoneTemplateDto);
+    return this.phoneTemplateService.update(
+      deliveryMethod,
+      name,
+      updatePhoneTemplateDto,
+    );
   }
 
-  @Delete(':name')
+  @Delete(':deliveryMethod/:name')
   @ApiOperation({
     summary: 'Remove an email template.',
     security: [{ ApiKeyAuth: [] }],
@@ -107,7 +115,10 @@ export class PhoneTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('name') name: string) {
-    return this.phoneTemplateService.remove(name);
+  remove(
+    @Param('deliveryMethod') deliveryMethod: PhoneMethods,
+    @Param('name') name: string,
+  ) {
+    return this.phoneTemplateService.remove(deliveryMethod, name);
   }
 }
