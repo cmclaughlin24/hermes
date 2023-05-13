@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ApiResponseDto } from '@notification/common';
-import { CreateCallNotificationDto } from '../../common/dto/create-call-notification.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
@@ -61,7 +60,7 @@ export class NotificationService {
    * @returns {Promise<ApiResponseDto>}
    */
   async createCallNotification(
-    createCallNotification: CreateCallNotificationDto,
+    createCallNotification: CreatePhoneNotificationDto,
   ) {
     // Todo: Call PhoneService to directly send a notification.
   }

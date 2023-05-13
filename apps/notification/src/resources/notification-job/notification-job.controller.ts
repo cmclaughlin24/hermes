@@ -11,7 +11,6 @@ import {
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto, Public } from '@notification/common';
 import { JobState } from 'bullmq';
-import { CreateCallNotificationDto } from '../../common/dto/create-call-notification.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { NotificationJobService } from './notification-job.service';
@@ -132,7 +131,7 @@ export class NotificationJobController {
     description: 'Forbidden Resource',
   })
   createCallNotification(
-    @Body() createCallNotification: CreateCallNotificationDto,
+    @Body() createCallNotification: CreatePhoneNotificationDto,
   ) {
     return this.notificationJobService.createCallNotification(
       createCallNotification,

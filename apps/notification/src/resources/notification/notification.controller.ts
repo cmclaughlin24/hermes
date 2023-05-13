@@ -1,7 +1,6 @@
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '@notification/common';
-import { CreateCallNotificationDto } from '../../common/dto/create-call-notification.dto';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { NotificationService } from './notification.service';
@@ -82,7 +81,7 @@ export class NotificationController {
     description: 'Forbidden Resource'
   })
   createCallNotification(
-    @Body() createCallNotification: CreateCallNotificationDto,
+    @Body() createCallNotification: CreatePhoneNotificationDto,
   ) {
     return this.notificationService.createCallNotification(
       createCallNotification,

@@ -29,6 +29,11 @@ export class PhoneService implements CreateNotificationDto {
     }
   }
 
+  async sendCall(createPhoneNotificationDto: CreatePhoneNotificationDto) {
+    try {
+    } catch (error) {}
+  }
+
   async createNotificationDto(data: any) {
     if (!data) {
       throw new Error('Payload cannot be null/undefined');
