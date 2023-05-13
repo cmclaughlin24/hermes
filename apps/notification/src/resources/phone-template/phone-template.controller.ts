@@ -1,9 +1,113 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponseDto, Public } from '@notification/common';
+import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
+import { PhoneTemplate } from './entities/phone-template.entity';
 import { PhoneTemplateService } from './phone-template.service';
 
 @ApiTags('Phone Template')
 @Controller('phone-template')
 export class PhoneTemplateController {
   constructor(private readonly phoneTemplateService: PhoneTemplateService) {}
+
+  @Get()
+  @Public()
+  @ApiOperation({
+    summary: 'Find phone templates.',
+    security: [],
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  findAll() {
+    return this.phoneTemplateService.findAll();
+  }
+
+  @Get(':name')
+  @Public()
+  @ApiOperation({
+    summary: "Find a phone template by it's name.",
+    security: [],
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  findOne(@Param('name') name: string) {
+    return this.phoneTemplateService.findOne(name);
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'Create a new phone template.',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Successful Operation',
+    type: ApiResponseDto<PhoneTemplate>,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  create(@Body() createPhoneTemplateDto: CreatePhoneTemplateDto) {
+    return this.phoneTemplateService.create(createPhoneTemplateDto);
+  }
+
+  @Patch(':name')
+  @ApiOperation({
+    summary: 'Update a phone template.',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful Operation',
+    type: ApiResponseDto<PhoneTemplate>,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  update(
+    @Param('name') name: string,
+    @Body() updatePhoneTemplateDto: UpdatePhoneTemplateDto,
+  ) {
+    return this.phoneTemplateService.update(name, updatePhoneTemplateDto);
+  }
+
+  @Delete(':name')
+  @ApiOperation({
+    summary: 'Remove an email template.',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful Operation',
+    type: ApiResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  remove(@Param('name') name: string) {
+    return this.phoneTemplateService.remove(name);
+  }
 }
