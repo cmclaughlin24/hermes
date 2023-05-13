@@ -43,6 +43,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       'Notification Log',
       'View the history of notification job outcomes.',
     )
+    .addTag(
+      'Phone Template',
+      'View and configure phone templates that may be used when sending SMS or making calls.',
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
