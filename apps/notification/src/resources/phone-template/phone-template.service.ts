@@ -78,7 +78,7 @@ export class PhoneTemplateService {
     });
 
     return new ApiResponseDto<PhoneTemplate>(
-      `Successfully created phone template ${phoneTemplate.name}`,
+      `Successfully created phone template ${phoneTemplate.name}!`,
       phoneTemplate,
     );
   }
