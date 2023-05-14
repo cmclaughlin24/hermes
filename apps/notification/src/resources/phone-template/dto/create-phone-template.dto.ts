@@ -26,7 +26,7 @@ export class CreatePhoneTemplateDto {
     description:
       'Message (SMS) or TwiML (call) template that can accept values from a nested JavaScript object',
     example:
-      '<Response><Say>You order for {{ product.quantity }} has been recevied! Your total is ${{ total }}</Say></Response>',
+      '<Response><Say>You order for {{ product.quantity }} has been received! Your total is ${{ total }}</Say></Response>',
     externalDocs: {
       url: 'https://www.twilio.com/docs/voice/twiml',
       description: 'TwiML',

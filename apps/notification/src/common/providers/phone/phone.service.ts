@@ -1,9 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PhoneMethods } from '@notification/common';
+import { PhoneTemplateService } from 'apps/notification/src/resources/phone-template/phone-template.service';
 import { validateOrReject } from 'class-validator';
 import { TwilioService } from 'nestjs-twilio';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
+import { compileTextTemplate } from '../../utils/template.utils';
 
 @Injectable()
 export class PhoneService implements CreateNotificationDto {
@@ -12,6 +15,7 @@ export class PhoneService implements CreateNotificationDto {
   constructor(
     private readonly twilioService: TwilioService,
     private readonly configService: ConfigService,
+    private readonly phoneTemplateService: PhoneTemplateService,
   ) {}
 
   async sendText(createPhoneNotificationDto: CreatePhoneNotificationDto) {
@@ -32,7 +36,7 @@ export class PhoneService implements CreateNotificationDto {
   async sendCall(createPhoneNotificationDto: CreatePhoneNotificationDto) {
     try {
       const result = await this.twilioService.client.calls.create({
-        twiml: '<Response><Say>Hello there!</Say></Response>',
+        twiml: createPhoneNotificationDto.body,
         to: createPhoneNotificationDto.to,
         from:
           createPhoneNotificationDto.from ||
@@ -58,6 +62,7 @@ export class PhoneService implements CreateNotificationDto {
     createPhoneNotificationDto.to = data.to;
     createPhoneNotificationDto.from = data.from;
     createPhoneNotificationDto.body = data.body;
+    createPhoneNotificationDto.template = data.template;
     createPhoneNotificationDto.context = data.context;
 
     try {
@@ -73,6 +78,37 @@ export class PhoneService implements CreateNotificationDto {
   }
 
   async createPhoneTemplate(
+    deliveryMethod: PhoneMethods,
     createPhoneNotificationDto: CreatePhoneNotificationDto,
-  ) {}
+  ) {
+    const templateName = createPhoneNotificationDto.template;
+    let body = createPhoneNotificationDto.body;
+
+    if (templateName) {
+      body &&
+        this.logger.warn(
+          `[${this.createPhoneTemplate.name}] ${CreatePhoneNotificationDto.name} contains both 'body' and 'template' keys, defaulting to 'template' key`,
+        );
+
+      const phoneTemplate = await this.phoneTemplateService.findOne(
+        deliveryMethod,
+        templateName,
+      );
+
+      body = phoneTemplate.template;
+    }
+
+    if (!body) {
+      throw new Error(
+        `Invalid Argument: ${CreatePhoneNotificationDto.name} must have either 'body' or 'template' keys present`,
+      );
+    }
+
+    createPhoneNotificationDto.body = compileTextTemplate(
+      body,
+      createPhoneNotificationDto.context,
+    );
+
+    return createPhoneNotificationDto;
+  }
 }

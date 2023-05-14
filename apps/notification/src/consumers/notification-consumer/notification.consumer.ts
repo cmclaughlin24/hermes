@@ -6,7 +6,6 @@ import { CreateEmailNotificationDto } from '../../common/dto/create-email-notifi
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { compileTextTemplate } from '../../common/utils/template.utils';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 const KEEP_JOB_OPTIONS: KeepJobs = {
@@ -141,9 +140,9 @@ export class NotificationConsumer extends WorkerHost {
         `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
       );
 
-      createPhoneNotificationDto.body = compileTextTemplate(
-        createPhoneNotificationDto.body,
-        createPhoneNotificationDto.context,
+      createPhoneNotificationDto = await this.phoneService.createPhoneTemplate(
+        DeliveryMethods.SMS,
+        createPhoneNotificationDto,
       );
 
       job.log(
@@ -173,7 +172,42 @@ export class NotificationConsumer extends WorkerHost {
     job.log(`${logPrefix}: Processing ${job.name} notification`);
 
     try {
-    } catch (error) {}
+      job.log(
+        `${logPrefix}: Creating ${CreatePhoneNotificationDto.name} from payload`,
+      );
+
+      let createPhoneNotificationDto: CreatePhoneNotificationDto;
+
+      try {
+        createPhoneNotificationDto =
+          await this.phoneService.createNotificationDto(job.data);
+      } catch (error) {
+        throw new UnrecoverableError(
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
+        );
+      }
+
+      job.log(
+        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
+      );
+
+      createPhoneNotificationDto = await this.phoneService.createPhoneTemplate(
+        DeliveryMethods.CALL,
+        createPhoneNotificationDto,
+      );
+
+      job.log(
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
+      );
+
+      const result = await this.phoneService.sendCall(
+        createPhoneNotificationDto,
+      );
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
