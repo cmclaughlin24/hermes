@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ApiResponseDto } from '@notification/common';
+import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { compileTextTemplate } from '../../common/utils/template.utils';
 
 @Injectable()
 export class NotificationService {
@@ -41,15 +40,15 @@ export class NotificationService {
   async createTextNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    createPhoneNotificationDto.body = compileTextTemplate(
-      createPhoneNotificationDto.body,
-      createPhoneNotificationDto.context,
+    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
+      DeliveryMethods.SMS,
+      createPhoneNotificationDto,
     );
 
-    const result = await this.phoneService.sendText(createPhoneNotificationDto);
+    const result = await this.phoneService.sendText(phoneNotificationDto);
 
     return new ApiResponseDto(
-      `Successfully sent SMS with body ${createPhoneNotificationDto.body} to ${createPhoneNotificationDto.to}`,
+      `Successfully sent SMS with body ${phoneNotificationDto.body} to ${phoneNotificationDto.to}`,
       result,
     );
   }
@@ -62,10 +61,15 @@ export class NotificationService {
   async createCallNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    const result = await this.phoneService.sendCall(createPhoneNotificationDto);
+    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
+      DeliveryMethods.CALL,
+      createPhoneNotificationDto,
+    );
+
+    const result = await this.phoneService.sendCall(phoneNotificationDto);
 
     return new ApiResponseDto(
-      `Successfully made call with to ${createPhoneNotificationDto.to}`,
+      `Successfully made call with to ${phoneNotificationDto.to}`,
       result,
     );
   }

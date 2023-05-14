@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PhoneMethods } from '@notification/common';
-import { PhoneTemplateService } from 'apps/notification/src/resources/phone-template/phone-template.service';
 import { validateOrReject } from 'class-validator';
 import { TwilioService } from 'nestjs-twilio';
+import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 import { compileTextTemplate } from '../../utils/template.utils';

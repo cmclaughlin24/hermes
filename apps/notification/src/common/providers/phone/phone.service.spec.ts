@@ -2,9 +2,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TwilioService } from 'nestjs-twilio';
 import {
+  MockConfigService,
   createConfigServiceMock,
-  MockConfigService
+  createPhoneTemplateServiceMock,
 } from '../../../../../notification/test/helpers/provider.helpers';
+import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { PhoneService } from './phone.service';
 
@@ -32,6 +34,10 @@ describe('PhoneService', () => {
         {
           provide: TwilioService,
           useValue: createTwilioServiceMock(),
+        },
+        {
+          provide: PhoneTemplateService,
+          useValue: createPhoneTemplateServiceMock(),
         },
       ],
     }).compile();
