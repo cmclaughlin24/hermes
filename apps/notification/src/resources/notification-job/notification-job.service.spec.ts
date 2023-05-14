@@ -1,11 +1,11 @@
 import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto } from '@notification/common';
+import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { Job, JobState } from 'bullmq';
 import {
   MockQueue,
-  createQueueMock
+  createQueueMock,
 } from '../../../../notification/test/helpers/queue.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -135,7 +135,7 @@ describe('NotificationJobService', () => {
 
       // Assert.
       expect(queue.add).toHaveBeenCalledWith(
-        'email',
+        DeliveryMethods.EMAIL,
         createEmailNotificationDto,
       );
     });
@@ -172,7 +172,10 @@ describe('NotificationJobService', () => {
       await service.createTextNotification(createPhoneNotificationDto);
 
       // Assert.
-      expect(queue.add).toHaveBeenCalledWith('sms', createPhoneNotificationDto);
+      expect(queue.add).toHaveBeenCalledWith(
+        DeliveryMethods.SMS,
+        createPhoneNotificationDto,
+      );
     });
 
     it('should yield an "ApiResposneDto" object with the job', async () => {
@@ -192,12 +195,40 @@ describe('NotificationJobService', () => {
   });
 
   describe('createCallNotfication()', () => {
+    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+      to: '+19999999999',
+      from: '+11111111111',
+      body: 'Unit Testing',
+    };
+
     afterEach(() => {
       queue.add.mockClear();
     });
 
-    it.todo('should add a "call" job to the notification queue');
+    it('should add a "call" job to the notification queue', async () => {
+      // Act.
+      await service.createCallNotification(createPhoneNotificationDto);
 
-    it.todo('should yield an "ApiResposneDto" object with the job');
+      // Assert.
+      expect(queue.add).toHaveBeenCalledWith(
+        DeliveryMethods.CALL,
+        createPhoneNotificationDto,
+      );
+    });
+
+    it('should yield an "ApiResposneDto" object with the job', async () => {
+      // Arrange.
+      const job = {};
+      const expectedResult = new ApiResponseDto(
+        `Successfully scheduled call notification`,
+        job,
+      );
+      queue.add.mockResolvedValue(job);
+
+      // Act/Assert.
+      await expect(
+        service.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
   });
 });

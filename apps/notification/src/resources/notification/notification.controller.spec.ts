@@ -70,7 +70,7 @@ describe('NotificationController', () => {
       from: '+11111111111',
       body: 'Unit Testing',
     };
-    
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
@@ -87,6 +87,24 @@ describe('NotificationController', () => {
   });
 
   describe('createCallNotification()', () => {
-    it.todo('should yield an "ApiResponseDto" object');
+    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+      to: '+19999999999',
+      from: '+11111111111',
+      body: 'Unit Testing',
+    };
+
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully made call with to ${createPhoneNotificationDto.to}`,
+        {},
+      );
+      service.createCallNotification.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(
+        controller.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
   });
 });
