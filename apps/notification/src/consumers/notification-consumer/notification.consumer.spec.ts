@@ -5,7 +5,7 @@ import {
   MockPhoneService,
   createEmailServiceMock,
   createNotificationLogServiceMock,
-  createPhoneServiceMock
+  createPhoneServiceMock,
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -51,6 +51,18 @@ describe('NotificationService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('process()', () => {
+    it.todo('should yield the result of a processed job (email)');
+
+    it.todo('should yield the result of a processed job (SMS)');
+
+    it.todo('should yield the result of a processed job (call)');
+
+    it.todo(
+      'should throw an "UnrecoverableError" if a process method cannot be identified for a job',
+    );
   });
 
   describe('processEmail()', () => {
@@ -227,7 +239,69 @@ describe('NotificationService', () => {
     });
   });
 
-  describe('processCall()', () => {});
+  describe('processCall()', () => {
+    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+      to: '+19999999999',
+      from: '+11111111111',
+      body: 'Unit Testing',
+    };
+
+    afterEach(() => {
+      phoneService.createNotificationDto.mockClear();
+      phoneService.sendCall.mockClear();
+    });
+
+    it('should yield the created text notification', async () => {
+      // Arrange.
+      const expectedResult = {};
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendCall.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processCall(job)).resolves.toEqual(expectedResult);
+    });
+
+    it("should validate the job's payload is valid", async () => {
+      // Arrange.
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendCall.mockResolvedValue(null);
+
+      // Act.
+      await service.processCall(job);
+
+      // Assert.
+      expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
+    });
+
+    it('should throw an "Error" if the job\'s payload is invalid', async () => {
+      // Arrange.
+      const error = new Error('unit testing');
+      const expectedResult = new Error(
+        `[${NotificationConsumer.name} processCall] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+      );
+      phoneService.createNotificationDto.mockRejectedValue(error);
+      phoneService.sendCall.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processCall(job)).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw an "Error" if an text failed to send', async () => {
+      // Arrange.
+      const expectedResult = new Error('Something went wrong');
+      phoneService.createNotificationDto.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+      phoneService.sendCall.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(service.processCall(job)).rejects.toEqual(expectedResult);
+    });
+  });
 
   describe('onQueueError()', () => {
     it.todo('should log the error to the console');

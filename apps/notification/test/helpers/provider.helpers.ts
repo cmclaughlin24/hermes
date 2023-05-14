@@ -47,7 +47,9 @@ export type MockPhoneService = Partial<Record<keyof PhoneService, jest.Mock>>;
 
 export const createPhoneServiceMock = (): MockPhoneService => ({
   sendText: jest.fn(),
+  sendCall: jest.fn(),
   createNotificationDto: jest.fn(),
+  createPhoneTemplate: jest.fn(),
 });
 
 export type MockNotificationLogService = Partial<

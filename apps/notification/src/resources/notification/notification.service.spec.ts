@@ -95,7 +95,14 @@ describe('NotificationService', () => {
       body: 'Unit Testing',
     };
 
+    beforeEach(() => {
+      phoneService.createPhoneTemplate.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+    });
+
     afterEach(() => {
+      phoneService.createPhoneTemplate.mockClear();
       phoneService.sendText.mockClear();
     });
 
@@ -125,10 +132,45 @@ describe('NotificationService', () => {
   });
 
   describe('createCalloNotification()', () => {
-    it.todo('should send a call notification');
+    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+      to: '+19999999999',
+      from: '+11111111111',
+      body: 'Unit Testing',
+    };
 
-    it.todo(
-      'should yield an "ApiResponseDto" object with the created notification',
-    );
+    beforeEach(() => {
+      phoneService.createPhoneTemplate.mockResolvedValue(
+        createPhoneNotificationDto,
+      );
+    });
+
+    afterEach(() => {
+      phoneService.createPhoneTemplate.mockClear();
+      phoneService.sendCall.mockClear();
+    });
+
+    it('should send a call notification', async () => {
+      // Act.
+      await service.createCallNotification(createPhoneNotificationDto);
+
+      // Assert.
+      expect(phoneService.sendCall).toHaveBeenCalledWith(
+        createPhoneNotificationDto,
+      );
+    });
+
+    it('should yield an "ApiResponseDto" object with the created notification', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully made call with to ${createPhoneNotificationDto.to}`,
+        {},
+      );
+      phoneService.sendCall.mockResolvedValue({});
+
+      // Act/Assert.
+      await expect(
+        service.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
   });
 });

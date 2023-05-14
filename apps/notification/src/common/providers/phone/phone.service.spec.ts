@@ -106,6 +106,14 @@ describe('PhoneService', () => {
     });
   });
 
+  describe('sendCall()', () => {
+    it.todo('should send a call notification');
+
+    it.todo(
+      "should use the environment's phone number if not included in CreatePhoneNotificationDto",
+    );
+  });
+
   describe('createNotificationDto()', () => {
     it('should yield a CreatePhoneNotificationDto object', async () => {
       // Arrange.
@@ -154,7 +162,6 @@ describe('PhoneService', () => {
     it('should throw an error if data is an invalid CreatePhoneNotificationDto', async () => {
       // Arrange.
       const payload = {
-        to: '+12818071479',
         from: '+12818071479',
       };
 
@@ -163,5 +170,19 @@ describe('PhoneService', () => {
         service.createNotificationDto(payload),
       ).rejects.toBeInstanceOf(Error);
     });
+  });
+
+  describe('createPhoneTemplate()', () => {
+    it.todo(
+      'should yield a CreatePhoneNotificationDto with a compiled body template',
+    );
+
+    it.todo(
+      'should retrieve a template from the repository if the "template" property is defined',
+    );
+
+    it.todo(
+      'should throw an error if both "template" or "body" properties are null/undefined',
+    );
   });
 });
