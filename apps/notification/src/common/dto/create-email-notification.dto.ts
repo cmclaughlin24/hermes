@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { TemplateExists } from '../decorators/template-exists.decorator';
+import { EmailTemplateExists } from '../decorators/email-template-exists.decorator';
 
 export class CreateEmailNotificationDto {
   @ApiProperty({
@@ -68,7 +68,7 @@ export class CreateEmailNotificationDto {
   })
   @IsString()
   @IsOptional()
-  @TemplateExists()
+  @EmailTemplateExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   template?: string;
 

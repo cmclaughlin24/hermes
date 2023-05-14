@@ -71,4 +71,8 @@ export class PhoneService implements CreateNotificationDto {
 
     return createPhoneNotificationDto;
   }
+
+  async createPhoneTemplate(
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
+  ) {}
 }

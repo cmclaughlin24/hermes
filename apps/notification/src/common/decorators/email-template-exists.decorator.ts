@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 import { EmailTemplateService } from '../../resources/email-template/email-template.service';
 
-@ValidatorConstraint({ name: 'TemplateExists', async: true })
+@ValidatorConstraint({ name: 'EmailTemplateExists', async: true })
 @Injectable()
-export class TemplateExistsRule implements ValidatorConstraintInterface {
+export class EmailTemplateExistsRule implements ValidatorConstraintInterface {
   constructor(private readonly emailTemplateService: EmailTemplateService) {}
 
   async validate(name: string) {
@@ -28,14 +28,14 @@ export class TemplateExistsRule implements ValidatorConstraintInterface {
   }
 }
 
-export function TemplateExists(validationOptions?: ValidationOptions) {
+export function EmailTemplateExists(validationOptions?: ValidationOptions) {
   return function (object: any, propertyName: string) {
     registerDecorator({
-      name: 'TemplateExists',
+      name: 'EmailTemplateExists',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      validator: TemplateExistsRule,
+      validator: EmailTemplateExistsRule,
     });
   };
 }

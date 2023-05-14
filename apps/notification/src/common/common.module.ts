@@ -3,7 +3,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TwilioModule } from 'nestjs-twilio';
 import { EmailTemplateModule } from '../resources/email-template/email-template.module';
-import { TemplateExistsRule } from './decorators/template-exists.decorator';
+import { PhoneTemplateModule } from '../resources/phone-template/phone-template.module';
+import { EmailTemplateExistsRule } from './decorators/email-template-exists.decorator';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
 
@@ -34,8 +35,9 @@ import { PhoneService } from './providers/phone/phone.service';
       }),
     }),
     EmailTemplateModule,
+    PhoneTemplateModule,
   ],
-  providers: [EmailService, PhoneService, TemplateExistsRule],
+  providers: [EmailService, PhoneService, EmailTemplateExistsRule],
   exports: [EmailService, PhoneService],
 })
 export class CommonModule {}
