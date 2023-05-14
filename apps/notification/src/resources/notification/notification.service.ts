@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ApiResponseDto } from '@notification/common';
+import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { RadioService } from '../../common/providers/radio/radio.service';
-import { compileTextTemplate } from '../../common/utils/template.utils';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
-    private readonly radioService: RadioService,
   ) {}
 
   /**
@@ -42,29 +38,39 @@ export class NotificationService {
    * @returns {Promise<ApiResponseDto>}
    */
   async createTextNotification(
-    createTextNotification: CreatePhoneNotificationDto,
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    createTextNotification.body = compileTextTemplate(
-      createTextNotification.body,
-      createTextNotification.context,
+    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
+      DeliveryMethods.SMS,
+      createPhoneNotificationDto,
     );
 
-    const result = await this.phoneService.sendText(createTextNotification);
+    const result = await this.phoneService.sendText(phoneNotificationDto);
 
     return new ApiResponseDto(
-      `Successfully sent SMS with body ${createTextNotification.body} to ${createTextNotification.to}`,
+      `Successfully sent SMS with body ${phoneNotificationDto.body} to ${phoneNotificationDto.to}`,
       result,
     );
   }
 
   /**
-   * Sends a radio notification.
-   * @param createRadioNotification
+   * Sends a call notification.
+   * @param createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
-  async createRadioNotification(
-    createRadioNotification: CreateRadioNotificationDto,
+  async createCallNotification(
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    // Todo: Call RadioService to directly send a notification.
+    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
+      DeliveryMethods.CALL,
+      createPhoneNotificationDto,
+    );
+
+    const result = await this.phoneService.sendCall(phoneNotificationDto);
+
+    return new ApiResponseDto(
+      `Successfully made call with to ${phoneNotificationDto.to}`,
+      result,
+    );
   }
 }

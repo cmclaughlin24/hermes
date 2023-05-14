@@ -12,7 +12,7 @@ export type MockNotificationService = Partial<
 export const createNotificationServiceMock = (): MockNotificationService => ({
   createEmailNotification: jest.fn(),
   createTextNotification: jest.fn(),
-  createRadioNotification: jest.fn(),
+  createCallNotification: jest.fn(),
 });
 
 describe('NotificationController', () => {
@@ -86,7 +86,7 @@ describe('NotificationController', () => {
     });
   });
 
-  describe('createRadioNotification()', () => {
+  describe('createCallNotification()', () => {
     it.todo('should yield an "ApiResponseDto" object');
   });
 });

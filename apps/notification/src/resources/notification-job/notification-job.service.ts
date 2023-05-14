@@ -5,7 +5,6 @@ import { JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { NotificationDto } from '../../common/interfaces/create-notification-dto.interface';
 import { queuePool } from '../../config/bull.config';
 
@@ -84,16 +83,16 @@ export class NotificationJobService {
   }
 
   /**
-   * Adds a 'radio' job to the notification queue.
-   * @param {CreateRadioNotificationDto} createRadioNotification
+   * Adds a 'call' job to the notification queue.
+   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
-  async createRadioNotification(
-    createRadioNotification: CreateRadioNotificationDto,
+  async createCallNotification(
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
     return this._createNotification(
-      DeliveryMethods.RADIO,
-      createRadioNotification,
+      DeliveryMethods.CALL,
+      createPhoneNotificationDto,
     );
   }
 

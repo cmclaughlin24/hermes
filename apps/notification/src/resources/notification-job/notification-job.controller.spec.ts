@@ -16,7 +16,7 @@ export const createNotificationJobServiceMock =
     findOne: jest.fn(),
     createEmailNotification: jest.fn(),
     createTextNotification: jest.fn(),
-    createRadioNotification: jest.fn(),
+    createCallNotification: jest.fn(),
   });
 
 describe('NotificationJobController', () => {
@@ -114,7 +114,7 @@ describe('NotificationJobController', () => {
     });
   });
 
-  describe('createRadioNotification()', () => {
+  describe('createCallNotification()', () => {
     it.todo('should yieild an "ApiResponseDto" object');
   });
 });

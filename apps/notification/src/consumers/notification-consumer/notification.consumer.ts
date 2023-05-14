@@ -6,8 +6,6 @@ import { CreateEmailNotificationDto } from '../../common/dto/create-email-notifi
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
-import { RadioService } from '../../common/providers/radio/radio.service';
-import { compileTextTemplate } from '../../common/utils/template.utils';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 const KEEP_JOB_OPTIONS: KeepJobs = {
@@ -24,7 +22,6 @@ export class NotificationConsumer extends WorkerHost {
   constructor(
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
-    private readonly radioService: RadioService,
     private readonly notificationLogService: NotificationLogService,
   ) {
     super();
@@ -47,8 +44,8 @@ export class NotificationConsumer extends WorkerHost {
       case DeliveryMethods.SMS:
         result = await this.processText(job);
         break;
-      case DeliveryMethods.RADIO:
-        result = await this.processRadio(job);
+      case DeliveryMethods.CALL:
+        result = await this.processCall(job);
         break;
       default:
         throw new UnrecoverableError(
@@ -143,9 +140,9 @@ export class NotificationConsumer extends WorkerHost {
         `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
       );
 
-      createPhoneNotificationDto.body = compileTextTemplate(
-        createPhoneNotificationDto.body,
-        createPhoneNotificationDto.context,
+      createPhoneNotificationDto = await this.phoneService.createPhoneTemplate(
+        DeliveryMethods.SMS,
+        createPhoneNotificationDto,
       );
 
       job.log(
@@ -163,16 +160,54 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * Processes a 'radio' job from the notification queue and yields the sent text
-   * notification. Throws an error if the job payload is an invalid CreateRadioNotificationDto
+   * Processes a 'call' job from the notification queue and yields the sent text
+   * notification. Throws an error if the job payload is an invalid CreatePhoneNotificationDto
    * object or the notification fails to send.
    * @param {Job} job
    * @returns
    */
-  async processRadio(job: Job) {
-    const logPrefix = this._createLogPrefix(this.processRadio.name, job.id);
+  async processCall(job: Job) {
+    const logPrefix = this._createLogPrefix(this.processCall.name, job.id);
 
     job.log(`${logPrefix}: Processing ${job.name} notification`);
+
+    try {
+      job.log(
+        `${logPrefix}: Creating ${CreatePhoneNotificationDto.name} from payload`,
+      );
+
+      let createPhoneNotificationDto: CreatePhoneNotificationDto;
+
+      try {
+        createPhoneNotificationDto =
+          await this.phoneService.createNotificationDto(job.data);
+      } catch (error) {
+        throw new UnrecoverableError(
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
+        );
+      }
+
+      job.log(
+        `${logPrefix}: ${CreatePhoneNotificationDto.name} created, building message template`,
+      );
+
+      createPhoneNotificationDto = await this.phoneService.createPhoneTemplate(
+        DeliveryMethods.CALL,
+        createPhoneNotificationDto,
+      );
+
+      job.log(
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
+      );
+
+      const result = await this.phoneService.sendCall(
+        createPhoneNotificationDto,
+      );
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**

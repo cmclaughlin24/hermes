@@ -37,7 +37,7 @@ export class DistributionRule extends Model {
       DataType.ENUM(
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
-        DeliveryMethods.RADIO,
+        DeliveryMethods.CALL,
       ),
     ),
   })

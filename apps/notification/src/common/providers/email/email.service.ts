@@ -66,7 +66,7 @@ export class EmailService implements CreateNotificationDto {
     if (templateName) {
       html &&
         this.logger.warn(
-          `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name}] contains both 'html' and 'template' keys, defaulting to 'template' key`,
+          `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name} contains both 'html' and 'template' keys, defaulting to 'template' key`,
         );
 
       const emailTemplate = await this.emailTemplateService.findOne(

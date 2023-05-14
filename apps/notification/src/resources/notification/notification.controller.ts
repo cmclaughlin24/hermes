@@ -3,7 +3,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '@notification/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreateRadioNotificationDto } from '../../common/dto/create-radio-notification.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('Notification')
@@ -63,9 +62,9 @@ export class NotificationController {
     );
   }
 
-  @Post('radio')
+  @Post('call')
   @ApiOperation({
-    summary: 'Send a radio notification.',
+    summary: 'Send a call notification.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
@@ -81,11 +80,11 @@ export class NotificationController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource'
   })
-  createRadioNotification(
-    @Body() createRadioNotification: CreateRadioNotificationDto,
+  createCallNotification(
+    @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this.notificationService.createRadioNotification(
-      createRadioNotification,
+    return this.notificationService.createCallNotification(
+      createPhoneNotificationDto,
     );
   }
 }
