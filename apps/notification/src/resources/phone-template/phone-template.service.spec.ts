@@ -7,6 +7,7 @@ import {
   createMockRepository,
 } from '../../../test/helpers/database.helpers';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
 import { PhoneTemplateService } from './phone-template.service';
 
@@ -170,30 +171,103 @@ describe('PhoneTemplateService', () => {
   });
 
   describe('update()', () => {
-    const phoneTemplate = { update: jest.fn() };
+    const updatePhoneTemplateDto: UpdatePhoneTemplateDto = {
+      template: '<Response><Say>Hello There!</Say></Response>',
+      context: null,
+    };
+    const phoneTemplate = { name: 'unit-test', update: jest.fn() };
 
     afterEach(() => {
       phoneTemplate.update.mockClear();
     });
 
-    it('should update a phone template', async () => {});
+    it('should update a phone template', async () => {
+      // Arrange.
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplate.update.mockResolvedValue(phoneTemplate);
 
-    it('should yield an "ApiResponseDto" object with the updated phone template', async () => {});
+      // Act.
+      await service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto);
 
-    it('should throw a "NotFoundException" if the phone template does not exist', async () => {});
+      // Assert.
+      expect(phoneTemplate.update).toHaveBeenCalledWith(updatePhoneTemplateDto);
+    });
+
+    it('should yield an "ApiResponseDto" object with the updated phone template', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto<PhoneTemplate>(
+        `Successfully updated phone template ${phoneTemplate.name}`,
+        phoneTemplate,
+      );
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplate.update.mockResolvedValue(phoneTemplate);
+
+      // Act/Assert.
+      await expect(
+        service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto),
+      ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the phone template does not exist', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.CALL} not found!`,
+      );
+      phoneTemplateModel.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        service.update(
+          DeliveryMethods.CALL,
+          phoneTemplate.name,
+          updatePhoneTemplateDto,
+        ),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('remove()', () => {
-    const phoneTemplate = { destroy: jest.fn() };
+    const phoneTemplate = { name: 'unit-test', destroy: jest.fn() };
 
     afterEach(() => {
       phoneTemplate.destroy.mockClear();
     });
 
-    it('should remove a phone template', async () => {});
+    it('should remove a phone template', async () => {
+      // Arrange.
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
 
-    it('should yield an "ApiResponseDto" object', async () => {});
+      // Act.
+      await service.remove(DeliveryMethods.SMS, '');
 
-    it('should throw a "NotFoundException" if the phone template does not exist', async () => {});
+      // Assert.
+      expect(phoneTemplate.destroy).toHaveBeenCalled();
+    });
+
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully deleted phone template ${phoneTemplate.name}!`,
+      );
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+
+      // Act/Assert.
+      await expect(
+        service.remove(DeliveryMethods.SMS, phoneTemplate.name),
+      ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the phone template does not exist', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.SMS} not found!`,
+      );
+      phoneTemplateModel.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        service.remove(DeliveryMethods.SMS, phoneTemplate.name),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 });

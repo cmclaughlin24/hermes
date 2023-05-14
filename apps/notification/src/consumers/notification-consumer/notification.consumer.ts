@@ -171,6 +171,9 @@ export class NotificationConsumer extends WorkerHost {
     const logPrefix = this._createLogPrefix(this.processCall.name, job.id);
 
     job.log(`${logPrefix}: Processing ${job.name} notification`);
+
+    try {
+    } catch (error) {}
   }
 
   /**
