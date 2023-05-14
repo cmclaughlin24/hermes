@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeliveryMethods } from '@notification/common';
+import { Job, UnrecoverableError } from 'bullmq';
 import {
   MockEmailService,
   MockNotificationLogService,
@@ -54,15 +56,60 @@ describe('NotificationService', () => {
   });
 
   describe('process()', () => {
-    it.todo('should yield the result of a processed job (email)');
+    it('should yield the result of a processed job (email)', async () => {
+      // Arrange.
+      const expectedResult: any = {};
+      const processEmail = jest
+        .spyOn(service, 'processEmail')
+        .mockResolvedValue(expectedResult);
 
-    it.todo('should yield the result of a processed job (SMS)');
+      // Act.
+      await service.process({ name: DeliveryMethods.EMAIL } as Job);
 
-    it.todo('should yield the result of a processed job (call)');
+      // Assert.
+      expect(processEmail).toHaveBeenCalled();
+    });
 
-    it.todo(
-      'should throw an "UnrecoverableError" if a process method cannot be identified for a job',
-    );
+    it('should yield the result of a processed job (SMS)', async () => {
+      // Arrange.
+      const expectedResult: any = {};
+      const processText = jest
+        .spyOn(service, 'processText')
+        .mockResolvedValue(expectedResult);
+
+      // Act.
+      await service.process({ name: DeliveryMethods.SMS } as Job);
+
+      // Assert.
+      expect(processText).toHaveBeenCalled();
+    });
+
+    it('should yield the result of a processed job (call)', async () => {
+      // Arrange.
+      const expectedResult: any = {};
+      const processCall = jest
+        .spyOn(service, 'processCall')
+        .mockResolvedValue(expectedResult);
+
+      // Act.
+      await service.process({ name: DeliveryMethods.CALL } as Job);
+
+      // Assert.
+      expect(processCall).toHaveBeenCalled();
+    });
+
+    it('should throw an "UnrecoverableError" if a process method cannot be identified for a job', async () => {
+      // Arrange.
+      const name = 'unit-test';
+      const expectedResult = new UnrecoverableError(
+        `Invalid Delivery Method: ${name} is not an available delievery method`,
+      );
+
+      // Act/Assert.
+      await expect(service.process({ name } as Job)).rejects.toEqual(
+        expectedResult,
+      );
+    });
   });
 
   describe('processEmail()', () => {

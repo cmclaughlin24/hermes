@@ -15,6 +15,9 @@ const createTwilioServiceMock = () => ({
     messages: {
       create: jest.fn(),
     },
+    calls: {
+      create: jest.fn(),
+    },
   },
 });
 
@@ -107,11 +110,54 @@ describe('PhoneService', () => {
   });
 
   describe('sendCall()', () => {
-    it.todo('should send a call notification');
+    afterEach(() => {
+      twilioService.client.calls.create.mockClear();
+    });
 
-    it.todo(
-      "should use the environment's phone number if not included in CreatePhoneNotificationDto",
-    );
+    it('should send a call notification', async () => {
+      // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+12818071479',
+        from: '+12818071479',
+        body: 'Unit Testing',
+      };
+      const expectedResult = {
+        to: createPhoneNotificationDto.to,
+        from: createPhoneNotificationDto.from,
+        twiml: createPhoneNotificationDto.body,
+      };
+
+      // Act.
+      await service.sendCall(createPhoneNotificationDto);
+
+      // Assert.
+      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
+
+    it("should use the environment's phone number if not included in CreatePhoneNotificationDto", async () => {
+      // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+12818071479',
+        body: 'Unit Testing',
+      };
+      const from = '+12918071478';
+      const expectedResult = {
+        to: createPhoneNotificationDto.to,
+        twiml: createPhoneNotificationDto.body,
+        from,
+      };
+      configService.get.mockReturnValue(from);
+
+      // Act.
+      await service.sendCall(createPhoneNotificationDto);
+
+      // Assert.
+      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
+    });
   });
 
   describe('createNotificationDto()', () => {
