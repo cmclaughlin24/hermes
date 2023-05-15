@@ -183,7 +183,15 @@ export function mapToNotificationJobs(
       case DeliveryMethods.SMS:
         data = {
           to: recipient,
+          template: distributionRule.smsTemplate,
           body: distributionRule.text,
+          context: payload,
+        };
+        break;
+      case DeliveryMethods.CALL:
+        data = {
+          to: recipient,
+          template: distributionRule.callTemplate,
           context: payload,
         };
         break;

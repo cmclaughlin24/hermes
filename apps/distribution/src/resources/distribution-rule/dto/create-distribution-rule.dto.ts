@@ -90,7 +90,8 @@ export class CreateDistributionRuleDto {
 
   @ApiProperty({
     description:
-      'Plain text template that can accept values from a nested JavaScript object',
+      'Plain text template that can accept values from a nested JavaScript object. When present, used ' +
+      'in the EmailNotificationDto as a plain text body or in the PhoneNotificationDto (SMS) as the message',
     example:
       '{{firstName}} {{lastName}} successfully sent a {{message.type}} notification!',
   })
@@ -98,6 +99,27 @@ export class CreateDistributionRuleDto {
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   text: string;
+
+  @ApiProperty({
+    description:
+      'Name of a SMS template in the Notification Service (overrides "text" property if provided)',
+    example: 'template',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  smsTemplate?: string;
+
+  @ApiProperty({
+    description: 'Name of a SMS template in the Notification Service',
+    example: 'template',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  callTemplate?: string;
 
   @ApiProperty({
     description:

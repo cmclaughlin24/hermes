@@ -4,7 +4,7 @@ import * as packageJson from '../../../../package.json';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Distribution Service Documentation')
+    .setTitle('Hermes | Distribution Service Documentation')
     .setVersion(packageJson.version)
     .setDescription(
       'The Distribution Service implements a message queue design pattern by utilizing the @golevelup/nestjs-rabbitmq package. This ' +

@@ -55,9 +55,19 @@ export class DistributionRule extends Model {
   @Column
   text: string;
 
+  @Column({ allowNull: true })
+  smsTemplate: string;
+
+  @Column({ allowNull: true })
+  callTemplate: string;
+
   @Default(false)
   @Column
   checkDeliveryWindow: boolean;
+
+  @Default(false)
+  @Column
+  bypassSubscriptions: boolean;
 
   @BelongsTo(() => DistributionEvent)
   event: DistributionEvent;

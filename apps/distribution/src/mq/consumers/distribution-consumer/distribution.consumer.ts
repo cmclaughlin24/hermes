@@ -15,6 +15,7 @@ import { createNotificationJobs } from '../../../common/utils/notification-job.u
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
+import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
 
 @Injectable()
 export class DistributionConsumer {
@@ -49,7 +50,12 @@ export class DistributionConsumer {
         true,
         true,
       );
-
+      const distributionRule = this._getDistributionRule(
+        distributionEvent,
+        message.metadata,
+      );
+      
+      // Todo: Check if the subscriptions should be bypassed.
       const subscriptions = filterSubscriptions(
         distributionEvent.subscriptions,
         message.payload,
@@ -67,13 +73,8 @@ export class DistributionConsumer {
         return;
       }
 
-      const distributionRuleIdx = this._getDistributionRuleIdx(
-        distributionEvent,
-        message.metadata,
-      );
-
       const jobs = createNotificationJobs(
-        distributionEvent.rules[distributionRuleIdx],
+        distributionRule,
         subscriptionMembers,
         message.payload,
       );
@@ -97,8 +98,8 @@ export class DistributionConsumer {
         finishedAt: new Date(),
         ...message,
       };
-      
-      await this.distributionLogService.log(job, state, result, error);
+
+      // await this.distributionLogService.log(job, state, result, error);
     }
   }
 
@@ -132,11 +133,11 @@ export class DistributionConsumer {
     return `[${DistributionConsumer.name} ${functionName}] Message ${messageId}`;
   }
 
-  private _getDistributionRuleIdx(
+  private _getDistributionRule(
     distributionEvent: DistributionEvent,
     metadata: any,
-  ): number {
-    let idx = distributionEvent.rules.findIndex((rule) =>
+  ): DistributionRule {
+    let rule = distributionEvent.rules.find((rule) =>
       hasMetadata(
         distributionEvent.metadataLabels,
         JSON.parse(rule.metadata),
@@ -144,16 +145,16 @@ export class DistributionConsumer {
       ),
     );
 
-    if (idx < 0) {
-      idx = distributionEvent.rules.findIndex((rule) => rule.metadata === null);
+    if (!rule) {
+      rule = distributionEvent.rules.find((rule) => rule.metadata === null);
 
-      if (idx < 0) {
+      if (!rule) {
         throw new Error(
           `Distribution Event queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} does not have a default distribution rule defined!`,
         );
       }
     }
 
-    return idx;
+    return rule;
   }
 }

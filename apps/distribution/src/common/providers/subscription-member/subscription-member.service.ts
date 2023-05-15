@@ -28,7 +28,7 @@ export class SubscriptionMemberService {
       //   null,
       // ),
       new SubscriptionMemberDto(
-        [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
+        [DeliveryMethods.EMAIL, DeliveryMethods.SMS, DeliveryMethods.CALL],
         'curtismclaughlin24@gmail.com',
         '+12815362118',
         'America/Chicago',
