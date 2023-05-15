@@ -1,5 +1,5 @@
+import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import {
   MockDistributionRuleService,
   createDistributionRuleServiceMock,

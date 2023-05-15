@@ -1,4 +1,4 @@
-import { PhoneMethods } from '@notification/common';
+import { PhoneMethods } from '@hermes/common';
 import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 @Table

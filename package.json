@@ -119,7 +119,7 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@notification/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@hermes/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "axios": "axios/dist/node/axios.cjs"
     }
   }

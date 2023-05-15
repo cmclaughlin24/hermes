@@ -1,6 +1,6 @@
+import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';

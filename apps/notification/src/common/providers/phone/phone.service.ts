@@ -1,6 +1,6 @@
+import { PhoneMethods } from '@hermes/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PhoneMethods } from '@notification/common';
 import { validateOrReject } from 'class-validator';
 import { TwilioService } from 'nestjs-twilio';
 import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';

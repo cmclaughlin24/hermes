@@ -1,5 +1,5 @@
+import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';

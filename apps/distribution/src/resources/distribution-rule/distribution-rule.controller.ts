@@ -1,3 +1,4 @@
+import { ApiResponseDto, Public } from '@hermes/common';
 import {
   Body,
   Controller,
@@ -11,7 +12,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto, Public } from '@notification/common';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';

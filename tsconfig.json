@@ -19,10 +19,10 @@
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "paths": {
-      "@notification/common": [
+      "@hermes/common": [
         "libs/common/src"
       ],
-      "@notification/common/*": [
+      "@hermes/common/*": [
         "libs/common/src/*"
       ]
     }

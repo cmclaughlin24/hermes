@@ -1,4 +1,4 @@
-import { DeliveryMethods } from '@notification/common';
+import { DeliveryMethods } from '@hermes/common';
 import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime } from 'luxon';
@@ -168,7 +168,7 @@ export function mapToNotificationJobs(
   return Array.from(recipients).map((recipient) => {
     let data;
 
-    // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @notification library.
+    // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
     switch (method) {
       case DeliveryMethods.EMAIL:
         data = {

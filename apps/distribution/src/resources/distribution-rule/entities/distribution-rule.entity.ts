@@ -1,4 +1,4 @@
-import { DeliveryMethods } from '@notification/common';
+import { DeliveryMethods } from '@hermes/common';
 import {
   BelongsTo,
   Column,

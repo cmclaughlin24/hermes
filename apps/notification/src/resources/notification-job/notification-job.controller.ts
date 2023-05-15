@@ -1,3 +1,4 @@
+import { ApiResponseDto, Public } from '@hermes/common';
 import {
   Body,
   Controller,
@@ -9,7 +10,6 @@ import {
   Query
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto, Public } from '@notification/common';
 import { JobState } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
