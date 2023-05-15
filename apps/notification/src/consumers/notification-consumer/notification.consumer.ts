@@ -1,6 +1,6 @@
+import { DeliveryMethods } from '@hermes/common';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { DeliveryMethods } from '@notification/common';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';

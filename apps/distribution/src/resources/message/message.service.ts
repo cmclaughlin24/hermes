@@ -1,6 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ApiResponseDto } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { ApiResponseDto } from '@notification/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()

@@ -1,7 +1,7 @@
+import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import {
   MockRepository,
   createMockRepository,

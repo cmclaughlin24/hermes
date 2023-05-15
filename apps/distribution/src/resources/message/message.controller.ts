@@ -1,6 +1,6 @@
+import { ApiResponseDto } from '@hermes/common';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto } from '@notification/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
 

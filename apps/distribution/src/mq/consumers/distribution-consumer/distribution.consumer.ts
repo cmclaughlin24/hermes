@@ -1,8 +1,8 @@
 import { Nack, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { hasMetadata } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { hasMetadata } from '@notification/common';
 import { ConsumeMessage } from 'amqplib';
 import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.types';
 import { MessageState } from 'apps/distribution/src/common/types/message-state.types';

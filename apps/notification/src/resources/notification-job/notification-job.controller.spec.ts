@@ -1,5 +1,5 @@
+import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto } from '@notification/common';
 import { Job } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';

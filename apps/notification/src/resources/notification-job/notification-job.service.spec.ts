@@ -1,7 +1,7 @@
+import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto, DeliveryMethods } from '@notification/common';
 import { Job, JobState } from 'bullmq';
 import {
   MockQueue,

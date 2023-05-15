@@ -1,5 +1,5 @@
+import { DeliveryMethods } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { DeliveryMethods } from '@notification/common';
 import { Transform, TransformFnParams } from 'class-transformer';
 import {
   IsBoolean,

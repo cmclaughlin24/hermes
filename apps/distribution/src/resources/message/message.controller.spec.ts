@@ -1,5 +1,5 @@
+import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto } from '@notification/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageController } from './message.controller';
 import { MessageService } from './message.service';

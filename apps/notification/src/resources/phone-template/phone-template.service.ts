@@ -1,10 +1,10 @@
+import { ApiResponseDto, PhoneMethods } from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { ApiResponseDto, PhoneMethods } from '@notification/common';
 import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';

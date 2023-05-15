@@ -1,3 +1,4 @@
+import { ApiResponseDto, PhoneMethods, Public } from '@hermes/common';
 import {
   Body,
   Controller,
@@ -9,7 +10,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseDto, PhoneMethods, Public } from '@notification/common';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';

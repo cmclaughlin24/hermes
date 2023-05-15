@@ -1,3 +1,4 @@
+import { DeliveryMethods, Public } from '@hermes/common';
 import {
   Controller,
   Get,
@@ -7,7 +8,6 @@ import {
   Query
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeliveryMethods, Public } from '@notification/common';
 import { JobState } from 'bullmq';
 import { NotificationLogService } from './notification-log.service';
 

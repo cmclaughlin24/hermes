@@ -1,11 +1,11 @@
+import { ApiKeyGuard, RequestLoggerMiddleware } from '@hermes/common';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ApiKeyGuard, RequestLoggerMiddleware } from '@notification/common';
+import { DistributionEventModule } from './distribution-event/distribution-event.module';
 import { DistributionLogModule } from './distribution-log/distribution-log.module';
 import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
-import { SubscriptionModule } from './subscription/subscription.module';
 import { MessageModule } from './message/message.module';
-import { DistributionEventModule } from './distribution-event/distribution-event.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [

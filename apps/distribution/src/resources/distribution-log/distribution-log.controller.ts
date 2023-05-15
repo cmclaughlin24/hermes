@@ -1,3 +1,4 @@
+import { Public } from '@hermes/common';
 import {
   Controller,
   Get,
@@ -7,7 +8,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from '@notification/common';
 import { DistributionLogService } from './distribution-log.service';
 
 @ApiTags('Distribution Log')

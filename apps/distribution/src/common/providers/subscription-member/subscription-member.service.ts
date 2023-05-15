@@ -1,6 +1,6 @@
+import { DeliveryMethods } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { DeliveryMethods } from '@notification/common';
 import * as _ from 'lodash';
 import { Observable, map } from 'rxjs';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';

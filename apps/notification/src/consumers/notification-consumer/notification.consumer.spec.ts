@@ -1,5 +1,5 @@
+import { DeliveryMethods } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeliveryMethods } from '@notification/common';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
   MockEmailService,

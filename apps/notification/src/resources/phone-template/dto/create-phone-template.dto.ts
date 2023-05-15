@@ -1,5 +1,5 @@
+import { DeliveryMethods, PhoneMethods } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { DeliveryMethods, PhoneMethods } from '@notification/common';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Allow, IsIn, IsNotEmpty, IsString } from 'class-validator';
 

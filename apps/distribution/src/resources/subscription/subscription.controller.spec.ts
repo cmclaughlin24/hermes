@@ -1,5 +1,5 @@
+import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseDto } from '@notification/common';
 import {
   MockSubscriptionService,
   createSubscriptionServiceMock,
