@@ -16,6 +16,8 @@ export class SubscriptionMemberDto {
         return this.email;
       case DeliveryMethods.SMS:
         return this.phoneNumber;
+      case DeliveryMethods.CALL:
+        return this.phoneNumber;
     }
 
     return null;

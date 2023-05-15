@@ -4,7 +4,7 @@ import * as packageJson from '../../../../package.json';
 
 export function setupSwaggerDocument(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Notification Service Documentation')
+    .setTitle('Hermes | Notification Service Documentation')
     .setVersion(packageJson.version)
     .setDescription(
       'The Notification Service implements a message queue design pattern by utilizing the @nestjs/bullmq package. This ' +
