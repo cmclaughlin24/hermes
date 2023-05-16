@@ -3,7 +3,7 @@ import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
-import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
+import { SubscriptionMemberDto } from '../classes/subscription-member.class';
 
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;

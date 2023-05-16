@@ -54,8 +54,11 @@ export class DistributionConsumer {
         distributionEvent,
         message.metadata,
       );
-      
+
       // Todo: Check if the subscriptions should be bypassed.
+      if (distributionRule.bypassSubscriptions) {
+      }
+
       const subscriptions = filterSubscriptions(
         distributionEvent.subscriptions,
         message.payload,
