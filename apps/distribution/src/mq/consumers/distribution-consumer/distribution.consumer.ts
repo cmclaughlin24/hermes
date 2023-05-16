@@ -1,25 +1,27 @@
 import { Nack, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { hasMetadata } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
+import { MqLogger } from '../../../common/decorators/mq-logger.decorator';
 import { MessageDto } from '../../../common/dto/message.dto';
+import { MqLoggerInterceptor } from '../../../common/interceptors/mq-logger/mq-logger.interceptor';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
-import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
+@UseInterceptors(MqLoggerInterceptor)
 @Injectable()
 export class DistributionConsumer extends MqConsumer {
-  protected override readonly logger = new Logger(DistributionConsumer.name);
+  private readonly logger = new Logger(DistributionConsumer.name);
   private DISTRIBUTION_QUEUE: string;
 
   constructor(
@@ -28,9 +30,8 @@ export class DistributionConsumer extends MqConsumer {
     private readonly distributionEventService: DistributionEventService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
     protected readonly configService: ConfigService,
-    protected readonly distributionLogService: DistributionLogService,
   ) {
-    super(configService, distributionLogService);
+    super(configService);
     this.DISTRIBUTION_QUEUE = this.configService.get(
       'RABBITMQ_DISTRIBUTION_QUEUE',
     );
@@ -45,9 +46,9 @@ export class DistributionConsumer extends MqConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
+  @MqLogger(process.env.RABBITMQ_DISTRIBUTION_QUEUE)
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
-    let result, error;
 
     try {
       const distributionEvent = await this.distributionEventService.findOne(
@@ -97,14 +98,6 @@ export class DistributionConsumer extends MqConsumer {
       if (this.shouldRetry(error, amqpMsg, this.DISTRIBUTION_QUEUE)) {
         return new Nack();
       }
-    } finally {
-      await this.logAttempt(
-        this.DISTRIBUTION_QUEUE,
-        message,
-        this.getAttempts(amqpMsg, this.DISTRIBUTION_QUEUE),
-        result,
-        error,
-      );
     }
   }
 
