@@ -13,5 +13,5 @@ export function getAttempts(amqpMsg: ConsumeMessage, queue: string): number {
     (header) => header.queue === queue,
   );
 
-  return queueHeader ? queueHeader.count : 1;
+  return queueHeader ? queueHeader.count + 1 : 1;
 }
