@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
 import { Observable, map } from 'rxjs';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
-import { SubscriptionMemberDto } from '../../dto/subscription-member.dto';
+import { SubscriptionMemberDto } from '../../classes/subscription-member.class';
 
 @Injectable()
 export class SubscriptionMemberService {
