@@ -4,31 +4,37 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
-import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.types';
-import { MessageState } from 'apps/distribution/src/common/types/message-state.types';
-import { DistributionEventService } from 'apps/distribution/src/resources/distribution-event/distribution-event.service';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
+import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
+import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
+import { MqConsumer } from '../mq-consumer/mq.consumer';
 
 @Injectable()
-export class DistributionConsumer {
-  private readonly logger = new Logger(DistributionConsumer.name);
+export class DistributionConsumer extends MqConsumer {
+  protected override readonly logger = new Logger(DistributionConsumer.name);
+  private DISTRIBUTION_QUEUE: string;
 
   constructor(
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
-    private readonly configService: ConfigService,
     private readonly distributionEventService: DistributionEventService,
-    private readonly distributionLogService: DistributionLogService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
-  ) {}
+    protected readonly configService: ConfigService,
+    protected readonly distributionLogService: DistributionLogService,
+  ) {
+    super(configService, distributionLogService);
+    this.DISTRIBUTION_QUEUE = this.configService.get(
+      'RABBITMQ_DISTRIBUTION_QUEUE',
+    );
+  }
 
   @RabbitSubscribe({
     queue: process.env.RABBITMQ_DISTRIBUTION_QUEUE,
@@ -40,12 +46,12 @@ export class DistributionConsumer {
     },
   })
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
-    const logPrefix = this._createLogPrefix(this.subscribe.name, message.type);
+    const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
     let result, error;
 
     try {
       const distributionEvent = await this.distributionEventService.findOne(
-        this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
+        this.DISTRIBUTION_QUEUE,
         message.type,
         true,
         true,
@@ -88,52 +94,18 @@ export class DistributionConsumer {
 
       await this.notificationQueue.addBulk(jobs);
     } catch (error) {
-      if (this._shouldRetry(amqpMsg)) {
+      if (this.shouldRetry(error, amqpMsg, this.DISTRIBUTION_QUEUE)) {
         return new Nack();
       }
     } finally {
-      // Todo: Set correct values for distribution log.
-      const state = error ? MessageState.FAILED : MessageState.COMPLETED;
-      const job: DistributionJob = {
-        queue: this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
-        attemptsMade: 0,
-        processedAt: new Date(),
-        finishedAt: new Date(),
-        ...message,
-      };
-
-      // await this.distributionLogService.log(job, state, result, error);
+      await this.logAttempt(
+        this.DISTRIBUTION_QUEUE,
+        message,
+        this.getAttempts(amqpMsg, this.DISTRIBUTION_QUEUE),
+        result,
+        error,
+      );
     }
-  }
-
-  /**
-   * Yields true if a message has not exceeded the max retry attempts or false
-   * otherwise.
-   * @param {ConsumeMessage} amqpMsg
-   * @returns {boolean}
-   */
-  private _shouldRetry(amqpMsg: ConsumeMessage): boolean {
-    const headers = amqpMsg.properties.headers;
-    const queueHeader = headers['x-death']?.find(
-      (header) =>
-        header.queue === this.configService.get('RABBITMQ_DISTRIBUTION_QUEUE'),
-    );
-
-    return (
-      !queueHeader ||
-      queueHeader.count < this.configService.get('RETRY_ATTEMPTS')
-    );
-  }
-
-  /**
-   * Yields a formatted string with the class's name and function's name in square brackets
-   * followed by the RabbitMQ message id. (e.g. [ClassName FunctionName] Message MessageId)
-   * @param {string} functionName
-   * @param {string} messageId
-   * @returns {string}
-   */
-  private _createLogPrefix(functionName: string, messageId: string): string {
-    return `[${DistributionConsumer.name} ${functionName}] Message ${messageId}`;
   }
 
   private _getDistributionRule(
@@ -152,7 +124,7 @@ export class DistributionConsumer {
       rule = distributionEvent.rules.find((rule) => rule.metadata === null);
 
       if (!rule) {
-        throw new Error(
+        throw new MqUnrecoverableError(
           `Distribution Event queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} does not have a default distribution rule defined!`,
         );
       }
