@@ -1,4 +1,4 @@
-import { Nack, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { hasMetadata } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
@@ -7,9 +7,9 @@ import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
-import { MqLogger } from '../../../common/decorators/mq-logger.decorator';
+import { MqInterceptorHelper } from '../../../common/decorators/mq-interceptor-helper.decorator';
 import { MessageDto } from '../../../common/dto/message.dto';
-import { MqLoggerInterceptor } from '../../../common/interceptors/mq-logger/mq-logger.interceptor';
+import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
@@ -18,7 +18,7 @@ import { DistributionEvent } from '../../../resources/distribution-event/entitie
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
-@UseInterceptors(MqLoggerInterceptor)
+@UseInterceptors(MqInterceptor)
 @Injectable()
 export class DistributionConsumer extends MqConsumer {
   private readonly logger = new Logger(DistributionConsumer.name);
@@ -29,9 +29,9 @@ export class DistributionConsumer extends MqConsumer {
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
     private readonly subscriptionMemberService: SubscriptionMemberService,
-    protected readonly configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {
-    super(configService);
+    super();
     this.DISTRIBUTION_QUEUE = this.configService.get(
       'RABBITMQ_DISTRIBUTION_QUEUE',
     );
@@ -46,7 +46,7 @@ export class DistributionConsumer extends MqConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
-  @MqLogger(process.env.RABBITMQ_DISTRIBUTION_QUEUE)
+  @MqInterceptorHelper(process.env.RABBITMQ_DISTRIBUTION_QUEUE)
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
@@ -93,11 +93,11 @@ export class DistributionConsumer extends MqConsumer {
         return;
       }
 
+      throw new Error('something went wrong');
+
       await this.notificationQueue.addBulk(jobs);
     } catch (error) {
-      if (this.shouldRetry(error, amqpMsg, this.DISTRIBUTION_QUEUE)) {
-        return new Nack();
-      }
+      throw error;
     }
   }
 
