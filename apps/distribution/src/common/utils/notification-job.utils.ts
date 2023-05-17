@@ -12,15 +12,22 @@ const MILLISECONDS_PER_SECOND = 1000;
 /**
  * Yields a list of notification jobs for a list of subscription members based on the
  * distribution rule's enabled delivery method(s).
+ * 
+ * Note: If the messageTimeZone argument is defined, it will override the recipients
+ * time zone. This can be disabled by setting the DistributionRule 'timeZoneLabel' to
+ * null.
+ * 
  * @param {DistributionRule} distributionRule
  * @param {SubscriptionMemberDto[]} subscriptionMembers
  * @param {any} payload
+ * @param {string} messageTimeZone
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
   subscriptionMembers: SubscriptionMemberDto[],
   payload: any,
+  messageTimeZone: string,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
   return _.chain(subscriptionMembers)
     .filter(
@@ -39,6 +46,7 @@ export function createNotificationJobs(
         recipients,
         distributionRule,
         payload,
+        messageTimeZone,
       ),
     )
     .flatten()
@@ -129,7 +137,10 @@ export function reduceToDeliveryMethodsMap(
   map: Map<DeliveryMethods, Recipient[]>,
   member: SubscriptionMemberDto,
 ) => Map<DeliveryMethods, Recipient[]> {
-  return (map: Map<DeliveryMethods, Recipient[]>, member: SubscriptionMemberDto) => {
+  return (
+    map: Map<DeliveryMethods, Recipient[]>,
+    member: SubscriptionMemberDto,
+  ) => {
     for (const method of deliveryMethods) {
       const value = member.getDeliveryMethod(method);
 
@@ -148,11 +159,12 @@ export function reduceToDeliveryMethodsMap(
 }
 
 /**
- * Yields a list of notification jobs for a delivery method's recipients.
+ * Yields a list of notification jobs for a delivery method's recipients. 
  * @param {DeliveryMethods} method
  * @param {Recipient[]} recipients
  * @param {DistributionRule} distributionRule
  * @param {any} payload
+ * @param {string} messageTimeZone
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function mapToNotificationJobs(
@@ -160,54 +172,60 @@ export function mapToNotificationJobs(
   recipients: Recipient[],
   distributionRule: DistributionRule,
   payload: any,
+  messageTimeZone: string,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
-  // Note: 'uniqWith' ensures recipients are unique based on the 'isEqual' compartor, which uses a deep comparison. This ensures each
-  //       recipient will only recieve a single notification per message (occurs if subscription member has multiple subscriptions to
-  //       same distribution rule).
-  return _.chain(recipients)
-    // Bug: If a recipient occurs twice, but with different time zones, he will recieve a duplicate notification. Should this be
-    //      intended behavior? Could update uniqWith comparator function to check values.
-    .uniqWith(_.isEqual)
-    .map((recipient) => {
-      let data;
+  // Note: 'uniqWith' ensures recipients are unique based on the compartor function, which checks if a.value === b.value. This ensures 
+  //       each recipient will only recieve a single notification per message (occurs if subscription member has multiple subscriptions
+  //       to same distribution rule).
+  return (
+    _.chain(recipients)
+      // Bug: If a recipient occurs twice, but with different time zones, he will recieve a notification for each delivery method but each
+      //      notification may show a different time zone based on which delivery method occured first.
+      .uniqWith(
+        (recipientA, recipientB) => recipientA.value === recipientB.value,
+      )
+      .map((recipient) => {
+        let data;
+        const timeZone = messageTimeZone ?? recipient.timeZone;
 
-      // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
-      switch (method) {
-        case DeliveryMethods.EMAIL:
-          data = {
-            to: recipient.value,
-            timeZone: recipient.timeZone,
-            subject: distributionRule.emailSubject,
-            text: distributionRule.text,
-            template: distributionRule.emailTemplate,
-            html: distributionRule.html,
-            context: payload,
-          };
-          break;
-        case DeliveryMethods.SMS:
-          data = {
-            to: recipient.value,
-            timeZone: recipient.timeZone,
-            template: distributionRule.smsTemplate,
-            body: distributionRule.text,
-            context: payload,
-          };
-          break;
-        case DeliveryMethods.CALL:
-          data = {
-            to: recipient.value,
-            timeZone: recipient.timeZone,
-            template: distributionRule.callTemplate,
-            context: payload,
-          };
-          break;
-        default:
-          throw new Error(
-            `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,
-          );
-      }
+        // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
+        switch (method) {
+          case DeliveryMethods.EMAIL:
+            data = {
+              to: recipient.value,
+              timeZone: timeZone,
+              subject: distributionRule.emailSubject,
+              text: distributionRule.text,
+              template: distributionRule.emailTemplate,
+              html: distributionRule.html,
+              context: payload,
+            };
+            break;
+          case DeliveryMethods.SMS:
+            data = {
+              to: recipient.value,
+              timeZone: timeZone,
+              template: distributionRule.smsTemplate,
+              body: distributionRule.text,
+              context: payload,
+            };
+            break;
+          case DeliveryMethods.CALL:
+            data = {
+              to: recipient.value,
+              timeZone: timeZone,
+              template: distributionRule.callTemplate,
+              context: payload,
+            };
+            break;
+          default:
+            throw new Error(
+              `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,
+            );
+        }
 
-      return { name: method, data: data };
-    })
-    .value();
+        return { name: method, data: data };
+      })
+      .value()
+  );
 }

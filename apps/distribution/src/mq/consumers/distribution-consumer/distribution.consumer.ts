@@ -81,10 +81,15 @@ export class DistributionConsumer extends MqConsumer {
         return;
       }
 
+      const messageTimeZone = this._getMessageTimeZone(
+        message.metadata,
+        distributionRule.timeZoneLabel,
+      );
       const jobs = createNotificationJobs(
         distributionRule,
         subscriptionMembers,
         message.payload,
+        messageTimeZone
       );
 
       if (_.isEmpty(jobs)) {
@@ -122,5 +127,13 @@ export class DistributionConsumer extends MqConsumer {
     }
 
     return rule;
+  }
+
+  private _getMessageTimeZone(metadata: any, timeZoneLabel: string): string {
+    if (!metadata || !timeZoneLabel || timeZoneLabel.trim() === '') {
+      return null;
+    }
+
+    return metadata[timeZoneLabel];
   }
 }
