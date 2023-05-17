@@ -93,7 +93,7 @@ export class DistributionConsumer extends MqConsumer {
 
       await this.notificationQueue.addBulk(jobs);
     } catch (error) {
-      // Note: The MqConsumer will be handled the error and determine if a message
+      // Note: The MqInterceptor will be handled the error and determine if a message
       //       should be retried or not.
       throw error;
     }
