@@ -4,7 +4,8 @@ import {
   IsObject,
   IsOptional,
   IsPhoneNumber,
-  IsString
+  IsString,
+  IsTimeZone
 } from 'class-validator';
 
 export class CreatePhoneNotificationDto {
@@ -23,6 +24,16 @@ export class CreatePhoneNotificationDto {
   @IsPhoneNumber()
   @IsOptional()
   from?: string;
+
+  @ApiProperty({
+    description:
+      'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" key)',
+    example: 'America/Chicago',
+    required: false,
+  })
+  @IsTimeZone()
+  @IsOptional()
+  timeZone?: string;
 
   @ApiProperty({
     description:

@@ -28,6 +28,7 @@ COPY --from=BUILD /app/*.json .
 COPY --from=BUILD /app/dist/apps/${APPLICATION}/main.js ./dist/main.js
 
 ENV API_KEY_HEADER='Api-Key'
+ENV NODE_ENV='production'
 ENV PORT=${DEFAULT_PORT}
 ENV RETRY_ATTEMPTS=${DEFAULT_RETRY_ATTEMPTS}
 ENV RETRY_DELAY=${DEFAULT_RETRY_DELAY}

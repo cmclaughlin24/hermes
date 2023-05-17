@@ -61,6 +61,7 @@ export class PhoneService implements CreateNotificationDto {
     const createPhoneNotificationDto = new CreatePhoneNotificationDto();
     createPhoneNotificationDto.to = data.to;
     createPhoneNotificationDto.from = data.from;
+    createPhoneNotificationDto.timeZone = data.timeZone;
     createPhoneNotificationDto.body = data.body;
     createPhoneNotificationDto.template = data.template;
     createPhoneNotificationDto.context = data.context;

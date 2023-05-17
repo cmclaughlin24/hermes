@@ -22,11 +22,13 @@ export class SubscriptionMemberService {
     // }
 
     return [
-      // new SubscriptionMemberDto(
-      //   [DeliveryMethods.EMAIL],
-      //   'curtismclaughlin24@gmail.com',
-      //   null,
-      // ),
+      new SubscriptionMemberDto(
+        [DeliveryMethods.EMAIL],
+        'curtismclaughlin24@gmail.com',
+        null,
+        'America/Detroit',
+        []
+      ),
       new SubscriptionMemberDto(
         [DeliveryMethods.EMAIL, DeliveryMethods.SMS, DeliveryMethods.CALL],
         'curtismclaughlin24@gmail.com',
