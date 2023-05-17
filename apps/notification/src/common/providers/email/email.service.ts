@@ -38,6 +38,7 @@ export class EmailService implements CreateNotificationDto {
     const createEmailNotificationDto = new CreateEmailNotificationDto();
     createEmailNotificationDto.to = data.to;
     createEmailNotificationDto.from = data.from;
+    createEmailNotificationDto.timeZone = data.timeZone;
     createEmailNotificationDto.subject = data.subject;
     createEmailNotificationDto.text = data.text;
     createEmailNotificationDto.template = data.template;
@@ -89,9 +90,10 @@ export class EmailService implements CreateNotificationDto {
       subject,
       createEmailNotificationDto.context,
     );
-    createEmailNotificationDto.html = template(
-      createEmailNotificationDto.context,
-    );
+    createEmailNotificationDto.html = template({
+      timeZone: createEmailNotificationDto.timeZone,
+      ...createEmailNotificationDto.context,
+    });
     delete createEmailNotificationDto.template;
     delete createEmailNotificationDto.context;
 

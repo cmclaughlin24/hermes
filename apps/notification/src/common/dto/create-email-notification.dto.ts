@@ -6,6 +6,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsTimeZone,
 } from 'class-validator';
 import { EmailTemplateExists } from '../decorators/email-template-exists.decorator';
 
@@ -25,6 +26,16 @@ export class CreateEmailNotificationDto {
   @IsEmail()
   @IsOptional()
   from?: string;
+
+  @ApiProperty({
+    description:
+      'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" key)',
+    example: 'America/Chicago',
+    required: false,
+  })
+  @IsTimeZone()
+  @IsOptional()
+  timeZone?: string;
 
   @ApiProperty({
     description:
