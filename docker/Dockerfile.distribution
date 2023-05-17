@@ -10,6 +10,7 @@ COPY /apps/distribution ./apps/distribution
 COPY /libs ./libs
 
 ENV API_KEY_HEADER='Distribution-Api-Key'
+ENV NODE_ENV='production'
 ENV PORT=3001
 ENV RETRY_ATTEMPTS=5
 ENV RETRY_DELAY=5000

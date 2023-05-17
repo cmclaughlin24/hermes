@@ -12,7 +12,8 @@ import { ResourcesModule } from './resources/resources.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      ignoreEnvFile: true,
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      envFilePath: `${process.cwd()}/env/notification.env`,
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),

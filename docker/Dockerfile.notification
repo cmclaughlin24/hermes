@@ -10,6 +10,7 @@ COPY /apps/notification ./apps/notification
 COPY /libs ./libs
 
 ENV API_KEY_HEADER='Notification-Api-Key'
+ENV NODE_ENV='production'
 ENV PORT=3000
 ENV RETRY_ATTEMPTS=5
 ENV RETRY_DELAY=5000
