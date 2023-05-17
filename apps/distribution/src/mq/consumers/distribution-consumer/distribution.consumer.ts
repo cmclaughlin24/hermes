@@ -7,7 +7,6 @@ import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
-import { MqInterceptorHelper } from '../../../common/decorators/mq-interceptor-helper.decorator';
 import { MessageDto } from '../../../common/dto/message.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
@@ -46,7 +45,6 @@ export class DistributionConsumer extends MqConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
-  @MqInterceptorHelper(process.env.RABBITMQ_DISTRIBUTION_QUEUE)
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
@@ -93,10 +91,10 @@ export class DistributionConsumer extends MqConsumer {
         return;
       }
 
-      throw new Error('something went wrong');
-
       await this.notificationQueue.addBulk(jobs);
     } catch (error) {
+      // Note: The MqConsumer will be handled the error and determine if a message
+      //       should be retried or not.
       throw error;
     }
   }
