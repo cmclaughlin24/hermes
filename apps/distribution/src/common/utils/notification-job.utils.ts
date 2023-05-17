@@ -3,6 +3,7 @@ import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
+import { Recipient } from '../classes/recipient.class';
 import { SubscriptionMemberDto } from '../classes/subscription-member.class';
 
 const SECONDS_PER_MINUTE = 60;
@@ -29,7 +30,7 @@ export function createNotificationJobs(
     )
     .reduce(
       reduceToDeliveryMethodsMap(distributionRule.deliveryMethods),
-      new Map<DeliveryMethods, Set<string>>(),
+      new Map<DeliveryMethods, Recipient[]>(),
     )
     .toPairs()
     .map(([method, recipients]) =>
@@ -120,18 +121,15 @@ export function isBetweenTimes(
  * reduces a list of subscription members into a Map where the key is the delivery method and the
  * value is a Set of recipients.
  * @param {DeliveryMethods[]} deliveryMethods
- * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionMemberDto) => Map<DeliveryMethods, Set<string>>}
+ * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionMemberDto) => Map<DeliveryMethods, Recipient[]>}
  */
 export function reduceToDeliveryMethodsMap(
   deliveryMethods: DeliveryMethods[],
 ): (
-  map: Map<DeliveryMethods, Set<string>>,
+  map: Map<DeliveryMethods, Recipient[]>,
   member: SubscriptionMemberDto,
-) => Map<DeliveryMethods, Set<string>> {
-  return (
-    map: Map<DeliveryMethods, Set<string>>,
-    member: SubscriptionMemberDto,
-  ) => {
+) => Map<DeliveryMethods, Recipient[]> {
+  return (map: Map<DeliveryMethods, Recipient[]>, member: SubscriptionMemberDto) => {
     for (const method of deliveryMethods) {
       const value = member.getDeliveryMethod(method);
 
@@ -139,11 +137,9 @@ export function reduceToDeliveryMethodsMap(
         continue;
       }
 
-      // Note: Recipients are added to a Set to ensure a recipient will only recieve a single notification per
-      //       message (occurs if subscription member has multiple subscriptions to same distribution rule).
-      const recipients = map.has(method) ? map.get(method) : new Set<string>();
+      const recipients = map.has(method) ? map.get(method) : [];
 
-      recipients.add(value);
+      recipients.push(new Recipient(value, member.timeZone));
       map.set(method, recipients);
     }
 
@@ -154,53 +150,64 @@ export function reduceToDeliveryMethodsMap(
 /**
  * Yields a list of notification jobs for a delivery method's recipients.
  * @param {DeliveryMethods} method
- * @param {Set<string>} recipients
+ * @param {Recipient[]} recipients
  * @param {DistributionRule} distributionRule
  * @param {any} payload
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function mapToNotificationJobs(
   method: DeliveryMethods,
-  recipients: Set<string>,
+  recipients: Recipient[],
   distributionRule: DistributionRule,
   payload: any,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
-  return Array.from(recipients).map((recipient) => {
-    let data;
+  // Note: 'uniqWith' ensures recipients are unique based on the 'isEqual' compartor, which uses a deep comparison. This ensures each
+  //       recipient will only recieve a single notification per message (occurs if subscription member has multiple subscriptions to
+  //       same distribution rule).
+  return _.chain(recipients)
+    // Bug: If a recipient occurs twice, but with different time zones, he will recieve a duplicate notification. Should this be
+    //      intended behavior? Could update uniqWith comparator function to check values.
+    .uniqWith(_.isEqual)
+    .map((recipient) => {
+      let data;
 
-    // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
-    switch (method) {
-      case DeliveryMethods.EMAIL:
-        data = {
-          to: recipient,
-          subject: distributionRule.emailSubject,
-          text: distributionRule.text,
-          template: distributionRule.emailTemplate,
-          html: distributionRule.html,
-          context: payload,
-        };
-        break;
-      case DeliveryMethods.SMS:
-        data = {
-          to: recipient,
-          template: distributionRule.smsTemplate,
-          body: distributionRule.text,
-          context: payload,
-        };
-        break;
-      case DeliveryMethods.CALL:
-        data = {
-          to: recipient,
-          template: distributionRule.callTemplate,
-          context: payload,
-        };
-        break;
-      default:
-        throw new Error(
-          `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,
-        );
-    }
+      // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
+      switch (method) {
+        case DeliveryMethods.EMAIL:
+          data = {
+            to: recipient.value,
+            timeZone: recipient.timeZone,
+            subject: distributionRule.emailSubject,
+            text: distributionRule.text,
+            template: distributionRule.emailTemplate,
+            html: distributionRule.html,
+            context: payload,
+          };
+          break;
+        case DeliveryMethods.SMS:
+          data = {
+            to: recipient.value,
+            timeZone: recipient.timeZone,
+            template: distributionRule.smsTemplate,
+            body: distributionRule.text,
+            context: payload,
+          };
+          break;
+        case DeliveryMethods.CALL:
+          data = {
+            to: recipient.value,
+            timeZone: recipient.timeZone,
+            template: distributionRule.callTemplate,
+            context: payload,
+          };
+          break;
+        default:
+          throw new Error(
+            `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,
+          );
+      }
 
-    return { name: method, data: data };
-  });
+      return { name: method, data: data };
+    })
+    .value();
 }

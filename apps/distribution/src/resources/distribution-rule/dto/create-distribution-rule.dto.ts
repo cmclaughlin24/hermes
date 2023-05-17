@@ -47,7 +47,7 @@ export class CreateDistributionRuleDto {
   @ApiProperty({
     description: 'How to deliver notifications for an event',
     enum: DeliveryMethods,
-    example: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
+    example: [DeliveryMethods.EMAIL, DeliveryMethods.SMS, DeliveryMethods.CALL],
   })
   @IsEnum(DeliveryMethods, { each: true })
   deliveryMethods: DeliveryMethods[];
@@ -125,8 +125,20 @@ export class CreateDistributionRuleDto {
     description:
       'If the application should check the current time is within the delivery window(s) ' +
       'for each subscription',
+    required: false,
   })
   @IsBoolean()
   @IsOptional()
   checkDeliveryWindow?: boolean;
+
+  @ApiProperty({
+    description:
+      "Metadata label for the time zone. If present, will set label's value in the " +
+      "NotificationDto instead of the user's time zone.",
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  timeZoneLabel?: string;
 }
