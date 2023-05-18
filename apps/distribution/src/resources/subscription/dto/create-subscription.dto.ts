@@ -46,7 +46,7 @@ export class CreateSubscriptionDto {
   filterJoin: FilterJoinOps;
 
   @IsOptional()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => SubscriptionFilterDto)
   filters?: SubscriptionFilterDto[];
 }

@@ -18,9 +18,11 @@ export class SubscriptionMemberDto {
         return this.phoneNumber;
       case DeliveryMethods.CALL:
         return this.phoneNumber;
+      default:
+        throw new Error(
+          `Invalid Argument: Retrieval for ${deliveryMethod} contact information not defined`,
+        );
     }
-
-    return null;
   }
 
   getDeliveryWindows(dayOfWeek: number): DeliveryWindow[] {

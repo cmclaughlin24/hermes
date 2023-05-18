@@ -36,7 +36,7 @@ export class CreateDistributionEventDto {
   @IsOptional()
   metadataLabels: string[];
 
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @ArrayMinSize(1)
   @Type(() => DistributionEventRuleDto)
   rules: DistributionEventRuleDto[];

@@ -8,6 +8,7 @@ import { Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 import { MessageDto } from '../../../common/dto/message.dto';
+import { SubscriptionMemberDto } from '../../../common/dto/subscription-member.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
@@ -15,6 +16,7 @@ import { filterSubscriptions } from '../../../common/utils/subscription-filter.u
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
+import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
 @UseInterceptors(MqInterceptor)
@@ -59,22 +61,10 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         message.metadata,
       );
-
-      // Todo: Check if the subscriptions should be bypassed.
-      if (distributionRule.bypassSubscriptions) {
-      }
-
-      const subscriptions = filterSubscriptions(
+      const subscriptionMembers = await this._getSubscriptionMembers(
+        message,
         distributionEvent.subscriptions,
-        message.payload,
-      );
-
-      if (_.isEmpty(subscriptions)) {
-        return;
-      }
-
-      const subscriptionMembers = await this.subscriptionMemberService.get(
-        subscriptions,
+        distributionRule.bypassSubscriptions,
       );
 
       if (_.isEmpty(subscriptionMembers)) {
@@ -89,7 +79,7 @@ export class DistributionConsumer extends MqConsumer {
         distributionRule,
         subscriptionMembers,
         message.payload,
-        messageTimeZone
+        messageTimeZone,
       );
 
       if (_.isEmpty(jobs)) {
@@ -135,5 +125,28 @@ export class DistributionConsumer extends MqConsumer {
     }
 
     return metadata[timeZoneLabel];
+  }
+
+  private async _getSubscriptionMembers(
+    message: MessageDto,
+    subscriptions: Subscription[],
+    bypassSubscriptions: boolean,
+  ): Promise<SubscriptionMemberDto[]> {
+    // Todo: Map recipients to the SubscriptionMemberDto class so that class functions are available.
+    if (bypassSubscriptions) {
+      return message.recipients;
+    }
+
+    const filteredSubs = filterSubscriptions(subscriptions, message.payload);
+
+    if (_.isEmpty(filteredSubs)) {
+      return [];
+    }
+
+    const subscriptionMembers = await this.subscriptionMemberService.get(
+      filteredSubs,
+    );
+
+    return subscriptionMembers;
   }
 }
