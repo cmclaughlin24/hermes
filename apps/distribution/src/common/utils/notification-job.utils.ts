@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
-import { SubscriptionMemberDto } from '../classes/subscription-member.class';
+import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
 
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;

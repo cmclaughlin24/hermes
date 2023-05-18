@@ -6,7 +6,6 @@ import Handlebars from 'handlebars';
 import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
-import { compileTextTemplate } from '../../utils/template.utils';
 
 @Injectable()
 export class EmailService implements CreateNotificationDto {
@@ -84,16 +83,15 @@ export class EmailService implements CreateNotificationDto {
       );
     }
 
-    const template = Handlebars.compile(html);
-
-    createEmailNotificationDto.subject = compileTextTemplate(
-      subject,
-      createEmailNotificationDto.context,
-    );
-    createEmailNotificationDto.html = template({
+    const htmlTemplate = Handlebars.compile(html);
+    const textTemplate = Handlebars.compile(createEmailNotificationDto.text);
+    const context = {
       timeZone: createEmailNotificationDto.timeZone,
       ...createEmailNotificationDto.context,
-    });
+    };
+
+    createEmailNotificationDto.subject = textTemplate(context);
+    createEmailNotificationDto.html = htmlTemplate(context);
     delete createEmailNotificationDto.template;
     delete createEmailNotificationDto.context;
 
