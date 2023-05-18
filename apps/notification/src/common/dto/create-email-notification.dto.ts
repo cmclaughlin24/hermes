@@ -48,8 +48,11 @@ export class CreateEmailNotificationDto {
   subject?: string;
 
   @ApiProperty({
-    description: 'Plain text email body',
-    example: "You successfully sent you're first notification!",
+    description:
+      'Plain text email body that can accept values from a JavaScript object. Uses Handlebars ' +
+      'to compile template and support date formating through the "formatDate" helper.',
+    example:
+      "You successfully sent you're first {{notificationType}} notification!",
   })
   @IsString()
   @IsNotEmpty()
@@ -58,7 +61,8 @@ export class CreateEmailNotificationDto {
 
   @ApiProperty({
     description:
-      'Handlebars HTML template for the email body (overridden if "template" property is provided)',
+      'Handlebars HTML template for the email body (overridden if "template" property is provided). ' +
+      'Date formatting supported through the "formatDate" Handlerbars helper.',
     example: '<body><main><h1>{{title}}</h1></main></body>',
     externalDocs: {
       url: 'https://handlebarsjs.com/',

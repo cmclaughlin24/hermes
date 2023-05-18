@@ -51,6 +51,7 @@ export class DistributionConsumer extends MqConsumer {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
     try {
+      // Todo: Validate MessageDto prior to any processing.
       const distributionEvent = await this.distributionEventService.findOne(
         this.DISTRIBUTION_QUEUE,
         message.type,

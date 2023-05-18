@@ -2,11 +2,11 @@ import { PhoneMethods } from '@hermes/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
+import Handlebars from 'handlebars';
 import { TwilioService } from 'nestjs-twilio';
 import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
-import { compileTextTemplate } from '../../utils/template.utils';
 
 @Injectable()
 export class PhoneService implements CreateNotificationDto {
@@ -105,10 +105,11 @@ export class PhoneService implements CreateNotificationDto {
       );
     }
 
-    createPhoneNotificationDto.body = compileTextTemplate(
-      body,
-      createPhoneNotificationDto.context,
-    );
+    const template = Handlebars.compile(body);
+    createPhoneNotificationDto.body = template({
+      timeZone: createPhoneNotificationDto.timeZone,
+      ...createPhoneNotificationDto.context,
+    });
 
     return createPhoneNotificationDto;
   }

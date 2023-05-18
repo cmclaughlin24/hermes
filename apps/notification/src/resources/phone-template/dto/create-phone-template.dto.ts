@@ -24,7 +24,8 @@ export class CreatePhoneTemplateDto {
 
   @ApiProperty({
     description:
-      'Message (SMS) or TwiML (call) template that can accept values from a nested JavaScript object',
+      'Message (SMS) or TwiML (call) template that can accept values from a nested JavaScript object. ' +
+      'Uses Handlebars to compile template and support date formating through the "formatDate" helper.',
     example:
       '<Response><Say>You order for {{ product.quantity }} has been received! Your total is ${{ total }}</Say></Response>',
     externalDocs: {
