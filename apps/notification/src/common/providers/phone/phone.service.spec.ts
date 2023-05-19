@@ -1,8 +1,10 @@
+import { DeliveryMethods } from '@hermes/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TwilioService } from 'nestjs-twilio';
 import {
   MockConfigService,
+  MockPhoneTemplateService,
   createConfigServiceMock,
   createPhoneTemplateServiceMock,
 } from '../../../../../notification/test/helpers/provider.helpers';
@@ -25,6 +27,7 @@ describe('PhoneService', () => {
   let service: PhoneService;
   let twilioService: any;
   let configService: MockConfigService;
+  let phoneTemplateService: MockPhoneTemplateService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -48,6 +51,8 @@ describe('PhoneService', () => {
     service = module.get<PhoneService>(PhoneService);
     twilioService = module.get<any>(TwilioService);
     configService = module.get<MockConfigService>(ConfigService);
+    phoneTemplateService =
+      module.get<MockPhoneTemplateService>(PhoneTemplateService);
   });
 
   it('should be defined', () => {
@@ -219,16 +224,88 @@ describe('PhoneService', () => {
   });
 
   describe('createPhoneTemplate()', () => {
-    it.todo(
-      'should yield a CreatePhoneNotificationDto with a compiled body template',
-    );
+    afterEach(() => {
+      phoneTemplateService.findOne.mockClear();
+    });
 
-    it.todo(
-      'should retrieve a template from the repository if the "template" property is defined',
-    );
+    it('should yield a CreatePhoneNotificationDto with a compiled body template', async () => {
+      // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+18883117422',
+        body: '{{title}}',
+        timeZone: 'America/Chicago',
+        template: null,
+        context: {
+          title: 'Unit Testing',
+        },
+      };
+      const expectedResult: CreatePhoneNotificationDto = {
+        to: createPhoneNotificationDto.to,
+        from: createPhoneNotificationDto.from,
+        body: 'Unit Testing',
+        template: null,
+        timeZone: createPhoneNotificationDto.timeZone,
+        context: createPhoneNotificationDto.context,
+      };
 
-    it.todo(
-      'should throw an error if both "template" or "body" properties are null/undefined',
-    );
+      // Act/Assert.
+      await expect(
+        service.createPhoneTemplate(
+          DeliveryMethods.SMS,
+          createPhoneNotificationDto,
+        ),
+      ).resolves.toEqual(expectedResult);
+    });
+
+    it('should retrieve a template from the repository if the "template" property is defined', async () => {
+      // Arrange.
+      const template = 'test';
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+18883117422',
+        body: '{{title}}',
+        timeZone: 'America/Chicago',
+        template,
+        context: {
+          title: 'Unit Testing',
+        },
+      };
+      phoneTemplateService.findOne.mockResolvedValue({
+        template: '{{title}}',
+      });
+
+      // Act.
+      await service.createPhoneTemplate(
+        DeliveryMethods.CALL,
+        createPhoneNotificationDto,
+      );
+
+      // Assert.
+      expect(phoneTemplateService.findOne).toHaveBeenCalledWith(
+        DeliveryMethods.CALL,
+        template,
+      );
+    });
+
+    it('should throw an error if both "template" or "body" properties are null/undefined', async () => {
+      // Arrange.
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+18883117422',
+        timeZone: 'America/Chicago',
+        context: {
+          title: 'Unit Testing',
+        },
+      };
+      const expectedResult = new Error(
+        `Invalid Argument: ${CreatePhoneNotificationDto.name} must have either 'body' or 'template' keys present`,
+      );
+
+      // Act/Assert.
+      await expect(
+        service.createPhoneTemplate(
+          DeliveryMethods.SMS,
+          createPhoneNotificationDto,
+        ),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 });
