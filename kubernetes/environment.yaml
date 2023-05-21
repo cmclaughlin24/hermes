@@ -2,14 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: env-store
+  namespace: hermes
 data:
   dbHost: ${DB_HOST}
   dbPort: ${DB_PORT}
   dbUsername: ${DB_USERNAME}
   dbPassword: ${DB_PASSWORD}
   dbName: ${DB_NAME}
-  rabbitmqUri: 'amqp://guest:guest@rabbitmq-service.default'
-  redisHost: 'redis-cluster-service.default'
+  rabbitmqUri: 'amqp://guest:guest@rabbitmq-service.hermes'
+  redisHost: 'redis-cluster-service.hermes'
   redisPort: '6379'
   enableRedisCluster: 'true'
   notificationQueue: 'notification'

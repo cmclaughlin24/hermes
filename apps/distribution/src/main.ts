@@ -5,7 +5,7 @@ import { setupSwaggerDocument } from './config/swagger.config';
 import { useGlobalPipes } from './config/use-global.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   const port = process.env.PORT || 3001;
 
   setupSwaggerDocument(app);
