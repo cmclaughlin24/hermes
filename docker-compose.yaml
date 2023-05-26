@@ -64,6 +64,24 @@ services:
       - database
       - rabbitmq
       - redis
+  analytics:
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile.analytics
+    ports:
+      - '3002:3002'
+    volumes:
+      - ./apps/analytics:/app/apps/analytics
+      - ./libs:/app/libs
+      - /app/node_modules
+    env_file:
+      - ./env/analytics.env
+    tty: true
+    stdin_open: true
+    depends_on:
+      - database
+      - rabbitmq
+      - redis
 volumes:
   pgadmin:
   redis:
