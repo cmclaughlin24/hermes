@@ -48,7 +48,6 @@ export class DistributionConsumer extends MqConsumer {
     },
   })
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
-    console.log(message);
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
     try {
