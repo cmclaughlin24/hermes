@@ -133,6 +133,16 @@ export class CreateDistributionRuleDto {
 
   @ApiProperty({
     description:
+      'If the application should ignore the Subscriptions and use the MessageDto "recipients" property ' +
+      'to determine who should recieve a notification.',
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  bypassSubscriptions?: boolean;
+
+  @ApiProperty({
+    description:
       "Metadata label for the time zone. If present, will set label's value in the " +
       "NotificationDto instead of the user's time zone.",
     required: false,

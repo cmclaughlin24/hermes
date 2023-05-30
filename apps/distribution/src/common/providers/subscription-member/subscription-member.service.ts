@@ -1,4 +1,3 @@
-import { DeliveryMethods } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
@@ -21,22 +20,23 @@ export class SubscriptionMemberService {
     //   throw error;
     // }
 
-    return [
-      new SubscriptionMemberDto(
-        [DeliveryMethods.EMAIL],
-        'curtismclaughlin24@gmail.com',
-        null,
-        'America/Detroit',
-        []
-      ),
-      new SubscriptionMemberDto(
-        [DeliveryMethods.EMAIL, DeliveryMethods.SMS, DeliveryMethods.CALL],
-        'curtismclaughlin24@gmail.com',
-        '+12815362118',
-        'America/Chicago',
-        []
-      ),
-    ];
+    return [];
+  }
+
+  map(members: any[]): SubscriptionMemberDto[] {
+    if (_.isEmpty(members)) {
+      return [];
+    }
+
+    return members.map((member) => {
+      const dto = new SubscriptionMemberDto();
+      dto.deliveryMethods = member.deliveryMethods;
+      dto.email = member.email;
+      dto.phoneNumber = member.phoneNumber;
+      dto.timeZone = member.timeZone;
+      dto.deliveryWindows = member.deliveryWindows;
+      return dto;
+    });
   }
 
   private _mapSubscriptionsToRequest(
@@ -69,22 +69,8 @@ export class SubscriptionMemberService {
     url: string,
     subscriptionIds: string[],
   ): Observable<SubscriptionMemberDto[]> {
-    return this.httpClient.post(url, subscriptionIds).pipe(
-      map((response) => {
-        if (_.isEmpty(response.data)) {
-          return [];
-        }
-        return response.data.map(
-          (item) =>
-            new SubscriptionMemberDto(
-              item.deliveryMethods,
-              item.email,
-              item.phoneNumber,
-              item.timeZone,
-              item.deliveryWindows,
-            ),
-        );
-      }),
-    );
+    return this.httpClient
+      .post(url, subscriptionIds)
+      .pipe(map((response) => this.map(response.data)));
   }
 }

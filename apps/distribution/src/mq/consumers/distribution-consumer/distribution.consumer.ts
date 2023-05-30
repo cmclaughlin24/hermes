@@ -48,6 +48,7 @@ export class DistributionConsumer extends MqConsumer {
     },
   })
   async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
+    console.log(message);
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
     try {
@@ -133,9 +134,8 @@ export class DistributionConsumer extends MqConsumer {
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
   ): Promise<SubscriptionMemberDto[]> {
-    // Todo: Map recipients to the SubscriptionMemberDto class so that class functions are available.
     if (bypassSubscriptions) {
-      return message.recipients;
+      return this.subscriptionMemberService.map(message.recipients);
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
