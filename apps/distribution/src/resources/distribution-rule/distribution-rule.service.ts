@@ -73,9 +73,21 @@ export class DistributionRuleService {
       createDistributionRuleDto.messageType,
     );
 
-    // Bug: Because of the way constraints are handled, if the metadata is equal to null,
-    //      the constraint for a unique combination of distributionEventId and metadata
-    //      will not be applied.
+    if (!createDistributionRuleDto.metadata) {
+      const existingRule = await this.distributionRuleModel.findOne({
+        where: { distributionEventId: distributionEvent.id, metadata: null },
+      });
+
+      // Note: Because of the way constraints are handled, manually check if a default
+      //       distribution rule already exists if the CreateDistributionRuleDto has a
+      //       metadata of null. 
+      if (existingRule) {
+        throw new BadRequestException(
+          'A default distribution rule already exists (metadata=null)!',
+        );
+      }
+    }
+
     const distributionRule = await this.distributionRuleModel.create({
       distributionEventId: distributionEvent.id,
       ...createDistributionRuleDto,
@@ -91,8 +103,8 @@ export class DistributionRuleService {
    * Updates a DistributionRule. Throws a NotFoundException if the repository returns
    * null/undefined or a BadRequestException if attempting to modify a default distribution
    * rule's metadata (must equal null).
-   * @param {string} id 
-   * @param {UpdateDistributionRuleDto} updateDistributionRuleDto 
+   * @param {string} id
+   * @param {UpdateDistributionRuleDto} updateDistributionRuleDto
    * @returns {Promise<ApiResponseDto<DistributionRule>>}
    */
   async update(

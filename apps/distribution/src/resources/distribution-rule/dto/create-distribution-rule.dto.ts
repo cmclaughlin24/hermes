@@ -9,6 +9,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import * as _ from 'lodash';
 import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
 
 export class CreateDistributionRuleDto {
@@ -39,9 +40,21 @@ export class CreateDistributionRuleDto {
   })
   @IsJSON()
   @IsOptional()
-  @Transform(({ value }: TransformFnParams) =>
-    value ? JSON.stringify(value) : null,
-  )
+  @Transform(({ value }: TransformFnParams) => {
+    // Note: Sort the metadata keys alphabetically so that the unique constraint will
+    //       be applied correctly.
+    if (!value) {
+      return null;
+    }
+
+    const sorted = _.chain(value)
+      .toPairs()
+      .orderBy([0], ['asc'])
+      .fromPairs()
+      .value();
+
+    return JSON.stringify(sorted);
+  })
   metadata: string;
 
   @ApiProperty({
