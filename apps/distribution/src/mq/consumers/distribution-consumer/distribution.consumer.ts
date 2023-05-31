@@ -131,7 +131,7 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
-   * 
+   * Yields the IANA time zone set in a message's metadata selectors.
    * @param {any} metadata
    * @param {string} timeZoneLabel 
    * @returns {string}
@@ -145,10 +145,10 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
-   * 
+   * Yields a list of SubscriptionMembers who should receive a notification for an event.
    * @param {MessageDto} message
-   * @param {Subscription[]} subscriptions 
-   * @param {boolean} bypassSubscriptions 
+   * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
+   * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
    * @returns {Promise<SubscriptionMemberDto[]>}
    */
   private async _getSubscriptionMembers(

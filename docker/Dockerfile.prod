@@ -2,9 +2,9 @@ FROM node:18-alpine as BUILD
 
 ARG APPLICATION
 
-WORKDIR /app
+WORKDIR /build
 
-COPY *.json ./
+COPY *.json .
 
 RUN npm ci
 
@@ -23,9 +23,9 @@ ARG DEFAULT_RETRY_DELAY=5000
 
 WORKDIR /app
 
-COPY --from=BUILD /app/node_modules ./node_modules
-COPY --from=BUILD /app/*.json .
-COPY --from=BUILD /app/dist/apps/${APPLICATION}/main.js ./dist/main.js
+COPY --from=BUILD /build/node_modules ./node_modules
+COPY --from=BUILD /build/*.json .
+COPY --from=BUILD /build/dist/apps/${APPLICATION}/main.js ./dist/main.js
 
 ENV API_KEY_HEADER='Api-Key'
 ENV NODE_ENV='production'
