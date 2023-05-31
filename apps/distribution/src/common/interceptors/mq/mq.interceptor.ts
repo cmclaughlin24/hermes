@@ -85,6 +85,7 @@ export class MqInterceptor implements NestInterceptor {
     }
 
     try {
+      // Fixme: Convert Error object to JSON object so that it may be stored in the database.
       await this.distributionLogService.log(job, state, result, error);
     } catch (err) {
       this.logger.error(

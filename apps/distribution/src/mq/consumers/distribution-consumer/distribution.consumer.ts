@@ -97,6 +97,14 @@ export class DistributionConsumer extends MqConsumer {
     }
   }
 
+  /**
+   * Yields a DistributionRule that should be applied for an event based on the selectors
+   * in a message's metadata. All selectors must match for a rule to be selected, otherwise,
+   * the default rule will be choosen.
+   * @param {DistributionEvent} distributionEvent
+   * @param {any} metadata
+   * @returns {DistributionRule}
+   */
   private _getDistributionRule(
     distributionEvent: DistributionEvent,
     metadata: any,
@@ -122,6 +130,12 @@ export class DistributionConsumer extends MqConsumer {
     return rule;
   }
 
+  /**
+   * 
+   * @param {any} metadata
+   * @param {string} timeZoneLabel 
+   * @returns {string}
+   */
   private _getMessageTimeZone(metadata: any, timeZoneLabel: string): string {
     if (!metadata || !timeZoneLabel || timeZoneLabel.trim() === '') {
       return null;
@@ -130,6 +144,13 @@ export class DistributionConsumer extends MqConsumer {
     return metadata[timeZoneLabel];
   }
 
+  /**
+   * 
+   * @param {MessageDto} message
+   * @param {Subscription[]} subscriptions 
+   * @param {boolean} bypassSubscriptions 
+   * @returns {Promise<SubscriptionMemberDto[]>}
+   */
   private async _getSubscriptionMembers(
     message: MessageDto,
     subscriptions: Subscription[],

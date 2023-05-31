@@ -7,6 +7,19 @@ import { validateOrReject } from 'class-validator';
 
 export class MqConsumer {
   /**
+   * Yields a formatted string with the function's name in square brackets followed
+   * by the RabbitMQ message id.
+   * @example
+   * - '[functionName] Message messageId'
+   * @param {string} functionName
+   * @param {string} messageId
+   * @returns {string}
+   */
+  protected createLogPrefix(functionName: string, messageId: string): string {
+    return `[${functionName}] Message ${messageId}`;
+  }
+
+  /**
    * Yields a MessageDto or throws a MqUnrecoverableError if the message properties
    * fail validation.
    * @param {any} message
@@ -32,18 +45,5 @@ export class MqConsumer {
     }
 
     return messageDto;
-  }
-
-  /**
-   * Yields a formatted string with the function's name in square brackets followed
-   * by the RabbitMQ message id.
-   * @example
-   * - '[functionName] Message messageId'
-   * @param {string} functionName
-   * @param {string} messageId
-   * @returns {string}
-   */
-  protected createLogPrefix(functionName: string, messageId: string): string {
-    return `[${functionName}] Message ${messageId}`;
   }
 }
