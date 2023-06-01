@@ -7,6 +7,7 @@ import { PhoneTemplateModule } from '../resources/phone-template/phone-template.
 import { EmailTemplateExistsRule } from './decorators/email-template-exists.decorator';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
+import { PushNotificationService } from './providers/push-notification/push-notification.service';
 
 @Module({
   imports: [
@@ -37,7 +38,12 @@ import { PhoneService } from './providers/phone/phone.service';
     EmailTemplateModule,
     PhoneTemplateModule,
   ],
-  providers: [EmailService, PhoneService, EmailTemplateExistsRule],
+  providers: [
+    EmailService,
+    PhoneService,
+    EmailTemplateExistsRule,
+    PushNotificationService,
+  ],
   exports: [EmailService, PhoneService],
 })
 export class CommonModule {}
