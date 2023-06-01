@@ -5,6 +5,7 @@ import { JobState, Queue } from 'bullmq';
 import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationDto } from '../../common/interfaces/create-notification-dto.interface';
 import { queuePool } from '../../config/bull.config';
 
@@ -93,6 +94,18 @@ export class NotificationJobService {
     return this._createNotification(
       DeliveryMethods.CALL,
       createPhoneNotificationDto,
+    );
+  }
+
+  /**
+   * Adds a 'push-notification' job to the notification queue.
+   * @param {CreatePushNotificationDto} createPhoneNotificationDto
+   * @returns {Promise<ApiResponseDto>}
+   */
+  async createPushNotification(createPushNotificationDto: CreatePushNotificationDto) {
+    return this._createNotification(
+      DeliveryMethods.PUSH,
+      createPushNotificationDto,
     );
   }
 

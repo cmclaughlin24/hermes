@@ -2,6 +2,7 @@ import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 
@@ -55,7 +56,7 @@ export class NotificationService {
 
   /**
    * Sends a call notification.
-   * @param createPhoneNotificationDto
+   * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
    * @returns {Promise<ApiResponseDto>}
    */
   async createCallNotification(
@@ -72,5 +73,16 @@ export class NotificationService {
       `Successfully made call with to ${phoneNotificationDto.to}`,
       result,
     );
+  }
+
+  /**
+   * Sends a push notification.
+   * @param {CreatePushNotificationDto} createPhoneNotificationDto
+   * @returns {Promise<ApiResponseDto>}
+   */
+  async createPushNotification(
+    createPushNotificationDto: CreatePushNotificationDto,
+  ) {
+    // Todo: Implement createPushNotification method.
   }
 }

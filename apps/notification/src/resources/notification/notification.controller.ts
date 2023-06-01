@@ -3,6 +3,7 @@ import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('Notification')
@@ -26,7 +27,7 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Resource'
+    description: 'Forbidden Resource',
   })
   createEmailNotification(
     @Body() createEmailNotificationDto: CreateEmailNotificationDto,
@@ -52,7 +53,7 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Resource'
+    description: 'Forbidden Resource',
   })
   createTextNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
@@ -78,13 +79,39 @@ export class NotificationController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden Resource'
+    description: 'Forbidden Resource',
   })
   createCallNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
     return this.notificationService.createCallNotification(
       createPhoneNotificationDto,
+    );
+  }
+
+  @Post('push-notification')
+  @ApiOperation({
+    summary: 'Send a push notification.',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Successful Operation',
+    type: ApiResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  createPushNotification(
+    @Body() createPushNotificationDto: CreatePushNotificationDto,
+  ) {
+    return this.notificationService.createPushNotification(
+      createPushNotificationDto,
     );
   }
 }
