@@ -44,6 +44,6 @@ import { PushNotificationService } from './providers/push-notification/push-noti
     EmailTemplateExistsRule,
     PushNotificationService,
   ],
-  exports: [EmailService, PhoneService],
+  exports: [EmailService, PhoneService, PushNotificationService],
 })
 export class CommonModule {}

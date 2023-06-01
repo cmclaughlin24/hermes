@@ -5,12 +5,14 @@ import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notifi
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
+import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
+    private readonly pushNotificationService: PushNotificationService,
   ) {}
 
   /**
@@ -83,6 +85,15 @@ export class NotificationService {
   async createPushNotification(
     createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    // Todo: Implement createPushNotification method.
+    const pushNotificationDto =
+      await this.pushNotificationService.createPushNotificationTemplate(
+        createPushNotificationDto,
+      );
+    
+    const result = await this.pushNotificationService.sendPushNotification(
+      pushNotificationDto,
+    );
+
+    return new ApiResponseDto(`Sucessfully sent push notification`, result);
   }
 }

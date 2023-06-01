@@ -18,7 +18,12 @@ export class PushNotificationService implements CreateNotificationDto {
 
   async sendPushNotification(
     createPushNotificationDto: CreatePushNotificationDto,
-  ) {}
+  ) {
+    return webpush.sendNotification(
+      createPushNotificationDto.subscription,
+      createPushNotificationDto.notification,
+    );
+  }
 
   async createNotificationDto(data: any) {
     if (!data) {
@@ -30,6 +35,10 @@ export class PushNotificationService implements CreateNotificationDto {
     }
 
     const createPushNotificationDto = new CreatePushNotificationDto();
+    createPushNotificationDto.subscription = data.subscription;
+    createPushNotificationDto.notification = data.notification;
+    createPushNotificationDto.template = data.template;
+    createPushNotificationDto.context = data.context;
 
     try {
       await validateOrReject(createPushNotificationDto);
@@ -40,6 +49,12 @@ export class PushNotificationService implements CreateNotificationDto {
       throw new Error(validationErrors);
     }
 
+    return createPushNotificationDto;
+  }
+
+  async createPushNotificationTemplate(
+    createPushNotificationDto: CreatePushNotificationDto,
+  ) {
     return createPushNotificationDto;
   }
 }
