@@ -1,3 +1,6 @@
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
+
 export class PushNotificationActionDto {
   action: string;
   title: string;
@@ -17,5 +20,11 @@ export class PushNotificationDto {
   silent?: boolean;
   tag?: string;
   timestamp?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  title: string;
+
   vibrate?: number[];
 }

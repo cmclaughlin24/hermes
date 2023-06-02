@@ -8,9 +8,8 @@ import { CreateNotificationDto } from '../../interfaces/create-notification-dto.
 @Injectable()
 export class PushNotificationService implements CreateNotificationDto {
   constructor(configService: ConfigService) {
-    // Todo: Remove hardcoded subject and add validation to Joi schema.
     webpush.setVapidDetails(
-      'mailto:curtismclauglhin24@gmail.com',
+      configService.get('VAPID_SUBJECT'),
       configService.get('VAPID_PUBLIC_KEY'),
       configService.get('VAPID_PRIVATE_KEY'),
     );
@@ -21,7 +20,7 @@ export class PushNotificationService implements CreateNotificationDto {
   ) {
     return webpush.sendNotification(
       createPushNotificationDto.subscription,
-      createPushNotificationDto.notification,
+      JSON.stringify({ notification: createPushNotificationDto.notification }),
     );
   }
 
