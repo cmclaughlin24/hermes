@@ -9,10 +9,28 @@ import {
 } from 'class-validator';
 
 export class CreatePushNotificationDto {
+  @ApiProperty({
+    description:
+      'The PushSubscription interface of the PUSH API provides the subscriptions URL ' +
+      'endpoint and allows unsubscribing from a push service',
+    externalDocs: {
+      description: 'PushSubscription (MDN)',
+      url: 'https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription',
+    },
+  })
   @ValidateNested()
   @Type(() => PushSubscriptionDto)
   subscription: PushSubscriptionDto;
 
+  @ApiProperty({
+    description:
+      'The Notification interface of the Notification API used to display configure ' +
+      'display notifications to the user',
+    externalDocs: {
+      description: 'Notification (MDN)',
+      url: 'https://developer.mozilla.org/en-US/docs/Web/API/notification',
+    },
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => PushNotificationDto)
