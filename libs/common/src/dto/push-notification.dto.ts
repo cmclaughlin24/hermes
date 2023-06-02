@@ -148,6 +148,7 @@ export class PushNotificationDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   tag?: string;
 
