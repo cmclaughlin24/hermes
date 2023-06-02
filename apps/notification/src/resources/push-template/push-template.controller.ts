@@ -10,7 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
+import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplate } from './entities/push-template.entity';
 import { PushTemplateService } from './push-template.service';
@@ -62,7 +62,7 @@ export class PushTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createPushTemplateDto: CreatePushNotificationDto) {
+  create(@Body() createPushTemplateDto: CreatePushTemplateDto) {
     return this.pushTemplateService.create(createPushTemplateDto);
   }
 
