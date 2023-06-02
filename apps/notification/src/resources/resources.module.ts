@@ -6,6 +6,7 @@ import { NotificationJobModule } from './notification-job/notification-job.modul
 import { NotificationLogModule } from './notification-log/notification-log.module';
 import { NotificationModule } from './notification/notification.module';
 import { PhoneTemplateModule } from './phone-template/phone-template.module';
+import { PushTemplateModule } from './push-template/push-template.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PhoneTemplateModule } from './phone-template/phone-template.module';
     NotificationLogModule,
     EmailTemplateModule,
     PhoneTemplateModule,
+    PushTemplateModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })

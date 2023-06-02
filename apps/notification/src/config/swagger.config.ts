@@ -29,7 +29,7 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Email Template',
-      'View and configure Handlebars email templates that may be used when sending emails.',
+      'View and configure templates that may be used when sending emails.',
     )
     .addTag(
       'Notification',
@@ -45,7 +45,11 @@ export function setupSwaggerDocument(app: INestApplication) {
     )
     .addTag(
       'Phone Template',
-      'View and configure phone templates that may be used when sending SMS or making calls.',
+      'View and configure templates that may be used when sending SMS or making calls.',
+    )
+    .addTag(
+      'Push Template',
+      'View and configure templates that may be used when sending push notifications.',
     )
     .build();
 
