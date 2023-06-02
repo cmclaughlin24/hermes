@@ -4,6 +4,7 @@ import { PhoneService } from '../../src/common/providers/phone/phone.service';
 import { EmailTemplateService } from '../../src/resources/email-template/email-template.service';
 import { NotificationLogService } from '../../src/resources/notification-log/notification-log.service';
 import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
+import { PushTemplateService } from '../../src/resources/push-template/push-template.service';
 
 export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
 
@@ -28,6 +29,18 @@ export type MockPhoneTemplateService = Partial<
 >;
 
 export const createPhoneTemplateServiceMock = (): MockPhoneTemplateService => ({
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  remove: jest.fn(),
+});
+
+export type MockPushTemplateService = Partial<
+  Record<keyof PushTemplateService, jest.Mock>
+>;
+
+export const createPushTemplateServiceMock = (): MockPushTemplateService => ({
   findAll: jest.fn(),
   findOne: jest.fn(),
   create: jest.fn(),
