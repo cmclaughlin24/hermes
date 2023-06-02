@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TwilioModule } from 'nestjs-twilio';
 import { EmailTemplateModule } from '../resources/email-template/email-template.module';
 import { PhoneTemplateModule } from '../resources/phone-template/phone-template.module';
+import { PushTemplateModule } from '../resources/push-template/push-template.module';
 import { EmailTemplateExistsRule } from './decorators/email-template-exists.decorator';
 import { EmailService } from './providers/email/email.service';
 import { PhoneService } from './providers/phone/phone.service';
@@ -37,6 +38,7 @@ import { PushNotificationService } from './providers/push-notification/push-noti
     }),
     EmailTemplateModule,
     PhoneTemplateModule,
+    PushTemplateModule,
   ],
   providers: [
     EmailService,

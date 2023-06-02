@@ -7,6 +7,7 @@ import { PushTemplateService } from './push-template.service';
 @Module({
   imports: [SequelizeModule.forFeature([PushTemplate])],
   controllers: [PushTemplateController],
-  providers: [PushTemplateService]
+  providers: [PushTemplateService],
+  exports: [PushTemplateService]
 })
 export class PushTemplateModule {}

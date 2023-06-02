@@ -1,13 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PushTemplateService } from 'apps/notification/src/resources/push-template/push-template.service';
 import { validateOrReject } from 'class-validator';
+import Handlebars from 'handlebars';
 import * as webpush from 'web-push';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 
 @Injectable()
 export class PushNotificationService implements CreateNotificationDto {
-  constructor(configService: ConfigService) {
+  private readonly logger = new Logger(PushNotificationService.name);
+
+  constructor(
+    private readonly pushTemplateService: PushTemplateService,
+    configService: ConfigService,
+  ) {
     webpush.setVapidDetails(
       configService.get('VAPID_SUBJECT'),
       configService.get('VAPID_PUBLIC_KEY'),
@@ -54,6 +61,36 @@ export class PushNotificationService implements CreateNotificationDto {
   async createPushNotificationTemplate(
     createPushNotificationDto: CreatePushNotificationDto,
   ) {
+    const templateName = createPushNotificationDto.template;
+    let notification = createPushNotificationDto.notification;
+
+    if (templateName) {
+      notification &&
+        this.logger.warn(
+          `[${this.createPushNotificationTemplate.name}] ${CreatePushNotificationDto.name} contains both 'notification' and 'template' keys, default to 'template' key`,
+        );
+
+      const pushTemplate = await this.pushTemplateService.findOne(templateName);
+
+      notification = pushTemplate.toJSON();
+    }
+
+    const titleTemplate = Handlebars.compile(notification.title);
+    notification.title = titleTemplate(createPushNotificationDto.context);
+
+    if (notification.body) {
+      const bodyTemplate = Handlebars.compile(notification.body);
+      notification.body = bodyTemplate(createPushNotificationDto.context);
+    }
+
+    // Note: Nullish keys removed from the notification object so that Angular and other frameworks
+    //       with out the box service worker offerings do not attempt to convert properties.
+    for (const key in notification) {
+      !notification[key] && delete notification[key];
+    }
+
+    createPushNotificationDto.notification = notification;
+
     return createPushNotificationDto;
   }
 }
