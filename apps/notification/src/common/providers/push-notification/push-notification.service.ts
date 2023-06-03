@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PushTemplateService } from 'apps/notification/src/resources/push-template/push-template.service';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import * as webpush from 'web-push';
+import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 

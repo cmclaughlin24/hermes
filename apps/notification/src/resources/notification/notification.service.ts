@@ -94,6 +94,6 @@ export class NotificationService {
       pushNotificationDto,
     );
 
-    return new ApiResponseDto(`Sucessfully sent push notification`, result);
+    return new ApiResponseDto(`Successfully sent push notification`, result);
   }
 }

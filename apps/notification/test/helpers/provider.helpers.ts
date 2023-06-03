@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../../src/common/providers/email/email.service';
 import { PhoneService } from '../../src/common/providers/phone/phone.service';
+import { PushNotificationService } from '../../src/common/providers/push-notification/push-notification.service';
 import { EmailTemplateService } from '../../src/resources/email-template/email-template.service';
 import { NotificationLogService } from '../../src/resources/notification-log/notification-log.service';
 import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
@@ -64,6 +65,17 @@ export const createPhoneServiceMock = (): MockPhoneService => ({
   createNotificationDto: jest.fn(),
   createPhoneTemplate: jest.fn(),
 });
+
+export type MockPushNotificationService = Partial<
+  Record<keyof PushNotificationService, jest.Mock>
+>;
+
+export const createPushNotificationServiceMock =
+  (): MockPushNotificationService => ({
+    sendPushNotification: jest.fn(),
+    createPushNotificationTemplate: jest.fn(),
+    createNotificationDto: jest.fn(),
+  });
 
 export type MockNotificationLogService = Partial<
   Record<keyof NotificationLogService, jest.Mock>
