@@ -9,6 +9,7 @@ import {
 } from '../../../../notification/test/helpers/queue.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationJobService } from './notification-job.service';
 
 describe('NotificationJobService', () => {
@@ -228,6 +229,43 @@ describe('NotificationJobService', () => {
       // Act/Assert.
       await expect(
         service.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
+  });
+
+  describe('createPushNotification()', () => {
+    const createPushNotificationDto: CreatePushNotificationDto = {
+      subscription: {},
+      notification: { title: 'Unit Test' },
+    } as CreatePushNotificationDto;
+
+    afterEach(() => {
+      queue.add.mockClear();
+    });
+
+    it('should add a "push-notification" job to the notification queue', async () => {
+      // Act.
+      await service.createPushNotification(createPushNotificationDto);
+
+      // Assert.
+      expect(queue.add).toHaveBeenCalledWith(
+        DeliveryMethods.PUSH,
+        createPushNotificationDto,
+      );
+    });
+
+    it('should yield an "ApiResposneDto" object with the job', async () => {
+      // Arrange.
+      const job = {};
+      const expectedResult = new ApiResponseDto(
+        `Successfully scheduled push-notification notification`,
+        job,
+      );
+      queue.add.mockResolvedValue(job);
+
+      // Act/Assert.
+      await expect(
+        service.createPushNotification(createPushNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
   });
