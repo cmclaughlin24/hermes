@@ -4,8 +4,10 @@ import { Logger } from '@nestjs/common';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
+import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 const KEEP_JOB_OPTIONS: KeepJobs = {
@@ -23,6 +25,7 @@ export class NotificationConsumer extends WorkerHost {
     private readonly emailService: EmailService,
     private readonly phoneService: PhoneService,
     private readonly notificationLogService: NotificationLogService,
+    private readonly pushNotificationService: PushNotificationService,
   ) {
     super();
   }
@@ -46,6 +49,9 @@ export class NotificationConsumer extends WorkerHost {
         break;
       case DeliveryMethods.CALL:
         result = await this.processCall(job);
+        break;
+      case DeliveryMethods.PUSH:
+        result = await this.processPushNotification(job);
         break;
       default:
         throw new UnrecoverableError(
@@ -87,7 +93,7 @@ export class NotificationConsumer extends WorkerHost {
       }
 
       job.log(
-        `${logPrefix}: ${CreateEmailNotificationDto.name} created, building Handlebars HTML template`,
+        `${logPrefix}: ${CreateEmailNotificationDto.name} created, building message template`,
       );
 
       createEmailNotificationDto = await this.emailService.createEmailTemplate(
@@ -95,7 +101,7 @@ export class NotificationConsumer extends WorkerHost {
       );
 
       job.log(
-        `${logPrefix}: Handlebars HTML template created, attempting to send ${job.name} notification`,
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
       );
 
       const result = await this.emailService.sendEmail(
@@ -202,6 +208,60 @@ export class NotificationConsumer extends WorkerHost {
 
       const result = await this.phoneService.sendCall(
         createPhoneNotificationDto,
+      );
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Processes a 'push-notification' job from the notification queue and yields the sent text
+   * notification. Throws an error if the job payload is an invalid CreatePushNotificationDto
+   * object or the notification fails to send.
+   * @param {Job} job
+   * @returns
+   */
+  async processPushNotification(job: Job) {
+    const logPrefix = this._createLogPrefix(
+      this.processPushNotification.name,
+      job.id,
+    );
+
+    job.log(`${logPrefix}: Processing ${job.name} notification`);
+
+    try {
+      job.log(
+        `${logPrefix}: Creating ${CreatePushNotificationDto.name} from payload`,
+      );
+
+      let createPushNotificationDto: CreatePushNotificationDto;
+
+      try {
+        createPushNotificationDto =
+          await this.pushNotificationService.createNotificationDto(job.data);
+      } catch (error) {
+        throw new UnrecoverableError(
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
+        );
+      }
+
+      job.log(
+        `${logPrefix}: ${CreatePushNotificationDto.name} created, building message template`,
+      );
+
+      createPushNotificationDto =
+        await this.pushNotificationService.createPushNotificationTemplate(
+          createPushNotificationDto,
+        );
+
+      job.log(
+        `${logPrefix}: Message template created, attempting to send ${job.name} notification`,
+      );
+
+      const result = await this.pushNotificationService.sendPushNotification(
+        createPushNotificationDto,
       );
 
       return result;

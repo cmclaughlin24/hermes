@@ -5,14 +5,17 @@ import {
   MockEmailService,
   MockNotificationLogService,
   MockPhoneService,
+  MockPushNotificationService,
   createEmailServiceMock,
   createNotificationLogServiceMock,
   createPhoneServiceMock,
+  createPushNotificationServiceMock,
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
+import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 import { NotificationConsumer } from './notification.consumer';
 
@@ -21,6 +24,7 @@ describe('NotificationService', () => {
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
   let notificationLogService: MockNotificationLogService;
+  let pushNotificationService: MockPushNotificationService;
 
   const job: any = { id: 1, data: {}, log: jest.fn(), update: jest.fn() };
 
@@ -40,6 +44,10 @@ describe('NotificationService', () => {
           provide: NotificationLogService,
           useValue: createNotificationLogServiceMock(),
         },
+        {
+          provide: PushNotificationService,
+          useValue: createPushNotificationServiceMock(),
+        },
       ],
     }).compile();
 
@@ -48,6 +56,9 @@ describe('NotificationService', () => {
     phoneService = module.get<MockPhoneService>(PhoneService);
     notificationLogService = module.get<MockNotificationLogService>(
       NotificationLogService,
+    );
+    pushNotificationService = module.get<MockPushNotificationService>(
+      PushNotificationService,
     );
   });
 
