@@ -31,7 +31,7 @@ export class PushNotificationService implements CreateNotificationDto {
   async sendPushNotification(
     createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    switch (createPushNotificationDto.platformType) {
+    switch (createPushNotificationDto.platform) {
       case Platform.WEB:
         return this._webPushNotification(
           createPushNotificationDto.subscription,
@@ -39,7 +39,7 @@ export class PushNotificationService implements CreateNotificationDto {
         );
       default:
         throw new UnrecoverableError(
-          `Invalid Platform: ${createPushNotificationDto.platformType} is not an avaliable platform`,
+          `Invalid Platform: ${createPushNotificationDto.platform} is not an avaliable platform`,
         );
     }
   }
@@ -57,6 +57,7 @@ export class PushNotificationService implements CreateNotificationDto {
     createPushNotificationDto.subscription = data.subscription;
     createPushNotificationDto.notification = data.notification;
     createPushNotificationDto.template = data.template;
+    createPushNotificationDto.platform = data.platform;
     createPushNotificationDto.context = data.context;
 
     try {

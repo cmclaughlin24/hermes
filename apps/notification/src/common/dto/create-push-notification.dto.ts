@@ -58,7 +58,7 @@ export class CreatePushNotificationDto {
     enum: [Platform.ANDROID, Platform.IOS, Platform.WEB],
   })
   @IsEnum(Platform)
-  platformType: Platform;
+  platform: Platform;
 
   @ApiProperty({
     description:
