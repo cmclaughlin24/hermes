@@ -76,11 +76,17 @@ export class PushNotificationService implements CreateNotificationDto {
     }
 
     const titleTemplate = Handlebars.compile(notification.title);
-    notification.title = titleTemplate(createPushNotificationDto.context);
+    notification.title = titleTemplate({
+      timeZone: createPushNotificationDto.timeZone,
+      ...createPushNotificationDto.context,
+    });
 
     if (notification.body) {
       const bodyTemplate = Handlebars.compile(notification.body);
-      notification.body = bodyTemplate(createPushNotificationDto.context);
+      notification.body = bodyTemplate({
+        timeZone: createPushNotificationDto.timeZone,
+        ...createPushNotificationDto.context,
+      });
     }
 
     // Note: Nullish keys removed from the notification object so that Angular and other frameworks

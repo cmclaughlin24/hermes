@@ -5,6 +5,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsTimeZone,
   ValidateNested,
 } from 'class-validator';
 
@@ -25,7 +26,7 @@ export class CreatePushNotificationDto {
   @ApiProperty({
     description:
       'The Notification interface of the Notification API used to display configure ' +
-      'display notifications to the user',
+      'display notifications to the user (overridden if "template" property is provided)',
     externalDocs: {
       description: 'Notification (MDN)',
       url: 'https://developer.mozilla.org/en-US/docs/Web/API/notification',
@@ -37,7 +38,8 @@ export class CreatePushNotificationDto {
   notification?: PushNotificationDto;
 
   @ApiProperty({
-    description: 'Name of push notification template',
+    description:
+      'Name of push notification template (overrides "notification" property if provided)',
     example: 'order-confirmation',
     required: false,
   })
@@ -47,13 +49,21 @@ export class CreatePushNotificationDto {
   template?: string;
 
   @ApiProperty({
+    description:
+      'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" property)',
+    example: 'America/Chicago',
+    required: false,
+  })
+  @IsTimeZone()
+  @IsOptional()
+  timeZone?: string;
+
+  @ApiProperty({
     description: 'Values to be injected into the push notification template',
     example: {
-      firstName: 'John',
-      lastName: 'Doe',
-      message: {
-        type: 'push notification',
-      },
+      notificationType: 'push (web)',
+      title: 'First Notification',
+      receivedOn: '2023-06-05T11:06:37.459Z'
     },
     required: false,
   })
