@@ -13,7 +13,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { TextDirection } from '../types/text-direction.types';
+import { TextDirection } from '../types/text-direction.type';
 
 export class PushNotificationActionDto {
   @ApiProperty({

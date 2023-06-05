@@ -1,5 +1,11 @@
+import {
+  Platform,
+  PushNotificationDto,
+  PushSubscriptionDto,
+} from '@hermes/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { UnrecoverableError } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import * as webpush from 'web-push';
@@ -25,10 +31,17 @@ export class PushNotificationService implements CreateNotificationDto {
   async sendPushNotification(
     createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    return webpush.sendNotification(
-      createPushNotificationDto.subscription,
-      JSON.stringify({ notification: createPushNotificationDto.notification }),
-    );
+    switch (createPushNotificationDto.platformType) {
+      case Platform.WEB:
+        return this._webPushNotification(
+          createPushNotificationDto.subscription,
+          createPushNotificationDto.notification,
+        );
+      default:
+        throw new UnrecoverableError(
+          `Invalid Platform: ${createPushNotificationDto.platformType} is not an avaliable platform`,
+        );
+    }
   }
 
   async createNotificationDto(data: any) {
@@ -98,5 +111,15 @@ export class PushNotificationService implements CreateNotificationDto {
     createPushNotificationDto.notification = notification;
 
     return createPushNotificationDto;
+  }
+
+  private _webPushNotification(
+    subscription: PushSubscriptionDto,
+    notification: PushNotificationDto,
+  ) {
+    return webpush.sendNotification(
+      subscription,
+      JSON.stringify({ notification }),
+    );
   }
 }

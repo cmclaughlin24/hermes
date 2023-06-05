@@ -1,7 +1,12 @@
-import { PushNotificationDto, PushSubscriptionDto } from '@hermes/common';
+import {
+  Platform,
+  PushNotificationDto,
+  PushSubscriptionDto
+} from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
+  IsEnum,
   IsObject,
   IsOptional,
   IsString,
@@ -49,6 +54,13 @@ export class CreatePushNotificationDto {
   template?: string;
 
   @ApiProperty({
+    description: 'Computing platform where the push notification will be delivered',
+    enum: [Platform.ANDROID, Platform.IOS, Platform.WEB],
+  })
+  @IsEnum(Platform)
+  platformType: Platform;
+
+  @ApiProperty({
     description:
       'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" property)',
     example: 'America/Chicago',
@@ -63,7 +75,7 @@ export class CreatePushNotificationDto {
     example: {
       notificationType: 'push (web)',
       title: 'First Notification',
-      receivedOn: '2023-06-05T11:06:37.459Z'
+      receivedOn: '2023-06-05T11:06:37.459Z',
     },
     required: false,
   })
