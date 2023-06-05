@@ -58,7 +58,11 @@ export class PushNotificationDto {
   badge?: string;
 
   @ApiProperty({
-    description: 'Body of the notification',
+    description:
+      'Body of the notification that can accept values from a nested JavaScript object. ' +
+      'Date formatting supported through the "formatDate" Handlerbars helper.',
+    example:
+      "You successfully sent you're first {{notificationType}} notification!",
     required: false,
   })
   @IsString()
@@ -157,7 +161,11 @@ export class PushNotificationDto {
   timestamp?: string;
 
   @ApiProperty({
-    description: 'Title of the notification',
+    description:
+      'Title of the notification that can accept values from a nested JavaScript object. ' +
+      'Date formatting supported through the "formatDate" Handlerbars helper.',
+    example:
+      '{{ title }} sent on {{ {{ formatDate receivedOn timeZone format }} }}',
   })
   @IsString()
   @IsNotEmpty()
