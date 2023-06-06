@@ -1,4 +1,4 @@
-import { DeliveryMethods } from '@hermes/common';
+import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
 import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
@@ -309,7 +310,7 @@ describe('NotificationService', () => {
       phoneService.sendCall.mockClear();
     });
 
-    it('should yield the created text notification', async () => {
+    it('should yield the created call notification', async () => {
       // Arrange.
       const expectedResult = {};
       phoneService.createNotificationDto.mockResolvedValue(
@@ -348,7 +349,7 @@ describe('NotificationService', () => {
       await expect(service.processCall(job)).rejects.toEqual(expectedResult);
     });
 
-    it('should throw an "Error" if an text failed to send', async () => {
+    it('should throw an "Error" if an call failed to send', async () => {
       // Arrange.
       const expectedResult = new Error('Something went wrong');
       phoneService.createNotificationDto.mockResolvedValue(
@@ -358,6 +359,85 @@ describe('NotificationService', () => {
 
       // Act/Assert.
       await expect(service.processCall(job)).rejects.toEqual(expectedResult);
+    });
+  });
+
+  describe('processPushNotification()', () => {
+    const createPushNotificationDto: CreatePushNotificationDto = {
+      subscription: null,
+      platform: Platform.WEB,
+      notification: { title: 'unit-test' },
+      context: {},
+    };
+
+    afterEach(() => {
+      pushNotificationService.createNotificationDto.mockClear();
+      pushNotificationService.sendPushNotification.mockClear();
+    });
+
+    it('should yield the created push notification', async () => {
+      // Arrange.
+      const expectedResult = {};
+      pushNotificationService.createNotificationDto.mockResolvedValue(
+        createPushNotificationDto,
+      );
+      pushNotificationService.sendPushNotification.mockResolvedValue(
+        expectedResult,
+      );
+
+      // Act/Assert.
+      await expect(service.processPushNotification(job)).resolves.toEqual(
+        expectedResult,
+      );
+    });
+
+    it("should validate the job's payload is valid", async () => {
+      // Arrange.
+      pushNotificationService.createNotificationDto.mockResolvedValue(
+        createPushNotificationDto,
+      );
+      pushNotificationService.sendPushNotification.mockResolvedValue(null);
+
+      // Act.
+      await service.processPushNotification(job);
+
+      // Assert.
+      expect(
+        pushNotificationService.createNotificationDto,
+      ).toHaveBeenCalledWith(job.data);
+    });
+
+    it('should throw an "Error" if the job\'s payload is invalid', async () => {
+      // Arrange.
+      const error = new Error('unit testing');
+      const expectedResult = new Error(
+        `[${NotificationConsumer.name} processPushNotification] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
+      );
+      pushNotificationService.createNotificationDto.mockRejectedValue(error);
+      pushNotificationService.sendPushNotification.mockResolvedValue(
+        expectedResult,
+      );
+
+      // Act/Assert.
+      await expect(service.processPushNotification(job)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw an "Error" if an push notification failed to send', async () => {
+      // Arrange.
+      const expectedResult = new Error('Something went wrong');
+      pushNotificationService.createNotificationDto.mockResolvedValue(
+        createPushNotificationDto,
+      );
+      pushNotificationService.sendPushNotification.mockRejectedValue(
+        expectedResult,
+      );
+
+      // Act/Assert.
+      await expect(service.processPushNotification(job)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 
