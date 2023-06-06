@@ -37,7 +37,7 @@ export class PushTemplateService {
     });
 
     if (_.isEmpty(pushTemplates)) {
-      throw new NotFoundException(`Push Notification templates not found!`);
+      throw new NotFoundException('Push Notification templates not found!');
     }
 
     return pushTemplates;
@@ -154,7 +154,9 @@ export class PushTemplateService {
 
     await pushTemplate.destroy();
 
-    return new ApiResponseDto(`Successfully delete push notification ${name}`);
+    return new ApiResponseDto(
+      `Successfully deleted push notification template ${name}`,
+    );
   }
 
   /**
