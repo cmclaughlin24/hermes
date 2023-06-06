@@ -1,6 +1,4 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
-import { CreatePushTemplateDto } from './create-push-template.dto';
+import { PushNotificationDto } from '@hermes/common';
+import { PartialType } from '@nestjs/swagger';
 
-export class UpdatePushTemplateDto extends PartialType(
-  OmitType(CreatePushTemplateDto, ['name']),
-) {}
+export class UpdatePushTemplateDto extends PartialType(PushNotificationDto) {}
