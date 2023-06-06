@@ -166,7 +166,7 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * Processes a 'call' job from the notification queue and yields the sent text
+   * Processes a 'call' job from the notification queue and yields the sent call
    * notification. Throws an error if the job payload is an invalid CreatePhoneNotificationDto
    * object or the notification fails to send.
    * @param {Job} job
@@ -217,7 +217,7 @@ export class NotificationConsumer extends WorkerHost {
   }
 
   /**
-   * Processes a 'push-notification' job from the notification queue and yields the sent text
+   * Processes a 'push-notification' job from the notification queue and yields the sent push
    * notification. Throws an error if the job payload is an invalid CreatePushNotificationDto
    * object or the notification fails to send.
    * @param {Job} job

@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
+import { PushAction } from './entities/push-action.entity';
 import { PushTemplate } from './entities/push-template.entity';
 
 @Injectable()
@@ -23,7 +24,12 @@ export class PushTemplateService {
    * @returns {Promise<PushTemplate[]>}
    */
   async findAll() {
-    const pushTemplates = await this.pushTemplateModel.findAll();
+    const pushTemplates = await this.pushTemplateModel.findAll({
+      include: {
+        model: PushAction,
+        attributes: { exclude: ['templateId'] },
+      },
+    });
 
     if (_.isEmpty(pushTemplates)) {
       throw new NotFoundException(`Push Notification templates not found!`);
@@ -39,7 +45,12 @@ export class PushTemplateService {
    * @returns {Promise<PushTemplate>}
    */
   async findOne(name: string) {
-    const pushTemplate = await this.pushTemplateModel.findByPk(name);
+    const pushTemplate = await this.pushTemplateModel.findByPk(name, {
+      include: {
+        model: PushAction,
+        attributes: { exclude: ['templateId'] },
+      },
+    });
 
     if (!pushTemplate) {
       throw new NotFoundException(
@@ -67,9 +78,12 @@ export class PushTemplateService {
       );
     }
 
-    const pushTemplate = await this.pushTemplateModel.create({
-      ...createPushTemplateDto,
-    });
+    const pushTemplate = await this.pushTemplateModel.create(
+      {
+        ...createPushTemplateDto,
+      },
+      { include: [PushAction] },
+    );
 
     return new ApiResponseDto<PushTemplate>(
       `Successfully created push notification template ${pushTemplate.name}!`,

@@ -3,18 +3,17 @@ import {
   Column,
   CreatedAt,
   DataType,
+  HasMany,
   Model,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { PushAction } from './push-action.entity';
 
 @Table
 export class PushTemplate extends Model {
   @Column({ primaryKey: true })
   name: string;
-
-  @Column({ type: DataType.JSON, allowNull: true })
-  actions: string;
 
   @Column({ allowNull: true })
   badge: string;
@@ -64,7 +63,7 @@ export class PushTemplate extends Model {
 
   @Column({
     allowNull: true,
-    type: DataType.ARRAY(DataType.INTEGER)
+    type: DataType.ARRAY(DataType.INTEGER),
   })
   vibrate: number[];
 
@@ -73,4 +72,7 @@ export class PushTemplate extends Model {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @HasMany(() => PushAction, { onDelete: 'CASCADE' })
+  actions: PushAction[];
 }
