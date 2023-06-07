@@ -89,6 +89,12 @@ export class PushNotificationService implements CreateNotificationDto {
       notification = pushTemplate.toJSON();
     }
 
+    if (!notification) {
+      throw new Error(
+        `Invalid Argument: ${CreatePushNotificationDto.name} must have either 'notification' or 'template' keys present`,
+      );
+    }
+
     const titleTemplate = Handlebars.compile(notification.title);
     notification.title = titleTemplate({
       timeZone: createPushNotificationDto.timeZone,
