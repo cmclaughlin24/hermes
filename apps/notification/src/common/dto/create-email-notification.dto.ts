@@ -29,7 +29,7 @@ export class CreateEmailNotificationDto {
 
   @ApiProperty({
     description:
-      'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" key)',
+      'Time zone to use when formatting dates/times (overridden if "context" property has a "timeZone" property)',
     example: 'America/Chicago',
     required: false,
   })

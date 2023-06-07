@@ -47,47 +47,49 @@ export class DistributionConsumer extends MqConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
-  async subscribe(message: MessageDto, amqpMsg: ConsumeMessage) {
+  async subscribe(message: any, amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
 
     try {
-      // Todo: Validate MessageDto prior to any processing.
+      const messageDto = await this.createMessageDto(message);
       const distributionEvent = await this.distributionEventService.findOne(
         this.DISTRIBUTION_QUEUE,
-        message.type,
+        messageDto.type,
         true,
         true,
       );
       const distributionRule = this._getDistributionRule(
         distributionEvent,
-        message.metadata,
+        messageDto.metadata,
       );
       const subscriptionMembers = await this._getSubscriptionMembers(
-        message,
+        messageDto,
         distributionEvent.subscriptions,
         distributionRule.bypassSubscriptions,
       );
 
       if (_.isEmpty(subscriptionMembers)) {
-        return;
+        return { message: `` };
       }
 
       const messageTimeZone = this._getMessageTimeZone(
-        message.metadata,
+        messageDto.metadata,
         distributionRule.timeZoneLabel,
       );
       const jobs = createNotificationJobs(
         distributionRule,
         subscriptionMembers,
-        message.payload,
+        messageDto.payload,
         messageTimeZone,
       );
 
       if (_.isEmpty(jobs)) {
-        return;
+        return { message: `` };
       }
 
       await this.notificationQueue.addBulk(jobs);
+
+      return { message: `` };
     } catch (error) {
       // Note: The MqInterceptor will be handled the error and determine if a message
       //       should be retried or not.
@@ -95,6 +97,14 @@ export class DistributionConsumer extends MqConsumer {
     }
   }
 
+  /**
+   * Yields a DistributionRule that should be applied for an event based on the selectors
+   * in a message's metadata. All selectors must match for a rule to be selected, otherwise,
+   * the default rule will be choosen.
+   * @param {DistributionEvent} distributionEvent
+   * @param {any} metadata
+   * @returns {DistributionRule}
+   */
   private _getDistributionRule(
     distributionEvent: DistributionEvent,
     metadata: any,
@@ -120,6 +130,12 @@ export class DistributionConsumer extends MqConsumer {
     return rule;
   }
 
+  /**
+   * Yields the IANA time zone set in a message's metadata selectors.
+   * @param {any} metadata
+   * @param {string} timeZoneLabel 
+   * @returns {string}
+   */
   private _getMessageTimeZone(metadata: any, timeZoneLabel: string): string {
     if (!metadata || !timeZoneLabel || timeZoneLabel.trim() === '') {
       return null;
@@ -128,14 +144,20 @@ export class DistributionConsumer extends MqConsumer {
     return metadata[timeZoneLabel];
   }
 
+  /**
+   * Yields a list of SubscriptionMembers who should receive a notification for an event.
+   * @param {MessageDto} message
+   * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
+   * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
+   * @returns {Promise<SubscriptionMemberDto[]>}
+   */
   private async _getSubscriptionMembers(
     message: MessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
   ): Promise<SubscriptionMemberDto[]> {
-    // Todo: Map recipients to the SubscriptionMemberDto class so that class functions are available.
     if (bypassSubscriptions) {
-      return message.recipients;
+      return this.subscriptionMemberService.map(message.recipients);
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);

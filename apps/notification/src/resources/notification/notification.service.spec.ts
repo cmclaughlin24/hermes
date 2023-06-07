@@ -3,19 +3,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockEmailService,
   MockPhoneService,
+  MockPushNotificationService,
   createEmailServiceMock,
   createPhoneServiceMock,
+  createPushNotificationServiceMock,
 } from '../../../../notification/test/helpers/provider.helpers';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { EmailService } from '../../common/providers/email/email.service';
 import { PhoneService } from '../../common/providers/phone/phone.service';
+import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
+  let pushNotificationService: MockPushNotificationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,12 +34,19 @@ describe('NotificationService', () => {
           provide: PhoneService,
           useValue: createPhoneServiceMock(),
         },
+        {
+          provide: PushNotificationService,
+          useValue: createPushNotificationServiceMock(),
+        },
       ],
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);
     emailService = module.get<MockEmailService>(EmailService);
     phoneService = module.get<MockPhoneService>(PhoneService);
+    pushNotificationService = module.get<MockPushNotificationService>(
+      PushNotificationService,
+    );
   });
 
   it('should be defined', () => {
@@ -170,6 +182,48 @@ describe('NotificationService', () => {
       // Act/Assert.
       await expect(
         service.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
+  });
+
+  describe('createPushNotification()', () => {
+    const createPushNotificationDto: CreatePushNotificationDto = {
+      subscription: {},
+      notification: { title: 'Unit Test' },
+    } as CreatePushNotificationDto;
+
+    beforeEach(() => {
+      pushNotificationService.createPushNotificationTemplate.mockResolvedValue(
+        createPushNotificationDto,
+      );
+    });
+
+    afterEach(() => {
+      pushNotificationService.createPushNotificationTemplate.mockClear();
+      pushNotificationService.sendPushNotification.mockClear();
+    });
+
+    it('should send a push notification', async () => {
+      // Act.
+      await service.createPushNotification(createPushNotificationDto);
+
+      // Assert.
+      expect(pushNotificationService.sendPushNotification).toHaveBeenCalledWith(
+        createPushNotificationDto,
+      );
+    });
+
+    it('should yield an "ApiResponseDto" object with a created notification', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully sent push notification`,
+        {},
+      );
+      pushNotificationService.sendPushNotification.mockResolvedValue({});
+
+      // Act/Assert.
+      await expect(
+        service.createPushNotification(createPushNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
   });

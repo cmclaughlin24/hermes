@@ -7,12 +7,13 @@ import {
   Param,
   ParseArrayPipe,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobState } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationJobService } from './notification-job.service';
 
 @ApiTags('Notification Job')
@@ -34,7 +35,7 @@ export class NotificationJobController {
     type: String,
     isArray: true,
     description: 'A list of job states',
-    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting'],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
@@ -135,6 +136,32 @@ export class NotificationJobController {
   ) {
     return this.notificationJobService.createCallNotification(
       createPhoneNotificationDto,
+    );
+  }
+
+  @Post('push-notification')
+  @ApiOperation({
+    summary: 'Schedule a notification "push-notification" job.',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Successful Operation',
+    type: ApiResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid Request',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  createPushNotification(
+    @Body() createPushNotificationDto: CreatePushNotificationDto,
+  ) {
+    return this.notificationJobService.createPushNotification(
+      createPushNotificationDto,
     );
   }
 }

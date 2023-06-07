@@ -180,7 +180,7 @@ describe('SubscriptionService', () => {
       );
     });
 
-    it('should throw a "NotFoundExcpetion" if the distribution rule does not exist', async () => {
+    it('should throw a "NotFoundExcpetion" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Distribution Rule for queue=${createSubscriptionDto.queue} messageType=${createSubscriptionDto.messageType} not found!`,

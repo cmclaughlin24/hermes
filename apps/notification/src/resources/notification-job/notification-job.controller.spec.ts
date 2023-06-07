@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationJobController } from './notification-job.controller';
 import { NotificationJobService } from './notification-job.service';
 
@@ -17,6 +18,7 @@ export const createNotificationJobServiceMock =
     createEmailNotification: jest.fn(),
     createTextNotification: jest.fn(),
     createCallNotification: jest.fn(),
+    createPushNotification: jest.fn(),
   });
 
 describe('NotificationJobController', () => {
@@ -135,4 +137,25 @@ describe('NotificationJobController', () => {
       ).resolves.toEqual(expectedResult);
     });
   });
+
+  describe('createPushNotification()', () => {
+    const createPushNotificationDto: CreatePushNotificationDto = {
+      subscription: {},
+      notification: { title: 'Unit Test' },
+    } as CreatePushNotificationDto;
+
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully sent push notification`,
+        {},
+      );
+      service.createPushNotification.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(
+        controller.createPushNotification(createPushNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
+  })
 });

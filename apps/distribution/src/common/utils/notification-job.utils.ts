@@ -13,9 +13,9 @@ const MILLISECONDS_PER_SECOND = 1000;
  * Yields a list of notification jobs for a list of subscription members based on the
  * distribution rule's enabled delivery method(s).
  * 
- * Note: If the messageTimeZone argument is defined, it will override the recipients
- * time zone. This can be disabled by setting the DistributionRule 'timeZoneLabel' to
- * null.
+ * Note: If the messageTimeZone argument is defined, dates and times in the notification
+ *       templates will be displayed in this time zone instead of the recipient's time
+ *       zone. This can be disabled by setting the DistributionRule 'timeZoneLabel' to null.
  * 
  * @param {DistributionRule} distributionRule
  * @param {SubscriptionMemberDto[]} subscriptionMembers

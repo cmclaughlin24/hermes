@@ -3,10 +3,7 @@ import * as _ from 'lodash';
 import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
-import {
-  FilterJoinOps,
-  FilterOps,
-} from '../types/filter.types';
+import { FilterJoinOps, FilterOps } from '../types/filter.types';
 
 export function filterSubscriptions(
   subscriptions: Subscription[],
@@ -112,43 +109,51 @@ export function compare(
 ): boolean {
   // Todo: Improve compare function by adding type conversion/validation based on the "dataType"
   //       field of the SubscriptionQueryDto.
+  let evalFn: (query: SubscriptionQueryDto, value) => boolean;
+
   switch (operator) {
     case FilterOps.EQUALS:
-      return equals(query.value, value);
+      evalFn = equals;
+      break;
     case FilterOps.NEQUALS:
-      return nequals(query.value, value);
+      evalFn = nequals;
+      break;
     case FilterOps.OR:
-      return or(query.value, value);
+      evalFn = or;
+      break;
     case FilterOps.MATCHES:
-      return matches(query.value, value);
+      evalFn = matches;
+      break;
     default:
       throw new Error(
         `Invalid Argument: Comparison for operator=${operator} is not defined`,
       );
   }
+
+  return evalFn(query, value);
 }
 
-export function equals(query: any, value: any): boolean {
-  return query === value;
+export function equals(query: SubscriptionQueryDto, value: any): boolean {
+  return query.value === value;
 }
 
-export function nequals(query: any, value: any): boolean {
-  return query !== value;
+export function nequals(query: SubscriptionQueryDto, value: any): boolean {
+  return query.value !== value;
 }
 
-export function or(query: any[], value: any): boolean {
-  if (!Array.isArray(query)) {
+export function or(query: SubscriptionQueryDto, value: any): boolean {
+  if (!Array.isArray(query.value)) {
     throw new Error(
-      `Invalid Argument: When using OR, query must be array; recieved ${typeof query} instead`,
+      `Invalid Argument: When using OR, query must be array; recieved ${typeof query.value} instead`,
     );
   }
-  return query.includes(value);
+  return query.value.includes(value);
 }
 
-export function matches(query: string, value: string): boolean {
-  if (typeof query !== 'string') {
+export function matches(query: SubscriptionQueryDto, value: string): boolean {
+  if (typeof query.value !== 'string') {
     throw new Error(
-      `Invalid Argument: When using MATCHES, query must be string; recieved ${typeof query} instead`,
+      `Invalid Argument: When using MATCHES, query must be string; recieved ${typeof query.value} instead`,
     );
   }
 
@@ -158,5 +163,5 @@ export function matches(query: string, value: string): boolean {
     );
   }
 
-  return new RegExp(query).test(value);
+  return new RegExp(query.value).test(value);
 }

@@ -2,6 +2,7 @@ import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 
@@ -13,6 +14,7 @@ export const createNotificationServiceMock = (): MockNotificationService => ({
   createEmailNotification: jest.fn(),
   createTextNotification: jest.fn(),
   createCallNotification: jest.fn(),
+  createPushNotification: jest.fn(),
 });
 
 describe('NotificationController', () => {
@@ -104,6 +106,27 @@ describe('NotificationController', () => {
       // Act/Assert.
       await expect(
         controller.createCallNotification(createPhoneNotificationDto),
+      ).resolves.toEqual(expectedResult);
+    });
+  });
+
+  describe('createPushNotification()', () => {
+    const createPushNotificationDto: CreatePushNotificationDto = {
+      subscription: {},
+      notification: { title: 'Unit Test' },
+    } as CreatePushNotificationDto;
+
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully sent push notification`,
+        {},
+      );
+      service.createPushNotification.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(
+        controller.createPushNotification(createPushNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
   });

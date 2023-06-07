@@ -15,7 +15,7 @@ import { RpcArgumentsHost } from '@nestjs/common/interfaces';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { ConsumeMessage } from 'amqplib';
-import { Observable, catchError, tap } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MessageDto } from '../../dto/message.dto';
@@ -59,7 +59,7 @@ export class MqInterceptor implements NestInterceptor {
     await this._log(distributionJob, MessageState.ACTIVE, null, null);
 
     return next.handle().pipe(
-      tap(async (result) => {
+      map(async (result) => {
         await this._log(distributionJob, MessageState.COMPLETED, result, null);
       }),
       catchError(async (error) => {
@@ -85,6 +85,7 @@ export class MqInterceptor implements NestInterceptor {
     }
 
     try {
+      // Fixme: Convert Error object to JSON object so that it may be stored in the database.
       await this.distributionLogService.log(job, state, result, error);
     } catch (err) {
       this.logger.error(

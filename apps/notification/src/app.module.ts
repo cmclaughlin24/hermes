@@ -39,6 +39,9 @@ import { ResourcesModule } from './resources/resources.module';
         TWILIO_SID: Joi.required(),
         TWILIO_AUTH_TOKEN: Joi.required(),
         TWILIO_PHONE_NUMBER: Joi.required(),
+        VAPID_SUBJECT: Joi.required(),
+        VAPID_PUBLIC_KEY: Joi.required(),
+        VAPID_PRIVATE_KEY: Joi.required(),
       }),
     }),
     SequelizeModule.forRootAsync({
