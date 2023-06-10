@@ -1,8 +1,8 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ApiResponseDto, RemoveCache, UseCache, defaultHashFn } from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
@@ -12,6 +12,8 @@ import { EmailTemplate } from './entities/email-template.entity';
 
 @Injectable()
 export class EmailTemplateService {
+  static readonly CACHE_KEY = 'email-template';
+
   constructor(
     @InjectModel(EmailTemplate)
     private readonly emailTemplateModel: typeof EmailTemplate,
@@ -38,6 +40,7 @@ export class EmailTemplateService {
    * @param {string} name Template's name
    * @returns {Promise<EmailTemplate>}
    */
+  @UseCache({ key: EmailTemplateService.CACHE_KEY })
   async findOne(name: string) {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
@@ -82,6 +85,10 @@ export class EmailTemplateService {
    * @param {UpdateEmailTemplateDto} updateEmailTemplateDto
    * @returns {Promise<ApiResponseDto<EmailTemplate>>}
    */
+  @RemoveCache({
+    key: EmailTemplateService.CACHE_KEY,
+    hashFn: (key: string, args: any[]) => defaultHashFn(key, [args[0]]),
+  })
   async update(name: string, updateEmailTemplateDto: UpdateEmailTemplateDto) {
     let emailTemplate = await this.emailTemplateModel.findByPk(name);
 
@@ -107,6 +114,7 @@ export class EmailTemplateService {
    * @param {string} name Template's name
    * @returns {Promise<ApiResponseDto>}
    */
+  @RemoveCache({ key: EmailTemplateService.CACHE_KEY })
   async remove(name: string) {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
