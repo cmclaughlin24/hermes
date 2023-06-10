@@ -3,6 +3,19 @@ import { Inject, Logger } from '@nestjs/common';
 import { RemoveCacheOptions } from '../types/cache-options.type';
 import { defaultHashFn } from '../utils/cache.utils';
 
+/**
+ * Decorator that marks a method that should remove an item from cache
+ * storage. It implements a monkey patch to wrap the original method
+ * call with logic to remove a key from the cache storage.
+ * 
+ * Note: Requires the @nestjs/cache-manager CacheModule to be imported
+ *       into the module where the decorator is used. Extends the module's
+ *       features to enable auto-caching and removal w/o the use of
+ *       interceptors.
+ * 
+ * @param {RemoveCacheOptions} options
+ * @returns {MethodDecorator}
+ */
 export const RemoveCache = (options: RemoveCacheOptions): MethodDecorator => {
   const logger = new Logger(RemoveCache.name);
   const injectCache = Inject(CACHE_MANAGER);

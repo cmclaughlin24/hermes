@@ -13,7 +13,7 @@ export interface UseCacheOptions {
   /**
    * A function that overrides the default key hashing algorithm. Should yield a unique
    * key hash for storing and retreiving cached data.
-   * @param {string} key UseCacheOptions key
+   * @param {string} key UseCacheOptions `key`
    * @param {any[]} args Method's arguments
    * @returns {string}
    */

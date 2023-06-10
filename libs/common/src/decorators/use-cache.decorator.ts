@@ -3,6 +3,23 @@ import { Inject, Logger } from '@nestjs/common';
 import { UseCacheOptions } from '../types/cache-options.type';
 import { defaultHashFn } from '../utils/cache.utils';
 
+const DEFAULT_TTL = 5000;
+
+/**
+ * Decorator that marks a method that should utilize cache storage for
+ * responses. It implements a monkey patch to wrap the original method 
+ * call with logic to check if the cache storage contains a key and either
+ * (1) yield it's value or (2) yield the value of the original method
+ * after setting it in the cache.
+ * 
+ * Note: Requires the @nestjs/cache-manager CacheModule to be imported
+ *       into the module where the decorator is used. Extends the module's
+ *       features to enable auto-caching and removal w/o the use of
+ *       interceptors.
+ *
+ * @param {UseCacheOptions} options
+ * @returns {MethodDecorator}
+ */
 export const UseCache = (options: UseCacheOptions): MethodDecorator => {
   const logger = new Logger(UseCache.name);
   const injectCache = Inject(CACHE_MANAGER);
@@ -20,7 +37,7 @@ export const UseCache = (options: UseCacheOptions): MethodDecorator => {
   }
 
   const hashFn = options.hashFn || defaultHashFn;
-  const ttl = options.ttl != null ? options.ttl : 5000;
+  const ttl = options.ttl != null ? options.ttl : DEFAULT_TTL;
 
   return (
     target: Object,
