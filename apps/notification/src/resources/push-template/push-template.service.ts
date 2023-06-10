@@ -1,4 +1,10 @@
-import { ApiResponseDto, PushNotificationActionDto } from '@hermes/common';
+import {
+  ApiResponseDto,
+  PushNotificationActionDto,
+  RemoveCache,
+  UseCache,
+  defaultHashFn,
+} from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
@@ -15,6 +21,8 @@ import { PushTemplate } from './entities/push-template.entity';
 
 @Injectable()
 export class PushTemplateService {
+  static readonly CACHE_KEY = 'push-notification';
+
   constructor(
     @InjectModel(PushTemplate)
     private readonly pushTemplateModel: typeof PushTemplate,
@@ -49,6 +57,7 @@ export class PushTemplateService {
    * @param {string} name Template's name
    * @returns {Promise<PushTemplate>}
    */
+  @UseCache({ key: PushTemplateService.CACHE_KEY })
   async findOne(name: string) {
     const pushTemplate = await this.pushTemplateModel.findByPk(name, {
       include: {
@@ -103,6 +112,10 @@ export class PushTemplateService {
    * @param {UpdatePushTemplateDto} updatePushTemplateDto
    * @returns {Promise<ApiResponseDto<PushTemplate>>}
    */
+  @RemoveCache({
+    key: PushTemplateService.CACHE_KEY,
+    hashFn: (key, args) => defaultHashFn(key, [args[0]]),
+  })
   async update(name: string, updatePushTemplateDto: UpdatePushTemplateDto) {
     return this.sequelize.transaction(async (transaction) => {
       let pushTemplate = await this.pushTemplateModel.findByPk(name, {
@@ -143,6 +156,7 @@ export class PushTemplateService {
    * @param {string} name Template's name
    * @returns {Promise<ApiResponseDto>}
    */
+  @RemoveCache({ key: PushTemplateService.CACHE_KEY })
   async remove(name: string) {
     const pushTemplate = await this.pushTemplateModel.findByPk(name);
 
