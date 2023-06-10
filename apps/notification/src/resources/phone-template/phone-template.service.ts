@@ -1,4 +1,10 @@
-import { ApiResponseDto, PhoneMethods } from '@hermes/common';
+import {
+  ApiResponseDto,
+  PhoneMethods,
+  RemoveCache,
+  UseCache,
+  defaultHashFn,
+} from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
@@ -12,6 +18,8 @@ import { PhoneTemplate } from './entities/phone-template.entity';
 
 @Injectable()
 export class PhoneTemplateService {
+  static readonly CACHE_KEY = 'phone-template';
+
   constructor(
     @InjectModel(PhoneTemplate)
     private readonly phoneTemplateModel: typeof PhoneTemplate,
@@ -36,9 +44,10 @@ export class PhoneTemplateService {
    * Yields a PhoneTemplate or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {PhoneTemplate} deliveryMethod
-   * @param {string} name 
+   * @param {string} name
    * @returns {Promise<PhoneTemplate>}
    */
+  @UseCache({ key: PhoneTemplateService.CACHE_KEY })
   async findOne(deliveryMethod: PhoneMethods, name: string) {
     const phoneTemplate = await this.phoneTemplateModel.findOne({
       where: { name, deliveryMethod },
@@ -91,6 +100,10 @@ export class PhoneTemplateService {
    * @param {UpdatePhoneTemplateDto} updatePhoneTemplateDto
    * @returns {Promise<ApiResponseDto<PhoneTemplate>>}
    */
+  @RemoveCache({
+    key: PhoneTemplateService.CACHE_KEY,
+    hashFn: (key, args) => defaultHashFn(key, [args[0]]),
+  })
   async update(
     deliveryMethod: PhoneMethods,
     name: string,
@@ -124,6 +137,7 @@ export class PhoneTemplateService {
    * @param {string} name
    * @returns {Promise<ApiResponseDto}
    */
+  @RemoveCache({ key: PhoneTemplateService.CACHE_KEY })
   async remove(deliveryMethod: PhoneMethods, name: string) {
     const phoneTemplate = await this.phoneTemplateModel.findOne({
       where: { name, deliveryMethod },
