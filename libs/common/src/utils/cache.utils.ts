@@ -3,8 +3,9 @@ import * as _ from 'lodash';
 /**
  * Yields a unique key hash used to subsequently store and retreive cached
  * data. Appends a stringified version of each argument separated by a
- * comma to the key.
+ * comma to the key if defined.
  * @example
+ * - "email-template"
  * - "email-template::'order-confirmation','{\"name\":\"example\"}'"
  * @param {string} key
  * @param {any[]} args
