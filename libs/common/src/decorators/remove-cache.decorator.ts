@@ -35,7 +35,7 @@ export const RemoveCache = (options: RemoveCacheOptions): MethodDecorator => {
 
   return (
     target: Object,
-    propertyKey: string,
+    _propertyKey: string,
     descriptor: PropertyDescriptor,
   ) => {
     const method = descriptor.value;
