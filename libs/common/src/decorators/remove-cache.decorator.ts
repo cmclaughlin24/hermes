@@ -24,11 +24,11 @@ export const RemoveCache = (options: RemoveCacheOptions): MethodDecorator => {
   const injectCache = Inject(CACHE_MANAGER);
 
   if (typeof options.key !== 'string') {
-    throw new Error("Invalid UseCacheOption: 'key' is not type string");
+    throw new Error("Invalid RemoveCacheOptions: 'key' is not type string");
   }
 
   if (options.hashFn && typeof options.hashFn !== 'function') {
-    throw new Error("Invalid UseCacheOption: 'hashFn' is not type function");
+    throw new Error("Invalid RemoveCacheOptions: 'hashFn' is not type function");
   }
 
   const hashFn = options.hashFn || defaultHashFn;

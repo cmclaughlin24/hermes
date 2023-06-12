@@ -57,7 +57,7 @@ export const UseCache = (options: UseCacheOptions): MethodDecorator => {
       try {
         value = await this.cacheManager.get(cacheKey);
 
-        if (value) {
+        if (value != null) {
           logger.verbose(`Returning cached value for key=${cacheKey}`);
 
           return value;
