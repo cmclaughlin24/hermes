@@ -8,6 +8,9 @@ import { defaultHashFn } from '../utils/cache.utils';
  * storage. It implements a monkey patch to wrap the original method
  * call with logic to remove a key from the cache storage.
  * 
+ * Due to the I/O operations required to interact with the cache store,
+ * methods decoratored by `RemoveCache` will resolve as a `Promise`.
+ * 
  * Note: Requires the @nestjs/cache-manager CacheModule to be imported
  *       into the module where the decorator is used. Extends the module's
  *       features to enable auto-caching and removal w/o the use of

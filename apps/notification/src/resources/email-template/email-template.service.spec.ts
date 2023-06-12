@@ -1,4 +1,5 @@
 import { ApiResponseDto } from '@hermes/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,6 +7,7 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../notification/test/helpers/database.helpers';
+import { createCacheStoreMock } from '../../..//test/helpers/provider.helpers';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
@@ -23,6 +25,10 @@ describe('EmailTemplateService', () => {
           provide: getModelToken(EmailTemplate),
           useValue: createMockRepository<EmailTemplate>(),
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: createCacheStoreMock()
+        }
       ],
     }).compile();
 

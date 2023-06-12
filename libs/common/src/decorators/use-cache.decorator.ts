@@ -9,8 +9,11 @@ const DEFAULT_TTL = 5000;
  * Decorator that marks a method that should utilize cache storage for
  * responses. It implements a monkey patch to wrap the original method 
  * call with logic to check if the cache storage contains a key and either
- * (1) yield it's value or (2) yield the value of the original method
+ * (1) yield the cached value or (2) yield the value of the original method
  * after setting it in the cache.
+ * 
+ * Due to the I/O operations required to interact with the cache store,
+ * methods decoratored by `UseCache` will resolve as a `Promise`.
  * 
  * Note: Requires the @nestjs/cache-manager CacheModule to be imported
  *       into the module where the decorator is used. Extends the module's

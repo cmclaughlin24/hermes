@@ -1,7 +1,9 @@
 import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { createCacheStoreMock } from '../../..//test/helpers/provider.helpers';
 import {
   MockRepository,
   createMockRepository,
@@ -23,6 +25,10 @@ describe('PhoneTemplateService', () => {
           provide: getModelToken(PhoneTemplate),
           useValue: createMockRepository(),
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: createCacheStoreMock()
+        }
       ],
     }).compile();
 
