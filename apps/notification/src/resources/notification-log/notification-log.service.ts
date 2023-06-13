@@ -63,7 +63,7 @@ export class NotificationLogService {
   }
 
   /**
-   * Update a NotificationLog or create a new record if one does not exits. Will not update
+   * Update a NotificationLog or create a new record if one does not exist. Will not update
    * a NotificationLog if the number of attempts in the job object are less than the number of
    * attempts stored in the NotificationLog.
    * @param {Job} job

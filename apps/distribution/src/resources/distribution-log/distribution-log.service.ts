@@ -57,6 +57,14 @@ export class DistributionLogService {
     return distributionLog;
   }
 
+  /**
+   * Update a DistributionLog or create a new record if one does not exist.
+   * @param {DistributionJob} distributionJob
+   * @param {MessageState} state
+   * @param {any} result
+   * @param {any} error
+   * @returns {Promise<DistributionLog>}
+   */
   async log(
     distributionJob: DistributionJob,
     state: MessageState,
@@ -108,6 +116,15 @@ export class DistributionLogService {
     return Object.keys(where).length > 0 ? where : null;
   }
 
+  /**
+   * Creates a DistributionLog and a DistributionAttempt if the message
+   * state is `COMPLETED` or `FAILED`.
+   * @param {DistributionJob} distributionJob
+   * @param {MessageState} state
+   * @param {any} result
+   * @param {any} error
+   * @returns {Promise<DistributionLog>}
+   */
   private async _createLog(
     distributionJob: DistributionJob,
     state: MessageState,
@@ -149,6 +166,15 @@ export class DistributionLogService {
     });
   }
 
+  /**
+   * Updates a DistributionLog and creates a new DistributionAttempt if the
+   * message state is `COMPLETED` or `FAILED`.
+   * @param {DistributionJob} distributionJob
+   * @param {MessageState} state
+   * @param {any} result
+   * @param {any} error
+   * @returns {Promise<DistributionLog>}
+   */
   private async _updateLog(
     distributionJob: DistributionJob,
     state: MessageState,
