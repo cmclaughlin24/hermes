@@ -84,13 +84,13 @@ export class EmailService implements CreateNotificationDto {
     }
 
     const htmlTemplate = Handlebars.compile(html);
-    const textTemplate = Handlebars.compile(createEmailNotificationDto.text);
+    const subjectTemplate = Handlebars.compile(subject);
     const context = {
       timeZone: createEmailNotificationDto.timeZone,
       ...createEmailNotificationDto.context,
     };
 
-    createEmailNotificationDto.subject = textTemplate(context);
+    createEmailNotificationDto.subject = subjectTemplate(context);
     createEmailNotificationDto.html = htmlTemplate(context);
     delete createEmailNotificationDto.template;
     delete createEmailNotificationDto.context;
