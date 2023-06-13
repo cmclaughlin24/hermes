@@ -142,7 +142,7 @@ export class DistributionLogService {
           data: distributionJob.payload,
           metadata: distributionJob.metadata,
           addedAt: distributionJob.addedAt,
-          finshedAt: distributionJob.finishedAt,
+          finishedAt: distributionJob.finishedAt,
         },
         { transaction },
       );
@@ -190,7 +190,7 @@ export class DistributionLogService {
         {
           state,
           attempts: distributionJob.attemptsMade,
-          finshedAt: distributionJob.finishedAt,
+          finishedAt: distributionJob.finishedAt,
         },
         { transaction },
       );

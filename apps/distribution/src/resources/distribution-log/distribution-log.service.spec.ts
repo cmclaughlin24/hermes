@@ -200,16 +200,38 @@ describe('DistributionLogService', () => {
     });
 
     it('should create a distribution log if the repository returns null/undefined (no attempt)', async () => {
+      // Arrange.
+      const expectedResult = {
+        id: job.id,
+        queue: job.queue,
+        messageType: job.type,
+        state: MessageState.ACTIVE,
+        attempts: job.attemptsMade,
+        data: job.payload,
+        metadata: job.metadata,
+        addedAt: job.addedAt,
+        finishedAt: job.finishedAt,
+      };
+
       // Act.
       await service.log(job, MessageState.ACTIVE);
 
       // Assert.
-      expect(distributionLogModel.create).toHaveBeenCalled();
+      expect(distributionLogModel.create).toHaveBeenCalledWith(expectedResult, {
+        transaction: undefined,
+      });
       expect(distributionAttemptModel.create).not.toHaveBeenCalled();
     });
 
     it('should create a distribution log if the repository returns null/undefined (completed attempt)', async () => {
       // Arrange.
+      const expectedResult = {
+        logId: job.id,
+        result: {},
+        error: undefined,
+        attempt: job.attemptsMade,
+        processedOn: job.processedAt,
+      };
       distributionLogModel.create.mockResolvedValue({
         id: job.id,
         reload: jest.fn(),
@@ -220,11 +242,21 @@ describe('DistributionLogService', () => {
 
       // Assert.
       expect(distributionLogModel.create).toHaveBeenCalled();
-      expect(distributionAttemptModel.create).toHaveBeenCalled();
+      expect(distributionAttemptModel.create).toHaveBeenCalledWith(
+        expectedResult,
+        { transaction: undefined },
+      );
     });
 
     it('should create a distribution log if the repository returns null/undefined (failed attempt)', async () => {
       // Arrange.
+      const expectedResult = {
+        logId: job.id,
+        result: null,
+        error: {},
+        attempt: job.attemptsMade,
+        processedOn: job.processedAt,
+      };
       distributionLogModel.create.mockResolvedValue({
         id: job.id,
         reload: jest.fn(),
@@ -235,11 +267,19 @@ describe('DistributionLogService', () => {
 
       // Assert.
       expect(distributionLogModel.create).toHaveBeenCalled();
-      expect(distributionAttemptModel.create).toHaveBeenCalled();
+      expect(distributionAttemptModel.create).toHaveBeenCalledWith(
+        expectedResult,
+        { transaction: undefined },
+      );
     });
 
     it('should update a distribution log if the repository ... (no attempt)', async () => {
       // Arrange.
+      const expectedResult = {
+        state: MessageState.ACTIVE,
+        attempts: job.attemptsMade,
+        finishedAt: job.finishedAt,
+      };
       const log = {
         update: jest.fn(() => ({ id: job.id })),
         reload: jest.fn(),
@@ -250,14 +290,24 @@ describe('DistributionLogService', () => {
       await service.log(job, MessageState.ACTIVE);
 
       // Assert.
-      expect(log.update).toHaveBeenCalled();
+      expect(log.update).toHaveBeenCalledWith(expectedResult, {
+        transaction: undefined,
+      });
       expect(distributionAttemptModel.create).not.toHaveBeenCalled();
     });
 
     it('should update a distribution log if the repository ... (completed attempt)', async () => {
       // Arrange.
+      const expectedResult = {
+        logId: job.id,
+        result: {},
+        error: undefined,
+        attempt: job.attemptsMade,
+        processedOn: job.processedAt,
+      };
       const log = {
-        update: jest.fn(() => ({ id: job.id })),
+        id: job.id,
+        update: jest.fn(),
         reload: jest.fn(),
       };
       distributionLogModel.findByPk.mockResolvedValue(log);
@@ -267,13 +317,24 @@ describe('DistributionLogService', () => {
 
       // Assert.
       expect(log.update).toHaveBeenCalled();
-      expect(distributionAttemptModel.create).toHaveBeenCalled();
+      expect(distributionAttemptModel.create).toHaveBeenCalledWith(
+        expectedResult,
+        { transaction: undefined },
+      );
     });
 
     it('should update a distribution log if the repository ... (failed  attempt)', async () => {
       // Arrange.
+      const expectedResult = {
+        logId: job.id,
+        result: null,
+        error: {},
+        attempt: job.attemptsMade,
+        processedOn: job.processedAt,
+      };
       const log = {
-        update: jest.fn(() => ({ id: job.id })),
+        id: job.id,
+        update: jest.fn(),
         reload: jest.fn(),
       };
       distributionLogModel.findByPk.mockResolvedValue(log);
@@ -283,7 +344,10 @@ describe('DistributionLogService', () => {
 
       // Assert.
       expect(log.update).toHaveBeenCalled();
-      expect(distributionAttemptModel.create).toHaveBeenCalled();
+      expect(distributionAttemptModel.create).toHaveBeenCalledWith(
+        expectedResult,
+        { transaction: undefined },
+      );
     });
 
     it('should yield the distribution log (create)', async () => {
