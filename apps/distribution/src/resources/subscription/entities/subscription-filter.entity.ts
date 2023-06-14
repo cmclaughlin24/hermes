@@ -14,6 +14,7 @@ import { Subscription } from './subscription.entity';
 export class SubscriptionFilter extends Model {
   @Column({
     primaryKey: true,
+    type: DataType.UUID,
   })
   @ForeignKey(() => Subscription)
   subscriptionId: string;

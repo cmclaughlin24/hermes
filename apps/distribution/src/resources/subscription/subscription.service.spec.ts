@@ -13,6 +13,7 @@ import {
   createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { FilterJoinOps } from '../../common/types/filter.type';
+import { SubscriptionType } from '../../common/types/subscription-type.type';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -70,7 +71,7 @@ describe('SubscriptionService', () => {
         {
           id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
           filterJoin: FilterJoinOps.AND,
-          url: 'http://localhost:9999/subscriptions',
+          data: { url: 'http://localhost:9999/subscriptions' },
         } as Subscription,
       ];
       subscriptionModel.findAll.mockResolvedValue(expectedResult);
@@ -108,7 +109,7 @@ describe('SubscriptionService', () => {
       const expectedResult: Subscription = {
         id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
         filterJoin: FilterJoinOps.AND,
-        url: 'http://localhost:9999/subscriptions',
+        data: { url: 'http://localhost:9999/subscriptions' },
       } as Subscription;
       subscriptionModel.findByPk.mockResolvedValue(expectedResult);
 
@@ -135,13 +136,14 @@ describe('SubscriptionService', () => {
       filterJoin: FilterJoinOps.NOT,
       queue: 'distribution',
       messageType: 'test',
-      url: 'http://localhost:9999/subscriptions',
+      subscriptionType: SubscriptionType.REQUEST,
+      data: { url: 'http://localhost:9999/subscriptions' },
     };
     const subscription = {
       id: createSubscriptionDto.id,
       distributionEventId: '',
       filterJoin: createSubscriptionDto.filterJoin,
-      url: createSubscriptionDto.url,
+      data: { url: 'http://localhost:9999/subscriptions' },
     } as Subscription;
 
     afterEach(() => {
@@ -215,7 +217,7 @@ describe('SubscriptionService', () => {
 
     afterEach(() => {
       subscription.update.mockClear();
-    })
+    });
 
     it('should update a subscription (w/o filters)', async () => {
       // Arrange.
