@@ -12,7 +12,7 @@ import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { FilterJoinOps } from '../../common/types/filter.types';
+import { FilterJoinOps } from '../../common/types/filter.type';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';

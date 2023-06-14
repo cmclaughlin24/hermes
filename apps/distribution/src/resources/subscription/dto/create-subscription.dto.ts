@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
-import { FilterJoinOps } from '../../../common/types/filter.types';
+import { FilterJoinOps } from '../../../common/types/filter.type';
 import { SubscriptionFilterDto } from './subscription-filter.dto';
 
 export class CreateSubscriptionDto {

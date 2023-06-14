@@ -121,7 +121,7 @@ export class SubscriptionService {
 
       subscription = await subscription.update(
         {
-          url: updateSubscriptionDto.url ?? subscription.url,
+          data: updateSubscriptionDto.url ?? subscription.data,
           filterJoin:
             updateSubscriptionDto.filterJoin ?? subscription.filterJoin,
         },

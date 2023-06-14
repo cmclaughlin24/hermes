@@ -6,7 +6,7 @@ import {
   Model,
   Table
 } from 'sequelize-typescript';
-import { FilterOps } from '../../../common/types/filter.types';
+import { FilterOps } from '../../../common/types/filter.type';
 import { SubscriptionQueryDto } from '../dto/subscription-query.dto';
 import { Subscription } from './subscription.entity';
 

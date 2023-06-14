@@ -3,7 +3,7 @@ import {
   MockDistributionLogService,
   createDistributionLogServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { MessageState } from '../../common/types/message-state.types';
+import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
 import { DistributionLog } from './entities/distribution-log.entity';
