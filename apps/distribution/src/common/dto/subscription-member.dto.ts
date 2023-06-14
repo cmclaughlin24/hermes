@@ -1,7 +1,7 @@
 import { DeliveryMethods } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsEmail, IsEnum, IsPhoneNumber, IsTimeZone } from 'class-validator';
-import { DeliveryWindow } from '../types/delivery-window.types';
+import { DeliveryWindow } from '../types/delivery-window.type';
 
 export class SubscriptionMemberDto {
   @ApiProperty({

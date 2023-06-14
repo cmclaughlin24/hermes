@@ -53,11 +53,11 @@ export class SubscriptionMemberService {
     map: Map<string, string[]>,
     subscription: Subscription,
   ): Map<string, string[]> {
-    if (!map.has(subscription.url)) {
-      map.set(subscription.url, [subscription.id]);
+    if (!map.has(subscription.data.url)) {
+      map.set(subscription.data.url, [subscription.id]);
     } else {
-      map.set(subscription.url, [
-        ...map.get(subscription.url),
+      map.set(subscription.data.url, [
+        ...map.get(subscription.data.url),
         subscription.id,
       ]);
     }

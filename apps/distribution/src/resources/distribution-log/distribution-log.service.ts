@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { DistributionJob } from '../../common/types/distribution-job.types';
-import { MessageState } from '../../common/types/message-state.types';
+import { DistributionJob } from '../../common/types/distribution-job.type';
+import { MessageState } from '../../common/types/message-state.type';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
 
