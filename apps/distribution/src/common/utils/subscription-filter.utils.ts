@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
-import { FilterJoinOps, FilterOps } from '../types/filter.types';
+import { FilterJoinOps, FilterOps } from '../types/filter.type';
 
 export function filterSubscriptions(
   subscriptions: Subscription[],

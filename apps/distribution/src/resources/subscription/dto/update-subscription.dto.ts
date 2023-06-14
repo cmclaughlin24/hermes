@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { CreateSubscriptionDto } from './create-subscription.dto';
 
-export class UpdateSubscriptionDto extends PartialType(CreateSubscriptionDto) {}
+export class UpdateSubscriptionDto extends OmitType(
+  PartialType(CreateSubscriptionDto),
+  ['id', 'queue', 'messageType', 'subscriptionType'],
+) {}

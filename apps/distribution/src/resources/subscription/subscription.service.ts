@@ -88,7 +88,8 @@ export class SubscriptionService {
       {
         id: createSubscriptionDto.id,
         distributionEventId: distributionRule.id,
-        url: createSubscriptionDto.url,
+        subscriptionType: createSubscriptionDto.subscriptionType,
+        data: createSubscriptionDto.data,
         filterJoin: createSubscriptionDto.filterJoin,
         filters: createSubscriptionDto.filters,
       },
@@ -121,7 +122,7 @@ export class SubscriptionService {
 
       subscription = await subscription.update(
         {
-          url: updateSubscriptionDto.url ?? subscription.url,
+          data: updateSubscriptionDto.data ?? subscription.data,
           filterJoin:
             updateSubscriptionDto.filterJoin ?? subscription.filterJoin,
         },
