@@ -273,7 +273,7 @@ describe('DistributionLogService', () => {
       );
     });
 
-    it('should update a distribution log if the repository ... (no attempt)', async () => {
+    it('should update a distribution log (no attempt)', async () => {
       // Arrange.
       const expectedResult = {
         state: MessageState.ACTIVE,
@@ -296,7 +296,7 @@ describe('DistributionLogService', () => {
       expect(distributionAttemptModel.create).not.toHaveBeenCalled();
     });
 
-    it('should update a distribution log if the repository ... (completed attempt)', async () => {
+    it('should update a distribution log (completed attempt)', async () => {
       // Arrange.
       const expectedResult = {
         logId: job.id,
@@ -323,7 +323,7 @@ describe('DistributionLogService', () => {
       );
     });
 
-    it('should update a distribution log if the repository ... (failed  attempt)', async () => {
+    it('should update a distribution log (failed  attempt)', async () => {
       // Arrange.
       const expectedResult = {
         logId: job.id,

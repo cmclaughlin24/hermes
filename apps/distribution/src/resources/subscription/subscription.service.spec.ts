@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
 import {
   MockRepository,
+  MockSequelize,
   createMockRepository,
   createMockSequelize,
 } from '../../../test/helpers/database.helpers';
@@ -12,12 +13,14 @@ import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { FilterJoinOps } from '../../common/types/filter.type';
+import { FilterJoinOps, FilterOps } from '../../common/types/filter.type';
 import { SubscriptionType } from '../../common/types/subscription-type.type';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionEvent } from '../distribution-event/entities/distribution-event.entity';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
+import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionFilter } from './entities/subscription-filter.entity';
 import { Subscription } from './entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
@@ -25,7 +28,9 @@ import { SubscriptionService } from './subscription.service';
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
   let subscriptionModel: MockRepository;
+  let subscriptionFilterModel: MockRepository;
   let distributionEventService: MockDistributionEventService;
+  let sequelize: MockSequelize;
 
   const queue = 'unit-test';
   const messageType = 'unit-test';
@@ -55,9 +60,13 @@ describe('SubscriptionService', () => {
 
     service = module.get<SubscriptionService>(SubscriptionService);
     subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
+    subscriptionFilterModel = module.get<MockRepository>(
+      getModelToken(SubscriptionFilter),
+    );
     distributionEventService = module.get<MockDistributionEventService>(
       DistributionEventService,
     );
+    sequelize = module.get<MockSequelize>(Sequelize);
   });
 
   it('should be defined', () => {
@@ -244,30 +253,122 @@ describe('SubscriptionService', () => {
   describe('update()', () => {
     const subscription = { update: jest.fn() };
 
+    beforeEach(() => {
+      sequelize.transaction.mockImplementation((callback) => callback());
+    });
+
     afterEach(() => {
+      distributionEventService.findOne.mockClear();
+      subscriptionModel.findOne.mockClear();
       subscription.update.mockClear();
     });
 
     it('should update a subscription (w/o filters)', async () => {
       // Arrange.
+      const subscription = { update: jest.fn() };
+      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
+      subscriptionModel.findOne.mockResolvedValue(subscription);
+
       // Act.
+      await service.update(queue, messageType, '', {} as UpdateSubscriptionDto);
+
       // Assert.
+      expect(subscription.update).toHaveBeenCalled();
     });
 
     it('should update the subscription (w/filters)', async () => {
       // Arrange.
+      const subscription = {
+        filters: [],
+        update: jest.fn(() => subscription),
+        reload: jest.fn(),
+      };
+      const filters: SubscriptionFilterDto[] = [
+        {
+          field: 'unit-test',
+          operator: FilterOps.EQUALS,
+          query: {
+            value: 'Legend of Zelda: Tears of the Kingdom',
+            dataType: 'string',
+          },
+        },
+      ];
+      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
+      subscriptionModel.findOne.mockResolvedValue(subscription);
+
       // Act.
+      await service.update(queue, messageType, '', {
+        filters,
+      } as UpdateSubscriptionDto);
+
       // Assert.
+      expect(subscription.update).toHaveBeenCalled();
+      expect(subscriptionFilterModel.create).toHaveBeenCalled();
     });
 
     it('should yield an "ApiResponseDto" object with the updated subscription', async () => {
       // Arrange.
+      const subscription = {
+        filters: [
+          {
+            field: 'unit-test',
+            operator: FilterOps.EQUALS,
+            query: {
+              value: 'Legend of Zelda: Tears of the Kingdom',
+              dataType: 'string',
+            },
+            destroy: jest.fn(),
+          },
+        ],
+        update: jest.fn(() => subscription),
+        reload: jest.fn(() => subscription),
+      };
+      const expectedResult = new ApiResponseDto<Subscription>(
+        `Successfully updated subscription!`,
+        subscription,
+      );
+      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
+      subscriptionModel.findOne.mockResolvedValue(subscription);
+
       // Act/Assert.
+      await expect(
+        service.update(queue, messageType, '', {
+          filters: [],
+        } as UpdateSubscriptionDto),
+      ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const externalId = 'unit-test';
+      const expectedResult = new NotFoundException(
+        `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+      );
+      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
+      subscriptionModel.findOne.mockResolvedValue(null);
+
       // Act/Assert.
+      await expect(
+        service.update(
+          queue,
+          messageType,
+          externalId,
+          {} as UpdateSubscriptionDto,
+        ),
+      ).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the distribution event does not exist', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution Rule for queue=${queue} messageType=${messageType} not found!`,
+      );
+      distributionEventService.findOne.mockRejectedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(
+        service.update(queue, messageType, '', {} as UpdateSubscriptionDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
