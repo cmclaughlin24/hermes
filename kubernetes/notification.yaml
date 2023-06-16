@@ -103,3 +103,9 @@ spec:
               value: ${TWILIO_AUTH_TOKEN}
             - name: TWILIO_PHONE_NUMBER
               value: ${TWILIO_PHONE_NUMBER}
+            - name: VAPID_SUBJECT
+              value: ${VAPID_SUBJECT}
+            - name: VAPID_PUBLIC_KEY
+              value: ${VAPID_PUBLIC_KEY}
+            - name: VAPID_PRIVATE_KEY
+              value: ${VAPID_PRIVATE_KEY}
