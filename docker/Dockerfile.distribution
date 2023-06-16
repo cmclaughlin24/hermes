@@ -10,6 +10,8 @@ COPY /apps/distribution ./apps/distribution
 COPY /libs ./libs
 
 ENV API_KEY_HEADER='Distribution-Api-Key'
+ENV ENABLE_DEVTOOLS=true
+ENV DEVTOOLS_PORT=8001
 ENV NODE_ENV='production'
 ENV PORT=3001
 ENV RETRY_ATTEMPTS=5
