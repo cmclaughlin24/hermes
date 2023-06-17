@@ -30,6 +30,7 @@ import { ResourcesModule } from './resources/resources.module';
         MAILER_SENDER: Joi.required(),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        REDIS_COMMAND_TIMEOUT: Joi.number().default(100),
         ENABLE_REDIS_CLUSTER: Joi.boolean().default(false),
         BULLMQ_NOTIFICATION_QUEUE: Joi.required(),
         BULLMQ_NOTIFICATION_QUEUE_PREFIX: Joi.required(),

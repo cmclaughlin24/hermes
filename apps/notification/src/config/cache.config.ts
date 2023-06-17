@@ -7,12 +7,14 @@ export async function cacheFactory(
 ): Promise<CacheModuleOptions> {
   const host = configService.get('REDIS_HOST');
   const port = configService.get('REDIS_PORT');
-  let options: any = { host, port };
+  const commandTimeout = configService.get('REDIS_COMMAND_TIMEOUT');
+  let options: any = { host, port, commandTimeout };
 
   if (configService.get('ENABLE_REDIS_CLUSTER')) {
     options = {
       clusterConfig: {
         nodes: [{ host, port }],
+        redisOptions: { commandTimeout },
       },
     };
   }
