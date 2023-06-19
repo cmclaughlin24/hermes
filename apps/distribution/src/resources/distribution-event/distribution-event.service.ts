@@ -88,6 +88,16 @@ export class DistributionEventService {
       );
     }
 
+    const hasDefaultRule = createDistributionEventDto.rules?.some(
+      (rule) => rule.metadata == null,
+    );
+
+    if (!hasDefaultRule) {
+      throw new BadRequestException(
+        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+      );
+    }
+
     const distributionEvent = await this.distributionEventModel.create(
       {
         ...createDistributionEventDto,
