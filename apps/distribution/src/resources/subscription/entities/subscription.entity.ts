@@ -15,13 +15,24 @@ import {
 import { DistributionEvent } from '../../distribution-event/entities/distribution-event.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';
 
-@Table
+@Table({
+  indexes: [
+    {
+      unique: true,
+      fields: ['externalId', 'distributionEventId'],
+    },
+  ],
+})
 export class Subscription extends Model {
   @Column({
     primaryKey: true,
     type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
   })
   id: string;
+
+  @Column
+  externalId: string;
 
   @ForeignKey(() => DistributionEvent)
   distributionEventId: string;

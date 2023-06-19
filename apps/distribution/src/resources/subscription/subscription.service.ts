@@ -46,16 +46,29 @@ export class SubscriptionService {
   /**
    * Yields a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
-   * @param {string} id
+   * @param {string} queue
+   * @param {string} messageType
+   * @param {string} externalId
    * @returns {Promise<Subscription>}
    */
-  async findOne(id: string) {
-    const subscription = await this.subscriptionModel.findByPk(id, {
+  async findOne(queue: string, messageType: string, externalId: string) {
+    // Note: Throws a NotFoundException if the distribution event does not exits.
+    const distributionEvent = await this.distributionEventService.findOne(
+      queue,
+      messageType,
+    );
+    const subscription = await this.subscriptionModel.findOne({
+      where: {
+        externalId: externalId,
+        distributionEventId: distributionEvent.id,
+      },
       include: [SubscriptionFilter],
     });
 
     if (!subscription) {
-      throw new NotFoundException(`Subscription with id=${id} not found!`);
+      throw new NotFoundException(
+        `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+      );
     }
 
     return subscription;
@@ -70,24 +83,27 @@ export class SubscriptionService {
    */
   async create(createSubscriptionDto: CreateSubscriptionDto) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
-    const distributionRule = await this.distributionEventService.findOne(
+    const distributionEvent = await this.distributionEventService.findOne(
       createSubscriptionDto.queue,
       createSubscriptionDto.messageType,
     );
-    const existingSubscription = await this.subscriptionModel.findByPk(
-      createSubscriptionDto.id,
-    );
+    const existingSubscription = await this.subscriptionModel.findOne({
+      where: {
+        externalId: createSubscriptionDto.externalId,
+        distributionEventId: distributionEvent.id,
+      },
+    });
 
     if (existingSubscription) {
       throw new BadRequestException(
-        `Subscription ${createSubscriptionDto.id} already exists!`,
+        `Subscription ${createSubscriptionDto.externalId} already exists!`,
       );
     }
 
     const subscription = await this.subscriptionModel.create(
       {
-        id: createSubscriptionDto.id,
-        distributionEventId: distributionRule.id,
+        distributionEventId: distributionEvent.id,
+        externalId: createSubscriptionDto.externalId,
         subscriptionType: createSubscriptionDto.subscriptionType,
         data: createSubscriptionDto.data,
         filterJoin: createSubscriptionDto.filterJoin,
@@ -105,19 +121,37 @@ export class SubscriptionService {
   /**
    * Updates a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
-   * @param {string} id
+   * @param {string} queue
+   * @param {string} messageType
+   * @param {string} externalId
    * @param {UpdateSubscriptionDto} updateSubscriptionDto
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
-  async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto) {
+  async update(
+    queue: string,
+    messageType: string,
+    externalId: string,
+    updateSubscriptionDto: UpdateSubscriptionDto,
+  ) {
     return this.sequelize.transaction(async (transaction) => {
-      let subscription = await this.subscriptionModel.findByPk(id, {
+      // Note: Throws a NotFoundException if the distribution event does not exits.
+      const distributionEvent = await this.distributionEventService.findOne(
+        queue,
+        messageType,
+      );
+      let subscription = await this.subscriptionModel.findOne({
+        where: {
+          externalId: externalId,
+          distributionEventId: distributionEvent.id,
+        },
         include: [SubscriptionFilter],
         transaction,
       });
 
       if (!subscription) {
-        throw new NotFoundException(`Subscription with id=${id} not found!`);
+        throw new NotFoundException(
+          `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+        );
       }
 
       subscription = await subscription.update(
@@ -150,20 +184,36 @@ export class SubscriptionService {
   /**
    * Removes a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
-   * @param {string} id
+   * @param {string} queue
+   * @param {string} messageType
+   * @param {string} externalId
    * @returns {Promise<ApiResponseDto>}
    */
-  async remove(id: string) {
-    const subscription = await this.subscriptionModel.findByPk(id);
+  async remove(queue: string, messageType: string, externalId: string) {
+    // Note: Throws a NotFoundException if the distribution event does not exits.
+    const distributionEvent = await this.distributionEventService.findOne(
+      queue,
+      messageType,
+    );
+    const subscription = await this.subscriptionModel.findOne({
+      where: {
+        externalId: externalId,
+        distributionEventId: distributionEvent.id,
+      },
+    });
 
     if (!subscription) {
-      throw new NotFoundException(`Subscription with id=${id} not found!`);
+      throw new NotFoundException(
+        `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+      );
     }
 
     // Note: The delete is cascaded to the SubscriptionFilters table.
     await subscription.destroy();
 
-    return new ApiResponseDto(`Successfully deleted subscription id=${id}!`);
+    return new ApiResponseDto(
+      `Successfully deleted subscription queue=${queue} messageType=${messageType} externalId=${externalId}!`,
+    );
   }
 
   /**
