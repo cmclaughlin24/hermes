@@ -1,3 +1,4 @@
+import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../../src/common/providers/email/email.service';
 import { PhoneService } from '../../src/common/providers/phone/phone.service';
@@ -6,6 +7,14 @@ import { EmailTemplateService } from '../../src/resources/email-template/email-t
 import { NotificationLogService } from '../../src/resources/notification-log/notification-log.service';
 import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
 import { PushTemplateService } from '../../src/resources/push-template/push-template.service';
+
+export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
+
+export const createCacheStoreMock = (): MockCacheStore => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+});
 
 export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
 

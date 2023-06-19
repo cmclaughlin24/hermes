@@ -1,8 +1,10 @@
 import { ApiResponseDto } from '@hermes/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
+import { createCacheStoreMock } from '../../..//test/helpers/provider.helpers';
 import {
   MockRepository,
   createMockRepository,
@@ -33,6 +35,10 @@ describe('PushTemplateService', () => {
           provide: Sequelize,
           useValue: createMockSequelize(),
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: createCacheStoreMock()
+        }
       ],
     }).compile();
 
