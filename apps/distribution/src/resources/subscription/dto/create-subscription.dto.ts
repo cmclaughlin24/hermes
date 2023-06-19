@@ -6,7 +6,6 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
@@ -20,15 +19,20 @@ import { SubscriptionFilterDto } from './subscription-filter.dto';
 export class CreateSubscriptionDto {
   @ApiProperty({
     description:
-      'Universal Unique Identifier (UUID) to identify the subscription',
+      'An identifer provided by the subscribing service used to identify the subscription ' +
+      'and retrieve subscription member(s) (if applicable)',
   })
-  @IsUUID('4')
-  id: string;
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  externalId: string;
 
   @ApiProperty({
     description: 'Name of the Rabbitmq queue the message is consumed from',
   })
   @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   queue: string;
 
   @ApiProperty({

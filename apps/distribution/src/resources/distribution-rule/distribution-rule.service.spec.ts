@@ -191,21 +191,61 @@ describe('DistributionRuleService', () => {
   });
 
   describe('update()', () => {
-    afterEach(() => {});
+    const distributionRule = { update: jest.fn(() => distributionRule) };
+
+    afterEach(() => {
+      distributionRule.update.mockClear();
+    });
 
     it('should update a distribution rule', async () => {
       // Arrange.
-      // Act/Assert.
+      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+
+      // Act.
+      await service.update('', {});
+
+      // Assert.
+      await expect(distributionRule.update).toHaveBeenCalled();
     });
 
     it('should yield an "ApiResponseDto" object with the updated distribution rule', async () => {
       // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully updated distribution rule!`,
+        distributionRule,
+      );
+      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+
       // Act/Assert.
+      await expect(service.update('', {})).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
+      const id = 'unit-test';
+      const expectedResult = new NotFoundException(
+        `Distribution rule for id=${id} not found!`,
+      );
+      distributionRuleModel.findByPk.mockResolvedValue(null);
+
       // Act/Assert.
+      await expect(service.update(id, {})).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" if attempting to modify the default rule\'s metadata property', async () => {
+      // Arrange.
+      const expectedResult = new BadRequestException(
+        'The metadata for a default distribution rule must be set to null',
+      );
+      distributionRuleModel.findByPk.mockResolvedValue({
+        ...distributionRule,
+        metadata: null,
+      });
+
+      // Act/Assert.
+      await expect(
+        service.update('', { metadata: '{"name":"unit-test"}' }),
+      ).rejects.toEqual(expectedResult);
     });
   });
 

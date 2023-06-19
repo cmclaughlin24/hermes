@@ -266,7 +266,9 @@ describe('DistributionEventService', () => {
       distributionEventModel.create.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.create({} as CreateDistributionEventDto);
+      await service.create({
+        rules: [{ metadata: null }],
+      } as CreateDistributionEventDto);
 
       // Assert.
       expect(distributionEventModel.create).toHaveBeenCalled();
@@ -282,7 +284,9 @@ describe('DistributionEventService', () => {
 
       // Act/Assert.
       await expect(
-        service.create({} as CreateDistributionEventDto),
+        service.create({
+          rules: [{ metadata: null }],
+        } as CreateDistributionEventDto),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -296,6 +300,40 @@ describe('DistributionEventService', () => {
         `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} already exists!`,
       );
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+
+      // Act/Assert.
+      await expect(service.create(createDistributionEventDto)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "BadRequestException" if a default distribution rule is not defined (w/rules equal to empty list)', async () => {
+      // Arrange.
+      const createDistributionEventDto = {
+        queue: 'unit-test',
+        messageType: 'unit-test',
+        rules: [],
+      } as CreateDistributionEventDto;
+      const expectedResult = new BadRequestException(
+        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+      );
+
+      // Act/Assert.
+      await expect(service.create(createDistributionEventDto)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "BadRequestException" if a default distribution rule is not defined (w/rules equal to null)', async () => {
+      // Arrange.
+      const createDistributionEventDto = {
+        queue: 'unit-test',
+        messageType: 'unit-test',
+        rules: null,
+      } as CreateDistributionEventDto;
+      const expectedResult = new BadRequestException(
+        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+      );
 
       // Act/Assert.
       await expect(service.create(createDistributionEventDto)).rejects.toEqual(

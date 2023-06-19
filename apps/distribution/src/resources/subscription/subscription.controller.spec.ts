@@ -15,8 +15,8 @@ describe('SubscriptionController', () => {
   let service: MockSubscriptionService;
 
   const subscription: Subscription = {
-    id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
-    url: 'http://localhost:9999/subscriptions',
+    externalId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
+    data: { url: 'http://localhost:9999/subscriptions' },
     filterJoin: 'and',
   } as Subscription;
 
@@ -56,9 +56,9 @@ describe('SubscriptionController', () => {
       service.findOne.mockResolvedValue(subscription);
 
       // Act/Assert.
-      await expect(controller.findOne(subscription.id)).resolves.toEqual(
-        subscription,
-      );
+      await expect(
+        controller.findOne('', '', subscription.externalId),
+      ).resolves.toEqual(subscription);
     });
   });
 
@@ -89,7 +89,12 @@ describe('SubscriptionController', () => {
 
       // Act/Assert.
       await expect(
-        controller.update(subscription.id, {} as UpdateSubscriptionDto),
+        controller.update(
+          '',
+          '',
+          subscription.externalId,
+          {} as UpdateSubscriptionDto,
+        ),
       ).resolves.toEqual(expectedResult);
     });
   });
@@ -97,15 +102,17 @@ describe('SubscriptionController', () => {
   describe('remove()', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
+      const queue = 'unit-test';
+      const messageType = 'unit-test';
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription ${subscription.id}!`,
+        `Successfully deleted subscription queue=${queue} messageType=${messageType} externalId=${subscription.externalId}!`,
       );
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.remove(subscription.id)).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(
+        controller.remove(queue, messageType, subscription.externalId),
+      ).resolves.toEqual(expectedResult);
     });
   });
 });

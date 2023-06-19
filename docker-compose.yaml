@@ -35,6 +35,7 @@ services:
       dockerfile: ./docker/Dockerfile.notification
     ports:
       - '3000:3000'
+      - '8000:8000'
     volumes:
       - ./apps/notification:/app/apps/notification
       - ./libs:/app/libs
@@ -52,6 +53,7 @@ services:
       dockerfile: ./docker/Dockerfile.distribution
     ports:
       - '3001:3001'
+      - '8001:8001'
     volumes:
       - ./apps/distribution:/app/apps/distribution
       - ./libs:/app/libs

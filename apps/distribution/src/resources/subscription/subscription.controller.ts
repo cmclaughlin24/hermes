@@ -1,5 +1,14 @@
 import { ApiResponseDto, Public } from '@hermes/common';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
@@ -22,16 +31,20 @@ export class SubscriptionController {
     return this.subscriptionService.findAll();
   }
 
-  @Get(':id')
+  @Get(':queue/:messageType/:externalId')
   @Public()
   @ApiOperation({
-    summary: "Find a subscription by it's id.",
+    summary: "Find a subscription by it's distribution event and external id.",
     security: [],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: string) {
-    return this.subscriptionService.findOne(id);
+  findOne(
+    @Param('queue') queue: string,
+    @Param('messageType') messageType: string,
+    @Param('externalId') externalId: string,
+  ) {
+    return this.subscriptionService.findOne(queue, messageType, externalId);
   }
 
   @Post()
@@ -57,7 +70,7 @@ export class SubscriptionController {
     return this.subscriptionService.create(createSubscriptionDto);
   }
 
-  @Patch(':id')
+  @Patch(':queue/:messageType/:externalId')
   @ApiOperation({
     summary: 'Update a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -76,13 +89,20 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   update(
-    @Param('id') id: string,
+    @Param('queue') queue: string,
+    @Param('messageType') messageType: string,
+    @Param('externalId') externalId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
-    return this.subscriptionService.update(id, updateSubscriptionDto);
+    return this.subscriptionService.update(
+      queue,
+      messageType,
+      externalId,
+      updateSubscriptionDto,
+    );
   }
 
-  @Delete(':id')
+  @Delete(':queue/:messageType/:externalId')
   @ApiOperation({
     summary: 'Remove a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -97,7 +117,11 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('id') id: string) {
-    return this.subscriptionService.remove(id);
+  remove(
+    @Param('queue') queue: string,
+    @Param('messageType') messageType: string,
+    @Param('externalId') externalId: string,
+  ) {
+    return this.subscriptionService.remove(queue, messageType, externalId);
   }
 }

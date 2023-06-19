@@ -6,7 +6,10 @@ import { setupSwaggerDocument } from './config/swagger.config';
 import { useGlobalPipes } from './config/use-global.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    snapshot: true,
+  });
   const port = process.env.PORT || 3000;
 
   setupBullBoard(app);

@@ -10,11 +10,14 @@ COPY /apps/notification ./apps/notification
 COPY /libs ./libs
 
 ENV API_KEY_HEADER='Notification-Api-Key'
+ENV ENABLE_DEVTOOLS=true
+ENV DEVTOOLS_PORT=8000
 ENV NODE_ENV='production'
 ENV PORT=3000
 ENV RETRY_ATTEMPTS=5
 ENV RETRY_DELAY=5000
 
-EXPOSE 3000
+EXPOSE ${PORT}
+EXPOSE ${DEVTOOLS_PORT}
 
 CMD [ "npm", "run", "start:notification" ]

@@ -3,5 +3,5 @@ import { CreateSubscriptionDto } from './create-subscription.dto';
 
 export class UpdateSubscriptionDto extends OmitType(
   PartialType(CreateSubscriptionDto),
-  ['id', 'queue', 'messageType', 'subscriptionType'],
+  ['queue', 'messageType', 'externalId', 'subscriptionType'],
 ) {}

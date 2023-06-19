@@ -2,6 +2,7 @@ import * as Joi from '@hapi/joi';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
@@ -19,6 +20,8 @@ import { ResourcesModule } from './resources/resources.module';
         API_KEY_HEADER: Joi.required(),
         API_KEY: Joi.required(),
         DB_HOST: Joi.required(),
+        ENABLE_DEVTOOLS: Joi.boolean().default(false),
+        DEVTOOLS_PORT: Joi.number().default(8001),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),
         DB_PASSWORD: Joi.required(),
@@ -44,6 +47,14 @@ import { ResourcesModule } from './resources/resources.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: bullFactory,
+    }),
+    DevtoolsModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        http: configService.get('ENABLE_DEVTOOLS'),
+        port: configService.get('DEVTOOLS_PORT'),
+      }),
     }),
     ResourcesModule,
     CommonModule,

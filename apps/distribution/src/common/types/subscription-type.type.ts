@@ -16,6 +16,7 @@ export enum SubscriptionType {
   REQUEST = 'request',
 }
 
+// Todo: Create SubscriptionRequestDto.
 export type SubscriptionData =
   | PushSubscriptionDto
   | SubscriptionMemberDto
