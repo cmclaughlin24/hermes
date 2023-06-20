@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
-import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
+import { UserSubscriptionDto } from '../dto/user-subscription.dto';
 
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
@@ -19,13 +19,13 @@ const MILLISECONDS_PER_SECOND = 1000;
  *       zone. This can be disabled by setting the DistributionRule 'timeZoneLabel' to null.
  * 
  * @param {DistributionRule} distributionRule
- * @param {SubscriptionMemberDto[]} subscriptionMembers
+ * @param {UserSubscriptionDto[]} subscriptionMembers
  * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
-  subscriptionMembers: SubscriptionMemberDto[],
+  subscriptionMembers: UserSubscriptionDto[],
   messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
   return _.chain(subscriptionMembers)
@@ -56,12 +56,12 @@ export function createNotificationJobs(
  * Yields true if a subscription member has at least one of the distribution rule's delivery
  * method(s) enabled or false otherwise.
  * @param {DistributionRule} distributionRule
- * @param {SubscriptionMemberDto} member
+ * @param {UserSubscriptionDto} member
  * @returns {boolean}
  */
 export function hasDeliveryMethods(
   distributionRule: DistributionRule,
-  member: SubscriptionMemberDto,
+  member: UserSubscriptionDto,
 ): boolean {
   return !_.isEmpty(
     // Example: _.intersection(['email'], ['email', 'sms']) => ['email']
@@ -73,12 +73,12 @@ export function hasDeliveryMethods(
  * Yields true if the current day and time falls within a subscription member's delivery window settings
  * or if the distribution rule does not check the delivery window. Yields false otherwise.
  * @param {DistributionRule} distributionRule
- * @param {SubscriptionMemberDto} member
+ * @param {UserSubscriptionDto} member
  * @returns
  */
 export function hasDeliveryWindow(
   distributionRule: DistributionRule,
-  member: SubscriptionMemberDto,
+  member: UserSubscriptionDto,
 ): boolean {
   if (!distributionRule.checkDeliveryWindow) {
     return true;
@@ -128,17 +128,17 @@ export function isBetweenTimes(
  * reduces a list of subscription members into a Map where the key is the delivery method and the
  * value is a Set of recipients.
  * @param {DeliveryMethods[]} deliveryMethods
- * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionMemberDto) => Map<DeliveryMethods, Recipient[]>}
+ * @returns {(map: Map<DeliveryMethods, Set<string>>, member: UserSubscriptionDto) => Map<DeliveryMethods, Recipient[]>}
  */
 export function reduceToDeliveryMethodsMap(
   deliveryMethods: DeliveryMethods[],
 ): (
   map: Map<DeliveryMethods, Recipient[]>,
-  member: SubscriptionMemberDto,
+  member: UserSubscriptionDto,
 ) => Map<DeliveryMethods, Recipient[]> {
   return (
     map: Map<DeliveryMethods, Recipient[]>,
-    member: SubscriptionMemberDto,
+    member: UserSubscriptionDto,
   ) => {
     for (const method of deliveryMethods) {
       const value = member.getDeliveryMethod(method);

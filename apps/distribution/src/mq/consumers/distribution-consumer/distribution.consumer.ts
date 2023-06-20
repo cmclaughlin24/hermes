@@ -9,7 +9,7 @@ import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
-import { SubscriptionMemberDto } from '../../../common/dto/subscription-member.dto';
+import { UserSubscriptionDto } from '../../../common/dto/user-subscription.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
@@ -160,13 +160,13 @@ export class DistributionConsumer extends MqConsumer {
    * @param {DistributionMessageDto} message
    * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
-   * @returns {Promise<SubscriptionMemberDto[]>}
+   * @returns {Promise<UserSubscriptionDto[]>}
    */
   private async _getSubscriptionMembers(
     message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
-  ): Promise<SubscriptionMemberDto[]> {
+  ): Promise<UserSubscriptionDto[]> {
     if (bypassSubscriptions) {
       return this.subscriptionMemberService.map(message.recipients);
     }

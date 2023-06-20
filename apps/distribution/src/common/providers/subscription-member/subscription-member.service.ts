@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as _ from 'lodash';
 import { Observable, map } from 'rxjs';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
-import { SubscriptionMemberDto } from '../../dto/subscription-member.dto';
+import { UserSubscriptionDto } from '../../dto/user-subscription.dto';
 
 @Injectable()
 export class SubscriptionMemberService {
@@ -11,7 +11,7 @@ export class SubscriptionMemberService {
 
   constructor(private readonly httpClient: HttpService) {}
 
-  async get(subscriptions: Subscription[]): Promise<SubscriptionMemberDto[]> {
+  async get(subscriptions: Subscription[]): Promise<UserSubscriptionDto[]> {
     const requests = this._mapSubscriptionsToRequest(subscriptions);
 
     // try {
@@ -23,13 +23,13 @@ export class SubscriptionMemberService {
     return [];
   }
 
-  map(members: any[]): SubscriptionMemberDto[] {
+  map(members: any[]): UserSubscriptionDto[] {
     if (_.isEmpty(members)) {
       return [];
     }
 
     return members.map((member) => {
-      const dto = new SubscriptionMemberDto();
+      const dto = new UserSubscriptionDto();
       dto.deliveryMethods = member.deliveryMethods;
       dto.email = member.email;
       dto.phoneNumber = member.phoneNumber;
@@ -41,7 +41,7 @@ export class SubscriptionMemberService {
 
   private _mapSubscriptionsToRequest(
     subscriptions: Subscription[],
-  ): Observable<SubscriptionMemberDto[]>[] {
+  ): Observable<UserSubscriptionDto[]>[] {
     return _.chain(subscriptions)
       .reduce(this._reduceToUrlMap, new Map())
       .toPairs()
@@ -68,7 +68,7 @@ export class SubscriptionMemberService {
   private _toRequest(
     url: string,
     subscriptionIds: string[],
-  ): Observable<SubscriptionMemberDto[]> {
+  ): Observable<UserSubscriptionDto[]> {
     return this.httpClient
       .post(url, subscriptionIds)
       .pipe(map((response) => this.map(response.data)));

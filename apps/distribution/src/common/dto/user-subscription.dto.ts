@@ -1,9 +1,16 @@
 import { DeliveryMethods } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsEnum, IsOptional, IsPhoneNumber, IsTimeZone } from 'class-validator';
+import {
+  Allow,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsPhoneNumber,
+  IsTimeZone,
+} from 'class-validator';
 import { DeliveryWindow } from '../types/delivery-window.type';
 
-export class SubscriptionMemberDto {
+export class UserSubscriptionDto {
   @ApiProperty({
     description: 'How to deliver notifications for an event',
     enum: DeliveryMethods,
