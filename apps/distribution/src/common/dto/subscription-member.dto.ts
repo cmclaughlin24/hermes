@@ -1,6 +1,6 @@
 import { DeliveryMethods } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsEnum, IsPhoneNumber, IsTimeZone } from 'class-validator';
+import { Allow, IsEmail, IsEnum, IsOptional, IsPhoneNumber, IsTimeZone } from 'class-validator';
 import { DeliveryWindow } from '../types/delivery-window.type';
 
 export class SubscriptionMemberDto {
@@ -17,14 +17,16 @@ export class SubscriptionMemberDto {
     example: 'example@email.com',
   })
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({
     description: 'Phone number to deliver notifications to',
     example: '+19999999999',
   })
   @IsPhoneNumber()
-  phoneNumber: string;
+  @IsOptional()
+  phoneNumber?: string;
 
   @ApiProperty({
     description:

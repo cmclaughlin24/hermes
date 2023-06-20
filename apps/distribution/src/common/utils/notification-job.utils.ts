@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
+import { DistributionMessageDto } from '../dto/distribution-message.dto';
 import { SubscriptionMemberDto } from '../dto/subscription-member.dto';
 
 const SECONDS_PER_MINUTE = 60;
@@ -19,15 +20,13 @@ const MILLISECONDS_PER_SECOND = 1000;
  * 
  * @param {DistributionRule} distributionRule
  * @param {SubscriptionMemberDto[]} subscriptionMembers
- * @param {any} payload
- * @param {string} messageTimeZone
+ * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
   subscriptionMembers: SubscriptionMemberDto[],
-  payload: any,
-  messageTimeZone: string,
+  messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
   return _.chain(subscriptionMembers)
     .filter(
@@ -45,8 +44,8 @@ export function createNotificationJobs(
         method as DeliveryMethods,
         recipients,
         distributionRule,
-        payload,
-        messageTimeZone,
+        messageDto.payload,
+        messageDto.timeZone,
       ),
     )
     .flatten()

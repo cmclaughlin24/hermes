@@ -2,6 +2,7 @@ export * from './decorators/public.decorator';
 export * from './decorators/remove-cache.decorator';
 export * from './decorators/use-cache.decorator';
 export * from './dto/api-response.dto';
+export * from './dto/message.dto';
 export * from './dto/push-notification.dto';
 export * from './dto/push-subscription.dto';
 export * from './guards/api-key.guard';

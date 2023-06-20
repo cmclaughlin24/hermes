@@ -4,6 +4,7 @@ import {
   RabbitHandlerConfig,
   isRabbitContext,
 } from '@golevelup/nestjs-rabbitmq';
+import { MessageDto } from '@hermes/common';
 import {
   CallHandler,
   ExecutionContext,
@@ -18,7 +19,6 @@ import { ConsumeMessage } from 'amqplib';
 import { Observable, catchError, map } from 'rxjs';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
-import { MessageDto } from '../../dto/message.dto';
 import { DistributionJob } from '../../types/distribution-job.type';
 import { MessageState } from '../../types/message-state.type';
 import { getAttempts } from '../../utils/amqp.utils';

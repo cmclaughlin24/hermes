@@ -69,9 +69,6 @@ export class DistributionRule extends Model {
   @Column
   bypassSubscriptions: boolean;
 
-  @Column({ allowNull: true })
-  timeZoneLabel: string;
-
   @BelongsTo(() => DistributionEvent)
   event: DistributionEvent;
 }
