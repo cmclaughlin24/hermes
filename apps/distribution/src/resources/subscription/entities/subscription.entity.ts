@@ -40,7 +40,7 @@ export class Subscription extends Model {
   @Column({
     type: DataType.ENUM(
       SubscriptionType.USER,
-      SubscriptionType.PUSH,
+      SubscriptionType.DEVICE,
       SubscriptionType.REQUEST,
     ),
   })

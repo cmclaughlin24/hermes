@@ -1,10 +1,13 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { hasSelectors } from '@hermes/common';
+import {
+  DeliveryMethods,
+  hasSelectors
+} from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
-import { SubscriptionType } from 'apps/distribution/src/common/types/subscription-type.type';
+import { DeviceSubscriptionDto } from 'apps/distribution/src/common/dto/device-subscription.dto';
 import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
@@ -64,19 +67,27 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         messageDto.metadata,
       );
-      const subscriptionData = await this._getSubscriptionData(
-        messageDto,
-        distributionEvent.subscriptions,
-        distributionRule.bypassSubscriptions,
-      );
+      const [userSubscriptions, deviceSubscriptions] =
+        await this._getSubscriptionData(
+          messageDto,
+          distributionEvent.subscriptions,
+          distributionRule.bypassSubscriptions,
+        );
 
-      if (_.isEmpty(subscriptionData)) {
-        return { message: `` };
+      if (!_.isEmpty(userSubscriptions)) {
+        // Todo: Create Notification Jobs from UserSubscriptionDtos.
+      }
+
+      if (
+        distributionRule.deliveryMethods.includes(DeliveryMethods.PUSH) &&
+        !_.isEmpty(deviceSubscriptions)
+      ) {
+        // Todo: Create Notification Jobs from PushSubscriptionDtos.
       }
 
       const jobs = createNotificationJobs(
         distributionRule,
-        subscriptionData,
+        userSubscriptions,
         messageDto,
       );
 
@@ -161,27 +172,28 @@ export class DistributionConsumer extends MqConsumer {
    * @param {DistributionMessageDto} message
    * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
-   * @returns {Promise<UserSubscriptionDto[]>}
+   * @returns {Promise<[UserSubscriptionDto[], DeviceSubscriptionDto[]]>}
    */
   private async _getSubscriptionData(
     message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
-  ): Promise<UserSubscriptionDto[]> {
+  ): Promise<[UserSubscriptionDto[], DeviceSubscriptionDto[]]> {
     if (bypassSubscriptions) {
-      // Todo: Format message's recipients to UserSubscriptionDto(s).
+      const userSubscriptions =
+        this.subscriptionDataService.mapToUserSubscriptionDtos(
+          message.recipients,
+        );
+
+      return [userSubscriptions, null];
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
 
     if (_.isEmpty(filteredSubs)) {
-      return [];
+      return [null, null];
     }
 
-    const subscriptionData = await this.subscriptionDataService.get(
-      filteredSubs,
-    );
-
-    return subscriptionData.get(SubscriptionType.USER) as UserSubscriptionDto[];
+    return this.subscriptionDataService.get(filteredSubs);
   }
 }

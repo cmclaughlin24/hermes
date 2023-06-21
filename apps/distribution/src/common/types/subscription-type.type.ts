@@ -1,4 +1,4 @@
-import { PushSubscriptionDto } from '@hermes/common';
+import { DeviceSubscriptionDto } from '../dto/device-subscription.dto';
 import { RequestSubscriptionDto } from '../dto/request-subscription.dto';
 import { UserSubscriptionDto } from '../dto/user-subscription.dto';
 
@@ -9,9 +9,9 @@ export enum SubscriptionType {
   USER = 'user',
 
   /**
-   * Indicates the subscription's `data` property is a `PushSubscriptionDto`.
+   * Indicates the subscription's `data` property is a `DeviceSubscriptionDto`.
    */
-  PUSH = 'push',
+  DEVICE = 'device',
 
   /**
    * Indicates the subscription's `data` property is a `RequestSubscriptionDto`.
@@ -20,6 +20,6 @@ export enum SubscriptionType {
 }
 
 export type SubscriptionData =
-  | PushSubscriptionDto
+  | DeviceSubscriptionDto
   | UserSubscriptionDto
   | RequestSubscriptionDto;

@@ -14,6 +14,7 @@ import {
 } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
+import { DeviceSubscriptionDto } from '../../dto/device-subscription.dto';
 import { RequestSubscriptionDto } from '../../dto/request-subscription.dto';
 import { UserSubscriptionDto } from '../../dto/user-subscription.dto';
 import {
@@ -27,7 +28,9 @@ export class SubscriptionDataService {
 
   constructor(private readonly httpClient: HttpService) {}
 
-  async get(subscriptions: Subscription[]) {
+  async get(
+    subscriptions: Subscription[],
+  ): Promise<[UserSubscriptionDto[], DeviceSubscriptionDto[]]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
 
     for (const subscription of subscriptions) {
@@ -64,7 +67,10 @@ export class SubscriptionDataService {
       map.delete(SubscriptionType.REQUEST);
     }
 
-    return map;
+    return [
+      map.get(SubscriptionType.USER) as UserSubscriptionDto[],
+      map.get(SubscriptionType.DEVICE) as DeviceSubscriptionDto[],
+    ];
   }
 
   async createDto(subscription: Subscription): Promise<SubscriptionData> {
@@ -74,8 +80,8 @@ export class SubscriptionDataService {
       case SubscriptionType.USER:
         dto = this._createUserSubscriptionDto(subscription.data);
         break;
-      case SubscriptionType.PUSH:
-        dto = this._createPushSubscriptionDto(subscription.data);
+      case SubscriptionType.DEVICE:
+        dto = this._createDeviceSubscriptionDto(subscription.data);
         break;
       case SubscriptionType.REQUEST:
         dto = this._createRequestSubscriptionDto(
@@ -89,16 +95,27 @@ export class SubscriptionDataService {
         );
     }
 
-    try {
-      await validateOrReject(dto);
-    } catch (errors) {
-      const validationErrors = errors
-        .map((error) => error.toString())
-        .join(', ');
-      throw new Error(validationErrors);
-    }
+    await this._validateDto(dto);
 
     return dto;
+  }
+
+  mapToUserSubscriptionDtos(data: any[]): UserSubscriptionDto[] {
+    if (_.isEmpty(data)) {
+      return null;
+    }
+
+    return data
+      .map((item) => this._createUserSubscriptionDto(item))
+      .filter(async (dto) => {
+        try {
+          await this._validateDto(dto);
+        } catch (error) {
+          // Todo: Show log message for corrupted/invalid dto.
+          return false;
+        }
+        return true;
+      });
   }
 
   private _createUserSubscriptionDto(data: any): UserSubscriptionDto {
@@ -111,13 +128,21 @@ export class SubscriptionDataService {
     return dto;
   }
 
-  private _createPushSubscriptionDto(data: any): PushSubscriptionDto {
+  private _createDeviceSubscriptionDto(data: any): DeviceSubscriptionDto {
+    const dto = new DeviceSubscriptionDto();
+    dto.platform = data.platform;
+    dto.timeZone = data.timeZone;
+    dto.subscription = this._createPushSubscriptonDto(data.subscription);
+    return dto;
+  }
+
+  private _createPushSubscriptonDto(subscription: any): PushSubscriptionDto {
     const dto = new PushSubscriptionDto();
-    dto.endpoint = data.endpoint;
-    dto.expirationTime = data.expirationTime;
+    dto.endpoint = subscription.endpoint;
+    dto.expirationTime = subscription.expirationTime;
     dto.keys = new PushSubscriptionKeysDto();
-    dto.keys.auth = data.keys?.auth;
-    dto.keys.p256dh = data.keys?.p256dh;
+    dto.keys.auth = subscription.keys?.auth;
+    dto.keys.p256dh = subscription.keys?.p256dh;
     return dto;
   }
 
@@ -129,6 +154,17 @@ export class SubscriptionDataService {
     dto.url = data.url;
     dto.id = externalId;
     return dto;
+  }
+
+  private async _validateDto(dto: object) {
+    try {
+      await validateOrReject(dto);
+    } catch (errors) {
+      const validationErrors = errors
+        .map((error) => error.toString())
+        .join(', ');
+      throw new Error(validationErrors);
+    }
   }
 
   private _request(
@@ -166,10 +202,7 @@ export class SubscriptionDataService {
     ids.forEach((id) => params.append('id', id));
 
     return this.httpClient.get(`${url}?${params.toString()}`).pipe(
-      // Todo: Filter out invalid dtos.
-      map((response) =>
-        response.data?.map((item) => this._createUserSubscriptionDto(item)),
-      ),
+      map((response) => this.mapToUserSubscriptionDtos(response.data)),
       catchError((error: AxiosError) => {
         this.logger.error(
           `Request for subscription data from ${url} failed: ${error.message}`,
