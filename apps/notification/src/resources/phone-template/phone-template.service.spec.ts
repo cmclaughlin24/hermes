@@ -3,11 +3,11 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCacheStoreMock } from '../../..//test/helpers/provider.helpers';
 import {
   MockRepository,
   createMockRepository,
 } from '../../../test/helpers/database.helpers';
+import { createCacheStoreMock } from '../../../test/helpers/provider.helpers';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
