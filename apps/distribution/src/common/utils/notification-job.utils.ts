@@ -14,21 +14,21 @@ const MILLISECONDS_PER_SECOND = 1000;
  * Yields a list of notification jobs for a list of subscription members based on the
  * distribution rule's enabled delivery method(s).
  * 
- * Note: If the messageTimeZone argument is defined, dates and times in the notification
+ * Note: If the messageDto has a time zone defined, dates and times in the notification
  *       templates will be displayed in this time zone instead of the recipient's time
- *       zone. This can be disabled by setting the DistributionRule 'timeZoneLabel' to null.
+ *       zone. This can be disabled by setting the messageDto time zone property to null.
  * 
  * @param {DistributionRule} distributionRule
- * @param {UserSubscriptionDto[]} subscriptionMembers
+ * @param {UserSubscriptionDto[]} userSubscriptions
  * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
-  subscriptionMembers: UserSubscriptionDto[],
+  userSubscriptions: UserSubscriptionDto[],
   messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
-  return _.chain(subscriptionMembers)
+  return _.chain(userSubscriptions)
     .filter(
       (member) =>
         hasDeliveryMethods(distributionRule, member) &&

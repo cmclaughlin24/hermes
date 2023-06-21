@@ -1,4 +1,5 @@
 import { PushSubscriptionDto } from '@hermes/common';
+import { RequestSubscriptionDto } from '../dto/request-subscription.dto';
 import { UserSubscriptionDto } from '../dto/user-subscription.dto';
 
 export enum SubscriptionType {
@@ -18,5 +19,7 @@ export enum SubscriptionType {
   REQUEST = 'request',
 }
 
-// Todo: Create SubscriptionRequestDto.
-export type SubscriptionData = PushSubscriptionDto | UserSubscriptionDto | any;
+export type SubscriptionData =
+  | PushSubscriptionDto
+  | UserSubscriptionDto
+  | RequestSubscriptionDto;

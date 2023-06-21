@@ -4,6 +4,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
+import { SubscriptionType } from 'apps/distribution/src/common/types/subscription-type.type';
 import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
@@ -11,7 +12,7 @@ import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-e
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { UserSubscriptionDto } from '../../../common/dto/user-subscription.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
-import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
+import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
@@ -30,7 +31,7 @@ export class DistributionConsumer extends MqConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
-    private readonly subscriptionMemberService: SubscriptionMemberService,
+    private readonly subscriptionDataService: SubscriptionDataService,
     private readonly configService: ConfigService,
   ) {
     super();
@@ -63,19 +64,19 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         messageDto.metadata,
       );
-      const subscriptionMembers = await this._getSubscriptionMembers(
+      const subscriptionData = await this._getSubscriptionData(
         messageDto,
         distributionEvent.subscriptions,
         distributionRule.bypassSubscriptions,
       );
 
-      if (_.isEmpty(subscriptionMembers)) {
+      if (_.isEmpty(subscriptionData)) {
         return { message: `` };
       }
 
       const jobs = createNotificationJobs(
         distributionRule,
-        subscriptionMembers,
+        subscriptionData,
         messageDto,
       );
 
@@ -162,13 +163,13 @@ export class DistributionConsumer extends MqConsumer {
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
    * @returns {Promise<UserSubscriptionDto[]>}
    */
-  private async _getSubscriptionMembers(
+  private async _getSubscriptionData(
     message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
   ): Promise<UserSubscriptionDto[]> {
     if (bypassSubscriptions) {
-      return this.subscriptionMemberService.map(message.recipients);
+      // Todo: Format message's recipients to UserSubscriptionDto(s).
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
@@ -177,10 +178,10 @@ export class DistributionConsumer extends MqConsumer {
       return [];
     }
 
-    const subscriptionMembers = await this.subscriptionMemberService.get(
+    const subscriptionData = await this.subscriptionDataService.get(
       filteredSubs,
     );
 
-    return subscriptionMembers;
+    return subscriptionData.get(SubscriptionType.USER) as UserSubscriptionDto[];
   }
 }
