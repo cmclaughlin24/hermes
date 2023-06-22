@@ -1,5 +1,5 @@
+import { MessageDto } from '@hermes/common';
 import { MqUnrecoverableError } from 'apps/distribution/src/common/classes/mq-unrecoverable-error.class';
-import { MessageDto } from 'apps/distribution/src/common/dto/message.dto';
 import { validateOrReject } from 'class-validator';
 
 // Note: MqConsumer is a parent class for storing commonized functionality required
@@ -33,7 +33,6 @@ export class MqConsumer {
     messageDto.metadata = message.metadata;
     messageDto.payload = message.payload;
     messageDto.addedAt = message.addedAt;
-    messageDto.recipients = message.recipients;
 
     try {
       await validateOrReject(messageDto);

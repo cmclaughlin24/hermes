@@ -38,6 +38,7 @@ export class DistributionRule extends Model {
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
         DeliveryMethods.CALL,
+        DeliveryMethods.PUSH,
       ),
     ),
   })
@@ -61,6 +62,9 @@ export class DistributionRule extends Model {
   @Column({ allowNull: true })
   callTemplate: string;
 
+  @Column({ allowNull: true })
+  pushTemplate: string;
+
   @Default(false)
   @Column
   checkDeliveryWindow: boolean;
@@ -68,9 +72,6 @@ export class DistributionRule extends Model {
   @Default(false)
   @Column
   bypassSubscriptions: boolean;
-
-  @Column({ allowNull: true })
-  timeZoneLabel: string;
 
   @BelongsTo(() => DistributionEvent)
   event: DistributionEvent;

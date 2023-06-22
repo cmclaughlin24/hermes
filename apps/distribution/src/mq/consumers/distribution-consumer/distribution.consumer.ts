@@ -1,16 +1,17 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { hasMetadata } from '@hermes/common';
+import { hasSelectors } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
+import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
-import { MessageDto } from '../../../common/dto/message.dto';
-import { SubscriptionMemberDto } from '../../../common/dto/subscription-member.dto';
+import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
+import { SubscriptionDataDto } from '../../../common/dto/subscription-data.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
-import { SubscriptionMemberService } from '../../../common/providers/subscription-member/subscription-member.service';
+import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
@@ -29,7 +30,7 @@ export class DistributionConsumer extends MqConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
-    private readonly subscriptionMemberService: SubscriptionMemberService,
+    private readonly subscriptionDataService: SubscriptionDataService,
     private readonly configService: ConfigService,
   ) {
     super();
@@ -62,25 +63,20 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         messageDto.metadata,
       );
-      const subscriptionMembers = await this._getSubscriptionMembers(
+      const subscriptonDtos = await this._getSubscriptionData(
         messageDto,
         distributionEvent.subscriptions,
         distributionRule.bypassSubscriptions,
       );
 
-      if (_.isEmpty(subscriptionMembers)) {
+      if (_.isEmpty(subscriptonDtos)) {
         return { message: `` };
       }
 
-      const messageTimeZone = this._getMessageTimeZone(
-        messageDto.metadata,
-        distributionRule.timeZoneLabel,
-      );
       const jobs = createNotificationJobs(
         distributionRule,
-        subscriptionMembers,
-        messageDto.payload,
-        messageTimeZone,
+        subscriptonDtos,
+        messageDto,
       );
 
       if (_.isEmpty(jobs)) {
@@ -98,6 +94,35 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
+   * Yields a DistributionMessageDto or throws a MqUnrecoverableError if the message properties
+   * fail validation.
+   * @param {any} message
+   * @returns {Promise<DistributionMessageDto>}
+   */
+  protected override async createMessageDto(message: any) {
+    const messageDto = new DistributionMessageDto();
+
+    messageDto.id = message.id;
+    messageDto.type = message.type;
+    messageDto.metadata = message.metadata;
+    messageDto.payload = message.payload;
+    messageDto.addedAt = message.addedAt;
+    messageDto.timeZone = message.timeZone;
+    messageDto.recipients = message.recipients;
+
+    try {
+      await validateOrReject(messageDto);
+    } catch (errors) {
+      const validationErrors = errors
+        .map((error) => error.toString())
+        .join(', ');
+      throw new MqUnrecoverableError(validationErrors);
+    }
+
+    return messageDto;
+  }
+
+  /**
    * Yields a DistributionRule that should be applied for an event based on the selectors
    * in a message's metadata. All selectors must match for a rule to be selected, otherwise,
    * the default rule will be choosen.
@@ -110,7 +135,7 @@ export class DistributionConsumer extends MqConsumer {
     metadata: any,
   ): DistributionRule {
     let rule = distributionEvent.rules.find((rule) =>
-      hasMetadata(
+      hasSelectors(
         distributionEvent.metadataLabels,
         JSON.parse(rule.metadata),
         metadata,
@@ -131,45 +156,29 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
-   * Yields the IANA time zone set in a message's metadata selectors.
-   * @param {any} metadata
-   * @param {string} timeZoneLabel 
-   * @returns {string}
-   */
-  private _getMessageTimeZone(metadata: any, timeZoneLabel: string): string {
-    if (!metadata || !timeZoneLabel || timeZoneLabel.trim() === '') {
-      return null;
-    }
-
-    return metadata[timeZoneLabel];
-  }
-
-  /**
-   * Yields a list of SubscriptionMembers who should receive a notification for an event.
-   * @param {MessageDto} message
+   * Yields a list of SubscriptionDataDtos that should receive a notification for an event.
+   * @param {DistributionMessageDto} message
    * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
-   * @returns {Promise<SubscriptionMemberDto[]>}
+   * @returns {Promise<SubscriptionDataDto[]>}
    */
-  private async _getSubscriptionMembers(
-    message: MessageDto,
+  private async _getSubscriptionData(
+    message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
-  ): Promise<SubscriptionMemberDto[]> {
+  ): Promise<SubscriptionDataDto[]> {
     if (bypassSubscriptions) {
-      return this.subscriptionMemberService.map(message.recipients);
+      return this.subscriptionDataService.mapToUserSubscriptionDtos(
+        message.recipients,
+      );
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
 
     if (_.isEmpty(filteredSubs)) {
-      return [];
+      return [null, null];
     }
 
-    const subscriptionMembers = await this.subscriptionMemberService.get(
-      filteredSubs,
-    );
-
-    return subscriptionMembers;
+    return this.subscriptionDataService.get(filteredSubs);
   }
 }

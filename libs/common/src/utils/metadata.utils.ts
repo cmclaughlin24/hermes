@@ -1,4 +1,4 @@
-export function hasMetadata(
+export function hasSelectors(
   labels: string[],
   values: any,
   metadata: any,

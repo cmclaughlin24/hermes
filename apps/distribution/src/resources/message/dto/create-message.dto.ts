@@ -1,7 +1,7 @@
+import { MessageDto } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { MessageDto } from '../../../common/dto/message.dto';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { Allow, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateMessageDto {
   @ApiProperty({
@@ -28,10 +28,9 @@ export class CreateMessageDto {
   routingKey: string;
 
   @ApiProperty({
-    description: 'Message to be published.',
+    description: 'Message to be published (MessageDto or MessageDto subclass).',
     type: MessageDto
   })
-  @ValidateNested()
-  @Type(() => MessageDto)
-  message: MessageDto;
+  @Allow()
+  message: any;
 }
