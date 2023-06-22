@@ -15,6 +15,7 @@ export async function cacheFactory(
       clusterConfig: {
         nodes: [{ host, port }],
         options: {
+          enableOfflineQueue: false,
           redisOptions: { commandTimeout },
         }
       },
