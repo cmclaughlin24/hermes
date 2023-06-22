@@ -7,14 +7,14 @@ const DEFAULT_TTL = 5000;
 
 /**
  * Decorator that marks a method that should utilize cache storage for
- * responses. It implements a monkey patch to wrap the original method 
+ * responses. It implements a monkey patch to wrap the original method
  * call with logic to check if the cache storage contains a key and either
  * (1) yield the cached value or (2) yield the value of the original method
  * after setting it in the cache.
- * 
+ *
  * Due to the I/O operations required to interact with the cache store,
  * methods decoratored by `UseCache` will resolve as a `Promise`.
- * 
+ *
  * Note: Requires the @nestjs/cache-manager CacheModule to be imported
  *       into the module where the decorator is used. Extends the module's
  *       features to enable auto-caching and removal w/o the use of
@@ -70,15 +70,17 @@ export const UseCache = (options: UseCacheOptions): MethodDecorator => {
 
       value = await method.apply(this, args);
 
-      try {
-        logger.verbose(`Setting value for key=${cacheKey} in cache`);
+      logger.verbose(`Setting value for key=${cacheKey} in cache`);
 
-        await this.cacheManager.set(cacheKey, value, ttl);
-      } catch (error) {
-        logger.error(
-          `An error occurred setting value in cache: ${error.message}`,
+      // Note: Promise resolution for setting value in cache is not waited on since it
+      //       does not impact return value but may impact response time.
+      this.cacheManager
+        .set(cacheKey, value, ttl)
+        .catch((error) =>
+          logger.error(
+            `An error occurred setting value in cache: ${error.message}`,
+          ),
         );
-      }
 
       return value;
     };

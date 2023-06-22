@@ -12,7 +12,7 @@ export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
 
 export const createCacheStoreMock = (): MockCacheStore => ({
   get: jest.fn(),
-  set: jest.fn(),
+  set: jest.fn(async () => {}),
   del: jest.fn(),
 });
 
