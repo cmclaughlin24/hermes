@@ -13,5 +13,5 @@ export class RequestSubscriptionDto {
 
   @ApiHideProperty()
   @IsString()
-  id: string;
+  id?: string;
 }
