@@ -38,6 +38,7 @@ export class DistributionRule extends Model {
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
         DeliveryMethods.CALL,
+        DeliveryMethods.PUSH,
       ),
     ),
   })
@@ -60,6 +61,9 @@ export class DistributionRule extends Model {
 
   @Column({ allowNull: true })
   callTemplate: string;
+
+  @Column({ allowNull: true })
+  pushTemplate: string;
 
   @Default(false)
   @Column

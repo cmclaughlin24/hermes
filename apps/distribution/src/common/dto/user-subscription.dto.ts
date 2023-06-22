@@ -5,12 +5,12 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
-  IsPhoneNumber,
-  IsTimeZone,
+  IsPhoneNumber
 } from 'class-validator';
 import { DeliveryWindow } from '../types/delivery-window.type';
+import { SubscriptionDataDto } from './subscription-data.dto';
 
-export class UserSubscriptionDto {
+export class UserSubscriptionDto extends SubscriptionDataDto {
   @ApiProperty({
     description: 'How to deliver notifications for an event',
     enum: DeliveryMethods,
@@ -35,14 +35,6 @@ export class UserSubscriptionDto {
   @IsOptional()
   phoneNumber?: string;
 
-  @ApiProperty({
-    description:
-      'Time zone to use when formatting dates/times (overridden if distribution rule has a "timeZone" key)',
-    example: 'America/Chicago',
-  })
-  @IsTimeZone()
-  timeZone: string;
-
   @Allow()
   deliveryWindows: DeliveryWindow[];
 
@@ -53,11 +45,9 @@ export class UserSubscriptionDto {
       case DeliveryMethods.SMS:
         return this.phoneNumber;
       case DeliveryMethods.CALL:
-        return this.phoneNumber;
+        return this.phoneNumber;        
       default:
-        throw new Error(
-          `Invalid Argument: Retrieval for ${deliveryMethod} contact information not defined`,
-        );
+        return null;
     }
   }
 

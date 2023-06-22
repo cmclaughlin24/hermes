@@ -1,9 +1,11 @@
 import { DeliveryMethods, Platform, PushSubscriptionDto } from '@hermes/common';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsTimeZone, ValidateNested } from 'class-validator';
+import { IsEnum, ValidateNested } from 'class-validator';
+import { DeliveryWindow } from '../types/delivery-window.type';
+import { SubscriptionDataDto } from './subscription-data.dto';
 
-export class DeviceSubscriptionDto {
+export class DeviceSubscriptionDto extends SubscriptionDataDto {
   @ApiProperty({
     description: 'Computing platform where the push notification will be delivered',
     enum: [Platform.ANDROID, Platform.IOS, Platform.WEB],
@@ -24,15 +26,20 @@ export class DeviceSubscriptionDto {
   @Type(() => PushSubscriptionDto)
   subscription: PushSubscriptionDto;
 
-  @ApiProperty({
-    description:
-      'Time zone to use when formatting dates/times (overridden if distribution rule has a "timeZone" key)',
-    example: 'America/Chicago',
-  })
-  @IsTimeZone()
-  timeZone: string;
-
   @ApiHideProperty()
   @IsEnum(DeliveryMethods, { each: true })
   deliveryMethods: DeliveryMethods[] = [DeliveryMethods.PUSH];
+
+  getDeliveryMethod(deliveryMethod: DeliveryMethods): PushSubscriptionDto {
+    switch (deliveryMethod) {
+      case DeliveryMethods.PUSH:
+        return this.subscription;
+      default:
+        return null;
+    }
+  }
+
+  getDeliveryWindows(number: any): DeliveryWindow[] {
+    return [];
+  }
 }

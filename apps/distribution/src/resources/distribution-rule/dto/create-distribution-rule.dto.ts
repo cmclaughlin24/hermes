@@ -125,7 +125,7 @@ export class CreateDistributionRuleDto {
   smsTemplate?: string;
 
   @ApiProperty({
-    description: 'Name of a SMS template in the Notification Service',
+    description: 'Name of a call template in the Notification Service',
     example: 'template',
     required: false,
   })
@@ -133,6 +133,17 @@ export class CreateDistributionRuleDto {
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   callTemplate?: string;
+
+  @ApiProperty({
+    description:
+      'Name of a push notification template in the Notification Service',
+    example: 'template',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  pushTemplate?: string;
 
   @ApiProperty({
     description:

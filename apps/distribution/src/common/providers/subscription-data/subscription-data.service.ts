@@ -16,6 +16,7 @@ import { URLSearchParams } from 'url';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import { DeviceSubscriptionDto } from '../../dto/device-subscription.dto';
 import { RequestSubscriptionDto } from '../../dto/request-subscription.dto';
+import { SubscriptionDataDto } from '../../dto/subscription-data.dto';
 import { UserSubscriptionDto } from '../../dto/user-subscription.dto';
 import {
   SubscriptionData,
@@ -28,9 +29,7 @@ export class SubscriptionDataService {
 
   constructor(private readonly httpClient: HttpService) {}
 
-  async get(
-    subscriptions: Subscription[],
-  ): Promise<[UserSubscriptionDto[], DeviceSubscriptionDto[]]> {
+  async get(subscriptions: Subscription[]): Promise<SubscriptionDataDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
 
     for (const subscription of subscriptions) {
@@ -68,8 +67,8 @@ export class SubscriptionDataService {
     }
 
     return [
-      map.get(SubscriptionType.USER) as UserSubscriptionDto[],
-      map.get(SubscriptionType.DEVICE) as DeviceSubscriptionDto[],
+      ...(map.get(SubscriptionType.USER) as UserSubscriptionDto[]),
+      ...(map.get(SubscriptionType.DEVICE) as DeviceSubscriptionDto[]),
     ];
   }
 
@@ -111,7 +110,9 @@ export class SubscriptionDataService {
         try {
           await this._validateDto(dto);
         } catch (error) {
-          // Todo: Show log message for corrupted/invalid dto.
+          this.logger.error(
+            `${UserSubscriptionDto.name} corrupted: ${error.message}`,
+          );
           return false;
         }
         return true;
@@ -203,6 +204,7 @@ export class SubscriptionDataService {
 
     return this.httpClient.get(`${url}?${params.toString()}`).pipe(
       map((response) => this.mapToUserSubscriptionDtos(response.data)),
+      // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried? 
       catchError((error: AxiosError) => {
         this.logger.error(
           `Request for subscription data from ${url} failed: ${error.message}`,
