@@ -99,7 +99,7 @@ export class DistributionConsumer extends MqConsumer {
    * @param {any} message
    * @returns {Promise<DistributionMessageDto>}
    */
-  protected override async createMessageDto(message: any) {
+  override async createMessageDto(message: any) {
     const messageDto = new DistributionMessageDto();
 
     messageDto.id = message.id;

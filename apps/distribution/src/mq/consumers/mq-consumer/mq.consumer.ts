@@ -1,6 +1,6 @@
 import { MessageDto } from '@hermes/common';
-import { MqUnrecoverableError } from 'apps/distribution/src/common/classes/mq-unrecoverable-error.class';
 import { validateOrReject } from 'class-validator';
+import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 
 // Note: MqConsumer is a parent class for storing commonized functionality required
 //       by all consumers.
@@ -15,7 +15,7 @@ export class MqConsumer {
    * @param {string} messageId
    * @returns {string}
    */
-  protected createLogPrefix(functionName: string, messageId: string): string {
+  createLogPrefix(functionName: string, messageId: string): string {
     return `[${functionName}] Message ${messageId}`;
   }
 
@@ -25,7 +25,7 @@ export class MqConsumer {
    * @param {any} message
    * @returns {Promise<MessageDto>}
    */
-  protected async createMessageDto(message: any) {
+  async createMessageDto(message: any): Promise<MessageDto> {
     const messageDto = new MessageDto();
 
     messageDto.id = message.id;
