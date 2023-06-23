@@ -5,11 +5,11 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
 import {
-  MockRepository,
-  createMockRepository,
-  createMockSequelize,
-} from '../../../test/helpers/database.helpers';
-import { createCacheStoreMock } from '../../../test/helpers/provider.helpers';
+    MockRepository,
+    createMockRepository,
+    createMockSequelize,
+} from '../../../test/helpers/database.helper';
+import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { PushAction } from './entities/push-action.entity';
 import { PushTemplate } from './entities/push-template.entity';

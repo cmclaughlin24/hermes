@@ -1,4 +1,4 @@
-import { DeliveryMethods, Platform } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
 import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime } from 'luxon';
@@ -151,7 +151,7 @@ export function reduceToDeliveryMethodsMap(
 
       const recipients = map.has(method) ? map.get(method) : [];
 
-      recipients.push(new Recipient(value, dto.timeZone));
+      recipients.push(new Recipient(value, dto));
       map.set(method, recipients);
     }
 
@@ -187,7 +187,7 @@ export function mapToNotificationJobs(
       )
       .map((recipient) => {
         let data;
-        const timeZone = overrideTimeZone ?? recipient.timeZone;
+        const timeZone = overrideTimeZone ?? recipient.subscription.timeZone;
 
         // Todo: Improve TypeScript support by refactoring CreateNotificationDto into @hermes library.
         switch (method) {
@@ -220,12 +220,12 @@ export function mapToNotificationJobs(
             };
             break;
           case DeliveryMethods.PUSH:
-            // Fixme: Remove hardcoded Platform and use recipient's.
             data = {
               subscription: recipient.value,
               template: distributionRule.pushTemplate,
-              platform: Platform.WEB,
-              timeZone: recipient.timeZone,
+              platform: (recipient.subscription as DeviceSubscriptionDto)
+                .platform,
+              timeZone: timeZone,
               context: payload,
             };
             break;

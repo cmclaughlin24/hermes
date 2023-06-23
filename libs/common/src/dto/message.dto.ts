@@ -45,5 +45,5 @@ export class MessageDto {
     description: 'Timestamp when the message was added to the queue',
   })
   @IsDateString()
-  addedAt: Date;
+  addedAt: string;
 }

@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../test/helpers/database.helpers';
+} from '../../../test/helpers/database.helper';
 import {
   MockDistributionEventService,
   createDistributionEventServiceMock,

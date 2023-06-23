@@ -1,17 +1,17 @@
 import {
-  Platform,
-  PushNotificationDto,
-  PushSubscriptionDto,
+    Platform,
+    PushNotificationDto,
+    PushSubscriptionDto,
 } from '@hermes/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnrecoverableError } from 'bullmq';
 import * as webpush from 'web-push';
 import {
-  MockPushTemplateService,
-  createConfigServiceMock,
-  createPushTemplateServiceMock,
-} from '../../../../test/helpers/provider.helpers';
+    MockPushTemplateService,
+    createConfigServiceMock,
+    createPushTemplateServiceMock,
+} from '../../../../test/helpers/provider.helper';
 import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { PushNotificationService } from './push-notification.service';

@@ -5,11 +5,11 @@ import { Job, JobState } from 'bullmq';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import {
-  MockRepository,
-  MockSequelize,
-  createMockRepository,
-  createMockSequelize,
-} from '../../../../notification/test/helpers/database.helpers';
+    MockRepository,
+    MockSequelize,
+    createMockRepository,
+    createMockSequelize,
+} from '../../../test/helpers/database.helper';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogService } from './notification-log.service';

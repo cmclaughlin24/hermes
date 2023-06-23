@@ -4,10 +4,10 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockRepository,
-  createMockRepository,
-} from '../../../../notification/test/helpers/database.helpers';
-import { createCacheStoreMock } from '../../../test/helpers/provider.helpers';
+    MockRepository,
+    createMockRepository,
+} from '../../../test/helpers/database.helper';
+import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';

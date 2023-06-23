@@ -8,7 +8,7 @@ import {
   MockSequelize,
   createMockRepository,
   createMockSequelize,
-} from '../../../test/helpers/database.helpers';
+} from '../../../test/helpers/database.helper';
 import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
@@ -369,6 +369,49 @@ describe('SubscriptionService', () => {
       await expect(
         service.update(queue, messageType, '', {} as UpdateSubscriptionDto),
       ).rejects.toEqual(expectedResult);
+    });
+  });
+
+  describe('removeAll()', () => {
+    const externalId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
+
+    it('should remove a subscription from all distribution event(s)', async () => {
+      // Arrange.
+      subscriptionModel.findOne.mockResolvedValue({});
+
+      // Act.
+      await service.removeAll(externalId);
+
+      // Assert.
+      expect(subscriptionModel.destroy).toHaveBeenCalledWith({
+        where: { externalId },
+      });
+    });
+
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully deleted subscription externalId=${externalId} from all distribution event(s)!`,
+      );
+      subscriptionModel.findOne.mockResolvedValue({});
+
+      // Act/Assert.
+      await expect(service.removeAll(externalId)).resolves.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "NotFoundException" if the repository does have at least one subscription', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Subscription(s) with externalId=${externalId} not found!`,
+      );
+      subscriptionModel.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(service.removeAll(externalId)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 

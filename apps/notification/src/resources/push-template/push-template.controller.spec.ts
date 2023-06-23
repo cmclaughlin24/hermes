@@ -1,9 +1,9 @@
 import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockPushTemplateService,
-  createPushTemplateServiceMock,
-} from '../../../test/helpers/provider.helpers';
+    MockPushTemplateService,
+    createPushTemplateServiceMock,
+} from '../../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplate } from './entities/push-template.entity';

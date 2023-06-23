@@ -5,7 +5,7 @@ export interface DistributionJob {
   attemptsMade: number;
   metadata: any;
   payload: any;
-  addedAt: Date;
+  addedAt: Date | string;
   processedAt: Date;
   finishedAt: Date;
 }

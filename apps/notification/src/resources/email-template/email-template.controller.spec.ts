@@ -1,9 +1,9 @@
 import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockEmailTemplateService,
-  createEmailTemplateServiceMock,
-} from '../../../../notification/test/helpers/provider.helpers';
+    MockEmailTemplateService,
+    createEmailTemplateServiceMock,
+} from '../../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateController } from './email-template.controller';

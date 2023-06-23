@@ -182,6 +182,32 @@ export class SubscriptionService {
   }
 
   /**
+   * Removes a Subscription from all distribution events or throws a NotFoundException
+   * if the repository returns null or undefined.
+   * @param {string} externalId
+   * @returns {Promise<ApiResponseDto>}
+   */
+  async removeAll(externalId: string) {
+    const subscription = await this.subscriptionModel.findOne({
+      where: { externalId },
+    });
+
+    if (!subscription) {
+      throw new NotFoundException(
+        `Subscription(s) with externalId=${externalId} not found!`,
+      );
+    }
+
+    await this.subscriptionModel.destroy({
+      where: { externalId },
+    });
+
+    return new ApiResponseDto(
+      `Successfully deleted subscription externalId=${externalId} from all distribution event(s)!`,
+    );
+  }
+
+  /**
    * Removes a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue

@@ -102,9 +102,28 @@ export class SubscriptionController {
     );
   }
 
+  @Delete(':externalId')
+  @ApiOperation({
+    summary: 'Remove a subscription from all distribution event(s).',
+    security: [{ ApiKeyAuth: [] }],
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful Operation',
+    type: ApiResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden Resource',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
+  removeAll(@Param('externalId') externalId: string) {
+    return this.subscriptionService.removeAll(externalId);
+  }
+
   @Delete(':queue/:messageType/:externalId')
   @ApiOperation({
-    summary: 'Remove a subscription.',
+    summary: 'Remove a subscription to a distribution event.',
     security: [{ ApiKeyAuth: [] }],
   })
   @ApiResponse({
