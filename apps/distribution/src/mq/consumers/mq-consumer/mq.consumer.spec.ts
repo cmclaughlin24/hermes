@@ -39,7 +39,7 @@ describe('MqConsumer', () => {
       type: 'unit-test',
       metadata: null,
       payload: {},
-      addedAt: new Date(),
+      addedAt: new Date().toISOString(),
     };
 
     it('should yield a "MessageDto" object', async () => {

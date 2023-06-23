@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import {
   Allow,
-  IsDate,
+  IsDateString,
   IsNotEmpty,
   IsString,
-  IsUUID
+  IsUUID,
 } from 'class-validator';
 
 export class MessageDto {
@@ -44,6 +44,6 @@ export class MessageDto {
   @ApiProperty({
     description: 'Timestamp when the message was added to the queue',
   })
-  @IsDate()
-  addedAt: Date;
+  @IsDateString()
+  addedAt: string;
 }

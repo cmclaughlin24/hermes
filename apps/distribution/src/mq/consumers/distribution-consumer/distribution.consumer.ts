@@ -49,7 +49,11 @@ export class DistributionConsumer extends MqConsumer {
     },
   })
   async subscribe(message: any, amqpMsg: ConsumeMessage) {
-    const logPrefix = this.createLogPrefix(this.subscribe.name, message.type);
+    const logPrefix = this.createLogPrefix(this.subscribe.name, message.id);
+
+    this.logger.log(
+      `${logPrefix}: Processing distribution event ${JSON.stringify(message)}`,
+    );
 
     try {
       const messageDto = await this.createMessageDto(message);
@@ -99,7 +103,9 @@ export class DistributionConsumer extends MqConsumer {
    * @param {any} message
    * @returns {Promise<DistributionMessageDto>}
    */
-  override async createMessageDto(message: any) {
+  override async createMessageDto(
+    message: any,
+  ): Promise<DistributionMessageDto> {
     const messageDto = new DistributionMessageDto();
 
     messageDto.id = message.id;
