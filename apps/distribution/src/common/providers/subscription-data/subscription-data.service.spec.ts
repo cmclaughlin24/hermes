@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionType } from '../../types/subscription-type.type';
 import { SubscriptionDataService } from './subscription-data.service';
@@ -7,7 +8,13 @@ describe('SubscriptionDataService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SubscriptionDataService],
+      providers: [
+        SubscriptionDataService,
+        {
+          provide: HttpService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<SubscriptionDataService>(SubscriptionDataService);
