@@ -51,5 +51,6 @@ export const createSubscriptionServiceMock = (): MockSubscriptionService => ({
   findOne: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
+  removeAll: jest.fn(),
   remove: jest.fn(),
 });

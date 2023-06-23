@@ -99,6 +99,21 @@ describe('SubscriptionController', () => {
     });
   });
 
+  describe('removeAll()', () => {
+    it('should yield an "ApiResponseDto" object', async () => {
+      // Arrange.
+      const expectedResult = new ApiResponseDto(
+        `Successfully deleted subscription externalId=${subscription.externalId} from all distribution event(s)!`,
+      );
+      service.removeAll.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(
+        controller.removeAll(subscription.externalId),
+      ).resolves.toEqual(expectedResult);
+    });
+  });
+
   describe('remove()', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
