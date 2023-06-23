@@ -8,7 +8,7 @@ import {
   MockSequelize,
   createMockRepository,
   createMockSequelize,
-} from '../../../test/helpers/database.helpers';
+} from '../../../test/helpers/database.helper';
 import {
   MockDistributionEventService,
   createDistributionEventServiceMock,

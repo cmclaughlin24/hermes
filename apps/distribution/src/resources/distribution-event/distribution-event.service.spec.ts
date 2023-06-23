@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../test/helpers/database.helpers';
+} from '../../../test/helpers/database.helper';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';

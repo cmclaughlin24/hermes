@@ -8,7 +8,7 @@ import {
   MockSequelize,
   createMockRepository,
   createMockSequelize,
-} from '../../../test/helpers/database.helpers';
+} from '../../../test/helpers/database.helper';
 import { DistributionJob } from '../../common/types/distribution-job.type';
 import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogService } from './distribution-log.service';

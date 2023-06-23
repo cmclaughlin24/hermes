@@ -2,15 +2,15 @@ import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
-  MockEmailService,
-  MockNotificationLogService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
-  createNotificationLogServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
-} from '../../../../notification/test/helpers/provider.helpers';
+    MockEmailService,
+    MockNotificationLogService,
+    MockPhoneService,
+    MockPushNotificationService,
+    createEmailServiceMock,
+    createNotificationLogServiceMock,
+    createPhoneServiceMock,
+    createPushNotificationServiceMock,
+} from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';

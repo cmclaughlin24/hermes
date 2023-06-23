@@ -1,13 +1,13 @@
 import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockEmailService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
-} from '../../../../notification/test/helpers/provider.helpers';
+    MockEmailService,
+    MockPhoneService,
+    MockPushNotificationService,
+    createEmailServiceMock,
+    createPhoneServiceMock,
+    createPushNotificationServiceMock,
+} from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
