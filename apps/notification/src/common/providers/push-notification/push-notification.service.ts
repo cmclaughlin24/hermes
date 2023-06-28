@@ -124,6 +124,7 @@ export class PushNotificationService implements CreateNotificationDto {
     subscription: PushSubscriptionDto,
     notification: PushNotificationDto,
   ) {
+    // Fixme: Check response status code === 410 and remove subscriptions if true.
     return webpush.sendNotification(
       subscription,
       JSON.stringify({ notification }),
