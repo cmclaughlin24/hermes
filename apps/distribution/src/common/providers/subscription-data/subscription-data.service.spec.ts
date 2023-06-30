@@ -3,8 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionType } from '../../types/subscription-type.type';
 import { SubscriptionDataService } from './subscription-data.service';
 
+export type MockHttpService = Partial<Record<keyof HttpService, jest.Mock>>;
+
+export const createHttpServiceMock = (): MockHttpService => ({
+  get: jest.fn(),
+});
+
 describe('SubscriptionDataService', () => {
   let service: SubscriptionDataService;
+  let httpService: MockHttpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -12,12 +19,13 @@ describe('SubscriptionDataService', () => {
         SubscriptionDataService,
         {
           provide: HttpService,
-          useValue: {},
+          useValue: createHttpServiceMock(),
         },
       ],
     }).compile();
 
     service = module.get<SubscriptionDataService>(SubscriptionDataService);
+    httpService = module.get<MockHttpService>(HttpService);
   });
 
   it('should be defined', () => {

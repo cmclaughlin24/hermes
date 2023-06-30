@@ -27,7 +27,7 @@ import {
 export class SubscriptionDataService {
   private readonly logger = new Logger(SubscriptionDataService.name);
 
-  constructor(private readonly httpClient: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
   async get(subscriptions: Subscription[]): Promise<SubscriptionDataDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
@@ -202,7 +202,7 @@ export class SubscriptionDataService {
     const params = new URLSearchParams();
     ids.forEach((id) => params.append('id', id));
 
-    return this.httpClient.get(`${url}?${params.toString()}`).pipe(
+    return this.httpService.get(`${url}?${params.toString()}`).pipe(
       map((response) => this.mapToUserSubscriptionDtos(response.data)),
       // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried? 
       catchError((error: AxiosError) => {
