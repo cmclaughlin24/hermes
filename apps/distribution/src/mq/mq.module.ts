@@ -8,7 +8,6 @@ import { DistributionEventModule } from '../resources/distribution-event/distrib
 import { DistributionLogModule } from '../resources/distribution-log/distribution-log.module';
 import { SubscriptionModule } from '../resources/subscription/subscription.module';
 import { DistributionConsumer } from './consumers/distribution-consumer/distribution.consumer';
-import { SubscriptionConsumer } from './consumers/subscription-consumer/subscription.consumer';
 
 @Module({
   imports: [
@@ -30,7 +29,7 @@ import { SubscriptionConsumer } from './consumers/subscription-consumer/subscrip
     DistributionLogModule,
     SubscriptionModule,
   ],
-  providers: [DistributionConsumer, SubscriptionConsumer],
+  providers: [DistributionConsumer],
   exports: [RabbitMQModule],
 })
 export class MqModule {}

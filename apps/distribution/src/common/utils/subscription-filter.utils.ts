@@ -98,10 +98,27 @@ export function joinFilters(
   }
 }
 
+/**
+ * Yields true if the field contains array notation or false otherwise.
+ * @example
+ * - `*.console`
+ * - `console.games.*.name`
+ * - `games.tags.*`
+ * @param {string} field
+ * @returns {boolean}
+ */
 export function hasArrayNotation(field: string): boolean {
   return /\.?\*\.?/g.test(field);
 }
 
+/**
+ * Yields a boolean value that indicates whether or not the value meets the
+ * filter's criteria.
+ * @param {FilterOps} operator
+ * @param {SubscriptionQueryDto} query
+ * @param {any} value
+ * @returns {boolean}
+ */
 export function compare(
   operator: FilterOps,
   query: SubscriptionQueryDto,
@@ -133,14 +150,35 @@ export function compare(
   return evalFn(query, value);
 }
 
+/**
+ * Yields true if the value is equal to the SubscriptionQueryDto or
+ * false otherwise.
+ * @param {query} query
+ * @param {any} value 
+ * @returns {boolean}
+ */
 export function equals(query: SubscriptionQueryDto, value: any): boolean {
   return query.value === value;
 }
 
+/**
+ * Yields true if the value is not equal to the SubscriptionQueryDto or
+ * false otherwise.
+ * @param {SubscriptionQueryDto} query
+ * @param {any} value 
+ * @returns {boolean}
+ */
 export function nequals(query: SubscriptionQueryDto, value: any): boolean {
   return query.value !== value;
 }
 
+/**
+ * Yields true if the value is included in the SubscriptionQueryDto or false
+ * otherwise.
+ * @param {SubscriptionQueryDto} query
+ * @param {any} value 
+ * @returns {boolean}
+ */
 export function or(query: SubscriptionQueryDto, value: any): boolean {
   if (!Array.isArray(query.value)) {
     throw new Error(
@@ -150,6 +188,13 @@ export function or(query: SubscriptionQueryDto, value: any): boolean {
   return query.value.includes(value);
 }
 
+/**
+ * Yields true if the SubscriptionQueryDto regex pattern exists in the value or
+ * false otherwise.
+ * @param {SubscriptionQueryDto} query 
+ * @param {string} value 
+ * @returns {boolean}
+ */
 export function matches(query: SubscriptionQueryDto, value: string): boolean {
   if (typeof query.value !== 'string') {
     throw new Error(
