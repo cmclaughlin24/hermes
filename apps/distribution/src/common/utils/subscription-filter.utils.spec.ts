@@ -1,32 +1,259 @@
 import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
+import { Subscription } from '../../resources/subscription/entities/subscription.entity';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 import {
   compare,
   equals,
   evaluateFilter,
+  filterSubscriptions,
   hasArrayNotation,
   joinFilters,
   matches,
   nequals,
   or,
+  shouldNotify,
 } from './subscription-filter.utils';
 
 describe('subscription-filter.utils.ts', () => {
-  describe('filterSubscriptions()', () => {});
+  describe('filterSubscriptions()', () => {
+    const payload = {
+      console: 'GameCube',
+      games: [
+        {
+          name: 'Legend of Zelda: Wind Waker',
+          releaseDate: {
+            year: 2003,
+          },
+          developer: 'Nintendo',
+        },
+        {
+          name: 'Super Smash Bros Melee',
+          releaseDate: {
+            year: 2001,
+          },
+          developer: 'HAL Laboratory',
+        },
+        {
+          name: 'Scooby-Doo: Night of 100 Frights',
+          releaseDate: {
+            year: 2002,
+          },
+          developer: 'Heavy Iron Studios',
+        },
+      ],
+    };
 
-  describe('hasFilterMatch()', () => {});
+    it('should yield a list of subscriptions whose filters evaluate to true for a payload', () => {
+      // Arrange.
+      const subscriptions = [
+        {
+          filterJoin: FilterJoinOps.OR,
+          filters: [
+            {
+              field: 'games.*.developer',
+              operator: FilterOps.EQUALS,
+              query: {
+                dataType: 'string',
+                value: 'Nintendo',
+              },
+            } as SubscriptionFilter,
+            {
+              field: 'console',
+              operator: FilterOps.MATCHES,
+              query: {
+                dataType: 'string',
+                value: 'Game',
+              },
+            } as SubscriptionFilter,
+          ],
+        } as Subscription,
+        {
+          filterJoin: FilterJoinOps.AND,
+          filters: [
+            {
+              field: 'games.*.releaseDate.year',
+              operator: FilterOps.EQUALS,
+              query: {
+                dataType: 'number',
+                value: 1999,
+              },
+            } as SubscriptionFilter,
+            {
+              field: 'games.*.name',
+              operator: FilterOps.OR,
+              query: {
+                dataType: 'array',
+                value: ['Scooby-Doo: Night of 100 Frights', 'Sonic Riders'],
+              },
+            } as SubscriptionFilter,
+          ],
+        } as Subscription,
+        {
+          filterJoin: FilterJoinOps.AND,
+          filters: [],
+        } as Subscription,
+      ];
+      const expectedResult = [subscriptions[0], subscriptions[2]];
+
+      // Act.
+      const result = filterSubscriptions(subscriptions, payload);
+
+      // Assert.
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should yield an empty list if the subscriptions argument is empty', () => {
+      // Act.
+      const result = filterSubscriptions([], payload);
+
+      // Assert.
+      expect(result.length).toBe(0);
+    });
+
+    it('should yield the subscriptions argument if the payload argument is null/undefined', () => {
+      // Arrange.
+      const subscriptions = [
+        {
+          filterJoin: FilterJoinOps.OR,
+          filters: [
+            {
+              field: 'games.*.developer',
+              operator: FilterOps.EQUALS,
+              query: {
+                dataType: 'string',
+                value: 'Nintendo',
+              },
+            } as SubscriptionFilter,
+            {
+              field: 'console',
+              operator: FilterOps.MATCHES,
+              query: {
+                dataType: 'string',
+                value: 'Game',
+              },
+            } as SubscriptionFilter,
+          ],
+        } as Subscription,
+        {
+          filterJoin: FilterJoinOps.AND,
+          filters: [],
+        } as Subscription,
+      ];
+
+      // Act.
+      const result = filterSubscriptions(subscriptions, null);
+
+      // Assert.
+      expect(result).toEqual(subscriptions);
+    });
+  });
+
+  describe('shouldNotify()', () => {
+    const payload = {
+      consoles: [
+        {
+          name: 'Nintendo Switch',
+          manufacturer: 'Nintendo',
+          games: ['Legend of Zelda: Breath of the Wild', 'Super Mario Odyssey'],
+          price: 299.99,
+        },
+        {
+          name: 'Xbox One',
+          manufacturer: 'Microsoft',
+          games: ['Titanfall', 'Ryse: Son of Rome'],
+          price: 499.99,
+        },
+        {
+          name: 'Playstation 4',
+          manufacturer: 'Sony',
+          games: ['Spiderman', 'Final Fantasy VII Remake'],
+          price: 399.99,
+        },
+      ],
+    };
+
+    it('should yield true if a subscription should recieve a notification', () => {
+      // Arrange.
+      const subscription = {
+        filterJoin: FilterJoinOps.AND,
+        filters: [
+          {
+            field: 'consoles.*.name',
+            operator: FilterOps.EQUALS,
+            query: {
+              dataType: 'string',
+              value: 'Nintendo Switch',
+            },
+          } as SubscriptionFilter,
+          {
+            field: 'consoles.*.games.*',
+            operator: FilterOps.OR,
+            query: {
+              dataType: 'array',
+              value: ['Legend of Zelda: Breath of the Wild'],
+            },
+          } as SubscriptionFilter,
+        ],
+      } as Subscription;
+
+      // Act.
+      const result = shouldNotify(subscription, payload);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield true if a subscription does not have any filters', () => {
+      // Act.
+      const result = shouldNotify({} as Subscription, payload);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield false if a subscription should not recieve a notification', () => {
+      // Arrange.
+      const subscription = {
+        filterJoin: FilterJoinOps.NOT,
+        filters: [
+          {
+            field: 'consoles.*.name',
+            operator: FilterOps.MATCHES,
+            query: {
+              dataType: 'string',
+              value: 'Xbox',
+            },
+          } as SubscriptionFilter,
+          {
+            field: 'consoles.*.games.*',
+            operator: FilterOps.EQUALS,
+            query: {
+              dataType: 'string',
+              value: 'Titanfall',
+            },
+          } as SubscriptionFilter,
+        ],
+      } as Subscription;
+
+      // Act.
+      const result = shouldNotify(subscription, payload);
+
+      // Assert.
+      expect(result).toBeFalsy();
+    });
+  });
 
   describe('evaluateFilter()', () => {
     const payload = {
       console: 'Xbox Series X',
       games: ['Halo Infinite', 'Hi-Fi Rush', 'Tales of Arise'],
       releaseDate: {
-        year: 2020
-      }
+        year: 2020,
+      },
     };
 
-    it('should yield true if... (w/o array notation)', () => {
+    it('should yield the result of the filter criteria applied to the payload (w/o array notation, true)', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.EQUALS,
@@ -44,15 +271,13 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if... (w/array notation)', () => {
+    it('should yield the result of the filter criteria applied to the payload (w/array notation, true)', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.OR,
         query: {
           dataType: 'string',
-          value: [
-            'Tales of Arise'
-          ],
+          value: ['Tales of Arise'],
         },
         field: 'games.*',
       } as SubscriptionFilter;
@@ -64,7 +289,7 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false if... (w/o array notation)', () => {
+    it('should yield the result of the filter criteria applied to the payload (w/o array notation, false)', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.NEQUALS,
@@ -82,7 +307,7 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should yield false if... (w/array notation)', () => {
+    it('should yield the result of the filter criteria applied to the payload (w/array notation, false)', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.MATCHES,
