@@ -1,9 +1,12 @@
 import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
-import { FilterOps } from '../types/filter.type';
+import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
+import { FilterJoinOps, FilterOps } from '../types/filter.type';
 import {
   compare,
   equals,
+  evaluateFilter,
   hasArrayNotation,
+  joinFilters,
   matches,
   nequals,
   or,
@@ -14,9 +17,141 @@ describe('subscription-filter.utils.ts', () => {
 
   describe('hasFilterMatch()', () => {});
 
-  describe('evaluateFilter()', () => {});
+  describe('evaluateFilter()', () => {
+    const payload = {
+      console: 'Xbox Series X',
+      games: ['Halo Infinite', 'Hi-Fi Rush', 'Tales of Arise'],
+      releaseDate: {
+        year: 2020
+      }
+    };
 
-  describe('joinFilters()', () => {});
+    it('should yield true if... (w/o array notation)', () => {
+      // Arrange.
+      const filter = {
+        operator: FilterOps.EQUALS,
+        query: {
+          dataType: 'string',
+          value: 'Xbox Series X',
+        },
+        field: 'console',
+      } as SubscriptionFilter;
+
+      // Act.
+      const result = evaluateFilter(filter, payload);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield true if... (w/array notation)', () => {
+      // Arrange.
+      const filter = {
+        operator: FilterOps.OR,
+        query: {
+          dataType: 'string',
+          value: [
+            'Tales of Arise'
+          ],
+        },
+        field: 'games.*',
+      } as SubscriptionFilter;
+
+      // Act.
+      const result = evaluateFilter(filter, payload);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield false if... (w/o array notation)', () => {
+      // Arrange.
+      const filter = {
+        operator: FilterOps.NEQUALS,
+        query: {
+          dataType: 'number',
+          value: 2020,
+        },
+        field: 'releaseDate.year',
+      } as SubscriptionFilter;
+
+      // Act.
+      const result = evaluateFilter(filter, payload);
+
+      // Assert.
+      expect(result).toBeFalsy();
+    });
+
+    it('should yield false if... (w/array notation)', () => {
+      // Arrange.
+      const filter = {
+        operator: FilterOps.MATCHES,
+        query: {
+          dataType: 'string',
+          value: 'Gears of War',
+        },
+        field: 'games.*',
+      } as SubscriptionFilter;
+
+      // Act.
+      const result = evaluateFilter(filter, payload);
+
+      // Assert.
+      expect(result).toBeFalsy();
+    });
+  });
+
+  describe('joinFilters()', () => {
+    it('should yield the result of the join operation (and)', () => {
+      // Arrange.
+      const accumulator = true;
+      const next = false;
+
+      // Act.
+      const result = joinFilters(FilterJoinOps.AND, accumulator, next);
+
+      // Assert.
+      expect(result).toBeFalsy();
+    });
+
+    it('should yield the result of the join operation (or)', () => {
+      // Arrange.
+      const accumulator = true;
+      const next = false;
+
+      // Act.
+      const result = joinFilters(FilterJoinOps.OR, accumulator, next);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should yield the result of the join operation (not)', () => {
+      // Arrange.
+      const accumulator = true;
+      const next = false;
+
+      // Act.
+      const result = joinFilters(FilterJoinOps.NOT, accumulator, next);
+
+      // Assert.
+      expect(result).toBeTruthy();
+    });
+
+    it('should throw an error if the join operator cannot be identified', () => {
+      // Arrange.
+      const join = 'testing';
+      const expectedResult = new Error(
+        `Invalid Argument: Filter join operation ${join} not defined`,
+      );
+
+      // Act.
+      const fn = joinFilters.bind(null, join, null, null);
+
+      // Assert.
+      expect(fn).toThrow(expectedResult);
+    });
+  });
 
   describe('hasArrayNotation()', () => {
     it('should yield true if the field contains array notation (beginning)', () => {
@@ -127,7 +262,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should throw an error if filter operator cannot be identified', () => {
       // Arrange.
-      const operator: any = 'testing';
+      const operator = 'testing';
       const expectedResult = new Error(
         `Invalid Argument: Comparison for operator=${operator} is not defined`,
       );

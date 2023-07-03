@@ -77,6 +77,18 @@ export function evaluateFilter(
   return isMatch;
 }
 
+/**
+ * Yields a boolean that indicates the new value of the accumulator after it
+ * has been joined to the next value in an array.
+ * 
+ * Note: This function is utilized by the lodash reduce method as a callback
+ *       function.
+ * 
+ * @param {FilterJoinOps} join
+ * @param {boolean} accumulator
+ * @param {boolean} next 
+ * @returns {boolean}
+ */
 export function joinFilters(
   join: FilterJoinOps,
   accumulator: boolean,
@@ -113,7 +125,7 @@ export function hasArrayNotation(field: string): boolean {
 
 /**
  * Yields a boolean value that indicates whether or not the value meets the
- * filter's criteria.
+ * comparison's criteria.
  * @param {FilterOps} operator
  * @param {SubscriptionQueryDto} query
  * @param {any} value
