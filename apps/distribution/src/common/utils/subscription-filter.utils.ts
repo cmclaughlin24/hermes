@@ -5,6 +5,12 @@ import { SubscriptionFilter } from '../../resources/subscription/entities/subscr
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 
+/**
+ * Yields a list of Subscriptions that should recieve a notification.
+ * @param {Subscription[]} subscriptions
+ * @param {any} payload
+ * @returns {Subscription[]}
+ */
 export function filterSubscriptions(
   subscriptions: Subscription[],
   payload: any,
@@ -20,11 +26,18 @@ export function filterSubscriptions(
   }
 
   return subscriptions.filter((subscription) =>
-    hasFilterMatch(subscription, payload),
+    shouldNotify(subscription, payload),
   );
 }
 
-export function hasFilterMatch(
+/**
+ * Yields a boolean that indicates whether or not a subscription should recieve a
+ * notification.
+ * @param {Subscription} subscription
+ * @param {Payload} payload
+ * @returns {boolean}
+ */
+export function shouldNotify(
   subscription: Subscription,
   payload: any,
 ): boolean {
@@ -44,6 +57,13 @@ export function hasFilterMatch(
     .value();
 }
 
+/**
+ * Yields a boolean that indicates whether or not the filter criteria exists in
+ * a payload.
+ * @param {SubscriptionFilter} filter
+ * @param {any} payload
+ * @returns {boolean}
+ */
 export function evaluateFilter(
   filter: SubscriptionFilter,
   payload: any,
@@ -77,6 +97,18 @@ export function evaluateFilter(
   return isMatch;
 }
 
+/**
+ * Yields a boolean that indicates the new value of the accumulator after it
+ * has been joined to the next value in an array.
+ *
+ * Note: This function is utilized by the lodash reduce method as a callback
+ *       function.
+ *
+ * @param {FilterJoinOps} join
+ * @param {boolean} accumulator
+ * @param {boolean} next
+ * @returns {boolean}
+ */
 export function joinFilters(
   join: FilterJoinOps,
   accumulator: boolean,
@@ -113,7 +145,7 @@ export function hasArrayNotation(field: string): boolean {
 
 /**
  * Yields a boolean value that indicates whether or not the value meets the
- * filter's criteria.
+ * comparison's criteria.
  * @param {FilterOps} operator
  * @param {SubscriptionQueryDto} query
  * @param {any} value
@@ -154,7 +186,7 @@ export function compare(
  * Yields true if the value is equal to the SubscriptionQueryDto or
  * false otherwise.
  * @param {query} query
- * @param {any} value 
+ * @param {any} value
  * @returns {boolean}
  */
 export function equals(query: SubscriptionQueryDto, value: any): boolean {
@@ -165,7 +197,7 @@ export function equals(query: SubscriptionQueryDto, value: any): boolean {
  * Yields true if the value is not equal to the SubscriptionQueryDto or
  * false otherwise.
  * @param {SubscriptionQueryDto} query
- * @param {any} value 
+ * @param {any} value
  * @returns {boolean}
  */
 export function nequals(query: SubscriptionQueryDto, value: any): boolean {
@@ -176,7 +208,7 @@ export function nequals(query: SubscriptionQueryDto, value: any): boolean {
  * Yields true if the value is included in the SubscriptionQueryDto or false
  * otherwise.
  * @param {SubscriptionQueryDto} query
- * @param {any} value 
+ * @param {any} value
  * @returns {boolean}
  */
 export function or(query: SubscriptionQueryDto, value: any): boolean {
@@ -191,8 +223,8 @@ export function or(query: SubscriptionQueryDto, value: any): boolean {
 /**
  * Yields true if the SubscriptionQueryDto regex pattern exists in the value or
  * false otherwise.
- * @param {SubscriptionQueryDto} query 
- * @param {string} value 
+ * @param {SubscriptionQueryDto} query
+ * @param {string} value
  * @returns {boolean}
  */
 export function matches(query: SubscriptionQueryDto, value: string): boolean {
