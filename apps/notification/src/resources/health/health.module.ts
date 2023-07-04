@@ -1,4 +1,4 @@
-import { RedisHealthModule } from '@hermes/common';
+import { RedisHealthModule, TwilioHealthModule } from '@hermes/common';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { HealthController } from './health.controller';
   imports: [
     TerminusModule,
     HttpModule,
+    TwilioHealthModule,
     RedisHealthModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

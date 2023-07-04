@@ -1,4 +1,9 @@
-import { Public, RedisHealthIndicator } from '@hermes/common';
+import {
+  Public,
+  RedisHealthIndicator,
+  TwilioHealthIndicator,
+  TwilioHealthIndicatorOptions,
+} from '@hermes/common';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,6 +22,7 @@ export class HealthController {
     private readonly sequelizeIndicator: SequelizeHealthIndicator,
     private readonly redisIndicator: RedisHealthIndicator,
     private readonly httpIndicator: HttpHealthIndicator,
+    private readonly twilioIndicator: TwilioHealthIndicator,
     private readonly configService: ConfigService,
   ) {}
 
@@ -28,16 +34,28 @@ export class HealthController {
   })
   @HealthCheck()
   check() {
-    // Todo: Add health checks for Twilio.
+    const twilioOptions: TwilioHealthIndicatorOptions = {
+      accountSid: this.configService.get('TWILIO_SID'),
+      authToken: this.configService.get('TWILIO_AUTH_TOKEN'),
+    };
+    const mailerPassword = this.configService.get('MAILER_PASSWORD');
+
     return this.health.check([
       () => this.sequelizeIndicator.pingCheck('database'),
       () => this.redisIndicator.pingCheck('redis'),
+      () => this.twilioIndicator.pingCheck('twilio', twilioOptions),
       // Note: Health check for Send Grid is to verify the validity of the API Key.
       // Fixme: Move URL for verifying API Key to environment.
       () =>
-        this.httpIndicator.pingCheck('send-grid', 'https://api.sendgrid.com/v3/scopes', {
-          headers: { Authorization: `Bearer ${this.configService.get('MAILER_PASSWORD')}` },
-        }),
+        this.httpIndicator.pingCheck(
+          'send-grid',
+          'https://api.sendgrid.com/v3/scopes',
+          {
+            headers: {
+              Authorization: `Bearer ${mailerPassword}`,
+            },
+          },
+        ),
     ]);
   }
 }

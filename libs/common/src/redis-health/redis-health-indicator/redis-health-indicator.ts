@@ -16,7 +16,7 @@ export class RedisHealthIndicator extends HealthIndicator {
 
   constructor(@Inject(REDIS_OPTIONS_TOKEN) options: typeof REDIS_OPTIONS_TYPE) {
     super();
-    this._createConnection(options);
+    this._connect(options);
   }
 
   async pingCheck(key: string): Promise<HealthIndicatorResult> {
@@ -43,16 +43,16 @@ export class RedisHealthIndicator extends HealthIndicator {
     throw new HealthCheckError('Redis Error', result);
   }
 
-  private async _createConnection(
-    connection: typeof REDIS_OPTIONS_TYPE,
+  private async _connect(
+    options: typeof REDIS_OPTIONS_TYPE,
   ): Promise<void> {
-    if (connection instanceof Cluster) {
-      this.connection = connection;
+    if (options instanceof Cluster) {
+      this.connection = options;
     } else {
       this.connection = new Redis(
-        connection.port,
-        connection.host,
-        connection.options,
+        options.port,
+        options.host,
+        options.options,
       );
     }
   }

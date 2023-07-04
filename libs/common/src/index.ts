@@ -9,6 +9,8 @@ export * from './guards/api-key.guard';
 export * from './middleware/request-logger.middleware';
 export * from './redis-health/redis-health-indicator/redis-health-indicator';
 export * from './redis-health/redis-health.module';
+export * from './twilio-health/twilio-health-indicator/twilio-health-indicator';
+export * from './twilio-health/twilio-health.module';
 export * from './types/cache-options.type';
 export * from './types/delivery-methods.type';
 export * from './types/platform.type';
