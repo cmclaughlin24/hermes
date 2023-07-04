@@ -18,12 +18,12 @@ import {
 @Controller('health')
 export class HealthController {
   constructor(
+    private readonly configService: ConfigService,
     private readonly health: HealthCheckService,
+    private readonly httpIndicator: HttpHealthIndicator,
     private readonly sequelizeIndicator: SequelizeHealthIndicator,
     private readonly redisIndicator: RedisHealthIndicator,
-    private readonly httpIndicator: HttpHealthIndicator,
     private readonly twilioIndicator: TwilioHealthIndicator,
-    private readonly configService: ConfigService,
   ) {}
 
   @Get()
