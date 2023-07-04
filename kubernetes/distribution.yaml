@@ -98,3 +98,12 @@ spec:
                 configMapKeyRef:
                   name: env-store
                   key: notificationPrefix
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+              httpHeaders:
+                - name: Accept
+                  value: application/json
+            initialDelaySeconds: 5
+            periodSeconds: 5

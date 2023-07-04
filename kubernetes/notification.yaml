@@ -109,3 +109,12 @@ spec:
               value: ${VAPID_PUBLIC_KEY}
             - name: VAPID_PRIVATE_KEY
               value: ${VAPID_PRIVATE_KEY}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+              httpHeaders:
+                - name: Accept
+                  value: application/json
+            initialDelaySeconds: 5
+            periodSeconds: 5
