@@ -1,4 +1,4 @@
-import { RedisHealthModule } from '@hermes/common';
+import { RabbitMQHealthModule, RedisHealthModule } from '@hermes/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
@@ -8,6 +8,7 @@ import { HealthController } from './health.controller';
 @Module({
   imports: [
     TerminusModule,
+    RabbitMQHealthModule,
     RedisHealthModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
