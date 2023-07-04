@@ -1,4 +1,4 @@
-import { RedisHealthModule, TwilioHealthModule } from '@hermes/common';
+import { RedisHealthModule, TwilioHealthModule } from '@hermes/health';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';

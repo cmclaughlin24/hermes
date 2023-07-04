@@ -1,4 +1,4 @@
-import { RabbitMQHealthModule, RedisHealthModule } from '@hermes/common';
+import { RabbitMQHealthModule, RedisHealthModule } from '@hermes/health';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';

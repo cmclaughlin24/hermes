@@ -24,6 +24,12 @@
       ],
       "@hermes/common/*": [
         "libs/common/src/*"
+      ],
+      "@hermes/health": [
+        "libs/health/src"
+      ],
+      "@hermes/health/*": [
+        "libs/health/src/*"
       ]
     }
   }

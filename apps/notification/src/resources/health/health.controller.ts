@@ -1,9 +1,9 @@
+import { Public } from '@hermes/common';
 import {
-  Public,
   RedisHealthIndicator,
   TwilioHealthIndicator,
   TwilioHealthIndicatorOptions,
-} from '@hermes/common';
+} from '@hermes/health';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
