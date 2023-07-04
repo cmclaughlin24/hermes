@@ -24,6 +24,7 @@ export class HealthController {
   })
   @HealthCheck()
   check() {
+    // Todo: Implement a health check for RabbitMQ connection.
     return this.health.check([
       () => this.sequelizeIndicator.pingCheck('database'),
       () => this.redisIndicator.pingCheck('redis'),
