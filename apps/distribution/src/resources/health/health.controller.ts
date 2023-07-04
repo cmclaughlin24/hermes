@@ -1,5 +1,11 @@
-import { Public, RedisHealthIndicator } from '@hermes/common';
+import {
+  Public,
+  RabbitMQHealthIndicator,
+  RabbitMQHealthIndicatorOptions,
+  RedisHealthIndicator,
+} from '@hermes/common';
 import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
@@ -11,8 +17,10 @@ import {
 @Controller('health')
 export class HealthController {
   constructor(
+    private readonly configService: ConfigService,
     private readonly health: HealthCheckService,
     private readonly sequelizeIndicator: SequelizeHealthIndicator,
+    private readonly rabbitmqIndicator: RabbitMQHealthIndicator,
     private readonly redisIndicator: RedisHealthIndicator,
   ) {}
 
@@ -24,9 +32,13 @@ export class HealthController {
   })
   @HealthCheck()
   check() {
-    // Todo: Implement a health check for RabbitMQ connection.
+    const rabbitmqOptions: RabbitMQHealthIndicatorOptions = {
+      uri: this.configService.get('RABBITMQ_URI'),
+    };
+
     return this.health.check([
       () => this.sequelizeIndicator.pingCheck('database'),
+      () => this.rabbitmqIndicator.pingCheck('rabbitmq', rabbitmqOptions),
       () => this.redisIndicator.pingCheck('redis'),
     ]);
   }
