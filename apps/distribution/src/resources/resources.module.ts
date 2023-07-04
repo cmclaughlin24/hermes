@@ -6,6 +6,7 @@ import { DistributionLogModule } from './distribution-log/distribution-log.modul
 import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
 import { MessageModule } from './message/message.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     SubscriptionModule,
     MessageModule,
     DistributionEventModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })

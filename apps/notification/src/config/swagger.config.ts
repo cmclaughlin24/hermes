@@ -28,6 +28,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       'ApiKeyAuth',
     )
     .addTag(
+      'Health',
+      'Monitor the overall health, status, and availability of the application.',
+    )
+    .addTag(
       'Email Template',
       'View and configure templates that may be used when sending emails.',
     )

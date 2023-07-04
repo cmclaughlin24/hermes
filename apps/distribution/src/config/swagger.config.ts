@@ -26,6 +26,10 @@ export function setupSwaggerDocument(app: INestApplication) {
       },
       'ApiKeyAuth',
     )
+    .addTag(
+      'Health',
+      'Monitor the overall health, status, and availability of the application.',
+    )
     .addTag('Distribution Event', 'View and configure the events for a queue.')
     .addTag(
       'Distribution Log',

@@ -7,6 +7,7 @@ import { NotificationLogModule } from './notification-log/notification-log.modul
 import { NotificationModule } from './notification/notification.module';
 import { PhoneTemplateModule } from './phone-template/phone-template.module';
 import { PushTemplateModule } from './push-template/push-template.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PushTemplateModule } from './push-template/push-template.module';
     EmailTemplateModule,
     PhoneTemplateModule,
     PushTemplateModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
