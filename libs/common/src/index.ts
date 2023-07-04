@@ -7,6 +7,8 @@ export * from './dto/push-notification.dto';
 export * from './dto/push-subscription.dto';
 export * from './guards/api-key.guard';
 export * from './middleware/request-logger.middleware';
+export * from './redis-health/redis-health-indicator/redis-health-indicator';
+export * from './redis-health/redis-health.module';
 export * from './types/cache-options.type';
 export * from './types/delivery-methods.type';
 export * from './types/platform.type';
