@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailTemplateService } from '../../../../../notification/src/resources/email-template/email-template.service';
 import {
-    MockConfigService,
-    MockEmailTemplateService,
-    createConfigServiceMock,
-    createEmailTemplateServiceMock
+  MockConfigService,
+  MockEmailTemplateService,
+  createConfigServiceMock,
+  createEmailTemplateServiceMock
 } from '../../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { EmailService } from './email.service';
@@ -224,6 +224,7 @@ describe('EmailService', () => {
         },
       };
       emailTemplateService.findOne.mockResolvedValue({
+        subject: '{{title}}',
         template: '<h1>{{title}}</h1>',
       });
 
