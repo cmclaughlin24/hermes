@@ -22,6 +22,11 @@ export class RedisHealthIndicator
     this._connect(options);
   }
 
+  /**
+   * Checks if Redis responds in the amount of time specified in module options.
+   * @param {string} key
+   * @returns {Promise<HealthIndicatorResult>}
+   */
   async pingCheck(key: string): Promise<HealthIndicatorResult> {
     let pingError: Error;
 
@@ -46,6 +51,10 @@ export class RedisHealthIndicator
     throw new HealthCheckError('Redis Error', result);
   }
 
+  /**
+   * Establishes a connection to a Redis Server or Cluster.
+   * @param {typeof REDIS_OPTIONS_TYPE} options
+   */
   private _connect(options: typeof REDIS_OPTIONS_TYPE): void {
     if (options instanceof Cluster) {
       this.connection = options;
@@ -54,6 +63,10 @@ export class RedisHealthIndicator
     }
   }
 
+  /**
+   * Lifecycle hook method that disconnects from Redis during application shutdown. 
+   * @param {string} signal
+   */
   async onApplicationShutdown(signal?: string): Promise<void> {
     await this.connection?.quit();
   }
