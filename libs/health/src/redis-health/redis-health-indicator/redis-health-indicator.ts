@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import {
   HealthCheckError,
   HealthIndicator,
@@ -11,7 +11,10 @@ import {
 } from '../redis-health.module-definition';
 
 @Injectable()
-export class RedisHealthIndicator extends HealthIndicator {
+export class RedisHealthIndicator
+  extends HealthIndicator
+  implements OnApplicationShutdown
+{
   private connection: Redis | Cluster;
 
   constructor(@Inject(REDIS_OPTIONS_TOKEN) options: typeof REDIS_OPTIONS_TYPE) {
@@ -19,6 +22,11 @@ export class RedisHealthIndicator extends HealthIndicator {
     this._connect(options);
   }
 
+  /**
+   * Checks if Redis responds in the amount of time specified in module options.
+   * @param {string} key
+   * @returns {Promise<HealthIndicatorResult>}
+   */
   async pingCheck(key: string): Promise<HealthIndicatorResult> {
     let pingError: Error;
 
@@ -43,17 +51,23 @@ export class RedisHealthIndicator extends HealthIndicator {
     throw new HealthCheckError('Redis Error', result);
   }
 
-  private async _connect(
-    options: typeof REDIS_OPTIONS_TYPE,
-  ): Promise<void> {
+  /**
+   * Establishes a connection to a Redis Server or Cluster.
+   * @param {typeof REDIS_OPTIONS_TYPE} options
+   */
+  private _connect(options: typeof REDIS_OPTIONS_TYPE): void {
     if (options instanceof Cluster) {
       this.connection = options;
     } else {
-      this.connection = new Redis(
-        options.port,
-        options.host,
-        options.options,
-      );
+      this.connection = new Redis(options.port, options.host, options.options);
     }
   }
-} 
+
+  /**
+   * Lifecycle hook method that disconnects from Redis during application shutdown. 
+   * @param {string} signal
+   */
+  async onApplicationShutdown(signal?: string): Promise<void> {
+    await this.connection?.quit();
+  }
+}

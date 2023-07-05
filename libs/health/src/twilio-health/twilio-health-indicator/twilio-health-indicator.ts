@@ -9,6 +9,12 @@ export interface TwilioHealthIndicatorOptions {
 
 @Injectable()
 export class TwilioHealthIndicator extends HealthIndicator {
+  /**
+   * Checks if Twilio responds and returns an account instance that has a status of active.
+   * @param {string} key The key which will be used for the result object
+   * @param {TwilioHealthIndicatorOptions} options The options for the ping
+   * @returns {Promise<HealthIndicatorResult>}
+   */
   async pingCheck(
     key: string,
     options: TwilioHealthIndicatorOptions,
