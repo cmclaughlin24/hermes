@@ -23,7 +23,7 @@ import { HealthController } from './health.controller';
         if (configService.get('ENABLE_REDIS_CLUSTER')) {
           return new Cluster([{ host, port }], {
             enableOfflineQueue: false,
-            redisOptions: { commandTimeout },
+            redisOptions: { commandTimeout: 1000 },
           });
         }
 
