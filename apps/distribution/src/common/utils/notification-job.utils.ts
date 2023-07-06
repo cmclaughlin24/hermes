@@ -130,8 +130,8 @@ export function isBetweenTimes(
 
 /**
  * Yields a preconfigured function with the delivery methods. The resulting preconfigured function
- * reduces a list of SubscriptionDataDtos into a Map where the key is the delivery method and the
- * value is a Set of recipients.
+ * reduces a SubscriptionDataDto into a Map where the key is the delivery method and the
+ * value is a list of recipients.
  * @param {DeliveryMethods[]} deliveryMethods
  * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionDataDto) => Map<DeliveryMethods, Recipient[]>}
  */

@@ -1,11 +1,13 @@
-import { DeliveryMethods, Platform } from '@hermes/common';
+import { DeliveryMethods, Platform, PushSubscriptionDto } from '@hermes/common';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriptionDto } from '../dto/device-subscription.dto';
+import { DistributionMessageDto } from '../dto/distribution-message.dto';
 import { SubscriptionDataDto } from '../dto/subscription-data.dto';
 import { UserSubscriptionDto } from '../dto/user-subscription.dto';
 import {
+  createNotificationJobs,
   hasDeliveryMethods,
   hasDeliveryWindow,
   isBetweenTimes,
@@ -13,7 +15,99 @@ import {
 } from './notification-job.utils';
 
 describe('notification-job.utils.ts', () => {
-  describe('createNotificationJobs()', () => {});
+  describe('createNotificationJobs()', () => {
+    it('should yield a list of notification jobs', () => {
+      // Arrange.
+      const distributionRule = {
+        checkDeliveryWindow: false,
+        deliveryMethods: [
+          DeliveryMethods.EMAIL,
+          DeliveryMethods.PUSH,
+          DeliveryMethods.SMS,
+        ],
+        text: 'the-manual-for-the-original-mario-kart-encouraged-screen-peeking',
+        emailTemplate: 'super-mario-kart',
+        smsTemplate: 'super-mario-kart',
+        pushTemplate: 'super-mario-kart',
+      } as DistributionRule;
+      const subscription1 = new UserSubscriptionDto();
+      subscription1.deliveryMethods = [
+        DeliveryMethods.EMAIL,
+        DeliveryMethods.SMS,
+      ];
+      subscription1.email = 'nolan.bushnell@atari.com';
+      subscription1.phoneNumber = '+12345678910';
+      const subscription2 = new UserSubscriptionDto();
+      subscription2.deliveryMethods = [DeliveryMethods.EMAIL];
+      subscription2.email = 'johnathan.blackley@xbox.com';
+      subscription2.phoneNumber = null;
+      const subscription3 = new DeviceSubscriptionDto();
+      subscription3.platform = Platform.IOS;
+      subscription3.subscription = {} as PushSubscriptionDto;
+      const subscriptions: SubscriptionDataDto[] = [
+        subscription1,
+        subscription2,
+        subscription3,
+      ];
+      const messageDto = {} as DistributionMessageDto;
+      const expectedResult = [
+        {
+          name: 'email',
+          data: {
+            to: 'nolan.bushnell@atari.com',
+            timeZone: undefined,
+            subject: undefined,
+            text: 'the-manual-for-the-original-mario-kart-encouraged-screen-peeking',
+            template: 'super-mario-kart',
+            html: undefined,
+            context: undefined,
+          },
+        },
+        {
+          name: 'email',
+          data: {
+            to: 'johnathan.blackley@xbox.com',
+            timeZone: undefined,
+            subject: undefined,
+            text: 'the-manual-for-the-original-mario-kart-encouraged-screen-peeking',
+            template: 'super-mario-kart',
+            html: undefined,
+            context: undefined,
+          },
+        },
+        {
+          name: 'sms',
+          data: {
+            to: '+12345678910',
+            timeZone: undefined,
+            template: 'super-mario-kart',
+            body: 'the-manual-for-the-original-mario-kart-encouraged-screen-peeking',
+            context: undefined,
+          },
+        },
+        {
+          name: 'push-notification',
+          data: {
+            subscription: {},
+            template: 'super-mario-kart',
+            platform: 'ios',
+            timeZone: undefined,
+            context: undefined,
+          },
+        },
+      ];
+
+      // Act.
+      const result = createNotificationJobs(
+        distributionRule,
+        subscriptions,
+        messageDto,
+      );
+
+      // Assert.
+      expect(result).toEqual(expectedResult);
+    });
+  });
 
   describe('hasDeliveryMethods()', () => {
     it('should yield true if a subscription has at least one delivery method enabled', () => {
@@ -199,7 +293,9 @@ describe('notification-job.utils.ts', () => {
     });
   });
 
-  describe('reduceToDeliveryMethodsMap()', () => {});
+  describe('reduceToDeliveryMethodsMap()', () => {
+    // Todo: Unit Test the reduceToDevliveryMethodsMap function.
+  });
 
   describe('mapToNotificationJobs()', () => {
     it('should yield a list of unique notification jobs (email)', () => {
