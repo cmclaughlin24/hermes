@@ -38,7 +38,7 @@ export class MqInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     if (!isRabbitContext(context)) {
-      return;
+      return next.handle();
     }
 
     const rpc: RpcArgumentsHost = context.switchToRpc();
