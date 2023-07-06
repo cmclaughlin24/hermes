@@ -32,7 +32,7 @@ export function createNotificationJobs(
   return _.chain(subscriptionDtos)
     .filter(
       (dto) =>
-        hasDeliveryMethods(distributionRule, dto) &&
+        hasDeliveryMethods(distributionRule.deliveryMethods, dto) &&
         hasDeliveryWindow(distributionRule, dto),
     )
     .reduce(
@@ -54,19 +54,19 @@ export function createNotificationJobs(
 }
 
 /**
- * Yields true if a SubscriptonDataDto has at least one of the distribution rule's delivery
- * method(s) enabled or false otherwise.
- * @param {DistributionRule} distributionRule
+ * Yields true if a SubscriptonDataDto has at least one of the delivery method(s) enabled
+ * or false otherwise.
+ * @param {deliveryMethods[]} deliveryMethods
  * @param {SubscriptionDataDto} dto
  * @returns {boolean}
  */
 export function hasDeliveryMethods(
-  distributionRule: DistributionRule,
+  deliveryMethods: DeliveryMethods[],
   dto: SubscriptionDataDto,
 ): boolean {
   return !_.isEmpty(
     // Example: _.intersection(['email'], ['email', 'sms']) => ['email']
-    _.intersection(distributionRule.deliveryMethods, dto.deliveryMethods),
+    _.intersection(deliveryMethods, dto.deliveryMethods),
   );
 }
 
@@ -76,7 +76,7 @@ export function hasDeliveryMethods(
  * the delivery window. Yields false otherwise.
  * @param {DistributionRule} distributionRule
  * @param {SubscriptionDataDto} dto
- * @returns
+ * @returns {boolean}
  */
 export function hasDeliveryWindow(
   distributionRule: DistributionRule,
@@ -90,7 +90,7 @@ export function hasDeliveryWindow(
   }
 
   const zonedNow = DateTime.now().setZone(dto.timeZone);
-  const deliveryWindows = dto.getDeliveryWindows(zonedNow.weekday - 1);
+  const deliveryWindows = dto.getDeliveryWindows(zonedNow.weekday % 7);
 
   if (_.isEmpty(deliveryWindows)) {
     return false;
@@ -108,8 +108,8 @@ export function hasDeliveryWindow(
 /**
  * Yields true if the time argument is greater than or equal to the start time and less than or equal
  * to the end time (startTime + duration in minutes) or false otherwise.
- * @param {Date} time
- * @param {Date} startTime
+ * @param {DateTime} time
+ * @param {DateTime} startTime
  * @param {number} duration
  * @returns {boolean}
  */
