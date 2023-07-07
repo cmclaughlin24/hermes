@@ -66,10 +66,11 @@ export class SubscriptionDataService {
       map.delete(SubscriptionType.REQUEST);
     }
 
-    return [
-      ...(map.get(SubscriptionType.USER) as UserSubscriptionDto[]),
-      ...(map.get(SubscriptionType.DEVICE) as DeviceSubscriptionDto[]),
-    ];
+    return _.chain(map)
+      .toPairs()
+      .map(([key, values]) => values)
+      .flatten()
+      .value();
   }
 
   async createDto(subscription: Subscription): Promise<SubscriptionData> {
@@ -204,7 +205,7 @@ export class SubscriptionDataService {
 
     return this.httpService.get(`${url}?${params.toString()}`).pipe(
       map((response) => this.mapToUserSubscriptionDtos(response.data)),
-      // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried? 
+      // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried?
       catchError((error: AxiosError) => {
         this.logger.error(
           `Request for subscription data from ${url} failed: ${error.message}`,
