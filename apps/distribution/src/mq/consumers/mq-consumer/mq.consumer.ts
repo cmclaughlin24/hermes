@@ -1,6 +1,6 @@
 import { MessageDto } from '@hermes/common';
 import { validateOrReject } from 'class-validator';
-import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 
 // Note: MqConsumer is a parent class for storing commonized functionality required
 //       by all consumers.

@@ -7,7 +7,6 @@ import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
-import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { SubscriptionDataDto } from '../../../common/dto/subscription-data.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
@@ -18,6 +17,7 @@ import { DistributionEventService } from '../../../resources/distribution-event/
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
 @UseInterceptors(MqInterceptor)
