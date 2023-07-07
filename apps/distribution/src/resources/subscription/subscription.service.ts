@@ -277,7 +277,8 @@ export class SubscriptionService {
             subscriptionId: subscription.id,
             field: filter.field,
             operator: filter.operator,
-            query: filter.query,
+            value: filter.value,
+            dataType: filter.dataType,
           },
           { transaction },
         );
@@ -285,7 +286,8 @@ export class SubscriptionService {
         await existingFilter.update(
           {
             operator: filter.operator ?? existingFilter.operator,
-            query: filter.query ?? existingFilter.query,
+            value: filter.value ?? existingFilter.value,
+            dataType: filter.dataType ?? existingFilter.value,
           },
           { transaction },
         );

@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsEnum, IsString, Matches, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsString, Matches } from 'class-validator';
 import { FilterOps } from '../../../common/types/filter.type';
-import { SubscriptionQueryDto } from './subscription-query.dto';
 
 export class SubscriptionFilterDto {
   @ApiProperty({
@@ -15,13 +13,23 @@ export class SubscriptionFilterDto {
   field: string;
 
   @ApiProperty({
-    description: 'Operator to use for the filter.',
+    description: 'Operator to use for the filter',
     enum: FilterOps,
   })
   @IsEnum(FilterOps)
   operator: FilterOps;
 
-  @ValidateNested()
-  @Type(() => SubscriptionQueryDto)
-  query: SubscriptionQueryDto;
+  @ApiProperty({
+    description: 'Data type of the filter "value" field',
+    example: 'string',
+  })
+  @IsString()
+  dataType: string;
+
+  @ApiProperty({
+    description: 'Value(s) to be checked for',
+    example: 'The Legend of Zelda: Link to the Past',
+  })
+  @Allow()
+  value: any;
 }

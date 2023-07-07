@@ -1,8 +1,8 @@
 import * as flatten from 'flat';
 import * as _ from 'lodash';
-import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
+import { SubscriptionQuery } from '../classes/subscription-query.class';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 
 /**
@@ -69,10 +69,11 @@ export function evaluateFilter(
   payload: any,
 ): boolean {
   const flatPayload = flatten(payload);
+  const query = new SubscriptionQuery(filter.dataType, filter.value);
   let isMatch = false;
 
   if (!hasArrayNotation(filter.field)) {
-    isMatch = compare(filter.operator, filter.query, flatPayload[filter.field]);
+    isMatch = compare(filter.operator, query, flatPayload[filter.field]);
   } else {
     // Bug: When using an array notation, the FilterJoinOps will match across objects in arrays. For example,
     //      object.*.hello equals world and object.*.test equals test will return true object.[0].hello and
@@ -86,7 +87,7 @@ export function evaluateFilter(
         continue;
       }
 
-      isMatch = compare(filter.operator, filter.query, flatPayload[key]);
+      isMatch = compare(filter.operator, query, flatPayload[key]);
 
       if (isMatch) {
         break;
@@ -147,18 +148,18 @@ export function hasArrayNotation(field: string): boolean {
  * Yields a boolean value that indicates whether or not the value meets the
  * comparison's criteria.
  * @param {FilterOps} operator
- * @param {SubscriptionQueryDto} query
+ * @param {SubscriptionQuery} query
  * @param {any} value
  * @returns {boolean}
  */
 export function compare(
   operator: FilterOps,
-  query: SubscriptionQueryDto,
+  query: SubscriptionQuery,
   value: any,
 ): boolean {
   // Todo: Improve compare function by adding type conversion/validation based on the "dataType"
-  //       field of the SubscriptionQueryDto.
-  let evalFn: (query: SubscriptionQueryDto, value) => boolean;
+  //       field of the SubscriptionQuery.
+  let evalFn: (query: SubscriptionQuery, value) => boolean;
 
   switch (operator) {
     case FilterOps.EQUALS:
@@ -183,35 +184,35 @@ export function compare(
 }
 
 /**
- * Yields true if the value is equal to the SubscriptionQueryDto or
+ * Yields true if the value is equal to the SubscriptionQuery or
  * false otherwise.
  * @param {query} query
  * @param {any} value
  * @returns {boolean}
  */
-export function equals(query: SubscriptionQueryDto, value: any): boolean {
+export function equals(query: SubscriptionQuery, value: any): boolean {
   return query.value === value;
 }
 
 /**
- * Yields true if the value is not equal to the SubscriptionQueryDto or
+ * Yields true if the value is not equal to the SubscriptionQuery or
  * false otherwise.
- * @param {SubscriptionQueryDto} query
+ * @param {SubscriptionQuery} query
  * @param {any} value
  * @returns {boolean}
  */
-export function nequals(query: SubscriptionQueryDto, value: any): boolean {
+export function nequals(query: SubscriptionQuery, value: any): boolean {
   return query.value !== value;
 }
 
 /**
- * Yields true if the value is included in the SubscriptionQueryDto or false
+ * Yields true if the value is included in the SubscriptionQuery or false
  * otherwise.
- * @param {SubscriptionQueryDto} query
+ * @param {SubscriptionQuery} query
  * @param {any} value
  * @returns {boolean}
  */
-export function or(query: SubscriptionQueryDto, value: any): boolean {
+export function or(query: SubscriptionQuery, value: any): boolean {
   if (!Array.isArray(query.value)) {
     throw new Error(
       `Invalid Argument: When using OR, query must be array; recieved ${typeof query.value} instead`,
@@ -221,13 +222,13 @@ export function or(query: SubscriptionQueryDto, value: any): boolean {
 }
 
 /**
- * Yields true if the SubscriptionQueryDto regex pattern exists in the value or
+ * Yields true if the SubscriptionQuery regex pattern exists in the value or
  * false otherwise.
- * @param {SubscriptionQueryDto} query
+ * @param {SubscriptionQuery} query
  * @param {string} value
  * @returns {boolean}
  */
-export function matches(query: SubscriptionQueryDto, value: string): boolean {
+export function matches(query: SubscriptionQuery, value: string): boolean {
   if (typeof query.value !== 'string') {
     throw new Error(
       `Invalid Argument: When using MATCHES, query must be string; recieved ${typeof query.value} instead`,

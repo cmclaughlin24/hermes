@@ -7,7 +7,6 @@ import {
   Table
 } from 'sequelize-typescript';
 import { FilterOps } from '../../../common/types/filter.type';
-import { SubscriptionQueryDto } from '../dto/subscription-query.dto';
 import { Subscription } from './subscription.entity';
 
 @Table
@@ -27,8 +26,11 @@ export class SubscriptionFilter extends Model {
   @Column
   operator: FilterOps;
 
+  @Column
+  dataType: string;
+
   @Column({ type: DataType.JSON })
-  query: SubscriptionQueryDto;
+  value: any;
 
   @BelongsTo(() => Subscription)
   subscription: Subscription;
