@@ -287,10 +287,8 @@ describe('SubscriptionService', () => {
         {
           field: 'unit-test',
           operator: FilterOps.EQUALS,
-          query: {
-            value: 'Legend of Zelda: Tears of the Kingdom',
-            dataType: 'string',
-          },
+          value: 'Legend of Zelda: Tears of the Kingdom',
+          dataType: 'string',
         },
       ];
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
@@ -313,10 +311,8 @@ describe('SubscriptionService', () => {
           {
             field: 'unit-test',
             operator: FilterOps.EQUALS,
-            query: {
-              value: 'Legend of Zelda: Tears of the Kingdom',
-              dataType: 'string',
-            },
+            value: 'Legend of Zelda: Tears of the Kingdom',
+            dataType: 'string',
             destroy: jest.fn(),
           },
         ],

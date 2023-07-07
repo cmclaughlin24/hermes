@@ -1,6 +1,6 @@
-import { SubscriptionQueryDto } from '../../resources/subscription/dto/subscription-query.dto';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
+import { SubscriptionQuery } from '../classes/subscription-query.class';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 import {
   compare,
@@ -53,18 +53,14 @@ describe('subscription-filter.utils.ts', () => {
             {
               field: 'games.*.developer',
               operator: FilterOps.EQUALS,
-              query: {
-                dataType: 'string',
-                value: 'Nintendo',
-              },
+              dataType: 'string',
+              value: 'Nintendo',
             } as SubscriptionFilter,
             {
               field: 'console',
               operator: FilterOps.MATCHES,
-              query: {
-                dataType: 'string',
-                value: 'Game',
-              },
+              dataType: 'string',
+              value: 'Game',
             } as SubscriptionFilter,
           ],
         } as Subscription,
@@ -74,18 +70,14 @@ describe('subscription-filter.utils.ts', () => {
             {
               field: 'games.*.releaseDate.year',
               operator: FilterOps.EQUALS,
-              query: {
-                dataType: 'number',
-                value: 1999,
-              },
+              dataType: 'number',
+              value: 1999,
             } as SubscriptionFilter,
             {
               field: 'games.*.name',
               operator: FilterOps.OR,
-              query: {
-                dataType: 'array',
-                value: ['Scooby-Doo: Night of 100 Frights', 'Sonic Riders'],
-              },
+              dataType: 'array',
+              value: ['Scooby-Doo: Night of 100 Frights', 'Sonic Riders'],
             } as SubscriptionFilter,
           ],
         } as Subscription,
@@ -120,18 +112,14 @@ describe('subscription-filter.utils.ts', () => {
             {
               field: 'games.*.developer',
               operator: FilterOps.EQUALS,
-              query: {
-                dataType: 'string',
-                value: 'Nintendo',
-              },
+              dataType: 'string',
+              value: 'Nintendo',
             } as SubscriptionFilter,
             {
               field: 'console',
               operator: FilterOps.MATCHES,
-              query: {
-                dataType: 'string',
-                value: 'Game',
-              },
+              dataType: 'string',
+              value: 'Game',
             } as SubscriptionFilter,
           ],
         } as Subscription,
@@ -181,18 +169,14 @@ describe('subscription-filter.utils.ts', () => {
           {
             field: 'consoles.*.name',
             operator: FilterOps.EQUALS,
-            query: {
-              dataType: 'string',
-              value: 'Nintendo Switch',
-            },
+            dataType: 'string',
+            value: 'Nintendo Switch',
           } as SubscriptionFilter,
           {
             field: 'consoles.*.games.*',
             operator: FilterOps.OR,
-            query: {
-              dataType: 'array',
-              value: ['Legend of Zelda: Breath of the Wild'],
-            },
+            dataType: 'array',
+            value: ['Legend of Zelda: Breath of the Wild'],
           } as SubscriptionFilter,
         ],
       } as Subscription;
@@ -220,18 +204,14 @@ describe('subscription-filter.utils.ts', () => {
           {
             field: 'consoles.*.name',
             operator: FilterOps.MATCHES,
-            query: {
-              dataType: 'string',
-              value: 'Xbox',
-            },
+            dataType: 'string',
+            value: 'Xbox',
           } as SubscriptionFilter,
           {
             field: 'consoles.*.games.*',
             operator: FilterOps.EQUALS,
-            query: {
-              dataType: 'string',
-              value: 'Titanfall',
-            },
+            dataType: 'string',
+            value: 'Titanfall',
           } as SubscriptionFilter,
         ],
       } as Subscription;
@@ -257,10 +237,8 @@ describe('subscription-filter.utils.ts', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.EQUALS,
-        query: {
-          dataType: 'string',
-          value: 'Xbox Series X',
-        },
+        dataType: 'string',
+        value: 'Xbox Series X',
         field: 'console',
       } as SubscriptionFilter;
 
@@ -275,10 +253,8 @@ describe('subscription-filter.utils.ts', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.OR,
-        query: {
-          dataType: 'string',
-          value: ['Tales of Arise'],
-        },
+        dataType: 'string',
+        value: ['Tales of Arise'],
         field: 'games.*',
       } as SubscriptionFilter;
 
@@ -293,10 +269,8 @@ describe('subscription-filter.utils.ts', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.NEQUALS,
-        query: {
-          dataType: 'number',
-          value: 2020,
-        },
+        dataType: 'number',
+        value: 2020,
         field: 'releaseDate.year',
       } as SubscriptionFilter;
 
@@ -311,10 +285,8 @@ describe('subscription-filter.utils.ts', () => {
       // Arrange.
       const filter = {
         operator: FilterOps.MATCHES,
-        query: {
-          dataType: 'string',
-          value: 'Gears of War',
-        },
+        dataType: 'string',
+        value: 'Gears of War',
         field: 'games.*',
       } as SubscriptionFilter;
 
@@ -427,7 +399,7 @@ describe('subscription-filter.utils.ts', () => {
   describe('compare()', () => {
     it('should yield the result of the comparison function (equals)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'Star Wars: Battlefront II',
       };
@@ -442,7 +414,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should yield the result of the comparison function (nequals)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'boolean',
         value: true,
       };
@@ -457,7 +429,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should yield the result of the comparison function (or)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'array',
         value: [1, 2, 3, 4, 5],
       };
@@ -472,7 +444,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should yield the result of the comparison function (matches)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: '^Halo: The Master Chief Collection$',
       };
@@ -493,7 +465,7 @@ describe('subscription-filter.utils.ts', () => {
       );
 
       // Act.
-      const fn = compare.bind(null, operator, {} as SubscriptionQueryDto, null);
+      const fn = compare.bind(null, operator, {} as SubscriptionQuery, null);
 
       // Assert.
       expect(fn).toThrow(expectedResult);
@@ -501,9 +473,9 @@ describe('subscription-filter.utils.ts', () => {
   });
 
   describe('equals()', () => {
-    it('should yield true if the value argument is equal to the SubscriptionQueryDto (string)', () => {
+    it('should yield true if the value argument is equal to the SubscriptionQuery (string)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'Super Smash Bros: Melee',
       };
@@ -516,9 +488,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if the value argument is equal to the SubscriptionQueryDto (number)', () => {
+    it('should yield true if the value argument is equal to the SubscriptionQuery (number)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'number',
         value: 18,
       };
@@ -531,9 +503,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if the value argument is equal to the SubscriptionQueryDto (boolean)', () => {
+    it('should yield true if the value argument is equal to the SubscriptionQuery (boolean)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'boolean',
         value: true,
       };
@@ -546,9 +518,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false if the value argument is not equal to the SubscriptionQueryDto (string)', () => {
+    it('should yield false if the value argument is not equal to the SubscriptionQuery (string)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'Super Smash Bros: Melee',
       };
@@ -561,9 +533,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should yield false if the value argument is not equal to the SubscriptionQueryDto (number)', () => {
+    it('should yield false if the value argument is not equal to the SubscriptionQuery (number)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'number',
         value: 18,
       };
@@ -576,9 +548,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should yield false if the value argument is not equal to the SubscriptionQueryDto (boolean)', () => {
+    it('should yield false if the value argument is not equal to the SubscriptionQuery (boolean)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'boolean',
         value: true,
       };
@@ -593,9 +565,9 @@ describe('subscription-filter.utils.ts', () => {
   });
 
   describe('nequals()', () => {
-    it('should yield true if the value argument is not equal to the SubscriptionQueryDto (string)', () => {
+    it('should yield true if the value argument is not equal to the SubscriptionQuery (string)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'Legend of Zelda: Tears of the Kingdom',
       };
@@ -608,9 +580,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if the value argument is not equal to the SubscriptionQueryDto (number)', () => {
+    it('should yield true if the value argument is not equal to the SubscriptionQuery (number)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'number',
         value: 69,
       };
@@ -623,9 +595,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if the value argument is not equal to the SubscriptionQueryDto (boolean)', () => {
+    it('should yield true if the value argument is not equal to the SubscriptionQuery (boolean)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'boolean',
         value: true,
       };
@@ -638,9 +610,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false if the value arugment is equal to the SubscriptionQueryDto (string)', () => {
+    it('should yield false if the value arugment is equal to the SubscriptionQuery (string)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'Super Mario Sunshine',
       };
@@ -653,9 +625,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should yield false if the value arugment is equal to the SubscriptionQueryDto (number)', () => {
+    it('should yield false if the value arugment is equal to the SubscriptionQuery (number)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'number',
         value: 69,
       };
@@ -668,9 +640,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should yield false if the value arugment is equal to the SubscriptionQueryDto (boolean)', () => {
+    it('should yield false if the value arugment is equal to the SubscriptionQuery (boolean)', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'boolean',
         value: true,
       };
@@ -685,9 +657,9 @@ describe('subscription-filter.utils.ts', () => {
   });
 
   describe('or()', () => {
-    it('should yield true if is included in the SubscriptionQueryDto', () => {
+    it('should yield true if is included in the SubscriptionQuery', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'array',
         value: ['apple', 'watermelon', 'peach', 'banana'],
       };
@@ -700,9 +672,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false if the value argument is not included in the SubscriptionQueryDto', () => {
+    it('should yield false if the value argument is not included in the SubscriptionQuery', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'array',
         value: [1, 3, 5, 7, 9],
       };
@@ -717,7 +689,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should throw an error if the value property of the query argument is not an array', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'unit-test',
       };
@@ -734,9 +706,9 @@ describe('subscription-filter.utils.ts', () => {
   });
 
   describe('matches()', () => {
-    it('should yield true if the regex pattern defined in the SubscriptionQueryDto exists in the value argument', () => {
+    it('should yield true if the regex pattern defined in the SubscriptionQuery exists in the value argument', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'unit-test',
       };
@@ -749,9 +721,9 @@ describe('subscription-filter.utils.ts', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false if the regex pattern defined in the SubscriptionQueryDto does not exist in the value argument', () => {
+    it('should yield false if the regex pattern defined in the SubscriptionQuery does not exist in the value argument', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'unit-test',
       };
@@ -766,7 +738,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should throw an error if the value property of the query argument is not a string', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'number',
         value: 1,
       };
@@ -783,7 +755,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should throw an error if the value argument is not a string', () => {
       // Arrange.
-      const query: SubscriptionQueryDto = {
+      const query: SubscriptionQuery = {
         dataType: 'string',
         value: 'unit-test',
       };
