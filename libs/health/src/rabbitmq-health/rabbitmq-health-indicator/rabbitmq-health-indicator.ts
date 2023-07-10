@@ -1,4 +1,3 @@
-import { TwilioHealthIndicatorOptions } from '@hermes/health/twilio-health/twilio-health-indicator/twilio-health-indicator';
 import { Injectable } from '@nestjs/common';
 import {
   HealthCheckError,
@@ -16,7 +15,7 @@ export class RabbitMQHealthIndicator extends HealthIndicator {
   /**
    * Checks if the RabbitMQ server responds and returns a connection instance.
    * @param {string} key The key which will be used for the result object
-   * @param {TwilioHealthIndicatorOptions} options The options for the ping
+   * @param {RabbitMQHealthIndicatorOptions} options The options for the ping
    * @returns {Promise<HealthIndicatorResult>}
    */
   async pingCheck(

@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { DistributionEventService } from '../../src/resources/distribution-event/distribution-event.service';
+import { DistributionLogService } from '../../src/resources/distribution-log/distribution-log.service';
 import { DistributionRuleService } from '../../src/resources/distribution-rule/distribution-rule.service';
 import { SubscriptionService } from '../../src/resources/subscription/subscription.service';
 
@@ -22,12 +23,13 @@ export const createDistributionEventServiceMock = (): MockDistributionEventServi
 });
 
 export type MockDistributionLogService = Partial<
-  Record<keyof SubscriptionService, jest.Mock>
+  Record<keyof DistributionLogService, jest.Mock>
 >;
 
 export const createDistributionLogServiceMock = (): MockDistributionLogService => ({
   findAll: jest.fn(),
   findOne: jest.fn(),
+  log: jest.fn(),
 });
 
 export type MockDistributionRuleService = Partial<
