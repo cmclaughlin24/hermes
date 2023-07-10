@@ -19,12 +19,12 @@ export class CreateDistributionEventDto {
   queue: string;
 
   @ApiProperty({
-    description: 'Name of the message (event)',
+    description: 'Type of the event',
   })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  messageType: string;
+  eventType: string;
 
   @ApiProperty({
     description:

@@ -6,7 +6,7 @@ import { Subscription } from '../../subscription/entities/subscription.entity';
   indexes: [
     {
       unique: true,
-      fields: ['queue', 'messageType'],
+      fields: ['queue', 'eventType'],
     },
   ],
 })
@@ -22,7 +22,7 @@ export class DistributionEvent extends Model {
   queue: string;
 
   @Column
-  messageType: string;
+  eventType: string;
 
   @Column(DataType.ARRAY(DataType.STRING))
   metadataLabels: string[];

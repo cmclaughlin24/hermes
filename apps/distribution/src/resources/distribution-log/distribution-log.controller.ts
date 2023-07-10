@@ -31,7 +31,7 @@ export class DistributionLogController {
     description: 'A list of Rabbitmq queues.',
   })
   @ApiQuery({
-    name: 'messageType',
+    name: 'eventType',
     required: false,
     type: String,
     isArray: true,
@@ -53,17 +53,17 @@ export class DistributionLogController {
     )
     queues: string[],
     @Query(
-      'messageType',
+      'eventType',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
-    messageTypes: string[],
+    eventTypes: string[],
     @Query(
       'state',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
     states: string[],
   ) {
-    return this.distributionLogService.findAll(queues, messageTypes, states);
+    return this.distributionLogService.findAll(queues, eventTypes, states);
   }
 
   @Get(':id')

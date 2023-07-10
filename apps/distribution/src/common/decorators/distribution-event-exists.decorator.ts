@@ -18,13 +18,13 @@ export class DistributionEventExistsRule
   ) {}
 
   async validate(
-    messageType: string,
+    eventType: string,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
       await this.distributionEventService.findOne(
         validationArguments.object['queue'],
-        messageType,
+        eventType,
       );
     } catch (error) {
       return false;
@@ -34,7 +34,7 @@ export class DistributionEventExistsRule
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `Distribution Event for queue=${validationArguments.object['queue']} messageType=${validationArguments.value} doesn't exist`;
+    return `Distribution Event for queue=${validationArguments.object['queue']} eventType=${validationArguments.value} doesn't exist`;
   }
 }
 

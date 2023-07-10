@@ -17,6 +17,7 @@ import { DistributionEventService } from '../../../resources/distribution-event/
 import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
 import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
+import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
@@ -74,7 +75,7 @@ export class DistributionConsumer extends MqConsumer {
       );
 
       if (_.isEmpty(subscriptonDtos)) {
-        return { message: `` };
+        return new MqResponse('');
       }
 
       const jobs = createNotificationJobs(
@@ -84,12 +85,12 @@ export class DistributionConsumer extends MqConsumer {
       );
 
       if (_.isEmpty(jobs)) {
-        return { message: `` };
+        return new MqResponse('');
       }
 
       await this.notificationQueue.addBulk(jobs);
 
-      return { message: `` };
+      return new MqResponse('');
     } catch (error) {
       // Note: The MqInterceptor will be handled the error and determine if a message
       //       should be retried or not.
@@ -153,7 +154,7 @@ export class DistributionConsumer extends MqConsumer {
 
       if (!rule) {
         throw new MqUnrecoverableError(
-          `Distribution Event queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} does not have a default distribution rule defined!`,
+          `Distribution Event queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} does not have a default distribution rule defined!`,
         );
       }
     }

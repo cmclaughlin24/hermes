@@ -37,7 +37,7 @@ export class DistributionRuleController {
     description: 'A list of Rabbitmq queues.',
   })
   @ApiQuery({
-    name: 'messageType',
+    name: 'eventType',
     required: false,
     type: String,
     isArray: true,
@@ -52,12 +52,12 @@ export class DistributionRuleController {
     )
     queues: string[],
     @Query(
-      'messageType',
+      'eventType',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
-    messageTypes: string[],
+    eventTypes: string[],
   ) {
-    return this.distributionRuleService.findAll(queues, messageTypes);
+    return this.distributionRuleService.findAll(queues, eventTypes);
   }
 
   @Get(':id')

@@ -25,12 +25,12 @@ export class DistributionRuleService {
    * Yields a list of DistributionRules or throws a NotFoundException if the
    * repository return null, undefined, or an empty list.
    * @param {string[]} queues
-   * @param {string[]} messageTypes
+   * @param {string[]} eventTypes
    * @returns {Promise<DistributionRule[]>}
    */
-  async findAll(queues: string[], messageTypes: string[]) {
+  async findAll(queues: string[], eventTypes: string[]) {
     const distributionRules = await this.distributionRuleModel.findAll({
-      where: this._buildWhereClause(queues, messageTypes),
+      where: this._buildWhereClause(queues, eventTypes),
       include: [{ model: DistributionEvent }],
       attributes: { exclude: ['event'] },
     });
@@ -62,7 +62,7 @@ export class DistributionRuleService {
 
   /**
    * Creates a DistributionRule or throws a NotFoundException if a DistributionEvent
-   * does not exist in the repository for the queue and messageType.
+   * does not exist in the repository for the queue and eventType.
    * @param {CreateDistributionRuleDto} createDistributionRuleDto
    * @returns {Promise<ApiResponseDto<DistributionRule>>}
    */
@@ -70,7 +70,7 @@ export class DistributionRuleService {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       createDistributionRuleDto.queue,
-      createDistributionRuleDto.messageType,
+      createDistributionRuleDto.eventType,
     );
 
     if (!createDistributionRuleDto.metadata) {
@@ -94,7 +94,7 @@ export class DistributionRuleService {
     });
 
     return new ApiResponseDto(
-      `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,
+      `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
       distributionRule,
     );
   }
@@ -167,10 +167,10 @@ export class DistributionRuleService {
    * Yields an object containing key-value pairs with the filter(s) (queues and/or
    * messsageTypes) that should be applied on a DistributionRule repository query.
    * @param {string[]} queues
-   * @param {string[]} messageTypes
+   * @param {string[]} eventTypes
    * @returns
    */
-  private _buildWhereClause(queues: string[], messageTypes: string[]) {
+  private _buildWhereClause(queues: string[], eventTypes: string[]) {
     const where: any = {};
 
     if (!_.isEmpty(queues)) {
@@ -179,9 +179,9 @@ export class DistributionRuleService {
       };
     }
 
-    if (!_.isEmpty(messageTypes)) {
-      where['$event.messageType$'] = {
-        [Op.or]: messageTypes,
+    if (!_.isEmpty(eventTypes)) {
+      where['$event.eventType$'] = {
+        [Op.or]: eventTypes,
       };
     }
 

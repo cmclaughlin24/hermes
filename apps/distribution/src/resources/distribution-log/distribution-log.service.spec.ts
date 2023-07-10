@@ -92,17 +92,17 @@ describe('DistributionLogService', () => {
       });
     });
 
-    it('should yield a list of distribution logs filtered by messageType(s)', async () => {
+    it('should yield a list of distribution logs filtered by eventType(s)', async () => {
       // Arrange.
-      const messageTypes = ['unit-test'];
+      const eventTypes = ['unit-test'];
       distributionLogModel.findAll.mockResolvedValue([log]);
 
       // Act.
-      await service.findAll(null, messageTypes, null);
+      await service.findAll(null, eventTypes, null);
 
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
-        where: { messageType: { [Op.or]: messageTypes } },
+        where: { eventType: { [Op.or]: eventTypes } },
         include: [DistributionAttempt],
       });
     });
@@ -204,7 +204,7 @@ describe('DistributionLogService', () => {
       const expectedResult = {
         id: job.id,
         queue: job.queue,
-        messageType: job.type,
+        eventType: job.type,
         state: MessageState.ACTIVE,
         attempts: job.attemptsMade,
         data: job.payload,

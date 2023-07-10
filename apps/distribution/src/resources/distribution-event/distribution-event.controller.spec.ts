@@ -17,7 +17,7 @@ describe('DistributionEventController', () => {
   const distributionEvent = {
     id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
     queue: 'unit-test',
-    messageType: 'unit-test',
+    eventType: 'unit-test',
     metadataLabels: ['unit-test'],
   } as DistributionEvent;
 
@@ -66,7 +66,7 @@ describe('DistributionEventController', () => {
       await expect(
         controller.findOne(
           distributionEvent.queue,
-          distributionEvent.messageType,
+          distributionEvent.eventType,
           false,
           false,
         ),
@@ -103,7 +103,7 @@ describe('DistributionEventController', () => {
       await expect(
         controller.update(
           distributionEvent.queue,
-          distributionEvent.messageType,
+          distributionEvent.eventType,
           {} as UpdateDistributionEventDto,
         ),
       ).resolves.toEqual(expectedResult);
@@ -122,7 +122,7 @@ describe('DistributionEventController', () => {
       await expect(
         controller.remove(
           distributionEvent.queue,
-          distributionEvent.messageType,
+          distributionEvent.eventType,
         ),
       ).resolves.toEqual(expectedResult);
     });

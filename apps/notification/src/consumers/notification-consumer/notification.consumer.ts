@@ -121,7 +121,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns
    */
-  async processText(job: Job) {
+  async processText(job: Job): Promise<any> {
     const logPrefix = this._createLogPrefix(this.processText.name, job.id);
 
     job.log(`${logPrefix}: Processing ${job.name} notification`);
@@ -172,7 +172,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns
    */
-  async processCall(job: Job) {
+  async processCall(job: Job): Promise<any> {
     const logPrefix = this._createLogPrefix(this.processCall.name, job.id);
 
     job.log(`${logPrefix}: Processing ${job.name} notification`);

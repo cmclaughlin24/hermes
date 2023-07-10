@@ -143,7 +143,7 @@ describe('DistributionRuleService', () => {
   describe('create()', () => {
     const createDistributionRuleDto: CreateDistributionRuleDto = {
       queue: 'unit-test',
-      messageType: 'unit-test',
+      eventType: 'unit-test',
       metadata: null,
       deliveryMethods: [DeliveryMethods.EMAIL],
       text: 'This is a unit test.',
@@ -155,7 +155,7 @@ describe('DistributionRuleService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: '',
         queue: createDistributionRuleDto.queue,
-        messageType: createDistributionRuleDto.messageType,
+        eventType: createDistributionRuleDto.eventType,
       });
       distributionRuleModel.create.mockResolvedValue(distributionRule);
     });
@@ -178,7 +178,7 @@ describe('DistributionRuleService', () => {
     it('should yield an "ApiResponseDto" object with the created distribution rule', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully created distribution rule for queue=${distributionRule.queue} messageType=${distributionRule.messageType}!`,
+        `Successfully created distribution rule for queue=${distributionRule.queue} eventType=${distributionRule.eventType}!`,
         distributionRule,
       );
       distributionRuleModel.findOne.mockResolvedValue(null);

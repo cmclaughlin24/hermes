@@ -23,7 +23,7 @@ export class DistributionLog extends Model {
   queue: string;
 
   @Column
-  messageType: string;
+  eventType: string;
 
   @Column
   state: MessageState;
