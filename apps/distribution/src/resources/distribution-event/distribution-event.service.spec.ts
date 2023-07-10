@@ -43,7 +43,7 @@ describe('DistributionEventService', () => {
     const distributionEvent = {
       id: 'unit-test',
       queue: 'unit-test',
-      messageType: 'unit-test',
+      eventType: 'unit-test',
     } as DistributionEvent;
 
     afterEach(() => {
@@ -143,7 +143,7 @@ describe('DistributionEventService', () => {
     const distributionEvent = {
       id: 'unit-test',
       queue: 'unit-test',
-      messageType: 'unit-test',
+      eventType: 'unit-test',
     } as DistributionEvent;
 
     afterEach(() => {
@@ -156,7 +156,7 @@ describe('DistributionEventService', () => {
 
       // Act/Assert.
       await expect(
-        service.findOne(distributionEvent.queue, distributionEvent.messageType),
+        service.findOne(distributionEvent.queue, distributionEvent.eventType),
       ).resolves.toEqual(distributionEvent);
     });
 
@@ -165,7 +165,7 @@ describe('DistributionEventService', () => {
       const expectedResult = {
         where: {
           queue: distributionEvent.queue,
-          messageType: distributionEvent.messageType,
+          eventType: distributionEvent.eventType,
         },
         include: [{ model: DistributionRule }],
       };
@@ -174,7 +174,7 @@ describe('DistributionEventService', () => {
       // Act.
       await service.findOne(
         distributionEvent.queue,
-        distributionEvent.messageType,
+        distributionEvent.eventType,
         true,
       );
 
@@ -189,7 +189,7 @@ describe('DistributionEventService', () => {
       const expectedResult = {
         where: {
           queue: distributionEvent.queue,
-          messageType: distributionEvent.messageType,
+          eventType: distributionEvent.eventType,
         },
         include: [{ model: Subscription, include: [SubscriptionFilter] }],
       };
@@ -198,7 +198,7 @@ describe('DistributionEventService', () => {
       // Act.
       await service.findOne(
         distributionEvent.queue,
-        distributionEvent.messageType,
+        distributionEvent.eventType,
         false,
         true,
       );
@@ -214,7 +214,7 @@ describe('DistributionEventService', () => {
       const expectedResult = {
         where: {
           queue: distributionEvent.queue,
-          messageType: distributionEvent.messageType,
+          eventType: distributionEvent.eventType,
         },
         include: [
           { model: DistributionRule },
@@ -226,7 +226,7 @@ describe('DistributionEventService', () => {
       // Act.
       await service.findOne(
         distributionEvent.queue,
-        distributionEvent.messageType,
+        distributionEvent.eventType,
         true,
         true,
       );
@@ -240,13 +240,13 @@ describe('DistributionEventService', () => {
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Distribution Event for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType} not found!`,
+        `Distribution Event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} not found!`,
       );
       distributionEventModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       expect(
-        service.findOne(distributionEvent.queue, distributionEvent.messageType),
+        service.findOne(distributionEvent.queue, distributionEvent.eventType),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -254,7 +254,7 @@ describe('DistributionEventService', () => {
   describe('create()', () => {
     const distributionEvent = {
       queue: 'unit-test',
-      messageType: 'unit-test',
+      eventType: 'unit-test',
     };
 
     afterEach(() => {
@@ -277,7 +277,7 @@ describe('DistributionEventService', () => {
     it('should yield an "ApiResponseDto" object with the create distribution event', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,
+        `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
       distributionEventModel.create.mockResolvedValue(distributionEvent);
@@ -294,10 +294,10 @@ describe('DistributionEventService', () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
-        messageType: 'unit-test',
+        eventType: 'unit-test',
       } as CreateDistributionEventDto;
       const expectedResult = new BadRequestException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} already exists!`,
+        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} already exists!`,
       );
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
@@ -311,11 +311,11 @@ describe('DistributionEventService', () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
-        messageType: 'unit-test',
+        eventType: 'unit-test',
         rules: [],
       } as CreateDistributionEventDto;
       const expectedResult = new BadRequestException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
       // Act/Assert.
@@ -328,11 +328,11 @@ describe('DistributionEventService', () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
-        messageType: 'unit-test',
+        eventType: 'unit-test',
         rules: null,
       } as CreateDistributionEventDto;
       const expectedResult = new BadRequestException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
       // Act/Assert.
@@ -345,7 +345,7 @@ describe('DistributionEventService', () => {
   describe('update()', () => {
     const distributionEvent = { update: jest.fn() };
     const queue = 'unit-test';
-    const messageType = 'unit-test';
+    const eventType = 'unit-test';
 
     afterEach(() => {
       distributionEvent.update.mockClear();
@@ -358,7 +358,7 @@ describe('DistributionEventService', () => {
       // Act.
       await service.update(
         queue,
-        messageType,
+        eventType,
         {} as UpdateDistributionEventDto,
       );
 
@@ -369,7 +369,7 @@ describe('DistributionEventService', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully updated distribution event for queue=${queue} messageType=${messageType}!`,
+        `Successfully updated distribution event for queue=${queue} eventType=${eventType}!`,
         distributionEvent,
       );
       distributionEvent.update.mockResolvedValue(distributionEvent);
@@ -377,20 +377,20 @@ describe('DistributionEventService', () => {
 
       // Act/Assert.
       await expect(
-        service.update(queue, messageType, {} as UpdateDistributionEventDto),
+        service.update(queue, eventType, {} as UpdateDistributionEventDto),
       ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.update(queue, messageType, {} as UpdateDistributionEventDto),
+        service.update(queue, eventType, {} as UpdateDistributionEventDto),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -398,7 +398,7 @@ describe('DistributionEventService', () => {
   describe('remove()', () => {
     const distributionEvent = { destroy: jest.fn() };
     const queue = 'unit-test';
-    const messageType = 'unit-test';
+    const eventType = 'unit-test';
 
     afterEach(() => {
       distributionEvent.destroy.mockClear();
@@ -409,7 +409,7 @@ describe('DistributionEventService', () => {
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.remove(queue, messageType);
+      await service.remove(queue, eventType);
 
       // Assert.
       expect(distributionEvent.destroy).toHaveBeenCalled();
@@ -418,12 +418,12 @@ describe('DistributionEventService', () => {
     it('should yield an "ApiResposneDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted distribution event for queue=${queue} messageType=${messageType}!`,
+        `Successfully deleted distribution event for queue=${queue} eventType=${eventType}!`,
       );
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
-      await expect(service.remove(queue, messageType)).resolves.toEqual(
+      await expect(service.remove(queue, eventType)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -431,12 +431,12 @@ describe('DistributionEventService', () => {
     it('should yield a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.remove(queue, messageType)).rejects.toEqual(
+      await expect(service.remove(queue, eventType)).rejects.toEqual(
         expectedResult,
       );
     });

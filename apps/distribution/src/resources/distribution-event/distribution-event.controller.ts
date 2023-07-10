@@ -52,7 +52,7 @@ export class DistributionEventController {
     );
   }
 
-  @Get(':queue/:messageType')
+  @Get(':queue/:eventType')
   @Public()
   @ApiOperation({
     summary: 'Find a distribution event for a queue and message type.',
@@ -74,13 +74,13 @@ export class DistributionEventController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
     @Query('includeRules') includeRules: boolean,
     @Query('includeSubscriptions') includeSubscriptions: boolean,
   ) {
     return this.distributionEventService.findOne(
       queue,
-      messageType,
+      eventType,
       includeRules,
       includeSubscriptions,
     );
@@ -109,7 +109,7 @@ export class DistributionEventController {
     return this.distributionEventService.create(createDistributionEventDto);
   }
 
-  @Patch(':queue/:messageType')
+  @Patch(':queue/:eventType')
   @ApiOperation({
     summary: 'Update a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -130,17 +130,17 @@ export class DistributionEventController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   update(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
     @Body() updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
     return this.distributionEventService.update(
       queue,
-      messageType,
+      eventType,
       updateDistributionEventDto,
     );
   }
 
-  @Delete(':queue/:messageType')
+  @Delete(':queue/:eventType')
   @ApiOperation({
     summary: 'Remove a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -157,8 +157,8 @@ export class DistributionEventController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
   ) {
-    return this.distributionEventService.remove(queue, messageType);
+    return this.distributionEventService.remove(queue, eventType);
   }
 }

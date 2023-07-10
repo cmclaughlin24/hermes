@@ -22,13 +22,13 @@ export class DistributionLogService {
    * Yields a list of DistributionLogs or throws a NotFoundExceptions if
    * the repository returns null, undefined, or an empty list.
    * @param {string[]} queues
-   * @param {string[]} messageTypes
+   * @param {string[]} eventTypes
    * @param {string[]} states
    * @returns {Promise<DistributionLog[]>}
    */
-  async findAll(queues: string[], messageTypes: string[], states: string[]) {
+  async findAll(queues: string[], eventTypes: string[], states: string[]) {
     const distributionLogs = await this.distributionLogModel.findAll({
-      where: this._buildWhereClause(queues, messageTypes, states),
+      where: this._buildWhereClause(queues, eventTypes, states),
       include: [DistributionAttempt],
     });
 
@@ -84,13 +84,13 @@ export class DistributionLogService {
    * Yields an object containing key-value pairs with the filter(s) (queues, messsageTypes,
    * and/or states) that should be applied on a DistributionLog repository query.
    * @param {string[]} queues
-   * @param {string[]} messageTypes
+   * @param {string[]} eventTypes
    * @param {string[]} states
    * @returns
    */
   private _buildWhereClause(
     queues: string[],
-    messageTypes: string[],
+    eventTypes: string[],
     states: string[],
   ) {
     const where: any = {};
@@ -101,9 +101,9 @@ export class DistributionLogService {
       };
     }
 
-    if (!_.isEmpty(messageTypes)) {
-      where.messageType = {
-        [Op.or]: messageTypes,
+    if (!_.isEmpty(eventTypes)) {
+      where.eventType = {
+        [Op.or]: eventTypes,
       };
     }
 
@@ -136,7 +136,7 @@ export class DistributionLogService {
         {
           id: distributionJob.id,
           queue: distributionJob.queue,
-          messageType: distributionJob.type,
+          eventType: distributionJob.type,
           state,
           attempts: distributionJob.attemptsMade,
           data: distributionJob.payload,

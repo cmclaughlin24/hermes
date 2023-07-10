@@ -70,10 +70,10 @@ describe('DistributionRuleController', () => {
       // Arrange.
       const createDistributionRuleDto = {
         queue: 'unit-test',
-        messageType: 'unit-test',
+        eventType: 'unit-test',
       } as CreateDistributionRuleDto;
       const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} messageType=${createDistributionRuleDto.messageType}!`,
+        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType}!`,
         distributionRule,
       );
       service.create.mockResolvedValue(expectedResult);

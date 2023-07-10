@@ -118,15 +118,15 @@ describe('SubscriptionController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const queue = 'unit-test';
-      const messageType = 'unit-test';
+      const eventType = 'unit-test';
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} messageType=${messageType} externalId=${subscription.externalId}!`,
+        `Successfully deleted subscription queue=${queue} eventType=${eventType} externalId=${subscription.externalId}!`,
       );
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        controller.remove(queue, messageType, subscription.externalId),
+        controller.remove(queue, eventType, subscription.externalId),
       ).resolves.toEqual(expectedResult);
     });
   });

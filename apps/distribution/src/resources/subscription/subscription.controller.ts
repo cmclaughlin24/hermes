@@ -31,7 +31,7 @@ export class SubscriptionController {
     return this.subscriptionService.findAll();
   }
 
-  @Get(':queue/:messageType/:externalId')
+  @Get(':queue/:eventType/:externalId')
   @Public()
   @ApiOperation({
     summary: "Find a subscription by it's distribution event and external id.",
@@ -41,10 +41,10 @@ export class SubscriptionController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   findOne(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
     @Param('externalId') externalId: string,
   ) {
-    return this.subscriptionService.findOne(queue, messageType, externalId);
+    return this.subscriptionService.findOne(queue, eventType, externalId);
   }
 
   @Post()
@@ -70,7 +70,7 @@ export class SubscriptionController {
     return this.subscriptionService.create(createSubscriptionDto);
   }
 
-  @Patch(':queue/:messageType/:externalId')
+  @Patch(':queue/:eventType/:externalId')
   @ApiOperation({
     summary: 'Update a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -90,13 +90,13 @@ export class SubscriptionController {
   })
   update(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
     @Param('externalId') externalId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.subscriptionService.update(
       queue,
-      messageType,
+      eventType,
       externalId,
       updateSubscriptionDto,
     );
@@ -121,7 +121,7 @@ export class SubscriptionController {
     return this.subscriptionService.removeAll(externalId);
   }
 
-  @Delete(':queue/:messageType/:externalId')
+  @Delete(':queue/:eventType/:externalId')
   @ApiOperation({
     summary: 'Remove a subscription to a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -138,9 +138,9 @@ export class SubscriptionController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   remove(
     @Param('queue') queue: string,
-    @Param('messageType') messageType: string,
+    @Param('eventType') eventType: string,
     @Param('externalId') externalId: string,
   ) {
-    return this.subscriptionService.remove(queue, messageType, externalId);
+    return this.subscriptionService.remove(queue, eventType, externalId);
   }
 }

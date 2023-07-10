@@ -36,13 +36,13 @@ export class CreateSubscriptionDto {
   queue: string;
 
   @ApiProperty({
-    description: 'Name of the message (event) the subscription applies to',
+    description: 'Name of the event the subscription applies to',
   })
   @IsString()
   @IsNotEmpty()
   @DistributionEventExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  messageType: string;
+  eventType: string;
 
   @ApiProperty({
     description:

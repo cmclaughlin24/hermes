@@ -1,6 +1,6 @@
 import { MessageDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqConsumer } from './mq.consumer';
 
 describe('MqConsumer', () => {

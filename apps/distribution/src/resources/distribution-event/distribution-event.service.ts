@@ -43,25 +43,25 @@ export class DistributionEventService {
    * Yields a DistributionEvent or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @param {boolean} includeRules
    * @param {boolean} includeSubscriptions
    * @returns {Promise<DistributionEvent>}
    */
   async findOne(
     queue: string,
-    messageType: string,
+    eventType: string,
     includeRules: boolean = false,
     includeSubscriptions: boolean = false,
   ) {
     const distributionEvent = await this.distributionEventModel.findOne({
-      where: { queue, messageType },
+      where: { queue, eventType },
       include: this._buildIncludes(includeRules, includeSubscriptions),
     });
 
     if (!distributionEvent) {
       throw new NotFoundException(
-        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
     }
 
@@ -70,7 +70,7 @@ export class DistributionEventService {
 
   /**
    * Creates a DistributionEvent of throws a BadRequestException if a distribution event
-   * for a queue and messageType exists in the repository.
+   * for a queue and eventType exists in the repository.
    * @param {CreateDistributionEventDto} createDistributionEventDto
    * @returns {Promise<ApiResponseDto<DistributionEvent>>}
    */
@@ -78,13 +78,13 @@ export class DistributionEventService {
     const existingEvent = await this.distributionEventModel.findOne({
       where: {
         queue: createDistributionEventDto.queue,
-        messageType: createDistributionEventDto.messageType,
+        eventType: createDistributionEventDto.eventType,
       },
     });
 
     if (existingEvent) {
       throw new BadRequestException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} already exists!`,
+        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} already exists!`,
       );
     }
 
@@ -94,7 +94,7 @@ export class DistributionEventService {
 
     if (!hasDefaultRule) {
       throw new BadRequestException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} messageType=${createDistributionEventDto.messageType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
     }
 
@@ -106,7 +106,7 @@ export class DistributionEventService {
     );
 
     return new ApiResponseDto<DistributionEvent>(
-      `Successfully created distribution rule for queue=${distributionEvent.queue} messageType=${distributionEvent.messageType}!`,
+      `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
       distributionEvent,
     );
   }
@@ -115,22 +115,22 @@ export class DistributionEventService {
    * Updates a DistributionEvent or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @param {UpdateDistributionEventDto} updateDistributionEventDto
    * @returns {Promise<ApiResponseDto<DistributionEvent>>}
    */
   async update(
     queue: string,
-    messageType: string,
+    eventType: string,
     updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
     let distributionEvent = await this.distributionEventModel.findOne({
-      where: { queue, messageType },
+      where: { queue, eventType },
     });
 
     if (!distributionEvent) {
       throw new NotFoundException(
-        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
     }
 
@@ -141,7 +141,7 @@ export class DistributionEventService {
     });
 
     return new ApiResponseDto<DistributionEvent>(
-      `Successfully updated distribution event for queue=${queue} messageType=${messageType}!`,
+      `Successfully updated distribution event for queue=${queue} eventType=${eventType}!`,
       distributionEvent,
     );
   }
@@ -150,24 +150,24 @@ export class DistributionEventService {
    * Removes a DistributionEvent or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @returns {Promise<ApiResponseDto>}
    */
-  async remove(queue: string, messageType: string) {
+  async remove(queue: string, eventType: string) {
     const distributionEvent = await this.distributionEventModel.findOne({
-      where: { queue, messageType },
+      where: { queue, eventType },
     });
 
     if (!distributionEvent) {
       throw new NotFoundException(
-        `Distribution Event for queue=${queue} messageType=${messageType} not found!`,
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
     }
 
     await distributionEvent.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted distribution event for queue=${queue} messageType=${messageType}!`,
+      `Successfully deleted distribution event for queue=${queue} eventType=${eventType}!`,
     );
   }
 

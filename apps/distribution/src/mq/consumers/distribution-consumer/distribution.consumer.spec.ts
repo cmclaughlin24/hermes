@@ -6,11 +6,11 @@ import {
   createDistributionEventServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { createQueueMock } from '../../../../test/helpers/queue.helper';
-import { MqUnrecoverableError } from '../../../common/classes/mq-unrecoverable-error.class';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { DistributionConsumer } from './distribution.consumer';
 
 class MqInterceptorMock {}

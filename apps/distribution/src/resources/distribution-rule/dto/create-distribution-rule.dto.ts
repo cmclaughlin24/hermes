@@ -22,13 +22,13 @@ export class CreateDistributionRuleDto {
   queue: string;
 
   @ApiProperty({
-    description: 'The message the rule should be applied to',
+    description: 'The event the rule should be applied to',
   })
   @IsString()
   @IsNotEmpty()
   @DistributionEventExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  messageType: string;
+  eventType: string;
 
   @ApiProperty({
     description:

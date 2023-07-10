@@ -3,5 +3,5 @@ import { CreateDistributionRuleDto } from '../../distribution-rule/dto/create-di
 
 export class DistributionEventRuleDto extends OmitType(CreateDistributionRuleDto, [
   'queue',
-  'messageType',
+  'eventType',
 ]) {}

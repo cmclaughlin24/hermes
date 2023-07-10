@@ -3,6 +3,6 @@ import { CreateDistributionEventDto } from './create-distribution-event.dto';
 
 export class UpdateDistributionEventDto extends OmitType(
   CreateDistributionEventDto,
-  ['queue', 'messageType', 'rules']
+  ['queue', 'eventType', 'rules']
 ) {
 }

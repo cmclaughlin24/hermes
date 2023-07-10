@@ -47,15 +47,15 @@ export class SubscriptionService {
    * Yields a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @param {string} externalId
    * @returns {Promise<Subscription>}
    */
-  async findOne(queue: string, messageType: string, externalId: string) {
+  async findOne(queue: string, eventType: string, externalId: string) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       queue,
-      messageType,
+      eventType,
     );
     const subscription = await this.subscriptionModel.findOne({
       where: {
@@ -67,7 +67,7 @@ export class SubscriptionService {
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
       );
     }
 
@@ -76,7 +76,7 @@ export class SubscriptionService {
 
   /**
    * Creates a Subscription. Throws a NotFoundException if a DistributionEvent does
-   * not exist in the repository for the queue and messageType or BadRequestException
+   * not exist in the repository for the queue and eventType or BadRequestException
    * if a subscription id exists in the repository.
    * @param {CreateSubscriptionDto} createSubscriptionDto
    * @returns {Promise<ApiResponseDto<Subscription>>}
@@ -85,7 +85,7 @@ export class SubscriptionService {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       createSubscriptionDto.queue,
-      createSubscriptionDto.messageType,
+      createSubscriptionDto.eventType,
     );
     const existingSubscription = await this.subscriptionModel.findOne({
       where: {
@@ -122,14 +122,14 @@ export class SubscriptionService {
    * Updates a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @param {string} externalId
    * @param {UpdateSubscriptionDto} updateSubscriptionDto
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
   async update(
     queue: string,
-    messageType: string,
+    eventType: string,
     externalId: string,
     updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
@@ -137,7 +137,7 @@ export class SubscriptionService {
       // Note: Throws a NotFoundException if the distribution event does not exits.
       const distributionEvent = await this.distributionEventService.findOne(
         queue,
-        messageType,
+        eventType,
       );
       let subscription = await this.subscriptionModel.findOne({
         where: {
@@ -150,7 +150,7 @@ export class SubscriptionService {
 
       if (!subscription) {
         throw new NotFoundException(
-          `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+          `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
         );
       }
 
@@ -211,15 +211,15 @@ export class SubscriptionService {
    * Removes a Subscription or throws a NotFoundException if the repository
    * returns null or undefined.
    * @param {string} queue
-   * @param {string} messageType
+   * @param {string} eventType
    * @param {string} externalId
    * @returns {Promise<ApiResponseDto>}
    */
-  async remove(queue: string, messageType: string, externalId: string) {
+  async remove(queue: string, eventType: string, externalId: string) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       queue,
-      messageType,
+      eventType,
     );
     const subscription = await this.subscriptionModel.findOne({
       where: {
@@ -230,7 +230,7 @@ export class SubscriptionService {
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription with queue=${queue} messageType=${messageType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
       );
     }
 
@@ -238,7 +238,7 @@ export class SubscriptionService {
     await subscription.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted subscription queue=${queue} messageType=${messageType} externalId=${externalId}!`,
+      `Successfully deleted subscription queue=${queue} eventType=${eventType} externalId=${externalId}!`,
     );
   }
 
