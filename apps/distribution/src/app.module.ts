@@ -1,9 +1,9 @@
-import * as Joi from '@hapi/joi';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { SequelizeModule } from '@nestjs/sequelize';
+import * as Joi from 'joi';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';

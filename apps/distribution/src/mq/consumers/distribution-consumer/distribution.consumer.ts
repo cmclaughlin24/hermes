@@ -9,7 +9,6 @@ import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { SubscriptionDataDto } from '../../../common/dto/subscription-data.dto';
-import { MqInterceptor } from '../../../common/interceptors/mq/mq.interceptor';
 import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
@@ -19,6 +18,7 @@ import { DistributionRule } from '../../../resources/distribution-rule/entities/
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
+import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
 
 @UseInterceptors(MqInterceptor)

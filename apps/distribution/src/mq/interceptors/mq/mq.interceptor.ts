@@ -17,11 +17,11 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { ConsumeMessage } from 'amqplib';
 import { Observable, catchError, map } from 'rxjs';
-import { MqUnrecoverableError } from '../../../mq/classes/mq-unrecoverable-error.class';
+import { DistributionJob } from '../../../common/types/distribution-job.type';
+import { MessageState } from '../../../common/types/message-state.type';
+import { getAttempts } from '../../../common/utils/amqp.utils';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
-import { DistributionJob } from '../../types/distribution-job.type';
-import { MessageState } from '../../types/message-state.type';
-import { getAttempts } from '../../utils/amqp.utils';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 
 @Injectable()
 export class MqInterceptor implements NestInterceptor {
@@ -68,12 +68,18 @@ export class MqInterceptor implements NestInterceptor {
         if (this._shouldRetry(error, distributionJob.attemptsMade)) {
           return new Nack();
         }
-
-        return;
       }),
     );
   }
 
+  /**
+   * Stores a record in the database containing information about the job's current
+   * state, number of attempts, processing time, and response stream.
+   * @param {DistributionJob} job
+   * @param {MessageState} state 
+   * @param {any} result 
+   * @param {Error} error 
+   */
   private async _log(
     job: DistributionJob,
     state: MessageState,
