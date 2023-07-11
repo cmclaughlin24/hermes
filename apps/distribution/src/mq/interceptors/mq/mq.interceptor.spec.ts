@@ -12,8 +12,8 @@ import {
   createConfigServiceMock,
   createDistributionLogServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { MqUnrecoverableError } from '../../../mq/classes/mq-unrecoverable-error.class';
 import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
+import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from './mq.interceptor';
 
 jest.mock('@golevelup/nestjs-rabbitmq');
