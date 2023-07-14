@@ -20,16 +20,16 @@ const MILLISECONDS_PER_SECOND = 1000;
  *       zone. This can be disabled by setting the messageDto time zone property to null.
  *
  * @param {DistributionRule} distributionRule
- * @param {SubscriberDto[]} subscriptionDtos
+ * @param {SubscriberDto[]} subscriberDtos
  * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
-  subscriptionDtos: SubscriberDto[],
+  subscriberDtos: SubscriberDto[],
   messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
-  return _.chain(subscriptionDtos)
+  return _.chain(subscriberDtos)
     .filter(
       (dto) =>
         hasDeliveryMethods(distributionRule.deliveryMethods, dto) &&
