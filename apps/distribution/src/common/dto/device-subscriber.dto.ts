@@ -3,9 +3,9 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, ValidateNested } from 'class-validator';
 import { DeliveryWindow } from '../types/delivery-window.type';
-import { SubscriptionDataDto } from './subscription-data.dto';
+import { SubscriberDto } from './subscriber.dto';
 
-export class DeviceSubscriptionDto extends SubscriptionDataDto {
+export class DeviceSubscriberDto extends SubscriberDto {
   @ApiProperty({
     description: 'Computing platform where the push notification will be delivered',
     enum: [Platform.ANDROID, Platform.IOS, Platform.WEB],

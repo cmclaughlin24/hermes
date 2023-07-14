@@ -8,7 +8,7 @@ import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
-import { SubscriptionDataDto } from '../../../common/dto/subscription-data.dto';
+import { SubscriberDto } from '../../../common/dto/subscriber.dto';
 import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
@@ -68,19 +68,21 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         messageDto.metadata,
       );
-      const subscriptonDtos = await this._getSubscriptionData(
+      const subscribers = await this._getSubscribers(
         messageDto,
         distributionEvent.subscriptions,
         distributionRule.bypassSubscriptions,
       );
 
-      if (_.isEmpty(subscriptonDtos)) {
-        return new MqResponse('');
+      if (_.isEmpty(subscribers)) {
+        return new MqResponse(
+          'Distribution event does not have any subscribers',
+        );
       }
 
       const jobs = createNotificationJobs(
         distributionRule,
-        subscriptonDtos,
+        subscribers,
         messageDto,
       );
 
@@ -163,19 +165,19 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
-   * Yields a list of SubscriptionDataDtos that should receive a notification for an event.
+   * Yields a list of SubscriberDtos that should receive a notification for an event.
    * @param {DistributionMessageDto} message
    * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
-   * @returns {Promise<SubscriptionDataDto[]>}
+   * @returns {Promise<SubscriberDto[]>}
    */
-  private async _getSubscriptionData(
+  private async _getSubscribers(
     message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
-  ): Promise<SubscriptionDataDto[]> {
+  ): Promise<SubscriberDto[]> {
     if (bypassSubscriptions) {
-      return this.subscriptionDataService.mapToUserSubscriptionDtos(
+      return this.subscriptionDataService.mapToUserSubscriberDtos(
         message.recipients,
       );
     }

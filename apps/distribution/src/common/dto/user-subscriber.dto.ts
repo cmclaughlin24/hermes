@@ -8,9 +8,9 @@ import {
   IsPhoneNumber
 } from 'class-validator';
 import { DeliveryWindow } from '../types/delivery-window.type';
-import { SubscriptionDataDto } from './subscription-data.dto';
+import { SubscriberDto } from './subscriber.dto';
 
-export class UserSubscriptionDto extends SubscriptionDataDto {
+export class UserSubscriberDto extends SubscriberDto {
   @ApiProperty({
     description: 'How to deliver notifications for an event',
     enum: DeliveryMethods,

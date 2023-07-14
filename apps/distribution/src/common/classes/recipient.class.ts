@@ -1,4 +1,4 @@
-import { SubscriptionDataDto } from '../dto/subscription-data.dto';
+import { SubscriberDto } from '../dto/subscriber.dto';
 
 export class Recipient {
   constructor(
@@ -9,6 +9,6 @@ export class Recipient {
     /**
      * Subscription data the recipient was created from.
      */
-    public subscription: SubscriptionDataDto,
+    public subscription: SubscriberDto,
   ) {}
 }
