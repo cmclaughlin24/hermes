@@ -2,7 +2,7 @@ import { MessageDto } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsTimeZone, ValidateNested } from 'class-validator';
-import { UserSubscriptionDto } from './user-subscription.dto';
+import { UserSubscriberDto } from './user-subscriber.dto';
 
 export class DistributionMessageDto extends MessageDto {
   @ApiProperty({
@@ -16,6 +16,6 @@ export class DistributionMessageDto extends MessageDto {
 
   @ValidateNested()
   @IsOptional()
-  @Type(() => UserSubscriptionDto)
-  recipients?: UserSubscriptionDto[];
+  @Type(() => UserSubscriberDto)
+  recipients?: UserSubscriberDto[];
 }

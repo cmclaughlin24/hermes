@@ -2,10 +2,10 @@ import { DeliveryMethods, Platform, PushSubscriptionDto } from '@hermes/common';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
-import { DeviceSubscriptionDto } from '../dto/device-subscription.dto';
+import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
-import { SubscriptionDataDto } from '../dto/subscription-data.dto';
-import { UserSubscriptionDto } from '../dto/user-subscription.dto';
+import { SubscriberDto } from '../dto/subscriber.dto';
+import { UserSubscriberDto } from '../dto/user-subscriber.dto';
 import {
   createNotificationJobs,
   hasDeliveryMethods,
@@ -30,21 +30,21 @@ describe('notification-job.utils.ts', () => {
         smsTemplate: 'super-mario-kart',
         pushTemplate: 'super-mario-kart',
       } as DistributionRule;
-      const subscription1 = new UserSubscriptionDto();
+      const subscription1 = new UserSubscriberDto();
       subscription1.deliveryMethods = [
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
       ];
       subscription1.email = 'nolan.bushnell@atari.com';
       subscription1.phoneNumber = '+12345678910';
-      const subscription2 = new UserSubscriptionDto();
+      const subscription2 = new UserSubscriberDto();
       subscription2.deliveryMethods = [DeliveryMethods.EMAIL];
       subscription2.email = 'johnathan.blackley@xbox.com';
       subscription2.phoneNumber = null;
-      const subscription3 = new DeviceSubscriptionDto();
+      const subscription3 = new DeviceSubscriberDto();
       subscription3.platform = Platform.IOS;
       subscription3.subscription = {} as PushSubscriptionDto;
-      const subscriptions: SubscriptionDataDto[] = [
+      const subscriptions: SubscriberDto[] = [
         subscription1,
         subscription2,
         subscription3,
@@ -116,7 +116,7 @@ describe('notification-job.utils.ts', () => {
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
       ];
-      const dto = new UserSubscriptionDto();
+      const dto = new UserSubscriberDto();
       dto.deliveryMethods = [DeliveryMethods.CALL, DeliveryMethods.EMAIL];
 
       // Act.
@@ -132,7 +132,7 @@ describe('notification-job.utils.ts', () => {
         DeliveryMethods.EMAIL,
         DeliveryMethods.SMS,
       ];
-      const dto = new UserSubscriptionDto();
+      const dto = new UserSubscriberDto();
       dto.deliveryMethods = [DeliveryMethods.CALL];
 
       // Act.
@@ -153,14 +153,14 @@ describe('notification-job.utils.ts', () => {
       const distributionRule = {
         checkDeliveryWindow: true,
       } as DistributionRule;
-      const subscriptionDataDto = new UserSubscriptionDto();
-      subscriptionDataDto.deliveryWindows = [
+      const SubscriberDto = new UserSubscriberDto();
+      SubscriberDto.deliveryWindows = [
         { dayOfWeek: 4, atHour: 4, atMinute: 30, duration: 120 },
       ];
-      subscriptionDataDto.timeZone = 'America/Chicago';
+      SubscriberDto.timeZone = 'America/Chicago';
 
       // Act.
-      const result = hasDeliveryWindow(distributionRule, subscriptionDataDto);
+      const result = hasDeliveryWindow(distributionRule, SubscriberDto);
 
       // Assert.
       expect(result).toBeTruthy();
@@ -175,22 +175,22 @@ describe('notification-job.utils.ts', () => {
       // Act.
       const result = hasDeliveryWindow(
         distributionRule,
-        new UserSubscriptionDto(),
+        new UserSubscriberDto(),
       );
 
       // Assert.
       expect(result).toBeTruthy();
     });
 
-    it('should yield true if a sbuscription is an instance of a "DeviceSubscriptionDto"', () => {
+    it('should yield true if a sbuscription is an instance of a "DeviceSubscriberDto"', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: true,
       } as DistributionRule;
-      const subscriptionDataDto = new DeviceSubscriptionDto();
+      const SubscriberDto = new DeviceSubscriberDto();
 
       // Act.
-      const result = hasDeliveryWindow(distributionRule, subscriptionDataDto);
+      const result = hasDeliveryWindow(distributionRule, SubscriberDto);
 
       // Assert.
       expect(result).toBeTruthy();
@@ -201,14 +201,14 @@ describe('notification-job.utils.ts', () => {
       const distributionRule = {
         checkDeliveryWindow: true,
       } as DistributionRule;
-      const subscriptionDataDto = new UserSubscriptionDto();
-      subscriptionDataDto.deliveryWindows = [
+      const SubscriberDto = new UserSubscriberDto();
+      SubscriberDto.deliveryWindows = [
         { dayOfWeek: 4, atHour: 12, atMinute: 30, duration: 120 },
       ];
-      subscriptionDataDto.timeZone = 'America/Chicago';
+      SubscriberDto.timeZone = 'America/Chicago';
 
       // Act.
-      const result = hasDeliveryWindow(distributionRule, subscriptionDataDto);
+      const result = hasDeliveryWindow(distributionRule, SubscriberDto);
 
       // Assert.
       expect(result).toBeFalsy();
@@ -219,14 +219,14 @@ describe('notification-job.utils.ts', () => {
       const distributionRule = {
         checkDeliveryWindow: true,
       } as DistributionRule;
-      const subscriptionDataDto = new UserSubscriptionDto();
-      subscriptionDataDto.deliveryWindows = [
+      const SubscriberDto = new UserSubscriberDto();
+      SubscriberDto.deliveryWindows = [
         { dayOfWeek: 6, atHour: 9, atMinute: 30, duration: 120 },
       ];
-      subscriptionDataDto.timeZone = 'America/Chicago';
+      SubscriberDto.timeZone = 'America/Chicago';
 
       // Act.
-      const result = hasDeliveryWindow(distributionRule, subscriptionDataDto);
+      const result = hasDeliveryWindow(distributionRule, SubscriberDto);
 
       // Assert.
       expect(result).toBeFalsy();
@@ -308,7 +308,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('nathan.drake@email.com', {
           timeZone: 'America/Chicago',
           deliveryMethods: [
@@ -316,7 +316,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('solid.snake@email.com', {
           timeZone: 'America/Detroit',
           deliveryMethods: [
@@ -324,7 +324,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
       ];
       const distributionRule = {
         emailSubject: 'PlayStation Characters',
@@ -370,7 +370,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('+19998887777', {
           timeZone: 'America/Chicago',
           deliveryMethods: [
@@ -378,7 +378,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('+12223334444', {
           timeZone: 'America/Chicago',
           deliveryMethods: [
@@ -386,7 +386,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
       ];
       const distributionRule = {
         smsTemplate: 'did-you-know-pac-man-was-originally-puckman?',
@@ -427,7 +427,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('+19998887777', {
           timeZone: 'America/Chicago',
           deliveryMethods: [
@@ -435,7 +435,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
         new Recipient('+12223334444', {
           timeZone: 'America/Chicago',
           deliveryMethods: [
@@ -443,7 +443,7 @@ describe('notification-job.utils.ts', () => {
             DeliveryMethods.SMS,
             DeliveryMethods.CALL,
           ],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
       ];
       const distributionRule = {
         callTemplate: 'nintendo-was-founded-in-1889',
@@ -479,15 +479,15 @@ describe('notification-job.utils.ts', () => {
         new Recipient('atari', {
           timeZone: 'America/Chicago',
           platform: Platform.WEB,
-        } as DeviceSubscriptionDto),
+        } as DeviceSubscriberDto),
         new Recipient('sega-genesis', {
           timeZone: 'America/Detroit',
           platform: Platform.WEB,
-        } as DeviceSubscriptionDto),
+        } as DeviceSubscriberDto),
         new Recipient('atari', {
           timeZone: 'America/Chicago',
           platform: Platform.WEB,
-        } as DeviceSubscriptionDto),
+        } as DeviceSubscriberDto),
       ];
       const distributionRule = {
         pushTemplate:
@@ -499,7 +499,7 @@ describe('notification-job.utils.ts', () => {
         data: {
           subscription: recipient.value,
           template: distributionRule.pushTemplate,
-          platform: (recipient.subscription as DeviceSubscriptionDto).platform,
+          platform: (recipient.subscription as DeviceSubscriberDto).platform,
           timeZone: recipient.subscription.timeZone,
           context: payload,
         },
@@ -525,7 +525,7 @@ describe('notification-job.utils.ts', () => {
         new Recipient('gunpei.yokoi@email.com', {
           timeZone: 'Japan',
           deliveryMethods: [DeliveryMethods.EMAIL],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
       ];
       const distributionRule = {
         emailSubject: 'Game Boy Creator',
@@ -568,7 +568,7 @@ describe('notification-job.utils.ts', () => {
         new Recipient('hayao.nakayama@email.com', {
           timeZone: 'Japan',
           deliveryMethods: [DeliveryMethods.EMAIL],
-        } as SubscriptionDataDto),
+        } as SubscriberDto),
       ];
       const expectedResult = new Error(
         `Invalid Argument: Could not map deliveryMethod=${method} to notification job`,

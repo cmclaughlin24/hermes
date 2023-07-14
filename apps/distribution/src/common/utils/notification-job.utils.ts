@@ -4,15 +4,15 @@ import * as _ from 'lodash';
 import { DateTime } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
-import { DeviceSubscriptionDto } from '../dto/device-subscription.dto';
+import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
-import { SubscriptionDataDto } from '../dto/subscription-data.dto';
+import { SubscriberDto } from '../dto/subscriber.dto';
 
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 
 /**
- * Yields a list of notification jobs for a list of SubscriptionDataDtos based on the
+ * Yields a list of notification jobs for a list of SubscriberDtos based on the
  * distribution rule's enabled delivery method(s).
  *
  * Note: If the messageDto has a time zone defined, dates and times in the notification
@@ -20,13 +20,13 @@ const MILLISECONDS_PER_SECOND = 1000;
  *       zone. This can be disabled by setting the messageDto time zone property to null.
  *
  * @param {DistributionRule} distributionRule
- * @param {SubscriptionDataDto[]} subscriptionDtos
+ * @param {SubscriberDto[]} subscriptionDtos
  * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
   distributionRule: DistributionRule,
-  subscriptionDtos: SubscriptionDataDto[],
+  subscriptionDtos: SubscriberDto[],
   messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
   return _.chain(subscriptionDtos)
@@ -54,15 +54,15 @@ export function createNotificationJobs(
 }
 
 /**
- * Yields true if a SubscriptonDataDto has at least one of the delivery method(s) enabled
+ * Yields true if a SubscriberDto has at least one of the delivery method(s) enabled
  * or false otherwise.
  * @param {deliveryMethods[]} deliveryMethods
- * @param {SubscriptionDataDto} dto
+ * @param {SubscriberDto} dto
  * @returns {boolean}
  */
 export function hasDeliveryMethods(
   deliveryMethods: DeliveryMethods[],
-  dto: SubscriptionDataDto,
+  dto: SubscriberDto,
 ): boolean {
   return !_.isEmpty(
     // Example: _.intersection(['email'], ['email', 'sms']) => ['email']
@@ -71,20 +71,20 @@ export function hasDeliveryMethods(
 }
 
 /**
- * Yields true if the current day and time falls within a SubscriptionDataDto's delivery window settings,
- * the dto is instance of DeviceSubscriptionDto subclass, or if the distribution rule does not check
+ * Yields true if the current day and time falls within a SubscriberDto's delivery window settings,
+ * the dto is instance of DeviceSubscriberDto subclass, or if the distribution rule does not check
  * the delivery window. Yields false otherwise.
  * @param {DistributionRule} distributionRule
- * @param {SubscriptionDataDto} dto
+ * @param {SubscriberDto} dto
  * @returns {boolean}
  */
 export function hasDeliveryWindow(
   distributionRule: DistributionRule,
-  dto: SubscriptionDataDto,
+  dto: SubscriberDto,
 ): boolean {
   if (
     !distributionRule.checkDeliveryWindow ||
-    dto instanceof DeviceSubscriptionDto
+    dto instanceof DeviceSubscriberDto
   ) {
     return true;
   }
@@ -130,18 +130,18 @@ export function isBetweenTimes(
 
 /**
  * Yields a preconfigured function with the delivery methods. The resulting preconfigured function
- * reduces a SubscriptionDataDto into a Map where the key is the delivery method and the
+ * reduces a SubscriberDto into a Map where the key is the delivery method and the
  * value is a list of recipients.
  * @param {DeliveryMethods[]} deliveryMethods
- * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriptionDataDto) => Map<DeliveryMethods, Recipient[]>}
+ * @returns {(map: Map<DeliveryMethods, Set<string>>, member: SubscriberDto) => Map<DeliveryMethods, Recipient[]>}
  */
 export function reduceToDeliveryMethodsMap(
   deliveryMethods: DeliveryMethods[],
 ): (
   map: Map<DeliveryMethods, Recipient[]>,
-  dto: SubscriptionDataDto,
+  dto: SubscriberDto,
 ) => Map<DeliveryMethods, Recipient[]> {
-  return (map: Map<DeliveryMethods, Recipient[]>, dto: SubscriptionDataDto) => {
+  return (map: Map<DeliveryMethods, Recipient[]>, dto: SubscriberDto) => {
     for (const method of deliveryMethods) {
       const value = dto.getDeliveryMethod(method);
 
@@ -223,7 +223,7 @@ export function mapToNotificationJobs(
             data = {
               subscription: recipient.value,
               template: distributionRule.pushTemplate,
-              platform: (recipient.subscription as DeviceSubscriptionDto)
+              platform: (recipient.subscription as DeviceSubscriberDto)
                 .platform,
               timeZone: timeZone,
               context: payload,

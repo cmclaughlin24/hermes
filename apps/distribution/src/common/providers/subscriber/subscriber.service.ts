@@ -14,22 +14,22 @@ import {
 } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
-import { DeviceSubscriptionDto } from '../../dto/device-subscription.dto';
-import { RequestSubscriptionDto } from '../../dto/request-subscription.dto';
-import { SubscriptionDataDto } from '../../dto/subscription-data.dto';
-import { UserSubscriptionDto } from '../../dto/user-subscription.dto';
+import { DeviceSubscriberDto } from '../../dto/device-subscriber.dto';
+import { RequestSubscriberDto } from '../../dto/request-subscriber.dto';
+import { SubscriberDto } from '../../dto/subscriber.dto';
+import { UserSubscriberDto } from '../../dto/user-subscriber.dto';
 import {
   SubscriptionData,
   SubscriptionType,
 } from '../../types/subscription-type.type';
 
 @Injectable()
-export class SubscriptionDataService {
-  private readonly logger = new Logger(SubscriptionDataService.name);
+export class SubscriberService {
+  private readonly logger = new Logger(SubscriberService.name);
 
   constructor(private readonly httpService: HttpService) {}
 
-  async get(subscriptions: Subscription[]): Promise<SubscriptionDataDto[]> {
+  async get(subscriptions: Subscription[]): Promise<SubscriberDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
 
     for (const subscription of subscriptions) {
@@ -51,7 +51,7 @@ export class SubscriptionDataService {
 
     if (map.has(SubscriptionType.REQUEST)) {
       const requestData = await this._request(
-        map.get(SubscriptionType.REQUEST) as RequestSubscriptionDto[],
+        map.get(SubscriptionType.REQUEST) as RequestSubscriberDto[],
       );
 
       // Todo: Refactor nested if-condition if possible.
@@ -78,13 +78,13 @@ export class SubscriptionDataService {
 
     switch (subscription.subscriptionType) {
       case SubscriptionType.USER:
-        dto = this._createUserSubscriptionDto(subscription.data);
+        dto = this._createUserSubscriberDto(subscription.data);
         break;
       case SubscriptionType.DEVICE:
-        dto = this._createDeviceSubscriptionDto(subscription.data);
+        dto = this._createDeviceSubscriberDto(subscription.data);
         break;
       case SubscriptionType.REQUEST:
-        dto = this._createRequestSubscriptionDto(
+        dto = this._createRequestSubscriberDto(
           subscription.externalId,
           subscription.data,
         );
@@ -100,19 +100,19 @@ export class SubscriptionDataService {
     return dto;
   }
 
-  mapToUserSubscriptionDtos(data: any[]): UserSubscriptionDto[] {
+  mapToUserSubscriberDtos(data: any[]): UserSubscriberDto[] {
     if (_.isEmpty(data)) {
       return null;
     }
 
     return data
-      .map((item) => this._createUserSubscriptionDto(item))
+      .map((item) => this._createUserSubscriberDto(item))
       .filter(async (dto) => {
         try {
           await this._validateDto(dto);
         } catch (error) {
           this.logger.error(
-            `${UserSubscriptionDto.name} corrupted: ${error.message}`,
+            `${UserSubscriberDto.name} corrupted: ${error.message}`,
           );
           return false;
         }
@@ -120,8 +120,8 @@ export class SubscriptionDataService {
       });
   }
 
-  private _createUserSubscriptionDto(data: any): UserSubscriptionDto {
-    const dto = new UserSubscriptionDto();
+  private _createUserSubscriberDto(data: any): UserSubscriberDto {
+    const dto = new UserSubscriberDto();
     dto.deliveryMethods = data.deliveryMethods;
     dto.email = data.email;
     dto.phoneNumber = data.phoneNumber;
@@ -130,8 +130,8 @@ export class SubscriptionDataService {
     return dto;
   }
 
-  private _createDeviceSubscriptionDto(data: any): DeviceSubscriptionDto {
-    const dto = new DeviceSubscriptionDto();
+  private _createDeviceSubscriberDto(data: any): DeviceSubscriberDto {
+    const dto = new DeviceSubscriberDto();
     dto.platform = data.platform;
     dto.timeZone = data.timeZone;
     dto.subscription = this._createPushSubscriptonDto(data.subscription);
@@ -148,11 +148,11 @@ export class SubscriptionDataService {
     return dto;
   }
 
-  private _createRequestSubscriptionDto(
+  private _createRequestSubscriberDto(
     externalId: string,
     data: any,
-  ): RequestSubscriptionDto {
-    const dto = new RequestSubscriptionDto();
+  ): RequestSubscriberDto {
+    const dto = new RequestSubscriberDto();
     dto.url = data.url;
     dto.id = externalId;
     return dto;
@@ -170,9 +170,9 @@ export class SubscriptionDataService {
   }
 
   private _request(
-    requestSubscriptionDtos: RequestSubscriptionDto[],
-  ): Promise<UserSubscriptionDto[]> {
-    const requests = _.chain(requestSubscriptionDtos)
+    RequestSubscriberDtos: RequestSubscriberDto[],
+  ): Promise<UserSubscriberDto[]> {
+    const requests = _.chain(RequestSubscriberDtos)
       .reduce(this._reduceToUrlMap, new Map())
       .toPairs()
       .map(([url, ids]) => this._toRequest(url, ids))
@@ -185,7 +185,7 @@ export class SubscriptionDataService {
 
   private _reduceToUrlMap(
     map: Map<string, string[]>,
-    data: RequestSubscriptionDto,
+    data: RequestSubscriberDto,
   ): Map<string, string[]> {
     if (!map.has(data.url)) {
       map.set(data.url, [data.id]);
@@ -199,12 +199,12 @@ export class SubscriptionDataService {
   private _toRequest(
     url: string,
     ids: string[],
-  ): Observable<UserSubscriptionDto[]> {
+  ): Observable<UserSubscriberDto[]> {
     const params = new URLSearchParams();
     ids.forEach((id) => params.append('id', id));
 
     return this.httpService.get(`${url}?${params.toString()}`).pipe(
-      map((response) => this.mapToUserSubscriptionDtos(response.data)),
+      map((response) => this.mapToUserSubscriberDtos(response.data)),
       // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried?
       catchError((error: AxiosError) => {
         this.logger.error(

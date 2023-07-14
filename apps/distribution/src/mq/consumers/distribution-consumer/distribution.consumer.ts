@@ -8,8 +8,8 @@ import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
-import { SubscriptionDataDto } from '../../../common/dto/subscription-data.dto';
-import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
+import { SubscriberDto } from '../../../common/dto/subscriber.dto';
+import { SubscriberService } from '../../../common/providers/subscriber/subscriber.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
@@ -31,7 +31,7 @@ export class DistributionConsumer extends MqConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
-    private readonly subscriptionDataService: SubscriptionDataService,
+    private readonly SubscriberService: SubscriberService,
     private readonly configService: ConfigService,
   ) {
     super();
@@ -68,29 +68,33 @@ export class DistributionConsumer extends MqConsumer {
         distributionEvent,
         messageDto.metadata,
       );
-      const subscriptonDtos = await this._getSubscriptionData(
+      const subscribers = await this._getSubscribers(
         messageDto,
         distributionEvent.subscriptions,
         distributionRule.bypassSubscriptions,
       );
 
-      if (_.isEmpty(subscriptonDtos)) {
-        return new MqResponse('');
+      if (_.isEmpty(subscribers)) {
+        return new MqResponse(
+          'Distribution event does not have any subscribers',
+        );
       }
 
       const jobs = createNotificationJobs(
         distributionRule,
-        subscriptonDtos,
+        subscribers,
         messageDto,
       );
 
       if (_.isEmpty(jobs)) {
-        return new MqResponse('');
+        return new MqResponse(
+          'Distribution event does not have subscriber(s) with enabled delivery methods or notficiation windows',
+        );
       }
 
-      await this.notificationQueue.addBulk(jobs);
+      const notifications = await this.notificationQueue.addBulk(jobs);
 
-      return new MqResponse('');
+      return new MqResponse(`Successfully added ${notifications.length} notification(s) to queue`);
     } catch (error) {
       // Note: The MqInterceptor will be handled the error and determine if a message
       //       should be retried or not.
@@ -163,19 +167,19 @@ export class DistributionConsumer extends MqConsumer {
   }
 
   /**
-   * Yields a list of SubscriptionDataDtos that should receive a notification for an event.
+   * Yields a list of SubscriberDtos that should receive a notification for an event.
    * @param {DistributionMessageDto} message
    * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
-   * @returns {Promise<SubscriptionDataDto[]>}
+   * @returns {Promise<SubscriberDto[]>}
    */
-  private async _getSubscriptionData(
+  private async _getSubscribers(
     message: DistributionMessageDto,
     subscriptions: Subscription[],
     bypassSubscriptions: boolean,
-  ): Promise<SubscriptionDataDto[]> {
+  ): Promise<SubscriberDto[]> {
     if (bypassSubscriptions) {
-      return this.subscriptionDataService.mapToUserSubscriptionDtos(
+      return this.SubscriberService.mapToUserSubscriberDtos(
         message.recipients,
       );
     }
@@ -186,6 +190,6 @@ export class DistributionConsumer extends MqConsumer {
       return [null, null];
     }
 
-    return this.subscriptionDataService.get(filteredSubs);
+    return this.SubscriberService.get(filteredSubs);
   }
 }
