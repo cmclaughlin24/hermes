@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionType } from '../../types/subscription-type.type';
-import { SubscriptionDataService } from './subscription-data.service';
+import { SubscriberService } from './subscriber.service';
 
 export type MockHttpService = Partial<Record<keyof HttpService, jest.Mock>>;
 
@@ -9,14 +9,14 @@ export const createHttpServiceMock = (): MockHttpService => ({
   get: jest.fn(),
 });
 
-describe('SubscriptionDataService', () => {
-  let service: SubscriptionDataService;
+describe('SubscriberService', () => {
+  let service: SubscriberService;
   let httpService: MockHttpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SubscriptionDataService,
+        SubscriberService,
         {
           provide: HttpService,
           useValue: createHttpServiceMock(),
@@ -24,7 +24,7 @@ describe('SubscriptionDataService', () => {
       ],
     }).compile();
 
-    service = module.get<SubscriptionDataService>(SubscriptionDataService);
+    service = module.get<SubscriberService>(SubscriberService);
     httpService = module.get<MockHttpService>(HttpService);
   });
 

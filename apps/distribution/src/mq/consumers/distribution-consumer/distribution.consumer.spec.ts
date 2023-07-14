@@ -7,7 +7,7 @@ import {
 } from '../../../../test/helpers/provider.helper';
 import { createQueueMock } from '../../../../test/helpers/queue.helper';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
-import { SubscriptionDataService } from '../../../common/providers/subscription-data/subscription-data.service';
+import { SubscriberService } from '../../../common/providers/subscriber/subscriber.service';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';
@@ -31,7 +31,7 @@ describe('DistributionConsumer', () => {
           useValue: createDistributionEventServiceMock(),
         },
         {
-          provide: SubscriptionDataService,
+          provide: SubscriberService,
           useValue: {},
         },
         {

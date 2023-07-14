@@ -24,8 +24,8 @@ import {
 } from '../../types/subscription-type.type';
 
 @Injectable()
-export class SubscriptionDataService {
-  private readonly logger = new Logger(SubscriptionDataService.name);
+export class SubscriberService {
+  private readonly logger = new Logger(SubscriberService.name);
 
   constructor(private readonly httpService: HttpService) {}
 
