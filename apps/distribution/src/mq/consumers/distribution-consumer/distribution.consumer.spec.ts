@@ -7,20 +7,37 @@ import {
   createConfigServiceMock,
   createDistributionEventServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { createQueueMock } from '../../../../test/helpers/queue.helper';
+import {
+  MockQueue,
+  createQueueMock,
+} from '../../../../test/helpers/queue.helper';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { SubscriberService } from '../../../common/providers/subscriber/subscriber.service';
+import { SubscriptionType } from '../../../common/types/subscription-type.type';
+import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
 import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';
 import { DistributionConsumer } from './distribution.consumer';
 
+jest.mock('../../../common/utils/subscription-filter.utils');
+
 class MqInterceptorMock {}
+
+type MockSubscriberService = Partial<
+  Record<keyof SubscriberService, jest.Mock>
+>;
+
+const createSubcriberServiceMock = (): MockSubscriberService => ({
+  get: jest.fn(),
+});
 
 describe('DistributionConsumer', () => {
   let consumer: DistributionConsumer;
   let distributionEventService: MockDistributionEventService;
+  let subscriberService: MockSubscriberService;
+  let queue: MockQueue;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,7 +53,7 @@ describe('DistributionConsumer', () => {
         },
         {
           provide: SubscriberService,
-          useValue: {},
+          useValue: createSubcriberServiceMock(),
         },
         {
           provide: ConfigService,
@@ -51,6 +68,10 @@ describe('DistributionConsumer', () => {
     consumer = module.get<DistributionConsumer>(DistributionConsumer);
     distributionEventService = module.get<MockDistributionEventService>(
       DistributionEventService,
+    );
+    subscriberService = module.get<MockSubscriberService>(SubscriberService);
+    queue = module.get<MockQueue>(
+      getQueueToken(process.env.BULLMQ_NOTIFICATION_QUEUE),
     );
   });
 
@@ -70,6 +91,15 @@ describe('DistributionConsumer', () => {
         },
       ],
     };
+    const message = {
+      id: '984f18bf-e044-4a74-98ae-c830341c8a69',
+      type: 'mega-drive',
+      metadata: {
+        languageCode: 'en-us',
+      },
+      payload: {},
+      addedAt: '1989-11-29T17:20:16.040Z',
+    };
 
     beforeEach(() => {
       distributionEventService.findOne.mockResolvedValue(distributionEvent);
@@ -77,52 +107,92 @@ describe('DistributionConsumer', () => {
 
     afterEach(() => {
       distributionEventService.findOne.mockClear();
+      subscriberService.get.mockClear();
+      // @ts-ignore
+      filterSubscriptions.mockClear();
     });
 
     it('should create notification job(s) for a distribution event', async () => {
       // Arrange.
-      const message = {
-        id: '984f18bf-e044-4a74-98ae-c830341c8a69',
-        type: 'mega-drive',
-        metadata: {
-          languageCode: 'en-us',
+      // @ts-ignore
+      filterSubscriptions.mockReturnValue([
+        {
+          id: '',
+          externalId: '',
+          distributionEventId: '',
+          subscriptionType: SubscriptionType.USER,
         },
-        payload: {},
-        addedAt: '1989-11-29T17:20:16.040Z',
-      };
+      ]);
+      subscriberService.get.mockResolvedValue([
+        {
+          deliveryMethods: [DeliveryMethods.EMAIL],
+          getDeliveryWindows: (dayOfWeek: number) => null,
+          getDeliveryMethod: (deliveryMethod: DeliveryMethods) => {
+            switch (deliveryMethod) {
+              case DeliveryMethods.EMAIL:
+                return 'donkey.kong@nintendo.com';
+              default:
+                return null;
+            }
+          },
+        },
+      ]);
+      queue.addBulk.mockResolvedValue([{}]);
 
       // Act.
-      const result = await consumer.subscribe(message, null);
+      await consumer.subscribe(message, null);
 
       // Assert.
+      expect(queue.addBulk).toHaveBeenCalled();
     });
 
     it('should yield a "MqResponse" object that indicates the number of notification(s) created', async () => {
       // Arrange.
-      // Act.
-      // Assert.
+      const notifications = [{}];
+      const expectedResult = new MqResponse(
+        `Successfully added ${notifications.length} notification(s) to queue`,
+      );
+      // @ts-ignore
+      filterSubscriptions.mockReturnValue([
+        {
+          id: '',
+          externalId: '',
+          distributionEventId: '',
+          subscriptionType: SubscriptionType.USER,
+        },
+      ]);
+      subscriberService.get.mockResolvedValue([
+        {
+          deliveryMethods: [DeliveryMethods.EMAIL],
+          getDeliveryWindows: (dayOfWeek: number) => null,
+          getDeliveryMethod: (deliveryMethod: DeliveryMethods) => {
+            switch (deliveryMethod) {
+              case DeliveryMethods.EMAIL:
+                return 'bowser.junior@nintendo.com';
+              default:
+                return null;
+            }
+          },
+        },
+      ]);
+      queue.addBulk.mockResolvedValue(notifications);
+
+      // Act/Assert.
+      await expect(consumer.subscribe(message, null)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should yield a "MqResponse" object that indicates there are no subscribers for a distribution event', async () => {
       // Arrange.
-      const message = {
-        id: '984f18bf-e044-4a74-98ae-c830341c8a69',
-        type: 'mega-drive',
-        metadata: {
-          languageCode: 'en-us',
-        },
-        payload: {},
-        addedAt: '1989-11-29T17:20:16.040Z',
-      };
       const expectedResult = new MqResponse(
         'Distribution event does not have any subscribers',
       );
 
-      // Act.
-      const result = await consumer.subscribe(message, null);
-
-      // Assert.
-      expect(result).toEqual(expectedResult);
+      // Act/Assert.
+      await expect(consumer.subscribe(message, null)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should yield a "MqResponse" object that indicates there are no subscriber(s) w/matching delivery methods or notification windows', async () => {
@@ -130,17 +200,26 @@ describe('DistributionConsumer', () => {
       const expectedResult = new MqResponse(
         "Distribution event does not have subscriber(s) matching the distribution rule's delivery methods or notficiation windows",
       );
+      // @ts-ignore
+      filterSubscriptions.mockReturnValue([
+        {
+          id: '',
+          externalId: '',
+          distributionEventId: '',
+          subscriptionType: SubscriptionType.USER,
+        },
+      ]);
+      subscriberService.get.mockResolvedValue([{ deliveryMethods: [] }]);
 
-      // Act.
-      // Assert.
+      // Act/Assert.
+      await expect(consumer.subscribe(message, null)).resolves.toEqual(
+        expectedResult,
+      );
     });
 
     it('should rethrow any errors so the MqInterceptor may handle them', async () => {
-      // Arrange.
-      const message = {};
-
       // Act/Assert.
-      await expect(consumer.subscribe(message, null)).rejects.toThrow();
+      await expect(consumer.subscribe({}, null)).rejects.toThrow();
     });
 
     it('should throw a "MqUnrecoverableError" if a distribution event does not have a default distribution rule', async () => {
@@ -154,15 +233,6 @@ describe('DistributionConsumer', () => {
       const expectedResult = new MqUnrecoverableError(
         `Distribution Event queue=${invalidDistributionEvent.queue} eventType=${invalidDistributionEvent.eventType} does not have a default distribution rule defined!`,
       );
-      const message = {
-        id: '984f18bf-e044-4a74-98ae-c830341c8a69',
-        type: 'mega-drive',
-        metadata: {
-          languageCode: 'en-us',
-        },
-        payload: {},
-        addedAt: '2023-07-14T17:20:16.040Z',
-      };
       distributionEventService.findOne.mockResolvedValue(
         invalidDistributionEvent,
       );

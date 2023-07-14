@@ -31,7 +31,7 @@ export class DistributionConsumer extends MqConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
-    private readonly SubscriberService: SubscriberService,
+    private readonly subscriberService: SubscriberService,
     private readonly configService: ConfigService,
   ) {
     super();
@@ -181,7 +181,7 @@ export class DistributionConsumer extends MqConsumer {
     bypassSubscriptions: boolean,
   ): Promise<SubscriberDto[]> {
     if (bypassSubscriptions) {
-      return this.SubscriberService.mapToUserSubscriberDtos(message.recipients);
+      return this.subscriberService.mapToUserSubscriberDtos(message.recipients);
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
@@ -190,6 +190,6 @@ export class DistributionConsumer extends MqConsumer {
       return [];
     }
 
-    return this.SubscriberService.get(filteredSubs);
+    return this.subscriberService.get(filteredSubs);
   }
 }
