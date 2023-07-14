@@ -14,7 +14,7 @@ export abstract class SubscriberDto {
 
   abstract deliveryMethods: DeliveryMethods[];
 
-  abstract getDeliveryMethod(DeliveryMethods): any;
+  abstract getDeliveryMethod(deliveryMethod: DeliveryMethods): any;
 
-  abstract getDeliveryWindows(number): DeliveryWindow[]; 
+  abstract getDeliveryWindows(dayOfWeek: number): DeliveryWindow[]; 
 }

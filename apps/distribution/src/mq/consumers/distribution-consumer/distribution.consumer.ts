@@ -31,7 +31,7 @@ export class DistributionConsumer extends MqConsumer {
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
-    private readonly SubscriberService: SubscriberService,
+    private readonly subscriberService: SubscriberService,
     private readonly configService: ConfigService,
   ) {
     super();
@@ -88,13 +88,15 @@ export class DistributionConsumer extends MqConsumer {
 
       if (_.isEmpty(jobs)) {
         return new MqResponse(
-          'Distribution event does not have subscriber(s) with enabled delivery methods or notficiation windows',
+          "Distribution event does not have subscriber(s) matching the distribution rule's delivery methods or notficiation windows",
         );
       }
 
       const notifications = await this.notificationQueue.addBulk(jobs);
 
-      return new MqResponse(`Successfully added ${notifications.length} notification(s) to queue`);
+      return new MqResponse(
+        `Successfully added ${notifications.length} notification(s) to queue`,
+      );
     } catch (error) {
       // Note: The MqInterceptor will be handled the error and determine if a message
       //       should be retried or not.
@@ -179,17 +181,15 @@ export class DistributionConsumer extends MqConsumer {
     bypassSubscriptions: boolean,
   ): Promise<SubscriberDto[]> {
     if (bypassSubscriptions) {
-      return this.SubscriberService.mapToUserSubscriberDtos(
-        message.recipients,
-      );
+      return this.subscriberService.mapToUserSubscriberDtos(message.recipients);
     }
 
     const filteredSubs = filterSubscriptions(subscriptions, message.payload);
 
     if (_.isEmpty(filteredSubs)) {
-      return [null, null];
+      return [];
     }
 
-    return this.SubscriberService.get(filteredSubs);
+    return this.subscriberService.get(filteredSubs);
   }
 }

@@ -39,7 +39,7 @@ export class DeviceSubscriberDto extends SubscriberDto {
     }
   }
 
-  getDeliveryWindows(number: any): DeliveryWindow[] {
+  getDeliveryWindows(dayOfWeek: number): DeliveryWindow[] {
     return [];
   }
 }
