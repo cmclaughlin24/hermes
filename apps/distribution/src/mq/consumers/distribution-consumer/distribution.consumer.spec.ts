@@ -118,7 +118,7 @@ describe('DistributionConsumer', () => {
       filterSubscriptions.mockReturnValue([
         {
           id: '',
-          externalId: '',
+          subscriberId: '',
           distributionEventId: '',
           subscriptionType: SubscriptionType.USER,
         },
@@ -156,7 +156,7 @@ describe('DistributionConsumer', () => {
       filterSubscriptions.mockReturnValue([
         {
           id: '',
-          externalId: '',
+          subscriberId: '',
           distributionEventId: '',
           subscriptionType: SubscriptionType.USER,
         },
@@ -204,7 +204,7 @@ describe('DistributionConsumer', () => {
       filterSubscriptions.mockReturnValue([
         {
           id: '',
-          externalId: '',
+          subscriberId: '',
           distributionEventId: '',
           subscriptionType: SubscriptionType.USER,
         },

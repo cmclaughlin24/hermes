@@ -138,9 +138,9 @@ describe('SubscriptionService', () => {
 
     it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
       // Arrange.
-      const externalId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
+      const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
       const expectedResult = new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
@@ -149,7 +149,7 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.findOne(queue, eventType, externalId),
+        service.findOne(queue, eventType, subscriberId),
       ).rejects.toEqual(expectedResult);
     });
 
@@ -169,7 +169,7 @@ describe('SubscriptionService', () => {
 
   describe('create()', () => {
     const createSubscriptionDto: CreateSubscriptionDto = {
-      externalId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
+      subscriberId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
       filterJoin: FilterJoinOps.NOT,
       queue: 'distribution',
       eventType: 'test',
@@ -177,7 +177,7 @@ describe('SubscriptionService', () => {
       data: { url: 'http://localhost:9999/subscriptions' },
     };
     const subscription = {
-      externalId: createSubscriptionDto.externalId,
+      subscriberId: createSubscriptionDto.subscriberId,
       distributionEventId: '',
       filterJoin: createSubscriptionDto.filterJoin,
       data: { url: 'http://localhost:9999/subscriptions' },
@@ -236,7 +236,7 @@ describe('SubscriptionService', () => {
     it('should throw a "BadRequestException" if a subscription already exists', async () => {
       // Arrange.
       const expectedResult = new BadRequestException(
-        `Subscription ${createSubscriptionDto.externalId} already exists!`,
+        `Subscription ${createSubscriptionDto.subscriberId} already exists!`,
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
@@ -336,9 +336,9 @@ describe('SubscriptionService', () => {
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const externalId = 'unit-test';
+      const subscriberId = 'unit-test';
       const expectedResult = new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(null);
@@ -348,7 +348,7 @@ describe('SubscriptionService', () => {
         service.update(
           queue,
           eventType,
-          externalId,
+          subscriberId,
           {} as UpdateSubscriptionDto,
         ),
       ).rejects.toEqual(expectedResult);
@@ -369,30 +369,30 @@ describe('SubscriptionService', () => {
   });
 
   describe('removeAll()', () => {
-    const externalId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
+    const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
 
     it('should remove a subscription from all distribution event(s)', async () => {
       // Arrange.
       subscriptionModel.findOne.mockResolvedValue({});
 
       // Act.
-      await service.removeAll(externalId);
+      await service.removeAll(subscriberId);
 
       // Assert.
       expect(subscriptionModel.destroy).toHaveBeenCalledWith({
-        where: { externalId },
+        where: { subscriberId },
       });
     });
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription externalId=${externalId} from all distribution event(s)!`,
+        `Successfully deleted subscription subscriberId=${subscriberId} from all distribution event(s)!`,
       );
       subscriptionModel.findOne.mockResolvedValue({});
 
       // Act/Assert.
-      await expect(service.removeAll(externalId)).resolves.toEqual(
+      await expect(service.removeAll(subscriberId)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -400,19 +400,19 @@ describe('SubscriptionService', () => {
     it('should throw a "NotFoundException" if the repository does have at least one subscription', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Subscription(s) with externalId=${externalId} not found!`,
+        `Subscription(s) with subscriberId=${subscriberId} not found!`,
       );
       subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.removeAll(externalId)).rejects.toEqual(
+      await expect(service.removeAll(subscriberId)).rejects.toEqual(
         expectedResult,
       );
     });
   });
 
   describe('remove()', () => {
-    const externalId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
+    const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
     const subscription = { destroy: jest.fn() };
 
     afterEach(() => {
@@ -428,7 +428,7 @@ describe('SubscriptionService', () => {
       } as DistributionRule);
 
       // Act.
-      await service.remove(queue, eventType, externalId);
+      await service.remove(queue, eventType, subscriberId);
 
       // Assert.
       expect(subscription.destroy).toHaveBeenCalled();
@@ -437,7 +437,7 @@ describe('SubscriptionService', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} eventType=${eventType} externalId=${externalId}!`,
+        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
@@ -446,14 +446,14 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.remove(queue, eventType, externalId),
+        service.remove(queue, eventType, subscriberId),
       ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
@@ -462,7 +462,7 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.remove(queue, eventType, externalId),
+        service.remove(queue, eventType, subscriberId),
       ).rejects.toEqual(expectedResult);
     });
 
@@ -475,7 +475,7 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.remove(queue, eventType, externalId),
+        service.remove(queue, eventType, subscriberId),
       ).rejects.toEqual(expectedResult);
     });
   });

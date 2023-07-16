@@ -36,6 +36,7 @@ import { ResourcesModule } from './resources/resources.module';
         BULLMQ_NOTIFICATION_QUEUE_PREFIX: Joi.required(),
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
+        SUBSCRIBERS_REQUEST_URL: Joi.string().required(),
       }),
     }),
     SequelizeModule.forRootAsync({

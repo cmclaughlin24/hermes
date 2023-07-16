@@ -15,7 +15,7 @@ describe('SubscriptionController', () => {
   let service: MockSubscriptionService;
 
   const subscription: Subscription = {
-    externalId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
+    subscriberId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
     data: { url: 'http://localhost:9999/subscriptions' },
     filterJoin: 'and',
   } as Subscription;
@@ -57,7 +57,7 @@ describe('SubscriptionController', () => {
 
       // Act/Assert.
       await expect(
-        controller.findOne('', '', subscription.externalId),
+        controller.findOne('', '', subscription.subscriberId),
       ).resolves.toEqual(subscription);
     });
   });
@@ -92,7 +92,7 @@ describe('SubscriptionController', () => {
         controller.update(
           '',
           '',
-          subscription.externalId,
+          subscription.subscriberId,
           {} as UpdateSubscriptionDto,
         ),
       ).resolves.toEqual(expectedResult);
@@ -103,13 +103,13 @@ describe('SubscriptionController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription externalId=${subscription.externalId} from all distribution event(s)!`,
+        `Successfully deleted subscription subscriberId=${subscription.subscriberId} from all distribution event(s)!`,
       );
       service.removeAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        controller.removeAll(subscription.externalId),
+        controller.removeAll(subscription.subscriberId),
       ).resolves.toEqual(expectedResult);
     });
   });
@@ -120,13 +120,13 @@ describe('SubscriptionController', () => {
       const queue = 'unit-test';
       const eventType = 'unit-test';
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} eventType=${eventType} externalId=${subscription.externalId}!`,
+        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId}!`,
       );
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        controller.remove(queue, eventType, subscription.externalId),
+        controller.remove(queue, eventType, subscription.subscriberId),
       ).resolves.toEqual(expectedResult);
     });
   });
