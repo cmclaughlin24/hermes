@@ -15,7 +15,7 @@ const DEFAULT_TTL = 5000;
  * Due to the I/O operations required to interact with the cache store,
  * methods decoratored by `UseCache` will resolve as a `Promise`.
  *
- * Note: Requires the @nestjs/cache-manager CacheModule to be imported
+ * Note: Requires the `@nestjs/cache-manager` CacheModule to be imported
  *       into the module where the decorator is used. Extends the module's
  *       features to enable auto-caching and removal w/o the use of
  *       interceptors.
@@ -72,7 +72,7 @@ export const UseCache = (options: UseCacheOptions): MethodDecorator => {
 
       logger.verbose(`Setting value for key=${cacheKey} in cache`);
 
-      // Note: Promise resolution for setting value in cache is not waited on since it
+      // Note: Promise resolution for setting value in cache is not awaited since it
       //       does not impact return value but may impact response time.
       this.cacheManager
         .set(cacheKey, value, ttl)

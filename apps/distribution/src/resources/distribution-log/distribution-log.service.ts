@@ -1,3 +1,4 @@
+import { errorToJson } from '@hermes/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
@@ -62,22 +63,23 @@ export class DistributionLogService {
    * @param {DistributionJob} distributionJob
    * @param {MessageState} state
    * @param {any} result
-   * @param {any} error
+   * @param {Error} error
    * @returns {Promise<DistributionLog>}
    */
   async log(
     distributionJob: DistributionJob,
     state: MessageState,
     result?: any,
-    error?: any,
+    error?: Error,
   ) {
     const log = await this.distributionLogModel.findByPk(distributionJob.id);
+    const errorJson = errorToJson(error);
 
     if (!log) {
-      return this._createLog(distributionJob, state, result, error);
+      return this._createLog(distributionJob, state, result, errorJson);
     }
 
-    return this._updateLog(distributionJob, state, result, error);
+    return this._updateLog(distributionJob, state, result, errorJson);
   }
 
   /**
@@ -122,14 +124,14 @@ export class DistributionLogService {
    * @param {DistributionJob} distributionJob
    * @param {MessageState} state
    * @param {any} result
-   * @param {any} error
+   * @param {Record<string, any>} error
    * @returns {Promise<DistributionLog>}
    */
   private async _createLog(
     distributionJob: DistributionJob,
     state: MessageState,
     result: any,
-    error: any,
+    error: Record<string, any>,
   ) {
     return this.sequelize.transaction(async (transaction) => {
       const log = await this.distributionLogModel.create(
@@ -172,14 +174,14 @@ export class DistributionLogService {
    * @param {DistributionJob} distributionJob
    * @param {MessageState} state
    * @param {any} result
-   * @param {any} error
+   * @param {Record<string, any>} error
    * @returns {Promise<DistributionLog>}
    */
   private async _updateLog(
     distributionJob: DistributionJob,
     state: MessageState,
     result: any,
-    error: any,
+    error: Record<string, any>,
   ) {
     return this.sequelize.transaction(async (transaction) => {
       let log = await this.distributionLogModel.findByPk(distributionJob.id, {

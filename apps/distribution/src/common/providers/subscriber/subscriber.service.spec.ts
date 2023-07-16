@@ -1,5 +1,7 @@
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { createConfigServiceMock } from '../../../../test/helpers/provider.helper';
 import { SubscriptionType } from '../../types/subscription-type.type';
 import { SubscriberService } from './subscriber.service';
 
@@ -15,7 +17,13 @@ describe('SubscriberService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SubscriberService],
+      providers: [
+        SubscriberService,
+        {
+          provide: ConfigService,
+          useValue: createConfigServiceMock(),
+        }
+      ],
     })
       .overrideProvider(HttpService)
       .useValue(createHttpServiceMock())

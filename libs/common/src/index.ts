@@ -12,5 +12,6 @@ export * from './types/delivery-methods.type';
 export * from './types/platform.type';
 export * from './types/text-direction.type';
 export * from './utils/cache.utils';
+export * from './utils/error.utils';
 export * from './utils/metadata.utils';
 
