@@ -27,7 +27,7 @@ export class NotificationAttempt extends Model {
   result: any;
 
   @Column({ type: DataType.JSON, allowNull: true })
-  error: Error;
+  error: any;
 
   @BelongsTo(() => NotificationLog)
   log: NotificationLog;

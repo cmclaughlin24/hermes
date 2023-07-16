@@ -1,3 +1,4 @@
+import { errorToJson } from '@hermes/common';
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -228,7 +229,7 @@ describe('DistributionLogService', () => {
       const expectedResult = {
         logId: job.id,
         result: {},
-        error: undefined,
+        error: null,
         attempt: job.attemptsMade,
         processedOn: job.processedAt,
       };
@@ -250,10 +251,11 @@ describe('DistributionLogService', () => {
 
     it('should create a distribution log if the repository returns null/undefined (failed attempt)', async () => {
       // Arrange.
+      const error = new Error('');
       const expectedResult = {
         logId: job.id,
         result: null,
-        error: {},
+        error: errorToJson(error),
         attempt: job.attemptsMade,
         processedOn: job.processedAt,
       };
@@ -263,7 +265,7 @@ describe('DistributionLogService', () => {
       });
 
       // Act.
-      await service.log(job, MessageState.FAILED, null, {});
+      await service.log(job, MessageState.FAILED, null, error);
 
       // Assert.
       expect(distributionLogModel.create).toHaveBeenCalled();
@@ -301,7 +303,7 @@ describe('DistributionLogService', () => {
       const expectedResult = {
         logId: job.id,
         result: {},
-        error: undefined,
+        error: null,
         attempt: job.attemptsMade,
         processedOn: job.processedAt,
       };
@@ -325,10 +327,11 @@ describe('DistributionLogService', () => {
 
     it('should update a distribution log (failed  attempt)', async () => {
       // Arrange.
+      const error = new Error('');
       const expectedResult = {
         logId: job.id,
         result: null,
-        error: {},
+        error: errorToJson(error),
         attempt: job.attemptsMade,
         processedOn: job.processedAt,
       };
@@ -340,7 +343,7 @@ describe('DistributionLogService', () => {
       distributionLogModel.findByPk.mockResolvedValue(log);
 
       // Act.
-      await service.log(job, MessageState.FAILED, null, {});
+      await service.log(job, MessageState.FAILED, null, error);
 
       // Assert.
       expect(log.update).toHaveBeenCalled();

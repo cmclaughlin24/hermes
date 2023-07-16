@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { TwilioService } from 'nestjs-twilio';
+import { CallInstance } from 'nestjs-twilio/node_modules/twilio/dist/lib/rest/api/v2010/account/call';
+import { MessageInstance } from 'nestjs-twilio/node_modules/twilio/dist/lib/rest/api/v2010/account/message';
 import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
@@ -18,7 +20,9 @@ export class PhoneService implements CreateNotificationDto {
     private readonly phoneTemplateService: PhoneTemplateService,
   ) {}
 
-  async sendText(createPhoneNotificationDto: CreatePhoneNotificationDto) {
+  async sendText(
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
+  ): Promise<MessageInstance> {
     try {
       const result = await this.twilioService.client.messages.create({
         ...createPhoneNotificationDto,
@@ -33,7 +37,9 @@ export class PhoneService implements CreateNotificationDto {
     }
   }
 
-  async sendCall(createPhoneNotificationDto: CreatePhoneNotificationDto) {
+  async sendCall(
+    createPhoneNotificationDto: CreatePhoneNotificationDto,
+  ): Promise<CallInstance> {
     try {
       const result = await this.twilioService.client.calls.create({
         twiml: createPhoneNotificationDto.body,

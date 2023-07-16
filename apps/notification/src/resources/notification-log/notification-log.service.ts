@@ -1,3 +1,4 @@
+import { errorToJson } from '@hermes/common';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobState } from 'bullmq';
@@ -73,14 +74,15 @@ export class NotificationLogService {
    * @returns {Promise<string>}
    */
   async log(job: Job, state: JobState, result: any, error: Error) {
+    const errorJson = errorToJson(error);
+
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
-    // Fixme: Convert Error object to JSON object so that it may be stored in the database.
     if (!job.data.notification_database_id) {
-      return this._createLog(job, state, result, error);
+      return this._createLog(job, state, result, errorJson);
     }
 
-    return this._updateLog(job, state, result, error);
+    return this._updateLog(job, state, result, errorJson);
   }
 
   /**
@@ -113,14 +115,14 @@ export class NotificationLogService {
    * @param {Job} job
    * @param {JobState} state
    * @param {any} result
-   * @param {Error} error
+   * @param {Record<string, any>} error
    * @returns {Promise<string>}
    */
   private async _createLog(
     job: Job,
     state: JobState,
     result: any,
-    error: Error,
+    error: Record<string, any>,
   ) {
     return this.sequelize.transaction(async (transaction) => {
       const log = await this.notificationLogModel.create(
@@ -159,14 +161,14 @@ export class NotificationLogService {
    * @param {Job} job
    * @param {JobState} state
    * @param {any} result
-   * @param {Error} error
+   * @param {Record<string, any>} error
    * @returns {Promise<string>}
    */
   private async _updateLog(
     job: Job,
     state: JobState,
     result: any,
-    error: Error,
+    error: Record<string, any>,
   ) {
     return this.sequelize.transaction(async (transaction) => {
       let log = await this.notificationLogModel.findByPk(
