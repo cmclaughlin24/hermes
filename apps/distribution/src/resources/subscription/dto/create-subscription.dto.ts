@@ -20,12 +20,12 @@ export class CreateSubscriptionDto {
   @ApiProperty({
     description:
       'An identifer provided by the subscribing service used to identify the subscription ' +
-      'and retrieve subscription member(s) (if applicable)',
+      'and retrieve the subscribers (if applicable)',
   })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  externalId: string;
+  subscriberId: string;
 
   @ApiProperty({
     description: 'Name of the Rabbitmq queue the message is consumed from',

@@ -31,7 +31,7 @@ export class SubscriptionController {
     return this.subscriptionService.findAll();
   }
 
-  @Get(':queue/:eventType/:externalId')
+  @Get(':queue/:eventType/:subscriberId')
   @Public()
   @ApiOperation({
     summary: "Find a subscription by it's distribution event and external id.",
@@ -42,9 +42,9 @@ export class SubscriptionController {
   findOne(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
-    @Param('externalId') externalId: string,
+    @Param('subscriberId') subscriberId: string,
   ) {
-    return this.subscriptionService.findOne(queue, eventType, externalId);
+    return this.subscriptionService.findOne(queue, eventType, subscriberId);
   }
 
   @Post()
@@ -70,7 +70,7 @@ export class SubscriptionController {
     return this.subscriptionService.create(createSubscriptionDto);
   }
 
-  @Patch(':queue/:eventType/:externalId')
+  @Patch(':queue/:eventType/:subscriberId')
   @ApiOperation({
     summary: 'Update a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -91,18 +91,18 @@ export class SubscriptionController {
   update(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
-    @Param('externalId') externalId: string,
+    @Param('subscriberId') subscriberId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.subscriptionService.update(
       queue,
       eventType,
-      externalId,
+      subscriberId,
       updateSubscriptionDto,
     );
   }
 
-  @Delete(':externalId')
+  @Delete(':subscriberId')
   @ApiOperation({
     summary: 'Remove a subscription from all distribution event(s).',
     security: [{ ApiKeyAuth: [] }],
@@ -117,11 +117,11 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  removeAll(@Param('externalId') externalId: string) {
-    return this.subscriptionService.removeAll(externalId);
+  removeAll(@Param('subscriberId') subscriberId: string) {
+    return this.subscriptionService.removeAll(subscriberId);
   }
 
-  @Delete(':queue/:eventType/:externalId')
+  @Delete(':queue/:eventType/:subscriberId')
   @ApiOperation({
     summary: 'Remove a subscription to a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -139,8 +139,8 @@ export class SubscriptionController {
   remove(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
-    @Param('externalId') externalId: string,
+    @Param('subscriberId') subscriberId: string,
   ) {
-    return this.subscriptionService.remove(queue, eventType, externalId);
+    return this.subscriptionService.remove(queue, eventType, subscriberId);
   }
 }

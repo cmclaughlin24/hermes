@@ -48,10 +48,10 @@ export class SubscriptionService {
    * returns null or undefined.
    * @param {string} queue
    * @param {string} eventType
-   * @param {string} externalId
+   * @param {string} subscriberId
    * @returns {Promise<Subscription>}
    */
-  async findOne(queue: string, eventType: string, externalId: string) {
+  async findOne(queue: string, eventType: string, subscriberId: string) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       queue,
@@ -59,7 +59,7 @@ export class SubscriptionService {
     );
     const subscription = await this.subscriptionModel.findOne({
       where: {
-        externalId: externalId,
+        subscriberId: subscriberId,
         distributionEventId: distributionEvent.id,
       },
       include: [SubscriptionFilter],
@@ -67,7 +67,7 @@ export class SubscriptionService {
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
     }
 
@@ -89,21 +89,21 @@ export class SubscriptionService {
     );
     const existingSubscription = await this.subscriptionModel.findOne({
       where: {
-        externalId: createSubscriptionDto.externalId,
+        subscriberId: createSubscriptionDto.subscriberId,
         distributionEventId: distributionEvent.id,
       },
     });
 
     if (existingSubscription) {
       throw new BadRequestException(
-        `Subscription ${createSubscriptionDto.externalId} already exists!`,
+        `Subscription ${createSubscriptionDto.subscriberId} already exists!`,
       );
     }
 
     const subscription = await this.subscriptionModel.create(
       {
         distributionEventId: distributionEvent.id,
-        externalId: createSubscriptionDto.externalId,
+        subscriberId: createSubscriptionDto.subscriberId,
         subscriptionType: createSubscriptionDto.subscriptionType,
         data: createSubscriptionDto.data,
         filterJoin: createSubscriptionDto.filterJoin,
@@ -123,14 +123,14 @@ export class SubscriptionService {
    * returns null or undefined.
    * @param {string} queue
    * @param {string} eventType
-   * @param {string} externalId
+   * @param {string} subscriberId
    * @param {UpdateSubscriptionDto} updateSubscriptionDto
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
   async update(
     queue: string,
     eventType: string,
-    externalId: string,
+    subscriberId: string,
     updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.sequelize.transaction(async (transaction) => {
@@ -141,7 +141,7 @@ export class SubscriptionService {
       );
       let subscription = await this.subscriptionModel.findOne({
         where: {
-          externalId: externalId,
+          subscriberId: subscriberId,
           distributionEventId: distributionEvent.id,
         },
         include: [SubscriptionFilter],
@@ -150,7 +150,7 @@ export class SubscriptionService {
 
       if (!subscription) {
         throw new NotFoundException(
-          `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+          `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
         );
       }
 
@@ -184,26 +184,26 @@ export class SubscriptionService {
   /**
    * Removes a Subscription from all distribution events or throws a NotFoundException
    * if the repository returns null or undefined.
-   * @param {string} externalId
+   * @param {string} subscriberId
    * @returns {Promise<ApiResponseDto>}
    */
-  async removeAll(externalId: string) {
+  async removeAll(subscriberId: string) {
     const subscription = await this.subscriptionModel.findOne({
-      where: { externalId },
+      where: { subscriberId },
     });
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription(s) with externalId=${externalId} not found!`,
+        `Subscription(s) with subscriberId=${subscriberId} not found!`,
       );
     }
 
     await this.subscriptionModel.destroy({
-      where: { externalId },
+      where: { subscriberId },
     });
 
     return new ApiResponseDto(
-      `Successfully deleted subscription externalId=${externalId} from all distribution event(s)!`,
+      `Successfully deleted subscription subscriberId=${subscriberId} from all distribution event(s)!`,
     );
   }
 
@@ -212,10 +212,10 @@ export class SubscriptionService {
    * returns null or undefined.
    * @param {string} queue
    * @param {string} eventType
-   * @param {string} externalId
+   * @param {string} subscriberId
    * @returns {Promise<ApiResponseDto>}
    */
-  async remove(queue: string, eventType: string, externalId: string) {
+  async remove(queue: string, eventType: string, subscriberId: string) {
     // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       queue,
@@ -223,14 +223,14 @@ export class SubscriptionService {
     );
     const subscription = await this.subscriptionModel.findOne({
       where: {
-        externalId: externalId,
+        subscriberId: subscriberId,
         distributionEventId: distributionEvent.id,
       },
     });
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} externalId=${externalId} not found!`,
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
     }
 
@@ -238,7 +238,7 @@ export class SubscriptionService {
     await subscription.destroy();
 
     return new ApiResponseDto(
-      `Successfully deleted subscription queue=${queue} eventType=${eventType} externalId=${externalId}!`,
+      `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
     );
   }
 

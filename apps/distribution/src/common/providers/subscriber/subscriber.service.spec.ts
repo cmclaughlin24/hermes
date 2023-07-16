@@ -15,14 +15,11 @@ describe('SubscriberService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        SubscriberService,
-        {
-          provide: HttpService,
-          useValue: createHttpServiceMock(),
-        },
-      ],
-    }).compile();
+      providers: [SubscriberService],
+    })
+      .overrideProvider(HttpService)
+      .useValue(createHttpServiceMock())
+      .compile();
 
     service = module.get<SubscriberService>(SubscriberService);
     httpService = module.get<MockHttpService>(HttpService);

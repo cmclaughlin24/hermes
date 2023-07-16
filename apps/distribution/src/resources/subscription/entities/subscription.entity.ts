@@ -19,7 +19,7 @@ import { SubscriptionFilter } from './subscription-filter.entity';
   indexes: [
     {
       unique: true,
-      fields: ['externalId', 'distributionEventId'],
+      fields: ['subscriberId', 'distributionEventId'],
     },
   ],
 })
@@ -32,7 +32,7 @@ export class Subscription extends Model {
   id: string;
 
   @Column
-  externalId: string;
+  subscriberId: string;
 
   @ForeignKey(() => DistributionEvent)
   distributionEventId: string;

@@ -1,6 +1,7 @@
 import { PushSubscriptionDto, PushSubscriptionKeysDto } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
@@ -26,8 +27,14 @@ import {
 @Injectable()
 export class SubscriberService {
   private readonly logger = new Logger(SubscriberService.name);
+  private subscribersRequestUrl: string;
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    configService: ConfigService,
+  ) {
+    this.subscribersRequestUrl = configService.get('SUBSCRIBERS_REQUEST_URL');
+  }
 
   async get(subscriptions: Subscription[]): Promise<SubscriberDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
@@ -84,10 +91,7 @@ export class SubscriberService {
         dto = this._createDeviceSubscriberDto(subscription.data);
         break;
       case SubscriptionType.REQUEST:
-        dto = this._createRequestSubscriberDto(
-          subscription.externalId,
-          subscription.data,
-        );
+        dto = this._createRequestSubscriberDto(subscription.subscriberId);
         break;
       default:
         throw new Error(
@@ -112,7 +116,9 @@ export class SubscriberService {
           await this._validateDto(dto);
         } catch (error) {
           this.logger.error(
-            `${UserSubscriberDto.name} corrupted: ${error.message}`,
+            `${UserSubscriberDto.name} corrupted: error=${
+              error.message
+            } dto=${JSON.stringify(dto)}`,
           );
           return false;
         }
@@ -149,12 +155,11 @@ export class SubscriberService {
   }
 
   private _createRequestSubscriberDto(
-    externalId: string,
-    data: any,
+    subscriberId: string,
   ): RequestSubscriberDto {
     const dto = new RequestSubscriberDto();
-    dto.url = data.url;
-    dto.id = externalId;
+    dto.url = this.subscribersRequestUrl;
+    dto.id = subscriberId;
     return dto;
   }
 
@@ -170,9 +175,9 @@ export class SubscriberService {
   }
 
   private _request(
-    RequestSubscriberDtos: RequestSubscriberDto[],
+    requestSubscriberDtos: RequestSubscriberDto[],
   ): Promise<UserSubscriberDto[]> {
-    const requests = _.chain(RequestSubscriberDtos)
+    const requests = _.chain(requestSubscriberDtos)
       .reduce(this._reduceToUrlMap, new Map())
       .toPairs()
       .map(([url, ids]) => this._toRequest(url, ids))
