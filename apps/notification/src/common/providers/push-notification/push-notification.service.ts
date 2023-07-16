@@ -127,12 +127,12 @@ export class PushNotificationService implements CreateNotificationDto {
     let response;
 
     try {
-      // Fixme: Check response status code === 410 and remove subscriptions if true.
       response = await webpush.sendNotification(
         subscription,
         JSON.stringify({ notification }),
       );
     } catch (error) {
+      // Fixme: Check response status code === 410 and remove subscriptions if true.
       console.error(error);
     }
 

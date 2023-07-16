@@ -11,7 +11,7 @@ import {
   firstValueFrom,
   forkJoin,
   map,
-  of,
+  throwError,
 } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
@@ -210,12 +210,16 @@ export class SubscriberService {
 
     return this.httpService.get(`${url}?${params.toString()}`).pipe(
       map((response) => this.mapToUserSubscriberDtos(response.data)),
-      // Fixme: Should an error be thrown on attempts 1-(n-1) so the message will be retried?
+      // ? If supporting multiple request endpoints, should an error be thrown on attempts 1 to n-1
+      //   so the message will be retried? Then on attempt n, process successful requests so some
+      //   notifications are delivered?
       catchError((error: AxiosError) => {
         this.logger.error(
-          `Request for subscription data from ${url} failed: ${error.message}`,
+          `Request for subscription data from ${url}?${params.toString()} failed: ${
+            error.message
+          }`,
         );
-        return of([]);
+        return throwError(() => error);
       }),
     );
   }
