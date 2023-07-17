@@ -3,11 +3,13 @@ import {
   PushNotificationDto,
   PushSubscriptionDto,
 } from '@hermes/common';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UnrecoverableError } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
+import { firstValueFrom } from 'rxjs';
 import * as webpush from 'web-push';
 import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
@@ -16,9 +18,13 @@ import { CreateNotificationDto } from '../../interfaces/create-notification-dto.
 @Injectable()
 export class PushNotificationService implements CreateNotificationDto {
   private readonly logger = new Logger(PushNotificationService.name);
+  private removeSubscriberUrl: string;
+  private subscriberApiKeyHeader: string;
+  private subscriberApiKey: string;
 
   constructor(
     private readonly pushTemplateService: PushTemplateService,
+    private readonly httpService: HttpService,
     configService: ConfigService,
   ) {
     webpush.setVapidDetails(
@@ -26,6 +32,11 @@ export class PushNotificationService implements CreateNotificationDto {
       configService.get('VAPID_PUBLIC_KEY'),
       configService.get('VAPID_PRIVATE_KEY'),
     );
+    this.removeSubscriberUrl = configService.get('REMOVE_SUBSCRIBER_URL');
+    this.subscriberApiKeyHeader = configService.get(
+      'SUBSCRIBER_API_KEY_HEADER',
+    );
+    this.subscriberApiKey = configService.get('SUBSCRIBER_API_KEY');
   }
 
   async sendPushNotification(
@@ -132,10 +143,26 @@ export class PushNotificationService implements CreateNotificationDto {
         JSON.stringify({ notification }),
       );
     } catch (error) {
-      // Fixme: Check response status code === 410 and remove subscriptions if true.
-      console.error(error);
+      if (error.statusCode === HttpStatus.GONE) {
+        // Fixme: Change sending subscription.endpoint to a generated UUID. Distribution Service
+        //        will need to send the subscriber id.
+        return this._removeSubscriber(subscription.endpoint);
+      }
+      throw error;
     }
 
     return response;
+  }
+
+  private _removeSubscriber(subscriberId: string) {
+    // Todo: Tap into the response from the remove subscriber url.
+    const request = this.httpService.delete(
+      `${this.removeSubscriberUrl}/${subscriberId}`,
+      {
+        headers: { [this.subscriberApiKeyHeader]: this.subscriberApiKey },
+      },
+    );
+
+    return firstValueFrom(request);
   }
 }
