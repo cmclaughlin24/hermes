@@ -27,6 +27,9 @@ export class DeviceSubscriberDto extends SubscriberDto {
   subscription: PushSubscriptionDto;
 
   @ApiHideProperty()
+  subscriberId: string;
+
+  @ApiHideProperty()
   @IsEnum(DeliveryMethods, { each: true })
   deliveryMethods: DeliveryMethods[] = [DeliveryMethods.PUSH];
 

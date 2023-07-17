@@ -2,14 +2,14 @@ import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
-    MockEmailService,
-    MockNotificationLogService,
-    MockPhoneService,
-    MockPushNotificationService,
-    createEmailServiceMock,
-    createNotificationLogServiceMock,
-    createPhoneServiceMock,
-    createPushNotificationServiceMock,
+  MockEmailService,
+  MockNotificationLogService,
+  MockPhoneService,
+  MockPushNotificationService,
+  createEmailServiceMock,
+  createNotificationLogServiceMock,
+  createPhoneServiceMock,
+  createPushNotificationServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -364,6 +364,7 @@ describe('NotificationService', () => {
 
   describe('processPushNotification()', () => {
     const createPushNotificationDto: CreatePushNotificationDto = {
+      subscriberId: 'unit-test',
       subscription: null,
       platform: Platform.WEB,
       notification: { title: 'unit-test' },

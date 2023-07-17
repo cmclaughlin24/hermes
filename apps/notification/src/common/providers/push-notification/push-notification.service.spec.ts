@@ -1,16 +1,17 @@
 import {
-    Platform,
-    PushNotificationDto,
-    PushSubscriptionDto,
+  Platform,
+  PushNotificationDto,
+  PushSubscriptionDto,
 } from '@hermes/common';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnrecoverableError } from 'bullmq';
 import * as webpush from 'web-push';
 import {
-    MockPushTemplateService,
-    createConfigServiceMock,
-    createPushTemplateServiceMock,
+  MockPushTemplateService,
+  createConfigServiceMock,
+  createPushTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
@@ -29,6 +30,10 @@ describe('PushNotificationService', () => {
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
+        },
+        {
+          provide: HttpService,
+          useValue: { delete: jest.fn() },
         },
         {
           provide: PushTemplateService,
@@ -50,6 +55,7 @@ describe('PushNotificationService', () => {
     it('should send a push notification (web)', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         notification: {} as PushNotificationDto,
@@ -65,6 +71,7 @@ describe('PushNotificationService', () => {
     it('should throw an "UnrecoverableError" if a the platform cannot be identified', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: null,
         subscription: {} as PushSubscriptionDto,
         notification: {} as PushNotificationDto,
@@ -159,6 +166,7 @@ describe('PushNotificationService', () => {
     it('should yield a CreatePushNotificationDto with a compiled title template', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         notification: {
@@ -169,6 +177,7 @@ describe('PushNotificationService', () => {
         },
       };
       const expectedResult: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         notification: {
@@ -189,6 +198,7 @@ describe('PushNotificationService', () => {
     it('should yield a CreatePushNotificationDto with a compiled title and body template', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         notification: {
@@ -201,6 +211,7 @@ describe('PushNotificationService', () => {
         },
       };
       const expectedResult: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         notification: {
@@ -224,6 +235,7 @@ describe('PushNotificationService', () => {
       // Arrange.
       const template = 'unit-test';
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
         template,
@@ -245,6 +257,7 @@ describe('PushNotificationService', () => {
     it('should throw an error if both "template" and "notification" properties are null/undefined', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {} as PushSubscriptionDto,
       };

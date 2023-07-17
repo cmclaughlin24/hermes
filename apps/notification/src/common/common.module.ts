@@ -1,4 +1,5 @@
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TwilioModule } from 'nestjs-twilio';
@@ -12,6 +13,7 @@ import { PushNotificationService } from './providers/push-notification/push-noti
 
 @Module({
   imports: [
+    HttpModule,
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
