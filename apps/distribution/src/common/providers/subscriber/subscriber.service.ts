@@ -88,7 +88,10 @@ export class SubscriberService {
         dto = this._createUserSubscriberDto(subscription.data);
         break;
       case SubscriptionType.DEVICE:
-        dto = this._createDeviceSubscriberDto(subscription.data);
+        dto = this._createDeviceSubscriberDto(
+          subscription.subscriberId,
+          subscription.data,
+        );
         break;
       case SubscriptionType.REQUEST:
         dto = this._createRequestSubscriberDto(subscription.subscriberId);
@@ -136,8 +139,12 @@ export class SubscriberService {
     return dto;
   }
 
-  private _createDeviceSubscriberDto(data: any): DeviceSubscriberDto {
+  private _createDeviceSubscriberDto(
+    subscriberId: string,
+    data: any,
+  ): DeviceSubscriberDto {
     const dto = new DeviceSubscriberDto();
+    dto.subscriberId = subscriberId;
     dto.platform = data.platform;
     dto.timeZone = data.timeZone;
     dto.subscription = this._createPushSubscriptonDto(data.subscription);

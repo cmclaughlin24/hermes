@@ -1,16 +1,13 @@
-import {
-  Platform,
-  PushNotificationDto,
-  PushSubscriptionDto,
-} from '@hermes/common';
+import { Platform } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UnrecoverableError } from 'bullmq';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
+import { PushTemplate } from '../../../resources/push-template/entities/push-template.entity';
 import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
@@ -44,10 +41,7 @@ export class PushNotificationService implements CreateNotificationDto {
   ) {
     switch (createPushNotificationDto.platform) {
       case Platform.WEB:
-        return this._webPushNotification(
-          createPushNotificationDto.subscription,
-          createPushNotificationDto.notification,
-        );
+        return this._webPushNotification(createPushNotificationDto);
       default:
         throw new UnrecoverableError(
           `Invalid Platform: ${createPushNotificationDto.platform} is not an avaliable platform`,
@@ -65,6 +59,7 @@ export class PushNotificationService implements CreateNotificationDto {
     }
 
     const createPushNotificationDto = new CreatePushNotificationDto();
+    createPushNotificationDto.subscriberId = data.subscriberId;
     createPushNotificationDto.subscription = data.subscription;
     createPushNotificationDto.notification = data.notification;
     createPushNotificationDto.template = data.template;
@@ -97,7 +92,11 @@ export class PushNotificationService implements CreateNotificationDto {
 
       const pushTemplate = await this.pushTemplateService.findOne(templateName);
 
-      notification = pushTemplate.toJSON();
+      // Note: Will already be in JSON format if pulled from Cache.
+      notification =
+        pushTemplate instanceof PushTemplate
+          ? pushTemplate.toJSON()
+          : pushTemplate;
     }
 
     if (!notification) {
@@ -131,10 +130,11 @@ export class PushNotificationService implements CreateNotificationDto {
     return createPushNotificationDto;
   }
 
-  private async _webPushNotification(
-    subscription: PushSubscriptionDto,
-    notification: PushNotificationDto,
-  ) {
+  private async _webPushNotification({
+    subscriberId,
+    subscription,
+    notification,
+  }: CreatePushNotificationDto) {
     let response;
 
     try {
@@ -144,9 +144,7 @@ export class PushNotificationService implements CreateNotificationDto {
       );
     } catch (error) {
       if (error.statusCode === HttpStatus.GONE) {
-        // Fixme: Change sending subscription.endpoint to a generated UUID. Distribution Service
-        //        will need to send the subscriber id.
-        return this._removeSubscriber(subscription.endpoint);
+        return this._removeSubscriber(subscriberId);
       }
       throw error;
     }
@@ -155,13 +153,16 @@ export class PushNotificationService implements CreateNotificationDto {
   }
 
   private _removeSubscriber(subscriberId: string) {
-    // Todo: Tap into the response from the remove subscriber url.
-    const request = this.httpService.delete(
-      `${this.removeSubscriberUrl}/${subscriberId}`,
-      {
+    const request = this.httpService
+      .delete(`${this.removeSubscriberUrl}/${subscriberId}`, {
         headers: { [this.subscriberApiKeyHeader]: this.subscriberApiKey },
-      },
-    );
+      })
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          throw error;
+        }),
+      );
 
     return firstValueFrom(request);
   }

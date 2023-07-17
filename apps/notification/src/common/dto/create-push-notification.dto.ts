@@ -1,7 +1,7 @@
 import {
   Platform,
   PushNotificationDto,
-  PushSubscriptionDto
+  PushSubscriptionDto,
 } from '@hermes/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
@@ -15,6 +15,16 @@ import {
 } from 'class-validator';
 
 export class CreatePushNotificationDto {
+  @ApiProperty({
+    description:
+      'A unique identifier that can be sent to remove subscription endpoint ' +
+      'if the service recieves a response that the push subscription has expired ' +
+      'when attempting to deliver the push notification.',
+  })
+  @IsString()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  subscriberId: string;
+
   @ApiProperty({
     description:
       'The PushSubscription interface of the PUSH API provides the subscriptions URL ' +
@@ -54,7 +64,8 @@ export class CreatePushNotificationDto {
   template?: string;
 
   @ApiProperty({
-    description: 'Computing platform where the push notification will be delivered',
+    description:
+      'Computing platform where the push notification will be delivered',
     enum: [Platform.ANDROID, Platform.IOS, Platform.WEB],
   })
   @IsEnum(Platform)

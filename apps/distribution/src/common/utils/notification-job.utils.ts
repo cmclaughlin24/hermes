@@ -221,6 +221,8 @@ export function mapToNotificationJobs(
             break;
           case DeliveryMethods.PUSH:
             data = {
+              subscriberId: (recipient.subscription as DeviceSubscriberDto)
+                .subscriberId,
               subscription: recipient.value,
               template: distributionRule.pushTemplate,
               platform: (recipient.subscription as DeviceSubscriberDto)
