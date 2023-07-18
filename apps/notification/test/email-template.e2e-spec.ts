@@ -129,30 +129,84 @@ describe('[Feature] Email Template', () => {
   });
 
   describe('Update Email Template [PATCH /:name]', () => {
-    it.todo('should respond with an OK status if the resource was updated');
+    it('should respond with an OK status if the resource was updated', () => {
+      // Arrange.
+      const updateEmailTemplateDto = {
+        template: '<h1>End-to-End Testing</h1>',
+      };
 
-    it.todo(
-      'should respond with a BAD_REQUEST status if the payload is invalid',
-    );
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/email-template/e2e-test`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateEmailTemplateDto)
+        .expect(HttpStatus.OK);
+    });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the request is not authorized',
-    );
+    it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
+      // Arrange.
+      const updateEmailTemplateDto = {
+        template: '',
+      };
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the resource does not exist',
-    );
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/email-template/e2e-test`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateEmailTemplateDto)
+        .expect(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+      // Arrange.
+      const updateEmailTemplateDto = {
+        template: '<h1>End-to-End Testing</h1>',
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/email-template/e2e-test`)
+        .send(updateEmailTemplateDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
+      // Arrange.
+      const updateEmailTemplateDto = {
+        template: '<h1>End-to-End Testing</h1>',
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/email-template/unit-test`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateEmailTemplateDto)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
   describe('Remove Email Template [DELETE /:name]', () => {
-    it.todo('should respond with an OK status if the resource was deleted');
+    it('should respond with an OK status if the resource was deleted', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/email-template/e2e-test`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.OK);
+    });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the request is not authorized',
-    );
+    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/email-template/e2e-test`)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the resource does not exist',
-    );
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/email-template/e2e-test`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 });
