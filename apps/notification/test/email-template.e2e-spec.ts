@@ -5,6 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { databaseFactory } from '../src/config/database.config';
 import { EmailTemplateModule } from '../src/resources/email-template/email-template.module';
 
+console.log(`${process.cwd()}/env/notification.env`)
+
 describe('[Feature] Email Template', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
@@ -14,6 +16,7 @@ describe('[Feature] Email Template', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
+          envFilePath: `${process.cwd()}/env/notification.env`,
         }),
         SequelizeModule.forRootAsync({
           imports: [ConfigModule],
@@ -27,6 +30,10 @@ describe('[Feature] Email Template', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     httpServer = app.getHttpServer();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it.todo('Create Email Template [POST /]');
