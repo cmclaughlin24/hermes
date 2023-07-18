@@ -21,7 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "docker-compose up -d database",
-    "test:e2e": "jest --config ./apps/notification/test/jest-e2e.json",
+    "test:e2e": "jest --config ./apps/notification/test/jest-e2e.json --detectOpenHandles --forceExit",
     "posttest:e2e": "docker-compose down && docker-compose rm -f database"
   },
   "dependencies": {
