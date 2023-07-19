@@ -114,7 +114,7 @@ describe('[Feature] Email Template', () => {
     );
   });
 
-  describe('Get Email Template [GET /:name]', () => {
+  describe('Get Email Template [GET /:deliveryMethod/:name]', () => {
     it('should respond with an OK status if the resource exists', () => {
       // Act/Assert.
       return request(httpServer)
@@ -130,7 +130,7 @@ describe('[Feature] Email Template', () => {
     });
   });
 
-  describe('Update Email Template [PATCH /:name]', () => {
+  describe('Update Email Template [PATCH /:deliveryMethod/:name]]', () => {
     it('should respond with an OK status if the resource was updated', () => {
       // Arrange.
       const updateEmailTemplateDto = {
@@ -187,7 +187,7 @@ describe('[Feature] Email Template', () => {
     });
   });
 
-  describe('Remove Email Template [DELETE /:name]', () => {
+  describe('Remove Email Template [DELETE /:deliveryMethod/:name]]', () => {
     it('should respond with an OK status if the resource was deleted', () => {
       // Act/Assert.
       return request(httpServer)

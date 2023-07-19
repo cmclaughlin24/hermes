@@ -174,6 +174,10 @@ describe('[Feature] Phone Template', () => {
         .send(updatePhoneTemplateDto)
         .expect(HttpStatus.FORBIDDEN);
     });
+
+    it.todo(
+      'should respond with a NOT_FOUND status if the resource does not exist',
+    );
   });
 
   describe('Remove Phone Template [DELETE /:deliveryMethod/:name]', () => {
