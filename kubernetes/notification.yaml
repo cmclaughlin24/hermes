@@ -97,6 +97,12 @@ spec:
                   key: notificationPrefix
             - name: BULLMQ_NOTIFICATION_JOB_AGE
               value: '86400'
+            - name: REMOVE_SUBSCRIBER_URL
+              value: distribution-service.hermes:3001/subscription
+            - name: SUBSCRIBER_API_KEY_HEADER
+              value: Api-Key
+            - name: SUBSCRIBER_API_KEY
+              value: notification123
             - name: TWILIO_SID
               value: ${TWILIO_SID}
             - name: TWILIO_AUTH_TOKEN
