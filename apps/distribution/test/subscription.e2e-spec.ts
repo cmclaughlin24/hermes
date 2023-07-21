@@ -5,22 +5,23 @@ import { APP_GUARD } from '@nestjs/core';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { FilterJoinOps, FilterOps } from '../src/common/types/filter.type';
+import { SubscriptionType } from '../src/common/types/subscription-type.type';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionEventModule } from '../src/resources/distribution-event/distribution-event.module';
 import { CreateDistributionEventDto } from '../src/resources/distribution-event/dto/create-distribution-event.dto';
 import { DistributionRuleModule } from '../src/resources/distribution-rule/distribution-rule.module';
-import { CreateDistributionRuleDto } from '../src/resources/distribution-rule/dto/create-distribution-rule.dto';
-import { UpdateDistributionRuleDto } from '../src/resources/distribution-rule/dto/update-distribution-rule.dto';
+import { CreateSubscriptionDto } from '../src/resources/subscription/dto/create-subscription.dto';
+import { UpdateSubscriptionDto } from '../src/resources/subscription/dto/update-subscription.dto';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
 
-describe('[Feature] Distribution Rule', () => {
+describe('[Feature] Subscription', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
 
   const queueName = 'e2e-test';
-  const eventType = 'e2e-test__distribution-rule';
-  let distributionRuleId: string;
-  let defaultDistributionRule;
+  const eventType = 'e2e-test__subscription';
+  const subscriberId = 'e2e-test';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -44,9 +45,9 @@ describe('[Feature] Distribution Rule', () => {
             logging: false,
           }),
         }),
-        DistributionRuleModule,
-        DistributionEventModule,
         SubscriptionModule,
+        DistributionEventModule,
+        DistributionRuleModule,
       ],
       providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
     }).compile();
@@ -67,19 +68,15 @@ describe('[Feature] Distribution Rule', () => {
         {
           metadata: null,
           deliveryMethods: [DeliveryMethods.CALL],
-          text: 'Tomb Raider was first released in 1996 by Core Design and published by Eidos Interactive. It was later transferred to Crystal Dynamics.',
+          text: 'Super Mario Kart was released for the Super Nintendo Entertainment System (SNES) in 1992.',
         },
       ],
     };
 
-    const { body } = await request(httpServer)
+    await request(httpServer)
       .post('/distribution-event')
       .set(process.env.API_KEY_HEADER, process.env.API_KEY)
       .send(createDistributionEventDto);
-
-    defaultDistributionRule = body.data.rules.find(
-      (rule) => rule.metadata === null,
-    );
   });
 
   afterAll(async () => {
@@ -91,224 +88,211 @@ describe('[Feature] Distribution Rule', () => {
     await app.close();
   });
 
-  describe('Create Distribution Rule [POST /]', () => {
+  describe('Create Subscription [POST /]', () => {
     it('should respond with a CREATED status if the resource was created', () => {
       // Arrange.
-      const createDistributionRuleDto: CreateDistributionRuleDto = {
+      const createSubscriptionDto: CreateSubscriptionDto = {
         queue: queueName,
         eventType: eventType,
-        metadata: JSON.stringify({
-          videoGame: "Tony Hawk's Pro Skater",
-        }),
-        deliveryMethods: [DeliveryMethods.CALL],
-        text: "THPS's iconic soundtrack included bands such as  Goldfinger, Dead Kennedys, and Primus.",
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: "Cuphead's art style is inspired by the 1930s cartoons.",
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
       };
 
       // Act/Assert.
       return request(httpServer)
-        .post('/distribution-rule')
+        .post('/subscription')
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(createDistributionRuleDto)
-        .expect(HttpStatus.CREATED)
-        .expect(({ body }) => {
-          distributionRuleId = body.data.id;
-        });
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.CREATED);
     });
 
     it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
       // Arrange.
-      const createDistributionRuleDto = {
+      const createSubscriptionDto = {
         queue: queueName,
-        metadata: JSON.stringify({
-          videoGame: 'Lego Star Wars',
-        }),
-        deliveryMethods: [DeliveryMethods.CALL, DeliveryMethods.SMS],
+        eventType: eventType,
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
       };
 
       // Act/Assert.
       return request(httpServer)
-        .post('/distribution-rule')
+        .post('/subscription')
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(createDistributionRuleDto)
+        .send(createSubscriptionDto)
         .expect(HttpStatus.BAD_REQUEST);
     });
 
     it('should respond with a FORBIDDEN status if the request is not authorized', () => {
       // Arrange.
-      const createDistributionRuleDto: CreateDistributionRuleDto = {
+      const createSubscriptionDto: CreateSubscriptionDto = {
         queue: queueName,
         eventType: eventType,
-        metadata: JSON.stringify({
-          videoGame: 'Jak and Daxter',
-        }),
-        deliveryMethods: [DeliveryMethods.CALL, DeliveryMethods.SMS],
-        text: 'Jak and Daxter is a platforming video game series originally developed by Naughty Dog and released in 2001.',
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: 'Insomniac Games originally intended for Ratchet to wield a sword as his primary weapon',
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
       };
 
       // Act/Assert.
       return request(httpServer)
-        .post('/distribution-rule')
-        .send(createDistributionRuleDto)
+        .post('/subscription')
+        .send(createSubscriptionDto)
         .expect(HttpStatus.FORBIDDEN);
     });
 
     it('should respond with a NOT_FOUND status if the distribution event does not exist', () => {
       // Arrange.
-      const createDistributionRuleDto: CreateDistributionRuleDto = {
+      const createSubscriptionDto: CreateSubscriptionDto = {
         queue: queueName,
-        eventType: `${eventType}-2`,
-        metadata: JSON.stringify({
-          videoGame: "Tony Hawk's Pro Skater",
-        }),
-        deliveryMethods: [DeliveryMethods.CALL, DeliveryMethods.SMS],
-        text: 'The underground world of Hallownest, a dark and mysterious kingdom inhabited by insects and other creatures, is from what game?',
+        eventType: `${eventType}-not-found`,
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: 'The GBA featured a 32-bit CPU and a 16-bit graphics processor',
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
       };
 
       // Act/Assert.
       return request(httpServer)
-        .post('/distribution-rule')
+        .post('/subscription')
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(createDistributionRuleDto)
+        .send(createSubscriptionDto)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Get Distribution Rules [GET /]', () => {
+  describe('Get Subscriptions [GET /]', () => {
     it('should respond with an OK status if resource(s) were found', () => {
       // Act/Assert.
-      return request(httpServer)
-        .get('/distribution-rule')
-        .expect(HttpStatus.OK);
+      return request(httpServer).get('/subscription').expect(HttpStatus.OK);
     });
 
-    it('should respond with a NOT_FOUND status if the resource(s) were not found', () => {
-      // Act/Assert.
-      return request(httpServer)
-        .get('/distribution-rule')
-        .query({ queue: `${queueName}-2` })
-        .expect(HttpStatus.NOT_FOUND);
-    });
+    it.todo(
+      'should respond with a NOT_FOUND status if resource(s) were not found',
+    );
   });
 
-  describe('Get Distribution Rule [GET /:id]', () => {
+  describe('Get Subscription [GET /:queue/:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource exists', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(`/distribution-rule/${distributionRuleId}`)
+        .get(`/subscription/${queueName}/${eventType}/${subscriberId}`)
         .expect(HttpStatus.OK);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .get('/distribution-rule/d6518492-1476-4332-bb1e-884bd5e099e4')
+        .get(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Update Distribution Rule [PATCH /:id]', () => {
+  describe('Update Subscription [PATCH /:queue/:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource was updated', () => {
       // Arrange.
-      const updateDistributionRuleDto: UpdateDistributionRuleDto = {
-        bypassSubscriptions: true,
-        emailTemplate:
-          'The music in the "Ori" series is composed by Gareth Coker.',
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        filters: [
+          {
+            field: 'consoleType',
+            operator: FilterOps.EQUALS,
+            dataType: 'string',
+            value: 'handheld',
+          },
+        ],
       };
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-rule/${distributionRuleId}`)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(updateDistributionRuleDto)
+        .send(updateSubscriptionDto)
         .expect(HttpStatus.OK);
     });
 
     it('should respond with a BAD_REQUEST if the payload is invalid', () => {
       // Arrange.
-      const updateDistributionRuleDto: UpdateDistributionRuleDto = {
-        metadata: JSON.stringify({
-          videoGame: 'LEGO Star Wars: The Video Game',
-        }),
-        emailTemplate:
-          'LEGO Star Wars: The Video Game was released in 2005 on the GameCube, GBA, Xbox, Playstation 2, Windows, & macOS',
+      const updateSubscriptionDto = {
+        filterJoin: 'invalid',
       };
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-rule/${defaultDistributionRule.id}`)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(updateDistributionRuleDto)
+        .send(updateSubscriptionDto)
         .expect(HttpStatus.BAD_REQUEST);
     });
 
     it('should respond with a FORBIDDEN status if the request is not authorized', () => {
       // Arrange.
-      const updateDistributionRuleDto: UpdateDistributionRuleDto = {
-        bypassSubscriptions: true,
-        emailTemplate:
-          'Final Fantasy was originally published in 1987 by Square',
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        filterJoin: FilterJoinOps.NOT,
       };
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-rule/${distributionRuleId}`)
-        .send(updateDistributionRuleDto)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .send(updateSubscriptionDto)
         .expect(HttpStatus.FORBIDDEN);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
-      const updateDistributionRuleDto: UpdateDistributionRuleDto = {
-        checkDeliveryWindow: true,
-        emailTemplate:
-          "The name of Final Fantasy first came about because it was Square's last attempt at the gaming industry",
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        data: {
+          id: '',
+          url: 'The Nintendo DS introduced the concept of dual-screen gaming to handheld consoles',
+        },
       };
 
       // Act/Assert.
       return request(httpServer)
-        .patch('/distribution-rule/d6518492-1476-4332-bb1e-884bd5e099e4')
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .send(updateDistributionRuleDto)
+        .send(updateSubscriptionDto)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Remove Distribution Rule [DELETE /:id]', () => {
+  describe('Remove Subscriptions [DELETE /:subscriberId]', () => {
+    // Todo: Implement E2E Tests for removing a subscriber from all distribution events.
+  });
+
+  describe('Remove Subscription [DELETE /:queue/:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource was deleted', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-rule/${distributionRuleId}`)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.OK);
-    });
-
-    it('should respond with a BAD_REQUEST if the resource is the default distribution rule for an event', () => {
-      // Arrange.
-      const expectedResponse = {
-        statusCode: 400,
-        message: `Distribution rule id=${defaultDistributionRule.id} is the default distribution rule and cannot be deleted!`,
-        error: 'Bad Request',
-      };
-
-      // Act/Assert.
-      return request(httpServer)
-        .delete(`/distribution-rule/${defaultDistributionRule.id}`)
-        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
-        .expect(HttpStatus.BAD_REQUEST)
-        .expect(expectedResponse);
     });
 
     it('should respond with a FORBIDDEN status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-rule/${distributionRuleId}`)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
         .expect(HttpStatus.FORBIDDEN);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete('/distribution-rule/d6518492-1476-4332-bb1e-884bd5e099e4')
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.NOT_FOUND);
     });
