@@ -29,7 +29,7 @@ export class DistributionRule extends Model {
   @ForeignKey(() => DistributionEvent)
   distributionEventId: string;
 
-  @Column
+  @Column({ type: DataType.TEXT })
   metadata: string;
 
   @Column({

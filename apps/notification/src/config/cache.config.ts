@@ -8,7 +8,7 @@ export async function cacheFactory(
   const host = configService.get('REDIS_HOST');
   const port = configService.get('REDIS_PORT');
   const commandTimeout = configService.get('REDIS_COMMAND_TIMEOUT');
-  let options: any = { host, port, commandTimeout };
+  let options: any = { host, port, commandTimeout, enableOfflineQueue: false, };
 
   if (configService.get('ENABLE_REDIS_CLUSTER')) {
     options = {
