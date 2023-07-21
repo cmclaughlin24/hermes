@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DistributionJob } from '../src/common/types/distribution-job.type';
 import { MessageState } from '../src/common/types/message-state.type';
-import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionLogModule } from '../src/resources/distribution-log/distribution-log.module';
 import { DistributionLogService } from '../src/resources/distribution-log/distribution-log.service';
 
@@ -45,7 +44,6 @@ describe('[Feature] Distribution Log', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    useGlobalPipes(app);
     await app.init();
     httpServer = app.getHttpServer();
     distributionLogService = moduleFixture.get<DistributionLogService>(
@@ -112,7 +110,7 @@ describe('[Feature] Distribution Log', () => {
         .expect(HttpStatus.OK);
     });
 
-    it('should respond with a NOT_FOUND status if the resrouce does not exist', () => {
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
         .get('/distribution-log/86121803-f171-4271-85c2-4ac58d8f722f')
