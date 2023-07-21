@@ -5,5 +5,10 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@hermes/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+    "axios": "axios/dist/node/axios.cjs",
+    "^@hermes/health(|/.*)$": "<rootDir>/libs/health/src/$1"
   }
 }
