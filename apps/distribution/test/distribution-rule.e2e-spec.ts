@@ -174,7 +174,7 @@ describe('[Feature] Distribution Rule', () => {
   });
 
   describe('Get Distribution Rules [GET /]', () => {
-    it('should respond with an OK status if the resource(s) were found', () => {
+    it('should respond with an OK status if resource(s) were found', () => {
       // Act/Assert.
       return request(httpServer)
         .get('/distribution-rule')
