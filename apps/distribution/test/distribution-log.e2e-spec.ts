@@ -52,8 +52,8 @@ describe('[Feature] Distribution Log', () => {
   });
 
   beforeAll(async () => {
-    // Note: Create several distribution log entries for E2E test cases.
-    const distributionJob1: DistributionJob = {
+    // Note: Create distribution log entrie(s) for E2E test cases.
+    const distributionJob: DistributionJob = {
       id: 'f1b98d1a-3ba0-4974-9e74-ac69bbe9b553',
       queue: queueName,
       type: eventType,
@@ -64,23 +64,11 @@ describe('[Feature] Distribution Log', () => {
       processedAt: new Date(),
       finishedAt: null,
     };
-    const distributionJob2: DistributionJob = {
-      id: '45eb2701-ef08-4032-8c91-abf96aec222a',
-      queue: queueName,
-      type: eventType,
-      attemptsMade: 2,
-      metadata: null,
-      payload: null,
-      addedAt: new Date(),
-      processedAt: new Date(),
-      finishedAt: new Date(),
-    };
 
     log = await distributionLogService.log(
-      distributionJob1,
+      distributionJob,
       MessageState.ACTIVE,
     );
-    await distributionLogService.log(distributionJob2, MessageState.COMPLETED);
   });
 
   afterAll(async () => {
