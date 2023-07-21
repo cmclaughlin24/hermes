@@ -1,14 +1,18 @@
 import { ApiKeyGuard, DeliveryMethods } from '@hermes/common';
-import { HttpServer, INestApplication } from '@nestjs/common';
+import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { FilterJoinOps, FilterOps } from '../src/common/types/filter.type';
+import { SubscriptionType } from '../src/common/types/subscription-type.type';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionEventModule } from '../src/resources/distribution-event/distribution-event.module';
 import { CreateDistributionEventDto } from '../src/resources/distribution-event/dto/create-distribution-event.dto';
 import { DistributionRuleModule } from '../src/resources/distribution-rule/distribution-rule.module';
+import { CreateSubscriptionDto } from '../src/resources/subscription/dto/create-subscription.dto';
+import { UpdateSubscriptionDto } from '../src/resources/subscription/dto/update-subscription.dto';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
 
 describe('[Feature] Subscription', () => {
@@ -17,13 +21,14 @@ describe('[Feature] Subscription', () => {
 
   const queueName = 'e2e-test';
   const eventType = 'e2e-test__subscription';
+  const subscriberId = 'e2e-test';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `${process.cwd()}/env/notification.env`,
+          envFilePath: `${process.cwd()}/env/distribution.env`,
         }),
         SequelizeModule.forRootAsync({
           imports: [ConfigModule],
@@ -63,7 +68,7 @@ describe('[Feature] Subscription', () => {
         {
           metadata: null,
           deliveryMethods: [DeliveryMethods.CALL],
-          text: 'Tomb Raider was first released in 1996 by Core Design and published by Eidos Interactive. It was later transferred to Crystal Dynamics.',
+          text: 'Super Mario Kart was released for the Super Nintendo Entertainment System (SNES) in 1992.',
         },
       ],
     };
@@ -84,23 +89,97 @@ describe('[Feature] Subscription', () => {
   });
 
   describe('Create Subscription [POST /]', () => {
-    it.todo('should respond with a CREATED status if the resource was created');
+    it('should respond with a CREATED status if the resource was created', () => {
+      // Arrange.
+      const createSubscriptionDto: CreateSubscriptionDto = {
+        queue: queueName,
+        eventType: eventType,
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: "Cuphead's art style is inspired by the 1930s cartoons.",
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
+      };
 
-    it.todo(
-      'should respond with a BAD_REQUEST status if the payload is invalid',
-    );
+      // Act/Assert.
+      return request(httpServer)
+        .post('/subscription')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.CREATED);
+    });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the request is not authorized',
-    );
+    it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
+      // Arrange.
+      const createSubscriptionDto = {
+        queue: queueName,
+        eventType: eventType,
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
+      };
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the distribution event does not exist',
-    );
+      // Act/Assert.
+      return request(httpServer)
+        .post('/subscription')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+      // Arrange.
+      const createSubscriptionDto: CreateSubscriptionDto = {
+        queue: queueName,
+        eventType: eventType,
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: 'Insomniac Games originally intended for Ratchet to wield a sword as his primary weapon',
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/subscription')
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
+    it('should respond with a NOT_FOUND status if the distribution event does not exist', () => {
+      // Arrange.
+      const createSubscriptionDto: CreateSubscriptionDto = {
+        queue: queueName,
+        eventType: `${eventType}-not-found`,
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: 'The GBA featured a 32-bit CPU and a 16-bit graphics processor',
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/subscription')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
   describe('Get Subscriptions [GET /]', () => {
-    it.todo('should respond with an OK status if resource(s) were found');
+    it('should respond with an OK status if resource(s) were found', () => {
+      // Act/Assert.
+      return request(httpServer).get('/subscription').expect(HttpStatus.OK);
+    });
 
     it.todo(
       'should respond with a NOT_FOUND status if resource(s) were not found',
@@ -108,38 +187,114 @@ describe('[Feature] Subscription', () => {
   });
 
   describe('Get Subscription [GET /:queue/:eventType/:subscriberId]', () => {
-    it.todo('should respond with an OK status if the resource exists');
+    it('should respond with an OK status if the resource exists', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .get(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .expect(HttpStatus.OK);
+    });
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the resource does not exist',
-    );
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .get(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
   describe('Update Subscription [PATCH /:queue/:eventType/:subscriberId]', () => {
-    it.todo('should respond with an OK status if the resource was updated');
+    it('should respond with an OK status if the resource was updated', () => {
+      // Arrange.
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        filters: [
+          {
+            field: 'consoleType',
+            operator: FilterOps.EQUALS,
+            dataType: 'string',
+            value: 'handheld',
+          },
+        ],
+      };
 
-    it.todo('should respond with a BAD_REQUEST if the payload is invalid');
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateSubscriptionDto)
+        .expect(HttpStatus.OK);
+    });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the request is not authorized',
-    );
+    it('should respond with a BAD_REQUEST if the payload is invalid', () => {
+      // Arrange.
+      const updateSubscriptionDto = {
+        filterJoin: 'invalid',
+      };
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the resource does not exist',
-    );
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateSubscriptionDto)
+        .expect(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+      // Arrange.
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        filterJoin: FilterJoinOps.NOT,
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .send(updateSubscriptionDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
+      // Arrange.
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        data: {
+          id: '',
+          url: 'The Nintendo DS introduced the concept of dual-screen gaming to handheld consoles',
+        },
+      };
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateSubscriptionDto)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 
-  describe('Remove Subscriptions [DELETE /:subscriberId]', () => {});
+  describe('Remove Subscriptions [DELETE /:subscriberId]', () => {
+    // Todo: Implement E2E Tests for removing a subscriber from all distribution events.
+  });
 
   describe('Remove Subscription [DELETE /:queue/:eventType/:subscriberId]', () => {
-    it.todo('should respond with an OK status if the resource was deleted');
+    it('should respond with an OK status if the resource was deleted', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.OK);
+    });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the request is not authorized',
-    );
+    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
-    it.todo(
-      'should respond with a NOT_FOUND status if the resource does not exist',
-    );
+    it('should respond with a NOT_FOUND status if the resource does not exist', () => {
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.NOT_FOUND);
+    });
   });
 });

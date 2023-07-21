@@ -27,7 +27,7 @@ describe('[Feature] Distribution Rule', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `${process.cwd()}/env/notification.env`,
+          envFilePath: `${process.cwd()}/env/distribution.env`,
         }),
         SequelizeModule.forRootAsync({
           imports: [ConfigModule],
