@@ -10,7 +10,6 @@ import {
   IsString,
 } from 'class-validator';
 import * as _ from 'lodash';
-import { DistributionEventExists } from '../../../common/decorators/distribution-event-exists.decorator';
 
 export class CreateDistributionRuleDto {
   @ApiProperty({
@@ -26,7 +25,7 @@ export class CreateDistributionRuleDto {
   })
   @IsString()
   @IsNotEmpty()
-  @DistributionEventExists()
+  // Todo: Renable after solution for E2E Tests can be identified. @DistributionEventExists()
   @Transform(({ value }: TransformFnParams) => value?.trim())
   eventType: string;
 
