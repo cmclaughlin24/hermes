@@ -98,7 +98,9 @@ spec:
                 configMapKeyRef:
                   name: env-store
                   key: notificationPrefix
-          livenessProbe:
+            - name: SUBSCRIBERS_REQUEST_URL
+              value: SUBSCRIBERS_REQUEST_URL
+          readinessProbe:
             httpGet:
               path: /health
               port: 3001
