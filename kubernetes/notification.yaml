@@ -97,6 +97,8 @@ spec:
                   key: notificationPrefix
             - name: BULLMQ_NOTIFICATION_JOB_AGE
               value: '86400'
+            - name: BULLMQ_CONCURRENCY
+              value: '100'
             - name: REMOVE_SUBSCRIBER_URL
               value: distribution-service.hermes:3001/subscription
             - name: SUBSCRIBER_API_KEY_HEADER
