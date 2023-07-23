@@ -10,7 +10,7 @@ config:
     maxSockets: 10
   environments:
     minikube:
-      target: 'http://127.0.0.1:63679'
+      target: 'http://127.0.0.1:54232'
       phases:
         - duration: 60
           arrivalRate: 5
@@ -19,7 +19,7 @@ config:
           rampTo: 50
           arrivalRate: 50
           name: 'Ramp-up to Sustained Load (50 arrivals/sec)'
-        - duration: 300
+        - duration: 1200
           arrivalRate: 50
           name: 'Sustained Load (50 arrivals/sec)'
   processor: './performance.js'
