@@ -15,8 +15,9 @@ export function telemetryWrapper(
   const wrappedMethod = function (...args: any[]) {
     const tracer = trace.getTracer('default');
     const name = options.name;
+    const spanOptions = options ?? {};
 
-    return tracer.startActiveSpan(name, (span) => {
+    return tracer.startActiveSpan(name, spanOptions, (span) => {
       switch (method.constructor.name) {
         case 'Function':
           try {

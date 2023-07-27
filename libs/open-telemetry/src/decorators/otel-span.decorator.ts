@@ -11,7 +11,7 @@ export const OTelSpan = (
   ) => {
     const method = descriptor.value;
     const spanOptions = {
-      name: `${target.constructor.name}.$${propertyKey}`,
+      name: `${target.constructor.name}.${propertyKey}`,
       ...options,
     };
 

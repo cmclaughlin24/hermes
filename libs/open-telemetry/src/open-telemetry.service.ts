@@ -52,7 +52,7 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
 
       for (const methodKey of methodNames) {
         const spanOptions =
-          this.reflector.get(OTEL_SPAN_OPTIONS, instance[methodKey]) || {};
+          this.reflector.get(OTEL_SPAN_OPTIONS, instance[methodKey]) ?? {};
 
         instance[methodKey] = telemetryWrapper(instance[methodKey], {
           name: `${instance.constructor.name}.${methodKey}`,
