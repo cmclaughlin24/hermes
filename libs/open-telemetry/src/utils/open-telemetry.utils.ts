@@ -1,7 +1,11 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { IS_TELEMETRY_WRAPPED } from '../constants/open-telemetry.constants';
+import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.type';
 
-export function telemetryWrapper(method: Function, options: any): Function {
+export function telemetryWrapper(
+  method: Function,
+  options: OTelSpanDecoratorOptions,
+): Function {
   const isTelemetryWrapped = Reflect.getMetadata(IS_TELEMETRY_WRAPPED, method);
 
   if (isTelemetryWrapped) {

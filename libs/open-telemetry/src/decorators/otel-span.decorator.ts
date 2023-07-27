@@ -1,9 +1,8 @@
-import { SpanOptions } from '@opentelemetry/api';
+import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.type';
 import { telemetryWrapper } from '../utils/open-telemetry.utils';
 
 export const OTelSpan = (
-  name?: string,
-  options?: SpanOptions,
+  options?: OTelSpanDecoratorOptions,
 ): MethodDecorator => {
   return (
     target: Object,
@@ -11,7 +10,11 @@ export const OTelSpan = (
     descriptor: PropertyDescriptor,
   ) => {
     const method = descriptor.value;
-    const spanName = name || `${target.constructor.name}.${propertyKey}`;
-    descriptor.value = telemetryWrapper(method, { name: spanName });
+    const spanOptions = {
+      name: `${target.constructor.name}.$${propertyKey}`,
+      ...options,
+    };
+
+    descriptor.value = telemetryWrapper(method, spanOptions);
   };
 };

@@ -1,7 +1,10 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { INJECTABLE_WATERMARK } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
-import { USE_OPEN_TELEMETRY } from './constants/open-telemetry.constants';
+import {
+  OTEL_SPAN_OPTIONS,
+  USE_OPEN_TELEMETRY,
+} from './constants/open-telemetry.constants';
 import {
   OPEN_TELEMETRY_OPTIONS_TOKEN,
   OPEN_TELEMETRY_OPTIONS_TYPE,
@@ -19,6 +22,10 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
   ) {}
 
   onApplicationBootstrap() {
+    if (!this.options.enableOpenTelemetry) {
+      return;
+    }
+
     const providers = this.discoveryService.getProviders();
 
     for (const wrapper of providers) {
@@ -44,8 +51,12 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
       const methodNames = this.metadataScanner.getAllMethodNames(prototype);
 
       for (const methodKey of methodNames) {
+        const spanOptions =
+          this.reflector.get(OTEL_SPAN_OPTIONS, instance[methodKey]) || {};
+
         instance[methodKey] = telemetryWrapper(instance[methodKey], {
           name: `${instance.constructor.name}.${methodKey}`,
+          ...spanOptions,
         });
       }
     }

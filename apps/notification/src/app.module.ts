@@ -70,7 +70,7 @@ import { ResourcesModule } from './resources/resources.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    OpenTelemetryModule.register({}),
+    OpenTelemetryModule.register({ enableOpenTelemetry: true }),
     ConsumerModule,
     ResourcesModule,
   ],
