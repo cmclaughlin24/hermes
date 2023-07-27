@@ -1,10 +1,17 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { IS_TELEMETRY_WRAPPED } from '../constants/open-telemetry.constants';
 
 export function telemetryWrapper(method: Function, options: any): Function {
-  const tracer = trace.getTracer('default');
-  const name = options.name;
+  const isTelemetryWrapped = Reflect.getMetadata(IS_TELEMETRY_WRAPPED, method);
+
+  if (isTelemetryWrapped) {
+    return method;
+  }
 
   const wrappedMethod = function (...args: any[]) {
+    const tracer = trace.getTracer('default');
+    const name = options.name;
+
     return tracer.startActiveSpan(name, (span) => {
       switch (method.constructor.name) {
         case 'Function':
@@ -13,6 +20,8 @@ export function telemetryWrapper(method: Function, options: any): Function {
           } catch (error) {
             recordException(span, error);
             throw error;
+          } finally {
+            span.end();
           }
         case 'AsyncFunction':
           return method
@@ -31,8 +40,9 @@ export function telemetryWrapper(method: Function, options: any): Function {
       }
     });
   };
-  
+
   copyMetadata(method, wrappedMethod);
+  Reflect.defineMetadata(IS_TELEMETRY_WRAPPED, true, wrappedMethod);
 
   return wrappedMethod;
 }

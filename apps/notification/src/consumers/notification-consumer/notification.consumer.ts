@@ -1,5 +1,5 @@
 import { DeliveryMethods } from '@hermes/common';
-import { OpenTelemetry } from '@hermes/open-telemetry';
+import { OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
@@ -39,6 +39,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns {Promise<any>}
    */
+  @OTelSpan()
   async process(job: Job): Promise<any> {
     let result;
 

@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { INJECTABLE_WATERMARK } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
-import { USE_OPEN_TELEMETRY } from './decorators/open-telemetry.decorator';
+import { USE_OPEN_TELEMETRY } from './constants/open-telemetry.constants';
 import {
   OPEN_TELEMETRY_OPTIONS_TOKEN,
   OPEN_TELEMETRY_OPTIONS_TYPE,
