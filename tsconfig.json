@@ -30,6 +30,12 @@
       ],
       "@hermes/health/*": [
         "libs/health/src/*"
+      ],
+      "@hermes/open-telemetry": [
+        "libs/open-telemetry/src"
+      ],
+      "@hermes/open-telemetry/*": [
+        "libs/open-telemetry/src/*"
       ]
     }
   }

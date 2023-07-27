@@ -141,7 +141,8 @@
     "moduleNameMapper": {
       "^@hermes/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "axios": "axios/dist/node/axios.cjs",
-      "^@hermes/health(|/.*)$": "<rootDir>/libs/health/src/$1"
+      "^@hermes/health(|/.*)$": "<rootDir>/libs/health/src/$1",
+      "^@hermes/open-telemetry(|/.*)$": "<rootDir>/libs/open-telemetry/src/$1"
     }
   }
 }

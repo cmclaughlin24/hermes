@@ -1,4 +1,5 @@
 import { DeliveryMethods } from '@hermes/common';
+import { OpenTelemetry } from '@hermes/open-telemetry';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
@@ -18,6 +19,7 @@ const KEEP_JOB_OPTIONS: KeepJobs = {
   removeOnComplete: KEEP_JOB_OPTIONS,
   removeOnFail: KEEP_JOB_OPTIONS,
 })
+@OpenTelemetry()
 export class NotificationConsumer extends WorkerHost {
   private readonly logger = new Logger(NotificationConsumer.name);
 

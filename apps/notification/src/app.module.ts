@@ -1,3 +1,4 @@
+import { OpenTelemetryModule } from '@hermes/open-telemetry';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -69,6 +70,7 @@ import { ResourcesModule } from './resources/resources.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
+    OpenTelemetryModule.register({}),
     ConsumerModule,
     ResourcesModule,
   ],
