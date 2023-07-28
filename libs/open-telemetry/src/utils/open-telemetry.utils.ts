@@ -8,7 +8,7 @@ export function telemetryWrapper(
 ): Function {
   const isTelemetryWrapped = Reflect.getMetadata(IS_TELEMETRY_WRAPPED, method);
 
-  if (isTelemetryWrapped) {
+  if (isTelemetryWrapped || !process.env.ENABLE_OPEN_TELEMETRY) {
     return method;
   }
 

@@ -1,8 +1,10 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { hasSelectors } from '@hermes/common';
+import { OTelSpan } from '@hermes/open-telemetry';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SpanKind } from '@opentelemetry/api';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
 import { validateOrReject } from 'class-validator';
@@ -49,6 +51,7 @@ export class DistributionConsumer extends MqConsumer {
       deadLetterRoutingKey: process.env.RABBITMQ_DISTRIBUTION_DL_ROUTING_KEY,
     },
   })
+  @OTelSpan({ kind: SpanKind.CONSUMER })
   async subscribe(message: any, amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.id);
 

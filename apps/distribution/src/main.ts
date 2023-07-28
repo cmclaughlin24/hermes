@@ -4,6 +4,10 @@ import { AppModule } from './app.module';
 import { setupSwaggerDocument } from './config/swagger.config';
 import { useGlobalPipes } from './config/use-global.config';
 
+if (process.env.ENABLE_OPEN_TELEMETRY === 'true') {
+  require('./config/open-telemetry.config');
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
