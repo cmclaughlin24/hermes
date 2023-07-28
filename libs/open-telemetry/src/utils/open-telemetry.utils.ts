@@ -18,30 +18,27 @@ export function telemetryWrapper(
     const spanOptions = options ?? {};
 
     return tracer.startActiveSpan(name, spanOptions, (span) => {
-      switch (method.constructor.name) {
-        case 'Function':
-          try {
-            return method.apply(this, args);
-          } catch (error) {
+      if (method.constructor.name === 'AsyncFunction') {
+        return method
+          .apply(this, args)
+          .catch((error) => {
             recordException(span, error);
             throw error;
-          } finally {
+          })
+          .finally(() => {
             span.end();
-          }
-        case 'AsyncFunction':
-          return method
-            .apply(this, args)
-            .catch((error) => {
-              recordException(span, error);
-              throw error;
-            })
-            .finally(() => {
-              span.end();
-            });
-        default:
-          throw new Error(
-            `Invalid Argument: Cannot identify how to wrap function=${method.name} type=${method.constructor.name}`,
-          );
+          });
+      }
+
+      // Bug: A function that returns a Promise object will be wrapped as a
+      //      synchronous function if it is not marked with the async key word.
+      try {
+        return method.apply(this, args);
+      } catch (error) {
+        recordException(span, error);
+        throw error;
+      } finally {
+        span.end();
       }
     });
   };
