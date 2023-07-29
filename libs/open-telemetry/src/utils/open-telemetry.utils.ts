@@ -12,35 +12,39 @@ export function telemetryWrapper(
     return method;
   }
 
-  const wrappedMethod = function (...args: any[]) {
-    const tracer = trace.getTracer('default');
-    const name = options.name;
-    const spanOptions = options ?? {};
+  // Note: Creation of wrapped method in an object with key of the method name
+  //       ensures wrapped method maintains name after wrapping.
+  const { [method.name]: wrappedMethod } = {
+    [method.name]: function (...args: any[]) {
+      const tracer = trace.getTracer('default');
+      const name = options.name;
+      const spanOptions = options ?? {};
 
-    return tracer.startActiveSpan(name, spanOptions, (span) => {
-      if (method.constructor.name === 'AsyncFunction') {
-        return method
-          .apply(this, args)
-          .catch((error) => {
-            recordException(span, error);
-            throw error;
-          })
-          .finally(() => {
-            span.end();
-          });
-      }
+      return tracer.startActiveSpan(name, spanOptions, (span) => {
+        if (method.constructor.name === 'AsyncFunction') {
+          return method
+            .apply(this, args)
+            .catch((error) => {
+              recordException(span, error);
+              throw error;
+            })
+            .finally(() => {
+              span.end();
+            });
+        }
 
-      // Bug: A function that returns a Promise object will be wrapped as a
-      //      synchronous function if it is not marked with the async key word.
-      try {
-        return method.apply(this, args);
-      } catch (error) {
-        recordException(span, error);
-        throw error;
-      } finally {
-        span.end();
-      }
-    });
+        // Bug: A function that returns a Promise object will be wrapped as a
+        //      synchronous function if it is not marked with the async key word.
+        try {
+          return method.apply(this, args);
+        } catch (error) {
+          recordException(span, error);
+          throw error;
+        } finally {
+          span.end();
+        }
+      });
+    },
   };
 
   copyMetadata(method, wrappedMethod);
