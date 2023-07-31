@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { INJECTABLE_WATERMARK } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import {
@@ -13,6 +18,8 @@ import { telemetryWrapper } from './utils/open-telemetry.utils';
 
 @Injectable()
 export class OpenTelemetryService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(OpenTelemetryService.name);
+
   constructor(
     @Inject(OPEN_TELEMETRY_OPTIONS_TOKEN)
     private readonly options: typeof OPEN_TELEMETRY_OPTIONS_TYPE,
@@ -37,12 +44,20 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
       }
 
       const useOpenTelemetry = this._useOpenTelemetry(instance);
+      const isExcluded = this._isExcluded(instance);
       const isInjectable =
         this.reflector.get(INJECTABLE_WATERMARK, instance.constructor) ?? false;
 
+      if (useOpenTelemetry && isExcluded) {
+        this.logger.warn(
+          `${instance.constructor.name} has the @OpenTelemetry decorator but is listed in the OpenTelemetryModuleOptions 'excludes' property; excluding from observability`,
+        );
+        continue;
+      }
+
       if (
         !useOpenTelemetry &&
-        (this.options.disableAutoDiscovery || !isInjectable)
+        (this.options.disableAutoDiscovery || !isInjectable || isExcluded)
       ) {
         continue;
       }
@@ -73,6 +88,14 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
   private _useOpenTelemetry(instance: any) {
     return (
       this.reflector.get(USE_OPEN_TELEMETRY, instance.constructor) ?? false
+    );
+  }
+
+  private _isExcluded(instance: any) {
+    return (
+      this.options.excludes?.some(
+        (provider) => provider.name === instance.constructor.name,
+      ) ?? false
     );
   }
 

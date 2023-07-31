@@ -1,3 +1,4 @@
+
 export interface OpenTelemetryModuleOptions {
   /**
    * Enable the Open Telemetry instrumentation so that traces,
@@ -9,8 +10,14 @@ export interface OpenTelemetryModuleOptions {
 
   /**
    * Disable the automatic discovery of providers and only
-   * capture telemetry from providers/functions decorated w/
+   * capture telemetry from providers/methods decorated w/
    * `@OpenTelemetry` or `@OTelSpan`.
    */
   disableAutoDiscovery?: boolean;
+
+  /**
+   * Exclude the listed providers from automatic discovery when it
+   * is enabled.
+   */
+  excludes?: any[];
 }
