@@ -36,8 +36,7 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
         continue;
       }
 
-      const useOpenTelemetry =
-        this.reflector.get(USE_OPEN_TELEMETRY, instance.constructor) ?? false;
+      const useOpenTelemetry = this._useOpenTelemetry(instance);
       const isInjectable =
         this.reflector.get(INJECTABLE_WATERMARK, instance.constructor) ?? false;
 
@@ -48,17 +47,46 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
         continue;
       }
 
-      const methodNames = this.metadataScanner.getAllMethodNames(prototype);
+      this._wrapInstanceMethods(instance, prototype);
+    }
 
-      for (const methodKey of methodNames) {
-        const spanOptions =
-          this.reflector.get(OTEL_SPAN_OPTIONS, instance[methodKey]) ?? {};
+    const controllers = this.discoveryService.getControllers();
 
-        instance[methodKey] = telemetryWrapper(instance[methodKey], {
-          name: `${instance.constructor.name}.${methodKey}`,
-          ...spanOptions,
-        });
+    for (const wrapper of controllers) {
+      const { instance } = wrapper;
+      const prototype = instance && Object.getPrototypeOf(instance);
+
+      if (!instance || !prototype) {
+        continue;
       }
+
+      const useOpenTelemetry = this._useOpenTelemetry(instance);
+
+      if (this.options.disableAutoDiscovery && !useOpenTelemetry) {
+        continue;
+      }
+
+      this._wrapInstanceMethods(instance, prototype);
+    }
+  }
+
+  private _useOpenTelemetry(instance: any) {
+    return (
+      this.reflector.get(USE_OPEN_TELEMETRY, instance.constructor) ?? false
+    );
+  }
+
+  private _wrapInstanceMethods(instance: any, prototype: any) {
+    const methodNames = this.metadataScanner.getAllMethodNames(prototype);
+
+    for (const methodKey of methodNames) {
+      const spanOptions =
+        this.reflector.get(OTEL_SPAN_OPTIONS, instance[methodKey]) ?? {};
+
+      instance[methodKey] = telemetryWrapper(instance[methodKey], {
+        name: `${instance.constructor.name}.${methodKey}`,
+        ...spanOptions,
+      });
     }
   }
 }

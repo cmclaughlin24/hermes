@@ -5,4 +5,5 @@ export * from './decorators/otel-span.decorator';
 export * from './open-telemetry.module';
 export * from './types/open-telemetry-module-options.type';
 export * from './types/otel-span-decorator-options.type';
+export * from './utils/open-telemetry.utils';
 
