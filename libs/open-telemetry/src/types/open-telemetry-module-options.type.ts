@@ -14,10 +14,4 @@ export interface OpenTelemetryModuleOptions {
    * `@OpenTelemetry` or `@OTelSpan`.
    */
   disableAutoDiscovery?: boolean;
-
-  /**
-   * Exclude the listed providers from automatic discovery when it
-   * is enabled.
-   */
-  excludes?: any[];
 }
