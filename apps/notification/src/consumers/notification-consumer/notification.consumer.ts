@@ -15,10 +15,12 @@ import { NotificationLogService } from '../../resources/notification-log/notific
 const KEEP_JOB_OPTIONS: KeepJobs = {
   age: +process.env.BULLMQ_NOTIFICATION_JOB_AGE,
 };
+const BULLMQ_CONCURRENCY = +process.env.BULLMQ_CONCURRENCY;
 
 @Processor(process.env.BULLMQ_NOTIFICATION_QUEUE, {
   removeOnComplete: KEEP_JOB_OPTIONS,
   removeOnFail: KEEP_JOB_OPTIONS,
+  concurrency: BULLMQ_CONCURRENCY,
 })
 @OpenTelemetry()
 export class NotificationConsumer extends WorkerHost {

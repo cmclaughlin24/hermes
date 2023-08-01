@@ -1,0 +1,18 @@
+# 1) Install the Rabbitmq Cluster Operator: kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml
+# 2) Check if the Rabbitmq Cluster Operator is healthy: kubectl get all -o wide -n rabbitmq-system
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq-cluster
+  namespace: hermes
+spec:
+  replicas: 1
+  rabbitmq:
+    additionalConfig: |
+            log.console.level = info
+            channel_max = 1700
+            default_user= guest 
+            default_pass = guest
+            default_user_tags.administrator = true
+  service:
+    type: LoadBalancer

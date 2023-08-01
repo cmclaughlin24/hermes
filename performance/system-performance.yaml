@@ -1,0 +1,142 @@
+# Resources:
+#   - https://www.artillery.io/docs
+# Useful Commands:
+#   - artillery run -o <filename>.json artillery.yaml
+#   - artillery report <filename>.json
+#   - artillery --help
+config:
+  http:
+    extendedMetrics: true
+    maxSockets: 10
+  environments:
+    minikube:
+      target: 'http://127.0.0.1:54232'
+      phases:
+        - duration: 60
+          arrivalRate: 5
+          name: 'Warm-up (5 arrivals/sec)'
+        - duration: 60
+          rampTo: 50
+          arrivalRate: 50
+          name: 'Ramp-up to Sustained Load (50 arrivals/sec)'
+        - duration: 1200
+          arrivalRate: 50
+          name: 'Sustained Load (50 arrivals/sec)'
+  processor: './performance.js'
+scenarios:
+  - name: 'Create Subscription'
+    flow:
+      - post:
+          url: '/subscription'
+          headers:
+            Content-Type: 'application/json'
+            Api-Key: 'distribution123'
+          json:
+            subscriberId: '{{ $randomString() }}'
+            queue: 'distribution'
+            eventType: 'monthly-newsletter'
+            subscriptionType: 'user'
+            data:
+              deliveryMethods:
+                - 'email'
+              email: '{{ $randomString() }}@email.com'
+              timeZone: 'America/Chicago'
+            filterJoin: 'and'
+            filters:
+              - field: 'manufacturer'
+                operator: 'equals'
+                dataType: 'string'
+                value: 'Xbox'
+    weight: 1
+  - name: 'Update Subscription'
+    flow:
+      - get:
+          url: '/subscription'
+          capture:
+            - json: '$[0].subscriberId'
+              as: updateSubscriptionId
+      - patch:
+          url: '/subscription/distribution/monthly-newsletter/{{updateSubscriptionId}}'
+          headers:
+            Content-Type: 'application/json'
+            Api-Key: 'distribution123'
+          json:
+            filters:
+              - field: 'manufacturer'
+                operator: 'or'
+                dataType: 'array'
+                value:
+                  - 'Sony'
+                  - 'Nintendo'
+                  - 'Microsoft'
+    weight: 1
+  - name: 'Remove Subscription'
+    flow:
+      - get:
+          url: '/subscription'
+          capture:
+            - json: '$[0].subscriberId'
+              as: removeSubscriptionId
+      - delete:
+          url: '/subscription/distribution/monthly-newsletter/{{removeSubscriptionId}}'
+          headers:
+            Content-Type: 'application/json'
+            Api-Key: 'distribution123'
+    weight: 1
+  - name: 'Distribution Event (Subscriptions)'
+    flow:
+      - post:
+          beforeRequest: 'generateUUID'
+          url: '/message'
+          headers:
+            Content-Type: 'application/json'
+            Api-Key: 'distribution123'
+          json:
+            exchange: 'distribution'
+            routingKey: 'distribution'
+            message:
+              id: '{{uuid}}'
+              type: 'monthly-newsletter'
+              metadata:
+                languageCode: es-MX
+              payload:
+                manufacturer: 'Nintendo'
+                consoles:
+                  - 'Nintendo 64'
+                  - 'GameCube'
+                  - 'Wii'
+                  - 'Wii U'
+                  - 'Switch'
+              addedAt: '2023-07-22T17:05:54.921Z'
+    weight: 4
+  - name: 'Distribution Event (Direct)'
+    flow:
+      - post:
+          beforeRequest: 'generateUUID'
+          url: '/message'
+          headers:
+            Content-Type: 'application/json'
+            Api-Key: 'distribution123'
+          json:
+            exchange: 'distribution'
+            routingKey: 'distribution'
+            message:
+              id: '{{uuid}}'
+              type: 'monthly-newsletter'
+              metadata:
+                languageCode: en-US
+              payload:
+                manufacturer: 'Xbox'
+                consoles:
+                  - 'Xbox'
+                  - 'Xbox 360'
+                  - 'Xbox One'
+                  - 'Xbox Series S/X'
+              recipients:
+                - deliveryMethods:
+                    - 'sms'
+                    - 'email'
+                  email: '{{ $randomString() }}@email.com'
+                  timeZone: 'Pacific/Auckland'
+              addedAt: '2023-07-22T17:05:54.921Z'
+    weight: 4
