@@ -44,12 +44,13 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
       }
 
       const useOpenTelemetry = this._useOpenTelemetry(instance);
+      const isExcluded = this._isExcluded(instance);
       const isInjectable =
         this.reflector.get(INJECTABLE_WATERMARK, instance.constructor) ?? false;
 
       if (
-        !useOpenTelemetry &&
-        (this.options.disableAutoDiscovery || !isInjectable)
+        (!useOpenTelemetry && !isInjectable) ||
+        (!this.options.disableAutoDiscovery && isExcluded)
       ) {
         continue;
       }
@@ -68,8 +69,12 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
       }
 
       const useOpenTelemetry = this._useOpenTelemetry(instance);
+      const isExcluded = this._isExcluded(instance);
 
-      if (this.options.disableAutoDiscovery && !useOpenTelemetry) {
+      if (
+        (this.options.disableAutoDiscovery && !useOpenTelemetry) ||
+        (!this.options.disableAutoDiscovery && isExcluded)
+      ) {
         continue;
       }
 
@@ -80,6 +85,14 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
   private _useOpenTelemetry(instance: any) {
     return (
       this.reflector.get(USE_OPEN_TELEMETRY, instance.constructor) ?? false
+    );
+  }
+
+  private _isExcluded(instance: any) {
+    return (
+      this.options.excludes?.some(
+        (cls) => cls.name === instance.constructor.name,
+      ) ?? false
     );
   }
 

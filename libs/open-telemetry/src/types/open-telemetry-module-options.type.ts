@@ -14,4 +14,12 @@ export interface OpenTelemetryModuleOptions {
    * `@OpenTelemetry` or `@OTelSpan`.
    */
   disableAutoDiscovery?: boolean;
+
+  /**
+   * Exclude providers or controllers from automatic discovery.
+   * 
+   * Note: Excluded classes with `@OTelSpan` decorated methods wil
+   *        still produce telemetry.
+   */
+  excludes?: any[];
 }
