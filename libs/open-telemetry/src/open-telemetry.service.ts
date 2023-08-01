@@ -1,8 +1,7 @@
 import {
   Inject,
   Injectable,
-  Logger,
-  OnApplicationBootstrap,
+  Logger
 } from '@nestjs/common';
 import { INJECTABLE_WATERMARK } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
@@ -17,7 +16,7 @@ import {
 import { telemetryWrapper } from './utils/open-telemetry.utils';
 
 @Injectable()
-export class OpenTelemetryService implements OnApplicationBootstrap {
+export class OpenTelemetryService {
   private readonly logger = new Logger(OpenTelemetryService.name);
 
   constructor(
@@ -28,7 +27,7 @@ export class OpenTelemetryService implements OnApplicationBootstrap {
     private readonly metadataScanner: MetadataScanner,
   ) {}
 
-  onApplicationBootstrap() {
+  init() {
     if (!this.options.enableOpenTelemetry) {
       return;
     }

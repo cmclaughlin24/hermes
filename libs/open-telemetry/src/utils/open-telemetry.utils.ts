@@ -1,6 +1,13 @@
+import { INestApplication } from '@nestjs/common';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { IS_TELEMETRY_WRAPPED } from '../constants/open-telemetry.constants';
+import { OpenTelemetryService } from '../open-telemetry.service';
 import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.type';
+
+export function useOpenTelemetry(app: INestApplication) {
+  const telemetryService = app.get(OpenTelemetryService);
+  telemetryService.init();
+}
 
 export function telemetryWrapper(
   method: Function,
