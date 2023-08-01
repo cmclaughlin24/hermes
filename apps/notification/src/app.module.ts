@@ -26,6 +26,7 @@ import { ResourcesModule } from './resources/resources.module';
         DB_PASSWORD: Joi.required(),
         DB_NAME: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
+        ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8000),
         MAILER_HOST: Joi.required(),
         MAILER_PORT: Joi.number().required(),
@@ -62,6 +63,13 @@ import { ResourcesModule } from './resources/resources.module';
       inject: [ConfigService],
       useFactory: bullFactory,
     }),
+    OpenTelemetryModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        enableOpenTelemetry: configService.get('ENABLE_OPEN_TELEMETRY'),
+      }),
+    }),
     DevtoolsModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -70,7 +78,6 @@ import { ResourcesModule } from './resources/resources.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    OpenTelemetryModule.forRoot({ enableOpenTelemetry: true }),
     ConsumerModule,
     ResourcesModule,
   ],
