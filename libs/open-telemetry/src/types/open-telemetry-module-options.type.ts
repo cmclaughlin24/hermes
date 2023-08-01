@@ -9,8 +9,8 @@ export interface OpenTelemetryModuleOptions {
   enableOpenTelemetry: boolean;
 
   /**
-   * Disable the automatic discovery of providers and only
-   * capture telemetry from providers/methods decorated w/
+   * Disable the automatic discovery of providers and controllers.
+   * Only capture telemetry from providers/methods decorated w/
    * `@OpenTelemetry` or `@OTelSpan`.
    */
   disableAutoDiscovery?: boolean;
