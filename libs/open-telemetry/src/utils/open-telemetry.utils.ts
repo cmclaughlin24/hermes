@@ -77,7 +77,8 @@ export function telemetryWrapper(
 }
 
 /**
- *
+ * Sets the exception as a span event and updates the span status to 
+ * `SpanStatusCode.ERROR`.
  * @param {Span} span
  * @param {Error} error
  */
@@ -87,12 +88,13 @@ function recordException(span: Span, error: Error) {
 }
 
 /**
- *
+ * Copies the metadata key-value pairs from the original object to the
+ * target object.
  * @param {object} original
- * @param {object} copy
+ * @param {object} target
  */
-function copyMetadata(original: object, copy: object) {
+function copyMetadata(original: object, target: object) {
   Reflect.getMetadataKeys(original).forEach((key) => {
-    Reflect.defineMetadata(key, Reflect.getMetadata(key, original), copy);
+    Reflect.defineMetadata(key, Reflect.getMetadata(key, original), target);
   });
 }
