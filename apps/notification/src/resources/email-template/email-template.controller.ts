@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post
+  Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';

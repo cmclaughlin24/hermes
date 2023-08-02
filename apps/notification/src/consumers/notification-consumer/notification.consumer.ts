@@ -1,6 +1,8 @@
 import { DeliveryMethods } from '@hermes/common';
+import { OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
+import { SpanKind } from '@opentelemetry/api';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -20,6 +22,7 @@ const BULLMQ_CONCURRENCY = +process.env.BULLMQ_CONCURRENCY;
   removeOnFail: KEEP_JOB_OPTIONS,
   concurrency: BULLMQ_CONCURRENCY,
 })
+@OpenTelemetry()
 export class NotificationConsumer extends WorkerHost {
   private readonly logger = new Logger(NotificationConsumer.name);
 
@@ -39,6 +42,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns {Promise<any>}
    */
+  @OTelSpan({ kind: SpanKind.CONSUMER })
   async process(job: Job): Promise<any> {
     let result;
 
@@ -290,6 +294,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('completed')
+  @OTelSpan()
   async onQueueCompleted(job: Job, result: any) {
     const logPrefix = this._createLogPrefix(this.onQueueCompleted.name, job.id);
 
@@ -317,6 +322,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('failed')
+  @OTelSpan()
   async onQueueFailed(job: Job, error: Error) {
     const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
 

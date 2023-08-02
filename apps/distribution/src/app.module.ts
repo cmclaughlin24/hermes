@@ -1,3 +1,4 @@
+import { OpenTelemetryModule } from '@hermes/open-telemetry';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -26,6 +27,7 @@ import { ResourcesModule } from './resources/resources.module';
         DB_USERNAME: Joi.required(),
         DB_PASSWORD: Joi.required(),
         DB_NAME: Joi.required(),
+        ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
         RABBITMQ_URI: Joi.required(),
         RABBITMQ_DISTRIBUTION_EXCHANGE: Joi.required(),
         RABBITMQ_DISTRIBUTION_QUEUE: Joi.required(),
@@ -48,6 +50,13 @@ import { ResourcesModule } from './resources/resources.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: bullFactory,
+    }),
+    OpenTelemetryModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        enableOpenTelemetry: configService.get('ENABLE_OPEN_TELEMETRY'),
+      }),
     }),
     DevtoolsModule.registerAsync({
       imports: [ConfigModule],
