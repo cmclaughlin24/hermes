@@ -24,7 +24,7 @@ export class OpenTelemetryExplorer{
     private readonly metadataScanner: MetadataScanner,
   ) {}
 
-  init({ logging }: UseOpenTelemetryOptions) {
+  explore({ logging }: UseOpenTelemetryOptions) {
     if (!this.options.enableOpenTelemetry) {
       return;
     }

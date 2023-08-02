@@ -21,7 +21,7 @@ export function useOpenTelemetry(
   options: UseOpenTelemetryOptions = {},
 ) {
   const explorer = app.get(OpenTelemetryExplorer);
-  explorer.init(options);
+  explorer.explore(options);
 }
 
 /**
