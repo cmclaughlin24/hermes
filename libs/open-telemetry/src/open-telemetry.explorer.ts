@@ -13,7 +13,7 @@ import { UseOpenTelemetryOptions } from './types/use-open-telemetry-options.type
 import { telemetryWrapper } from './utils/open-telemetry.utils';
 
 @Injectable()
-export class OpenTelemetryExplorer{
+export class OpenTelemetryExplorer {
   private readonly logger = new Logger(OpenTelemetryExplorer.name);
 
   constructor(
@@ -24,6 +24,11 @@ export class OpenTelemetryExplorer{
     private readonly metadataScanner: MetadataScanner,
   ) {}
 
+  /**
+   * Explores the application IoC container and configures discovered
+   * controllers and providers to emit telemetry data.
+   * @param {UseOpenTelemetryOptions} options
+   */
   explore({ logging }: UseOpenTelemetryOptions) {
     if (!this.options.enableOpenTelemetry) {
       return;
@@ -88,12 +93,24 @@ export class OpenTelemetryExplorer{
     }
   }
 
+  /**
+   * Yields a boolean indicating whether or not a controller/provider instance
+   * has the `USE_OPEN_TELEMETRY` metadata.
+   * @param {any} instance
+   * @returns {boolean}
+   */
   private _useOpenTelemetry(instance: any) {
     return (
       this.reflector.get(USE_OPEN_TELEMETRY, instance.constructor) ?? false
     );
   }
 
+  /**
+   * Yields a boolean indicating whether or not a controller/provider instance
+   * was excluded in the `OpenTelemetryModuleOptions`.
+   * @param {any} instance
+   * @returns {boolean}
+   */
   private _isExcluded(instance: any) {
     return (
       this.options.excludes?.some(
@@ -102,6 +119,12 @@ export class OpenTelemetryExplorer{
     );
   }
 
+  /**
+   * Wraps the original methods of the provider or controller instance with
+   * the span [creation and closure](https://opentelemetry.io/docs/instrumentation/js/manual/#create-spans).
+   * @param {any} instance
+   * @param {any} prototype
+   */
   private _wrapInstanceMethods(instance: any, prototype: any) {
     const methodNames = this.metadataScanner.getAllMethodNames(prototype);
 

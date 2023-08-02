@@ -46,7 +46,7 @@ export function telemetryWrapper(
   const { [method.name]: wrappedMethod } = {
     [method.name]: function (...args: any[]) {
       const tracer = trace.getTracer('default');
-      const name = options.name;
+      const name = options.name || method.name;
       const spanOptions = options ?? {};
 
       return tracer.startActiveSpan(name, spanOptions, (span) => {
