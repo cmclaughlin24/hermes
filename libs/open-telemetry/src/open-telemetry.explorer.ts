@@ -9,11 +9,12 @@ import {
   OPEN_TELEMETRY_OPTIONS_TOKEN,
   OPEN_TELEMETRY_OPTIONS_TYPE,
 } from './open-telemetry.module-definition';
+import { UseOpenTelemetryOptions } from './types/use-open-telemetry-options.type';
 import { telemetryWrapper } from './utils/open-telemetry.utils';
 
 @Injectable()
-export class OpenTelemetryService {
-  private readonly logger = new Logger(OpenTelemetryService.name);
+export class OpenTelemetryExplorer{
+  private readonly logger = new Logger(OpenTelemetryExplorer.name);
 
   constructor(
     @Inject(OPEN_TELEMETRY_OPTIONS_TOKEN)
@@ -23,10 +24,12 @@ export class OpenTelemetryService {
     private readonly metadataScanner: MetadataScanner,
   ) {}
 
-  init() {
+  init({ logging }: UseOpenTelemetryOptions) {
     if (!this.options.enableOpenTelemetry) {
       return;
     }
+
+    logging && this.logger.log('Scanning Nest application for providers...');
 
     const providers = this.discoveryService.getProviders();
 
@@ -51,7 +54,12 @@ export class OpenTelemetryService {
       }
 
       this._wrapInstanceMethods(instance, prototype);
+
+      logging &&
+        this.logger.log(`${instance.constructor.name} telemetry initialized`);
     }
+
+    logging && this.logger.log('Scanning Nest application for controllers...');
 
     const controllers = this.discoveryService.getControllers();
 
@@ -74,6 +82,9 @@ export class OpenTelemetryService {
       }
 
       this._wrapInstanceMethods(instance, prototype);
+
+      logging &&
+        this.logger.log(`${instance.constructor.name} telemetry initialized`);
     }
   }
 

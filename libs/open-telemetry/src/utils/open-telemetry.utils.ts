@@ -1,8 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import { IS_TELEMETRY_WRAPPED } from '../constants/open-telemetry.constants';
-import { OpenTelemetryService } from '../open-telemetry.service';
+import { OpenTelemetryExplorer } from '../open-telemetry.explorer';
 import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.type';
+import { UseOpenTelemetryOptions } from '../types/use-open-telemetry-options.type';
 
 /**
  * Initializes the `OpenTelemetryModule` instrumentation so that
@@ -13,10 +14,14 @@ import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.t
  *       and stores a reference value for each controllers' methods.
  *
  * @param {INestApplication} app
+ * @param {UseOpenTelemetryOptions} options
  */
-export function useOpenTelemetry(app: INestApplication) {
-  const telemetryService = app.get(OpenTelemetryService);
-  telemetryService.init();
+export function useOpenTelemetry(
+  app: INestApplication,
+  options: UseOpenTelemetryOptions = {},
+) {
+  const explorer = app.get(OpenTelemetryExplorer);
+  explorer.init(options);
 }
 
 /**
@@ -78,7 +83,7 @@ export function telemetryWrapper(
 }
 
 /**
- * Sets the exception as a span event and updates the span status to 
+ * Sets the exception as a span event and updates the span status to
  * `SpanStatusCode.ERROR`.
  * @param {Span} span
  * @param {Error} error

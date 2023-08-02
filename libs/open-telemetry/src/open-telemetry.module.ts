@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
+import { OpenTelemetryExplorer } from './open-telemetry.explorer';
 import { OpenTelemetryModuleDefinitionClass } from './open-telemetry.module-definition';
-import { OpenTelemetryService } from './open-telemetry.service';
 
 @Module({
   imports: [DiscoveryModule],
-  providers: [OpenTelemetryService],
+  providers: [OpenTelemetryExplorer],
 })
 export class OpenTelemetryModule extends OpenTelemetryModuleDefinitionClass {}
