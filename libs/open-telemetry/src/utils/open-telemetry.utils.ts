@@ -1,14 +1,30 @@
 import { INestApplication } from '@nestjs/common';
-import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import { IS_TELEMETRY_WRAPPED } from '../constants/open-telemetry.constants';
 import { OpenTelemetryService } from '../open-telemetry.service';
 import { OTelSpanDecoratorOptions } from '../types/otel-span-decorator-options.type';
 
+/**
+ * Initializes the `OpenTelemetryModule` instrumentation so that
+ * traces, metrics, and logs are emitted from discovered controllers
+ * and providers.
+ *
+ * Note: Must occur before `app.listen` excutes the Nest `RouteExplorer`
+ *       and stores a reference value for each controllers' methods.
+ *
+ * @param {INestApplication} app
+ */
 export function useOpenTelemetry(app: INestApplication) {
   const telemetryService = app.get(OpenTelemetryService);
   telemetryService.init();
 }
 
+/**
+ *
+ * @param {Function} method
+ * @param {OTelSpanDecoratorOptions} options
+ * @returns {Function}
+ */
 export function telemetryWrapper(
   method: Function,
   options: OTelSpanDecoratorOptions,
@@ -60,12 +76,22 @@ export function telemetryWrapper(
   return wrappedMethod;
 }
 
-function recordException(span: any, error: Error) {
+/**
+ *
+ * @param {Span} span
+ * @param {Error} error
+ */
+function recordException(span: Span, error: Error) {
   span.recordException(error);
-  span.setStatus({ status: SpanStatusCode.ERROR, message: error.message });
+  span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
 }
 
-function copyMetadata(original: Object, copy: Object) {
+/**
+ *
+ * @param {object} original
+ * @param {object} copy
+ */
+function copyMetadata(original: object, copy: object) {
   Reflect.getMetadataKeys(original).forEach((key) => {
     Reflect.defineMetadata(key, Reflect.getMetadata(key, original), copy);
   });
