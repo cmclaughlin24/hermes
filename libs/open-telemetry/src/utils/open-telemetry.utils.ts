@@ -20,7 +20,8 @@ export function useOpenTelemetry(app: INestApplication) {
 }
 
 /**
- *
+ * Yields a copy of the function that has been wrapped with the
+ * span [creation and closure](https://opentelemetry.io/docs/instrumentation/js/manual/#create-spans).
  * @param {Function} method
  * @param {OTelSpanDecoratorOptions} options
  * @returns {Function}
