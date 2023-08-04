@@ -42,7 +42,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns {Promise<any>}
    */
-  @OTelSpan({ kind: SpanKind.CONSUMER })
+  @OTelSpan({ kind: SpanKind.CONSUMER, root: true })
   async process(job: Job): Promise<any> {
     let result;
 
@@ -294,7 +294,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('completed')
-  @OTelSpan()
+  @OTelSpan({ root: true })
   async onQueueCompleted(job: Job, result: any) {
     const logPrefix = this._createLogPrefix(this.onQueueCompleted.name, job.id);
 
@@ -322,7 +322,7 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('failed')
-  @OTelSpan()
+  @OTelSpan({ root: true })
   async onQueueFailed(job: Job, error: Error) {
     const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
 

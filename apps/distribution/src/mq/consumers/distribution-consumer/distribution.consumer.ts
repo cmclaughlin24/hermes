@@ -1,6 +1,6 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { hasSelectors } from '@hermes/common';
-import { OTelSpan } from '@hermes/open-telemetry';
+import { OTelSpan, telemetryWrapper } from '@hermes/open-telemetry';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -22,6 +22,9 @@ import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';
 import { MqConsumer } from '../mq-consumer/mq.consumer';
+
+const otelSubscriptionFilter = telemetryWrapper(filterSubscriptions);
+const otelCreateNotificationJobs = telemetryWrapper(createNotificationJobs);
 
 @UseInterceptors(MqInterceptor)
 @Injectable()
@@ -83,7 +86,7 @@ export class DistributionConsumer extends MqConsumer {
         );
       }
 
-      const jobs = createNotificationJobs(
+      const jobs = otelCreateNotificationJobs(
         distributionRule,
         subscribers,
         messageDto,
@@ -187,7 +190,7 @@ export class DistributionConsumer extends MqConsumer {
       return this.subscriberService.mapToUserSubscriberDtos(message.recipients);
     }
 
-    const filteredSubs = filterSubscriptions(subscriptions, message.payload);
+    const filteredSubs = otelSubscriptionFilter(subscriptions, message.payload);
 
     if (_.isEmpty(filteredSubs)) {
       return [];
