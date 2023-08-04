@@ -33,7 +33,7 @@ export function useOpenTelemetry(
  */
 export function telemetryWrapper(
   method: Function,
-  options: OTelSpanDecoratorOptions,
+  options: OTelSpanDecoratorOptions = {},
 ): Function {
   const isTelemetryWrapped = Reflect.getMetadata(IS_TELEMETRY_WRAPPED, method);
 
