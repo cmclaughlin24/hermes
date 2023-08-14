@@ -1,5 +1,5 @@
 import { DeliveryMethods } from '@hermes/common';
-import { OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
+import { OTelCounter, OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { SpanKind } from '@opentelemetry/api';
@@ -42,6 +42,11 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns {Promise<any>}
    */
+  @OTelCounter({
+    meterName: 'hermes.notification.service.notification-consumer',
+    counterName: 'total-notifications.counter',
+    attrFn: (args) => ({ 'notification.type': args[0].name }),
+  })
   @OTelSpan({ kind: SpanKind.CONSUMER, root: true })
   async process(job: Job): Promise<any> {
     let result;
