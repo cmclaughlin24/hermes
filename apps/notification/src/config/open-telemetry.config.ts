@@ -11,7 +11,11 @@ const sdk = new NodeSDK({
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter(),
   }),
-  instrumentations: [getNodeAutoInstrumentations()],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      '@opentelemetry/instrumentation-fs': { enabled: false },
+    }),
+  ],
   resourceDetectors: [envDetector, processDetector, dockerCGroupV1Detector],
 });
 

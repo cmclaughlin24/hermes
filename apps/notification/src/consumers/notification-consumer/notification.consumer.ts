@@ -1,5 +1,5 @@
 import { DeliveryMethods } from '@hermes/common';
-import { OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
+import { OTelCounter, OTelSpan, OpenTelemetry } from '@hermes/open-telemetry';
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { SpanKind } from '@opentelemetry/api';
@@ -42,6 +42,11 @@ export class NotificationConsumer extends WorkerHost {
    * @param {Job} job
    * @returns {Promise<any>}
    */
+  @OTelCounter({
+    meterName: 'hermes.notification.service.notification-consumer',
+    counterName: 'total-notifications.counter',
+    attrFn: (args) => ({ 'notification.type': args[0].name }),
+  })
   @OTelSpan({ kind: SpanKind.CONSUMER, root: true })
   async process(job: Job): Promise<any> {
     let result;
@@ -307,7 +312,7 @@ export class NotificationConsumer extends WorkerHost {
         result,
         null,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({ ...job.data, notification_database_id: databaseId });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);
@@ -322,6 +327,11 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('failed')
+  @OTelCounter({
+    meterName: 'hermes.notification.service.notification-consumer',
+    counterName: 'failed-notifications.counter',
+    attrFn: (args) => ({ 'notification.type': args[0].name }),
+  })
   @OTelSpan({ root: true })
   async onQueueFailed(job: Job, error: Error) {
     const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
@@ -337,7 +347,7 @@ export class NotificationConsumer extends WorkerHost {
         null,
         error,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({ ...job.data, notification_database_id: databaseId });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);
