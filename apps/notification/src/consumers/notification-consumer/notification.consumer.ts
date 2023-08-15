@@ -327,6 +327,11 @@ export class NotificationConsumer extends WorkerHost {
    * @param {any} result
    */
   @OnWorkerEvent('failed')
+  @OTelCounter({
+    meterName: 'hermes.notification.service.notification-consumer',
+    counterName: 'failed-notifications.counter',
+    attrFn: (args) => ({ 'notification.type': args[0].name }),
+  })
   @OTelSpan({ root: true })
   async onQueueFailed(job: Job, error: Error) {
     const logPrefix = this._createLogPrefix(this.onQueueFailed.name, job.id);
