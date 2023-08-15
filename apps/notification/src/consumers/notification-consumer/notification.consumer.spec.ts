@@ -27,7 +27,7 @@ describe('NotificationConsumer', () => {
   let notificationLogService: MockNotificationLogService;
   let pushNotificationService: MockPushNotificationService;
 
-  const job: any = { id: 1, data: {}, log: jest.fn(), update: jest.fn() };
+  const job: any = { id: 1, data: {}, log: jest.fn(), updateData: jest.fn() };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -449,7 +449,7 @@ describe('NotificationConsumer', () => {
   describe('onQueueCompleted()', () => {
     afterEach(() => {
       notificationLogService.log.mockClear();
-      job.update.mockClear();
+      job.updateData.mockClear();
       job.log.mockClear();
     });
 
@@ -482,7 +482,7 @@ describe('NotificationConsumer', () => {
       await service.onQueueCompleted(job, null);
 
       // Assert.
-      expect(job.update).toHaveBeenCalledWith(expectedResult);
+      expect(job.updateData).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {
@@ -514,7 +514,7 @@ describe('NotificationConsumer', () => {
   describe('onQueueFailed()', () => {
     afterEach(() => {
       notificationLogService.log.mockClear();
-      job.update.mockClear();
+      job.updateData.mockClear();
       job.log.mockClear();
     });
 
@@ -547,7 +547,7 @@ describe('NotificationConsumer', () => {
       await service.onQueueFailed(job, null);
 
       // Assert.
-      expect(job.update).toHaveBeenCalledWith(expectedResult);
+      expect(job.updateData).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {
