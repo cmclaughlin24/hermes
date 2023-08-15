@@ -91,6 +91,7 @@ describe('PushNotificationService', () => {
     it('should yield a CreatePushNotificationDto object', async () => {
       // Arrange.
       const payload = {
+        subscriberId: 'unit-test',
         platform: Platform.WEB,
         subscription: {
           endpoint: 'unit-test',
@@ -245,6 +246,7 @@ describe('PushNotificationService', () => {
       };
       pushTemplateService.findOne.mockResolvedValue({
         toJSON: () => ({ title: 'Order Received: {{product}}' }),
+        title: 'Order Received: {{product}}'
       });
 
       // Act.

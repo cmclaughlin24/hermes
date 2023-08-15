@@ -20,7 +20,7 @@ import { PushNotificationService } from '../../common/providers/push-notificatio
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 import { NotificationConsumer } from './notification.consumer';
 
-describe('NotificationService', () => {
+describe('NotificationConsumer', () => {
   let service: NotificationConsumer;
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
