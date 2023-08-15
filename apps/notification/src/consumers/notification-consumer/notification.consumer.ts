@@ -312,7 +312,7 @@ export class NotificationConsumer extends WorkerHost {
         result,
         null,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({ ...job.data, notification_database_id: databaseId });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);
@@ -347,7 +347,7 @@ export class NotificationConsumer extends WorkerHost {
         null,
         error,
       );
-      await job.update({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({ ...job.data, notification_database_id: databaseId });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);
