@@ -34,8 +34,9 @@ export const OTelCounter = (
 
     const { [propertyKey]: wrappedMethod } = {
       [propertyKey]: function (...args: any[]) {
-        const attributes = options.attrFn ? options.attrFn(args) : null;
-        counter.add(1, attributes);
+        const counterArgs: any[] = [1];
+        options.attrFn && counterArgs.push(options.attrFn(args));
+        counter.add.apply(counter, counterArgs);
         return method.apply(this, args);
       },
     };
