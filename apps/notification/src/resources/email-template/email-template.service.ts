@@ -1,11 +1,12 @@
-import { ApiResponseDto, RemoveCache, UseCache, defaultHashFn } from '@hermes/common';
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  ExistsException,
+  MissingException,
+  RemoveCache,
+  UseCache,
+  defaultHashFn,
+} from '@hermes/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import * as _ from 'lodash';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplate } from './entities/email-template.entity';
@@ -24,14 +25,8 @@ export class EmailTemplateService {
    * the repository returns null, undefined, or an empty list.
    * @returns {Promise<EmailTemplate[]>}
    */
-  async findAll() {
-    const emailTemplates = await this.emailTemplateModel.findAll();
-
-    if (_.isEmpty(emailTemplates)) {
-      throw new NotFoundException(`Email templates not found!`);
-    }
-
-    return emailTemplates;
+  findAll() {
+    return this.emailTemplateModel.findAll();
   }
 
   /**
@@ -41,21 +36,15 @@ export class EmailTemplateService {
    * @returns {Promise<EmailTemplate>}
    */
   @UseCache({ key: EmailTemplateService.CACHE_KEY })
-  async findOne(name: string) {
-    const emailTemplate = await this.emailTemplateModel.findByPk(name);
-
-    if (!emailTemplate) {
-      throw new NotFoundException(`Email Template with ${name} not found!`);
-    }
-
-    return emailTemplate;
+  findOne(name: string) {
+    return this.emailTemplateModel.findByPk(name);
   }
 
   /**
-   * Creates a new EmailTemplate or throws a BadRequestException if an
-   * email template name exists in the repository.
+   * Creates a new EmailTemplate or throws a ExistsException if an email
+   * template name exists in the repository.
    * @param {CreateEmailTemplateDto} createEmailTemplateDto
-   * @returns {Promise<ApiResponseDto<EmailTemplate>>}
+   * @returns {Promise<EmailTemplate>}
    */
   async create(createEmailTemplateDto: CreateEmailTemplateDto) {
     const existingTemplate = await this.emailTemplateModel.findByPk(
@@ -63,7 +52,7 @@ export class EmailTemplateService {
     );
 
     if (existingTemplate) {
-      throw new BadRequestException(
+      throw new ExistsException(
         `Email Template ${createEmailTemplateDto.name} already exists!`,
       );
     }
@@ -72,18 +61,15 @@ export class EmailTemplateService {
       ...createEmailTemplateDto,
     });
 
-    return new ApiResponseDto<EmailTemplate>(
-      `Successfully created email template ${emailTemplate.name}!`,
-      emailTemplate,
-    );
+    return emailTemplate;
   }
 
   /**
-   * Updates an EmailTemplate or throws a NotFoundException if the
+   * Updates an EmailTemplate or throws a MissingException if the
    * repository returns null or undefined.
    * @param {string} name Template's name
    * @param {UpdateEmailTemplateDto} updateEmailTemplateDto
-   * @returns {Promise<ApiResponseDto<EmailTemplate>>}
+   * @returns {Promise<EmailTemplate>}
    */
   @RemoveCache({
     key: EmailTemplateService.CACHE_KEY,
@@ -93,7 +79,7 @@ export class EmailTemplateService {
     let emailTemplate = await this.emailTemplateModel.findByPk(name);
 
     if (!emailTemplate) {
-      throw new NotFoundException(`Email Template with ${name} not found!`);
+      throw new MissingException(`Email Template with ${name} not found!`);
     }
 
     emailTemplate = await emailTemplate.update({
@@ -102,28 +88,23 @@ export class EmailTemplateService {
       context: updateEmailTemplateDto.context ?? emailTemplate.context,
     });
 
-    return new ApiResponseDto<EmailTemplate>(
-      `Successfully updated email template ${emailTemplate.name}!`,
-      emailTemplate,
-    );
+    return emailTemplate;
   }
 
   /**
-   * Removes an EmailTemplate or throws a NotFoundException if the
+   * Removes an EmailTemplate or throws a MissingException if the
    * repository returns null or undefined.
    * @param {string} name Template's name
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<void>}
    */
   @RemoveCache({ key: EmailTemplateService.CACHE_KEY })
   async remove(name: string) {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
     if (!emailTemplate) {
-      throw new NotFoundException(`Email Template with ${name} not found!`);
+      throw new MissingException(`Email Template with ${name} not found!`);
     }
 
     await emailTemplate.destroy();
-
-    return new ApiResponseDto(`Successfully deleted email template ${name}!`);
   }
 }
