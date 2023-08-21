@@ -79,7 +79,7 @@ export class EmailTemplateService {
     let emailTemplate = await this.emailTemplateModel.findByPk(name);
 
     if (!emailTemplate) {
-      throw new MissingException(`Email Template with ${name} not found!`);
+      throw new MissingException(`Email Template ${name} not found!`);
     }
 
     emailTemplate = await emailTemplate.update({
@@ -102,7 +102,7 @@ export class EmailTemplateService {
     const emailTemplate = await this.emailTemplateModel.findByPk(name);
 
     if (!emailTemplate) {
-      throw new MissingException(`Email Template with ${name} not found!`);
+      throw new MissingException(`Email Template ${name} not found!`);
     }
 
     await emailTemplate.destroy();

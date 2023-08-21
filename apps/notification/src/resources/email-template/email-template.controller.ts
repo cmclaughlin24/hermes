@@ -56,7 +56,7 @@ export class EmailTemplateController {
     const emailTemplate = await this.emailTemplateService.findOne(name);
 
     if (!emailTemplate) {
-      throw new NotFoundException(`Email Template with ${name} not found!`);
+      throw new NotFoundException(`Email Template ${name} not found!`);
     }
 
     return emailTemplate;

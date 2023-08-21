@@ -1,8 +1,13 @@
-import { ApiResponseDto } from '@hermes/common';
+import {
+  ApiResponseDto,
+  ExistsException,
+  MissingException,
+} from '@hermes/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockEmailTemplateService,
-    createEmailTemplateServiceMock,
+  MockEmailTemplateService,
+  createEmailTemplateServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
@@ -48,6 +53,28 @@ describe('EmailTemplateController', () => {
       // Act/Assert.
       await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Email templates not found!`,
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Email templates not found!`,
+      );
+      service.findAll.mockResolvedValue([]);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('findOne()', () => {
@@ -60,6 +87,19 @@ describe('EmailTemplateController', () => {
         emailTemplate,
       );
     });
+
+    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Email Template ${emailTemplate.name} not found!`,
+      );
+      service.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findOne(emailTemplate.name)).rejects.toEqual(
+        expectedResult,
+      );
+    });
   });
 
   describe('create()', () => {
@@ -69,12 +109,24 @@ describe('EmailTemplateController', () => {
         `Successfully created email template ${emailTemplate.name}!`,
         emailTemplate,
       );
-      service.create.mockResolvedValue(expectedResult);
+      service.create.mockResolvedValue(emailTemplate);
 
       // Act/Assert.
       await expect(
         controller.create({} as CreateEmailTemplateDto),
       ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestExcepction" if an email template already exists', async () => {
+      // Arrange.
+      const errorMessage = `Email Template ${emailTemplate.name} already exists!`;
+      const expectedResult = new BadRequestException(errorMessage);
+      service.create.mockRejectedValue(new ExistsException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.create({} as CreateEmailTemplateDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
@@ -85,12 +137,24 @@ describe('EmailTemplateController', () => {
         `Successfully updated email template ${emailTemplate.name}!`,
         emailTemplate,
       );
-      service.update.mockResolvedValue(expectedResult);
+      service.update.mockResolvedValue(emailTemplate);
 
       // Act/Assert.
       await expect(
         controller.update(emailTemplate.name, {} as UpdateEmailTemplateDto),
       ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if an email template does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Email Template ${emailTemplate.name} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.update.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.update(emailTemplate.name, {} as UpdateEmailTemplateDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
@@ -100,10 +164,22 @@ describe('EmailTemplateController', () => {
       const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully deleted email template ${emailTemplate.name}!`,
       );
-      service.remove.mockResolvedValue(expectedResult);
+      service.remove.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(controller.remove(emailTemplate.name)).resolves.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "NotFoundException" if an email template does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Email Template ${emailTemplate.name} not found!`;
+      const expectedResult = new BadRequestException(errorMessage);
+      service.remove.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(controller.remove(emailTemplate.name)).rejects.toEqual(
         expectedResult,
       );
     });

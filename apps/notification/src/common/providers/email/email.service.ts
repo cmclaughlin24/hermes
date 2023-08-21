@@ -1,3 +1,4 @@
+import { MissingException } from '@hermes/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -69,9 +70,14 @@ export class EmailService implements CreateNotificationDto {
           `[${this.createEmailTemplate.name}] ${CreateEmailNotificationDto.name} contains both 'html' and 'template' keys, defaulting to 'template' key`,
         );
 
-      const emailTemplate = await this.emailTemplateService.findOne(
-        createEmailNotificationDto.template,
-      );
+      const emailTemplate =
+        await this.emailTemplateService.findOne(templateName);
+
+      if (!emailTemplate) {
+        throw new MissingException(
+          `Email template ${templateName} not found!`,
+        );
+      }
 
       subject = emailTemplate.subject;
       html = emailTemplate.template;

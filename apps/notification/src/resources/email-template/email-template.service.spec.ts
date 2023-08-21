@@ -1,11 +1,11 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockRepository,
-    createMockRepository,
+  MockRepository,
+  createMockRepository,
 } from '../../../test/helpers/database.helper';
 import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
@@ -27,8 +27,8 @@ describe('EmailTemplateService', () => {
         },
         {
           provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock()
-        }
+          useValue: createCacheStoreMock(),
+        },
       ],
     }).compile();
 
@@ -62,26 +62,12 @@ describe('EmailTemplateService', () => {
       await expect(service.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield an empty list of email templates if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Email templates not found!`,
-      );
-      emailTemplateModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository return an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        `Email templates not found!`,
-      );
       emailTemplateModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
+      await expect(service.findAll()).resolves.toHaveLength(0);
     });
   });
 
@@ -105,16 +91,13 @@ describe('EmailTemplateService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+    it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const name = 'test';
-      const expectedResult = new NotFoundException(
-        `Email Template with ${name} not found!`,
-      );
       emailTemplateModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(name)).rejects.toEqual(expectedResult);
+      await expect(service.findOne(name)).resolves.toBeNull();
     });
   });
 
@@ -145,12 +128,8 @@ describe('EmailTemplateService', () => {
       expect(emailTemplateModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the created email template', async () => {
+    it('should yield the created email template', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully created email template ${emailTemplate.name}!`,
-        emailTemplate,
-      );
       emailTemplateModel.findByPk.mockResolvedValue(null);
       emailTemplateModel.create.mockResolvedValue(emailTemplate);
 
@@ -158,12 +137,12 @@ describe('EmailTemplateService', () => {
       const func = service.create.bind(service, createEmailTemplateDto);
 
       // Assert.
-      await expect(func()).resolves.toEqual(expectedResult);
+      await expect(func()).resolves.toEqual(emailTemplate);
     });
 
-    it('should throw a "BadRequestException" if an email template already exists', async () => {
+    it('should throw an "ExistsException" if an email template already exists', async () => {
       // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new ExistsException(
         `Email Template ${createEmailTemplateDto.name} already exists!`,
       );
       emailTemplateModel.findByPk.mockResolvedValue({
@@ -207,12 +186,8 @@ describe('EmailTemplateService', () => {
       expect(emailTemplate.update).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the updated email template', async () => {
+    it('should yield the updated email template', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully updated email template ${emailTemplate.name}!`,
-        emailTemplate,
-      );
       emailTemplateModel.findByPk.mockResolvedValue(emailTemplate);
       emailTemplate.update.mockResolvedValue(emailTemplate);
 
@@ -224,14 +199,14 @@ describe('EmailTemplateService', () => {
       );
 
       // Assert.
-      await expect(func()).resolves.toEqual(expectedResult);
+      await expect(func()).resolves.toEqual(emailTemplate);
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+    it('should throw a "MissingException" if the repository return null/undefined', async () => {
       // Arrange.
       const name = 'test';
       const expectedResult = new NotFoundException(
-        `Email Template with ${name} not found!`,
+        `Email Template ${name} not found!`,
       );
       emailTemplateModel.findByPk.mockResolvedValue(null);
 
@@ -262,25 +237,10 @@ describe('EmailTemplateService', () => {
       expect(emailTemplate.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should throw a "MissingException" if the repository return null/undefined', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted email template ${name}!`,
-      );
-      emailTemplateModel.findByPk.mockResolvedValue(emailTemplate);
-      emailTemplate.destroy.mockResolvedValue(null);
-
-      // Act.
-      const func = service.remove.bind(service, name);
-
-      // Assert.
-      await expect(func()).resolves.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        `Email Template with ${name} not found!`,
+      const expectedResult = new MissingException(
+        `Email Template ${name} not found!`,
       );
       emailTemplateModel.findByPk.mockResolvedValue(null);
 
