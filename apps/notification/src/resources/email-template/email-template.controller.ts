@@ -1,15 +1,21 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import {
+  ApiResponseDto,
+  Public,
+  errorToHttpException
+} from '@hermes/common';
 import {
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
-  Post,
+  Post
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
@@ -28,8 +34,14 @@ export class EmailTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.emailTemplateService.findAll();
+  async findAll() {
+    const emailTemplates = await this.emailTemplateService.findAll();
+
+    if (_.isEmpty(emailTemplates)) {
+      throw new NotFoundException(`Email templates not found!`);
+    }
+
+    return emailTemplates;
   }
 
   @Get(':name')
@@ -40,8 +52,14 @@ export class EmailTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('name') name: string) {
-    return this.emailTemplateService.findOne(name);
+  async findOne(@Param('name') name: string) {
+    const emailTemplate = await this.emailTemplateService.findOne(name);
+
+    if (!emailTemplate) {
+      throw new NotFoundException(`Email Template ${name} not found!`);
+    }
+
+    return emailTemplate;
   }
 
   @Post()
@@ -62,8 +80,19 @@ export class EmailTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createEmailTemplateDto: CreateEmailTemplateDto) {
-    return this.emailTemplateService.create(createEmailTemplateDto);
+  async create(@Body() createEmailTemplateDto: CreateEmailTemplateDto) {
+    try {
+      const emailTemplate = await this.emailTemplateService.create(
+        createEmailTemplateDto,
+      );
+
+      return new ApiResponseDto<EmailTemplate>(
+        `Successfully created email template ${emailTemplate.name}!`,
+        emailTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':name')
@@ -85,11 +114,23 @@ export class EmailTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  update(
+  async update(
     @Param('name') name: string,
     @Body() updateEmailTemplateDto: UpdateEmailTemplateDto,
   ) {
-    return this.emailTemplateService.update(name, updateEmailTemplateDto);
+    try {
+      const emailTemplate = await this.emailTemplateService.update(
+        name,
+        updateEmailTemplateDto,
+      );
+
+      return new ApiResponseDto<EmailTemplate>(
+        `Successfully updated email template ${emailTemplate.name}!`,
+        emailTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':name')
@@ -107,7 +148,12 @@ export class EmailTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('name') name: string) {
-    return this.emailTemplateService.remove(name);
+  async remove(@Param('name') name: string) {
+    try {
+      await this.emailTemplateService.remove(name);
+      return new ApiResponseDto(`Successfully deleted email template ${name}!`);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }

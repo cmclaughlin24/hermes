@@ -1,16 +1,23 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import {
+  ApiResponseDto,
+  DeliveryMethods,
+  Public,
+  errorToHttpException,
+} from '@hermes/common';
 import {
   Body,
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseArrayPipe,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JobState } from 'bullmq';
+import { Job, JobState } from 'bullmq';
+import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
@@ -39,14 +46,22 @@ export class NotificationJobController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
+  async findAll(
     @Query(
       'state',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
     states: JobState[] = [],
   ) {
-    return this.notificationJobService.findAll(states);
+    const jobs = await this.notificationJobService.findAll(states);
+
+    if (_.isEmpty(jobs)) {
+      throw new NotFoundException(
+        `Jobs with state(s) ${states.join(', ')} not found`,
+      );
+    }
+
+    return jobs;
   }
 
   @Get(':id')
@@ -57,8 +72,14 @@ export class NotificationJobController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: string) {
-    return this.notificationJobService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const job = await this.notificationJobService.findOne(id);
+
+    if (!job) {
+      throw new NotFoundException(`Job with ${id} not found!`);
+    }
+
+    return job;
   }
 
   @Post('email')
@@ -79,12 +100,18 @@ export class NotificationJobController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createEmailNotification(
+  async createEmailNotification(
     @Body() createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
-    return this.notificationJobService.createEmailNotification(
-      createEmailNotificationDto,
-    );
+    try {
+      const job = await this.notificationJobService.createEmailNotification(
+        createEmailNotificationDto,
+      );
+
+      return this._createApiResponseDto(DeliveryMethods.EMAIL, job);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('sms')
@@ -105,12 +132,18 @@ export class NotificationJobController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createTextNotification(
+  async createTextNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this.notificationJobService.createTextNotification(
-      createPhoneNotificationDto,
-    );
+    try {
+      const job = await this.notificationJobService.createTextNotification(
+        createPhoneNotificationDto,
+      );
+
+      return this._createApiResponseDto(DeliveryMethods.SMS, job);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('call')
@@ -131,12 +164,18 @@ export class NotificationJobController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createCallNotification(
+  async createCallNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this.notificationJobService.createCallNotification(
-      createPhoneNotificationDto,
-    );
+    try {
+      const job = await this.notificationJobService.createCallNotification(
+        createPhoneNotificationDto,
+      );
+
+      return this._createApiResponseDto(DeliveryMethods.CALL, job);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('push-notification')
@@ -157,11 +196,27 @@ export class NotificationJobController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createPushNotification(
+  async createPushNotification(
     @Body() createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    return this.notificationJobService.createPushNotification(
-      createPushNotificationDto,
+    try {
+      const job = await this.notificationJobService.createPushNotification(
+        createPushNotificationDto,
+      );
+
+      return this._createApiResponseDto(DeliveryMethods.PUSH, job);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
+  }
+
+  private _createApiResponseDto(
+    name: DeliveryMethods,
+    job: Job,
+  ): ApiResponseDto<Job> {
+    return new ApiResponseDto(
+      `Successfully scheduled ${name} notification`,
+      job,
     );
   }
 }

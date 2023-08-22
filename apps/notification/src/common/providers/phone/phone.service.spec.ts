@@ -1,12 +1,12 @@
-import { DeliveryMethods } from '@hermes/common';
+import { DeliveryMethods, MissingException } from '@hermes/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TwilioService } from 'nestjs-twilio';
 import {
-    MockConfigService,
-    MockPhoneTemplateService,
-    createConfigServiceMock,
-    createPhoneTemplateServiceMock,
+  MockConfigService,
+  MockPhoneTemplateService,
+  createConfigServiceMock,
+  createPhoneTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
@@ -284,6 +284,32 @@ describe('PhoneService', () => {
         DeliveryMethods.CALL,
         template,
       );
+    });
+
+    it('should throw a "MissingException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const template = 'test';
+      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
+        to: '+18883117422',
+        body: '{{title}}',
+        timeZone: 'America/Chicago',
+        template,
+        context: {
+          title: 'Unit Testing',
+        },
+      };
+      const expectedResult = new MissingException(
+        `Phone template name=${template} for deliveryMethod=${DeliveryMethods.CALL} not found!`,
+      );
+      phoneTemplateService.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        service.createPhoneTemplate(
+          DeliveryMethods.CALL,
+          createPhoneNotificationDto,
+        ),
+      ).rejects.toEqual(expectedResult);
     });
 
     it('should throw an error if both "template" or "body" properties are null/undefined', async () => {

@@ -1,13 +1,12 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
 import {
-    MockRepository,
-    createMockRepository,
-    createMockSequelize,
+  MockRepository,
+  createMockRepository,
+  createMockSequelize,
 } from '../../../test/helpers/database.helper';
 import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
@@ -37,8 +36,8 @@ describe('PushTemplateService', () => {
         },
         {
           provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock()
-        }
+          useValue: createCacheStoreMock(),
+        },
       ],
     }).compile();
 
@@ -68,26 +67,12 @@ describe('PushTemplateService', () => {
       await expect(service.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        'Push Notification templates not found!',
-      );
-      pushTemplateModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        'Push Notification templates not found!',
-      );
       pushTemplateModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
+      await expect(service.findAll()).resolves.toHaveLength(0);
     });
   });
 
@@ -110,16 +95,13 @@ describe('PushTemplateService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const name = 'unit-test';
-      const expectedResult = new NotFoundException(
-        `Push Notification Template with ${name} not found!`,
-      );
       pushTemplateModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(name)).rejects.toEqual(expectedResult);
+      await expect(service.findOne(name)).resolves.toBeNull();
     });
   });
 
@@ -151,24 +133,20 @@ describe('PushTemplateService', () => {
       );
     });
 
-    it('should yield an "ApiResponseDto" object with the created push notification template', async () => {
+    it('should yield the created push notification template', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<PushTemplate>(
-        `Successfully created push notification template ${pushTemplate.name}!`,
-        pushTemplate,
-      );
       pushTemplateModel.findByPk.mockResolvedValue(null);
       pushTemplateModel.create.mockResolvedValue(pushTemplate);
 
       // Act/Assert.
       await expect(service.create(createPushTemplateDto)).resolves.toEqual(
-        expectedResult,
+        pushTemplate,
       );
     });
 
-    it('should throw a "BadRequestException" if a push notification template already exists', async () => {
+    it('should throw a "ExistsException" if a push notification template already exists', async () => {
       // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new ExistsException(
         `Push Notification Template ${createPushTemplateDto.name} already exists!`,
       );
       pushTemplateModel.findByPk.mockResolvedValue(pushTemplate);
@@ -185,9 +163,13 @@ describe('PushTemplateService', () => {
 
     it.todo('should update a push notification template (w/actions)');
 
-    it.todo('should yield an "ApiResponseDto" object with the updated push notification template');
+    it.todo(
+      'should yield an "ApiResponseDto" object with the updated push notification template',
+    );
 
-    it.todo('should throw a "NotFoundException" if the repository returns null/undefined');
+    it.todo(
+      'should throw a "NotFoundException" if the repository returns null/undefined',
+    );
   });
 
   describe('remove()', () => {
@@ -209,19 +191,8 @@ describe('PushTemplateService', () => {
       expect(pushTemplate.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
-      // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted push notification template ${name}`,
-      );
-      pushTemplateModel.findByPk.mockResolvedValue(pushTemplate);
-
-      // Act/Assert.
-      await expect(service.remove(name)).resolves.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
-      const expectedResult = new NotFoundException(
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
+      const expectedResult = new MissingException(
         `Push Notification Template with ${name} not found!`,
       );
       pushTemplateModel.findByPk.mockResolvedValue(null);

@@ -1,5 +1,4 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CacheStore } from '@nestjs/common';
+import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UseCache } from './use-cache.decorator';
 

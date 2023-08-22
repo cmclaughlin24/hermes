@@ -18,11 +18,15 @@ describe('SubscriberService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SubscriberService,
+        SubscriberService,  
+        {
+          provide: HttpService,
+          useValue: createHttpServiceMock(),
+        },
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
-        }
+        },
       ],
     })
       .overrideProvider(HttpService)

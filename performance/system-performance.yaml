@@ -10,27 +10,27 @@ config:
     maxSockets: 10
   environments:
     minikube:
-      target: 'http://127.0.0.1:54232'
+      target: 'http://localhost:3001'
       phases:
         - duration: 60
           arrivalRate: 5
           name: 'Warm-up (5 arrivals/sec)'
         - duration: 60
-          rampTo: 50
-          arrivalRate: 50
-          name: 'Ramp-up to Sustained Load (50 arrivals/sec)'
-        - duration: 1200
-          arrivalRate: 50
-          name: 'Sustained Load (50 arrivals/sec)'
+          rampTo: 15
+          arrivalRate: 15
+          name: 'Ramp-up to Sustained Load (15 arrivals/sec)'
+        - duration: 600
+          arrivalRate: 15
+          name: 'Sustained Load (15 arrivals/sec)'
   processor: './performance.js'
 scenarios:
-  - name: 'Create Subscription'
+  - name: 'Create Subscription (1)'
     flow:
       - post:
           url: '/subscription'
           headers:
             Content-Type: 'application/json'
-            Api-Key: 'distribution123'
+            Distribution-Api-Key: 'notification123'
           json:
             subscriberId: '{{ $randomString() }}'
             queue: 'distribution'
@@ -39,7 +39,35 @@ scenarios:
             data:
               deliveryMethods:
                 - 'email'
+                - 'call'
               email: '{{ $randomString() }}@email.com'
+              phoneNumber: '+12815362118'
+              timeZone: 'America/Chicago'
+            filterJoin: 'and'
+            filters:
+              - field: 'manufacturer'
+                operator: 'equals'
+                dataType: 'string'
+                value: 'Xbox'
+    weight: 1
+  - name: 'Create Subscription (2)'
+    flow:
+      - post:
+          url: '/subscription'
+          headers:
+            Content-Type: 'application/json'
+            Distribution-Api-Key: 'notification123'
+          json:
+            subscriberId: '{{ $randomString() }}'
+            queue: 'distribution'
+            eventType: 'monthly-newsletter'
+            subscriptionType: 'user'
+            data:
+              deliveryMethods:
+                - 'call'
+                - 'sms'
+              email: '{{ $randomString() }}@email.com'
+              phoneNumber: '+12815362118'
               timeZone: 'America/Chicago'
             filterJoin: 'and'
             filters:
@@ -59,7 +87,7 @@ scenarios:
           url: '/subscription/distribution/monthly-newsletter/{{updateSubscriptionId}}'
           headers:
             Content-Type: 'application/json'
-            Api-Key: 'distribution123'
+            Distribution-Api-Key: 'notification123'
           json:
             filters:
               - field: 'manufacturer'
@@ -81,8 +109,8 @@ scenarios:
           url: '/subscription/distribution/monthly-newsletter/{{removeSubscriptionId}}'
           headers:
             Content-Type: 'application/json'
-            Api-Key: 'distribution123'
-    weight: 1
+            Distribution-Api-Key: 'notification123'
+    weight: 2
   - name: 'Distribution Event (Subscriptions)'
     flow:
       - post:
@@ -90,7 +118,7 @@ scenarios:
           url: '/message'
           headers:
             Content-Type: 'application/json'
-            Api-Key: 'distribution123'
+            Distribution-Api-Key: 'notification123'
           json:
             exchange: 'distribution'
             routingKey: 'distribution'
@@ -116,7 +144,7 @@ scenarios:
           url: '/message'
           headers:
             Content-Type: 'application/json'
-            Api-Key: 'distribution123'
+            Distribution-Api-Key: 'notification123'
           json:
             exchange: 'distribution'
             routingKey: 'distribution'

@@ -1,3 +1,4 @@
+import { MissingException } from '@hermes/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,7 +7,7 @@ import {
   MockConfigService,
   MockEmailTemplateService,
   createConfigServiceMock,
-  createEmailTemplateServiceMock
+  createEmailTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { EmailService } from './email.service';
@@ -233,6 +234,29 @@ describe('EmailService', () => {
 
       // Assert.
       expect(emailTemplateService.findOne).toHaveBeenCalledWith(template);
+    });
+
+    it('should throw a "MissingException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const template = 'test';
+      const createEmailNotificationDto: CreateEmailNotificationDto = {
+        to: 'example@email.com',
+        subject: 'Unit Testing',
+        text: 'Unit Testing',
+        template,
+        context: {
+          title: 'Unit Testing',
+        },
+      };
+      const expectedResult = new MissingException(
+        `Email template ${template} not found!`,
+      );
+      emailTemplateService.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        service.createEmailTemplate(createEmailNotificationDto),
+      ).rejects.toEqual(expectedResult);
     });
 
     it('should throw an error if both "template" or "html" properties are null/undefined', async () => {

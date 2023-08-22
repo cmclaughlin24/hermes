@@ -1,10 +1,11 @@
+import { MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import {
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator';
 import { EmailTemplateService } from '../../resources/email-template/email-template.service';
 
@@ -15,7 +16,11 @@ export class EmailTemplateExistsRule implements ValidatorConstraintInterface {
 
   async validate(name: string) {
     try {
-      await this.emailTemplateService.findOne(name);
+      const template = await this.emailTemplateService.findOne(name);
+
+      if (!template) {
+        throw new MissingException(`Email Template ${name} not found!`);
+      }
     } catch (error) {
       return false;
     }

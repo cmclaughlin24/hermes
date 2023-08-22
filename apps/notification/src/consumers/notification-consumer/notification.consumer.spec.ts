@@ -20,14 +20,14 @@ import { PushNotificationService } from '../../common/providers/push-notificatio
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 import { NotificationConsumer } from './notification.consumer';
 
-describe('NotificationService', () => {
+describe('NotificationConsumer', () => {
   let service: NotificationConsumer;
   let emailService: MockEmailService;
   let phoneService: MockPhoneService;
   let notificationLogService: MockNotificationLogService;
   let pushNotificationService: MockPushNotificationService;
 
-  const job: any = { id: 1, data: {}, log: jest.fn(), update: jest.fn() };
+  const job: any = { id: 1, data: {}, log: jest.fn(), updateData: jest.fn() };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -449,7 +449,7 @@ describe('NotificationService', () => {
   describe('onQueueCompleted()', () => {
     afterEach(() => {
       notificationLogService.log.mockClear();
-      job.update.mockClear();
+      job.updateData.mockClear();
       job.log.mockClear();
     });
 
@@ -482,7 +482,7 @@ describe('NotificationService', () => {
       await service.onQueueCompleted(job, null);
 
       // Assert.
-      expect(job.update).toHaveBeenCalledWith(expectedResult);
+      expect(job.updateData).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {
@@ -514,7 +514,7 @@ describe('NotificationService', () => {
   describe('onQueueFailed()', () => {
     afterEach(() => {
       notificationLogService.log.mockClear();
-      job.update.mockClear();
+      job.updateData.mockClear();
       job.log.mockClear();
     });
 
@@ -547,7 +547,7 @@ describe('NotificationService', () => {
       await service.onQueueFailed(job, null);
 
       // Assert.
-      expect(job.update).toHaveBeenCalledWith(expectedResult);
+      expect(job.updateData).toHaveBeenCalledWith(expectedResult);
     });
 
     it("should add the method's result to the job (sucess)", async () => {

@@ -70,17 +70,19 @@ export const UseCache = (options: UseCacheOptions): MethodDecorator => {
 
       value = await method.apply(this, args);
 
-      logger.verbose(`Setting value for key=${cacheKey} in cache`);
-
       // Note: Promise resolution for setting value in cache is not awaited since it
       //       does not impact return value but may impact response time.
-      this.cacheManager
-        .set(cacheKey, value, ttl)
-        .catch((error) =>
-          logger.error(
-            `An error occurred setting value in cache: ${error.message}`,
-          ),
-        );
+      if (value != null) {
+        logger.verbose(`Setting value for key=${cacheKey} in cache`);
+
+        this.cacheManager
+          .set(cacheKey, value, ttl)
+          .catch((error) =>
+            logger.error(
+              `An error occurred setting value in cache: ${error.message}`,
+            ),
+          );
+      }
 
       return value;
     };

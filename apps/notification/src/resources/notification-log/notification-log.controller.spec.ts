@@ -1,7 +1,8 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockNotificationLogService,
-    createNotificationLogServiceMock
+  MockNotificationLogService,
+  createNotificationLogServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogController } from './notification-log.controller';
@@ -43,6 +44,10 @@ describe('NotificationLogController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of email templates', async () => {
       // Arrange.
       const expectedResult: NotificationLog[] = [notificationLog];
@@ -51,9 +56,35 @@ describe('NotificationLogController', () => {
       // Act/Assert.
       await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the service yields null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Notification logs not found!`,
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the service yields an empty list', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Notification logs not found!`,
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('findOne', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a notification log', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(notificationLog);
@@ -61,6 +92,19 @@ describe('NotificationLogController', () => {
       // Act/Assert.
       await expect(controller.findOne(notificationLog.id)).resolves.toEqual(
         notificationLog,
+      );
+    });
+
+    it('should throw a "NotFoundExcpetion" if the service yields null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Notification Log with ${notificationLog.id} not found!`,
+      );
+      service.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findOne(notificationLog.id)).rejects.toEqual(
+        expectedResult,
       );
     });
   });

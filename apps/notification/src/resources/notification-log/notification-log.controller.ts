@@ -3,12 +3,14 @@ import {
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseArrayPipe,
-  Query
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobState } from 'bullmq';
+import * as _ from 'lodash';
 import { NotificationLogService } from './notification-log.service';
 
 @ApiTags('Notification Log')
@@ -38,11 +40,11 @@ export class NotificationLogController {
     type: String,
     isArray: true,
     description: 'A list of job states.',
-    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting']
+    enum: ['active', 'completed', 'delayed', 'failed', 'paused', 'waiting'],
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
+  async findAll(
     @Query(
       'job',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
@@ -54,7 +56,16 @@ export class NotificationLogController {
     )
     states: JobState[] = [],
   ) {
-    return this.notificationLogService.findAll(jobs, states);
+    const notificationLogs = await this.notificationLogService.findAll(
+      jobs,
+      states,
+    );
+
+    if (_.isEmpty(notificationLogs)) {
+      throw new NotFoundException(`Notification logs not found!`);
+    }
+
+    return notificationLogs;
   }
 
   @Get(':id')
@@ -65,7 +76,13 @@ export class NotificationLogController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: string) {
-    return this.notificationLogService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const notificationLog = await this.notificationLogService.findOne(id);
+
+    if (!notificationLog) {
+      throw new NotFoundException(`Notification Log with ${id} not found!`);
+    }
+
+    return notificationLog;
   }
 }

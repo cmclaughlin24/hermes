@@ -1,15 +1,17 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import { ApiResponseDto, Public, errorToHttpException } from '@hermes/common';
 import {
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplate } from './entities/push-template.entity';
@@ -28,8 +30,14 @@ export class PushTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.pushTemplateService.findAll();
+  async findAll() {
+    const pushTemplates = await this.pushTemplateService.findAll();
+
+    if (_.isEmpty(pushTemplates)) {
+      throw new NotFoundException('Push Notification templates not found!');
+    }
+
+    return pushTemplates;
   }
 
   @Get(':name')
@@ -40,8 +48,16 @@ export class PushTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('name') name: string) {
-    return this.pushTemplateService.findOne(name);
+  async findOne(@Param('name') name: string) {
+    const pushTemplate = await this.pushTemplateService.findOne(name);
+
+    if (!pushTemplate) {
+      throw new NotFoundException(
+        `Push Notification Template with ${name} not found!`,
+      );
+    }
+
+    return pushTemplate;
   }
 
   @Post()
@@ -62,8 +78,19 @@ export class PushTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createPushTemplateDto: CreatePushTemplateDto) {
-    return this.pushTemplateService.create(createPushTemplateDto);
+  async create(@Body() createPushTemplateDto: CreatePushTemplateDto) {
+    try {
+      const pushTemplate = await this.pushTemplateService.create(
+        createPushTemplateDto,
+      );
+
+      return new ApiResponseDto<PushTemplate>(
+        `Successfully created push notification template ${pushTemplate.name}!`,
+        pushTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':name')
@@ -85,11 +112,23 @@ export class PushTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  update(
+  async update(
     @Param('name') name: string,
     @Body() updatePushTemplateDto: UpdatePushTemplateDto,
   ) {
-    return this.pushTemplateService.update(name, updatePushTemplateDto);
+    try {
+      const pushTemplate = await this.pushTemplateService.update(
+        name,
+        updatePushTemplateDto,
+      );
+
+      return new ApiResponseDto<PushTemplate>(
+        `Successfully updated push notification template ${pushTemplate.name}!`,
+        pushTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':name')
@@ -106,7 +145,15 @@ export class PushTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  remove(@Param('name') name: string) {
-    return this.pushTemplateService.remove(name);
+  async remove(@Param('name') name: string) {
+    try {
+      await this.pushTemplateService.remove(name);
+
+      return new ApiResponseDto(
+        `Successfully deleted push notification template ${name}!`,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }

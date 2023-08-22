@@ -1,11 +1,15 @@
-import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
+import {
+  DeliveryMethods,
+  ExistsException,
+  MissingException,
+} from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockRepository,
-    createMockRepository,
+  MockRepository,
+  createMockRepository,
 } from '../../../test/helpers/database.helper';
 import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
@@ -27,8 +31,8 @@ describe('PhoneTemplateService', () => {
         },
         {
           provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock()
-        }
+          useValue: createCacheStoreMock(),
+        },
       ],
     }).compile();
 
@@ -62,26 +66,12 @@ describe('PhoneTemplateService', () => {
       await expect(service.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should yield a "NotFoundException" if the repository yields null/undefined', async () => {
+    it('should yield an empty list if the repository yields an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        'Phone templates not found!',
-      );
-      phoneTemplateModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
-    });
-
-    it('should yield a "NotFoundException" if the repository yields an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        'Phone templates not found!',
-      );
       phoneTemplateModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
+      await expect(service.findAll()).resolves.toHaveLength(0);
     });
   });
 
@@ -106,7 +96,7 @@ describe('PhoneTemplateService', () => {
       ).resolves.toEqual(phoneTemplate);
     });
 
-    it('should throw a "NotFoundException" if the repository yields null/undefined', async () => {
+    it('should yield null if the repository yields null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${phoneTemplate.deliveryMethod} not found!`,
@@ -116,7 +106,7 @@ describe('PhoneTemplateService', () => {
       // Act/Assert.
       await expect(
         service.findOne(phoneTemplate.deliveryMethod, phoneTemplate.name),
-      ).rejects.toEqual(expectedResult);
+      ).resolves.toBeNull();
     });
   });
 
@@ -145,24 +135,20 @@ describe('PhoneTemplateService', () => {
       expect(phoneTemplateModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the created phone template', async () => {
+    it('should yield the created phone template', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully created phone template ${phoneTemplate.name}!`,
-        phoneTemplate,
-      );
       phoneTemplateModel.findOne.mockResolvedValue(null);
       phoneTemplateModel.create.mockResolvedValue(phoneTemplate);
 
       // Assert.
       await expect(service.create(createPhoneTemplateDto)).resolves.toEqual(
-        expectedResult,
+        phoneTemplate,
       );
     });
 
-    it('should throw a "BadRequestException" if the phone template already exits', async () => {
+    it('should throw a "ExistsException" if the phone template already exits', async () => {
       // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new ExistsException(
         `Phone template name=${createPhoneTemplateDto.name} for deliveryMethod=${createPhoneTemplateDto.deliveryMethod} already exists!`,
       );
       phoneTemplateModel.findOne.mockResolvedValue({
@@ -199,24 +185,20 @@ describe('PhoneTemplateService', () => {
       expect(phoneTemplate.update).toHaveBeenCalledWith(updatePhoneTemplateDto);
     });
 
-    it('should yield an "ApiResponseDto" object with the updated phone template', async () => {
+    it('should yield the updated phone template', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<PhoneTemplate>(
-        `Successfully updated phone template ${phoneTemplate.name}`,
-        phoneTemplate,
-      );
       phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
       phoneTemplate.update.mockResolvedValue(phoneTemplate);
 
       // Act/Assert.
       await expect(
         service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(phoneTemplate);
     });
 
-    it('should throw a "NotFoundException" if the phone template does not exist', async () => {
+    it('should throw a "MissingException" if the phone template does not exist', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.CALL} not found!`,
       );
       phoneTemplateModel.findOne.mockResolvedValue(null);
@@ -250,22 +232,9 @@ describe('PhoneTemplateService', () => {
       expect(phoneTemplate.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should throw a "MissingException" if the phone template does not exist', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted phone template ${phoneTemplate.name}!`,
-      );
-      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
-
-      // Act/Assert.
-      await expect(
-        service.remove(DeliveryMethods.SMS, phoneTemplate.name),
-      ).resolves.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the phone template does not exist', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.SMS} not found!`,
       );
       phoneTemplateModel.findOne.mockResolvedValue(null);

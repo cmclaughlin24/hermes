@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseArrayPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -68,7 +69,7 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.distributionRuleService.findOne(id);
   }
 
@@ -113,7 +114,7 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
     return this.distributionRuleService.update(id, updateDistributionRuleDto);
@@ -138,7 +139,7 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('id') id: string) {
+  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.distributionRuleService.remove(id);
   }
 }

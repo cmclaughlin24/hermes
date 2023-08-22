@@ -1,4 +1,4 @@
-import { Platform } from '@hermes/common';
+import { MissingException, Platform } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -91,6 +91,12 @@ export class PushNotificationService implements CreateNotificationDto {
         );
 
       const pushTemplate = await this.pushTemplateService.findOne(templateName);
+
+      if (!pushTemplate) {
+        throw new MissingException(
+          `Push Notification Template ${templateName} does not exist!`,
+        );
+      }
 
       // Note: Will already be in JSON format if pulled from Cache.
       notification =

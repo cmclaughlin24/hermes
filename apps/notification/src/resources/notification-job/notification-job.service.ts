@@ -1,8 +1,7 @@
-import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JobState, Queue } from 'bullmq';
-import * as _ from 'lodash';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
@@ -26,15 +25,7 @@ export class NotificationJobService {
    * @returns {Promoise<Job>}
    */
   async findOne(id: string) {
-    const job = await this.notificationQueue.getJob(id);
-
-    if (!job) {
-      throw new NotFoundException(
-        `Job with ${id} not found in '${this.notificationQueue.name}' queue`,
-      );
-    }
-
-    return job;
+    return this.notificationQueue.getJob(id);
   }
 
   /**
@@ -44,21 +35,13 @@ export class NotificationJobService {
    * @returns {Promise<Job[]>}
    */
   async findAll(states: JobState[]) {
-    const jobs = await this.notificationQueue.getJobs(states);
-
-    if (_.isEmpty(jobs)) {
-      throw new NotFoundException(
-        `Jobs with state(s) ${states.join(', ')} not found`,
-      );
-    }
-
-    return jobs;
+    return this.notificationQueue.getJobs(states);
   }
 
   /**
    * Adds an 'email' job to the notification queue.
    * @param {CreateEmailNotificationDto} createEmailNotificationDto
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<Job>}
    */
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
@@ -72,7 +55,7 @@ export class NotificationJobService {
   /**
    * Adds a 'sms' job to the notification queue.
    * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<Job>}
    */
   async createTextNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
@@ -86,7 +69,7 @@ export class NotificationJobService {
   /**
    * Adds a 'call' job to the notification queue.
    * @param {CreatePhoneNotificationDto} createPhoneNotificationDto
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<Job>}
    */
   async createCallNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
@@ -100,7 +83,7 @@ export class NotificationJobService {
   /**
    * Adds a 'push-notification' job to the notification queue.
    * @param {CreatePushNotificationDto} createPhoneNotificationDto
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<Job>}
    */
   async createPushNotification(createPushNotificationDto: CreatePushNotificationDto) {
     return this._createNotification(
@@ -113,17 +96,12 @@ export class NotificationJobService {
    * Adds a job to the notification queue.
    * @param {DeliveryMethods} name Name of the job
    * @param {NotificationDto} notificationDto Payload for the job
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<Job>}
    */
   private async _createNotification(
     name: DeliveryMethods,
     notificationDto: NotificationDto,
   ) {
-    const job = await this.notificationQueue.add(name, notificationDto);
-
-    return new ApiResponseDto(
-      `Successfully scheduled ${name} notification`,
-      job,
-    );
+    return this.notificationQueue.add(name, notificationDto);
   }
 }
