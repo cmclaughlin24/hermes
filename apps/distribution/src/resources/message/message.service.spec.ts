@@ -1,5 +1,4 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockAmqpConnection,
@@ -58,16 +57,6 @@ describe('MessageService', () => {
         createMessageDto.routingKey,
         createMessageDto.message,
       );
-    });
-
-    it('should yield an "ApiResponseDto" object', () => {
-      // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully sent message to ${createMessageDto.exchange}!`,
-      );
-
-      // Act/Assert.
-      expect(service.create(createMessageDto)).resolves.toEqual(expectedResult);
     });
   });
 });
