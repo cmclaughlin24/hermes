@@ -1,6 +1,5 @@
-import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
 import { getQueueToken } from '@nestjs/bullmq';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobState } from 'bullmq';
 import {
@@ -63,28 +62,13 @@ describe('NotificationJobService', () => {
       expect(queue.getJobs).toHaveBeenCalledWith(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if queue returns null/undefined', async () => {
+    it('should yield and empty list if queue returns an empty list', async () => {
       // Arrange.
       const states = [];
-      const expectedResult = new NotFoundException(
-        `Jobs with state(s) ${states.join(', ')} not found`,
-      );
-      queue.getJobs.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if queue returns an empty list', async () => {
-      // Arrange.
-      const states = [];
-      const expectedResult = new NotFoundException(
-        `Jobs with state(s) ${states.join(', ')} not found`,
-      );
       queue.getJobs.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(states)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(states)).resolves.toHaveLength(0);
     });
   });
 
@@ -102,16 +86,13 @@ describe('NotificationJobService', () => {
       await expect(service.findOne('0')).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the queue returns null/undefined', async () => {
+    it('should yield null if the queue returns null/undefined', async () => {
       // Arrange.
       const id = '0';
-      const expectedResult = new NotFoundException(
-        `Job with ${id} not found in '${queue.name}' queue`,
-      );
       queue.getJob.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(id)).rejects.toEqual(expectedResult);
+      await expect(service.findOne(id)).resolves.toBeNull();
     });
   });
 
@@ -141,19 +122,15 @@ describe('NotificationJobService', () => {
       );
     });
 
-    it('should yield an "ApiResposneDto" object with the job', async () => {
+    it('should yield a "Job" object', async () => {
       // Arrange.
       const job = {};
-      const expectedResult = new ApiResponseDto(
-        `Successfully scheduled email notification`,
-        job,
-      );
       queue.add.mockResolvedValue(job);
 
       // Act/Assert.
       await expect(
         service.createEmailNotification(createEmailNotificationDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(job);
     });
   });
 
@@ -179,19 +156,15 @@ describe('NotificationJobService', () => {
       );
     });
 
-    it('should yield an "ApiResposneDto" object with the job', async () => {
+    it('should yield a "Job" object', async () => {
       // Arrange.
       const job = {};
-      const expectedResult = new ApiResponseDto(
-        `Successfully scheduled sms notification`,
-        job,
-      );
       queue.add.mockResolvedValue(job);
 
       // Act/Assert.
       await expect(
         service.createTextNotification(createPhoneNotificationDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(job);
     });
   });
 
@@ -217,19 +190,15 @@ describe('NotificationJobService', () => {
       );
     });
 
-    it('should yield an "ApiResposneDto" object with the job', async () => {
+    it('should yield an "Job" object', async () => {
       // Arrange.
       const job = {};
-      const expectedResult = new ApiResponseDto(
-        `Successfully scheduled call notification`,
-        job,
-      );
       queue.add.mockResolvedValue(job);
 
       // Act/Assert.
       await expect(
         service.createCallNotification(createPhoneNotificationDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(job);
     });
   });
 
@@ -254,19 +223,15 @@ describe('NotificationJobService', () => {
       );
     });
 
-    it('should yield an "ApiResposneDto" object with the job', async () => {
+    it('should yield an "Job" object', async () => {
       // Arrange.
       const job = {};
-      const expectedResult = new ApiResponseDto(
-        `Successfully scheduled push-notification notification`,
-        job,
-      );
       queue.add.mockResolvedValue(job);
 
       // Act/Assert.
       await expect(
         service.createPushNotification(createPushNotificationDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(job);
     });
   });
 });
