@@ -1,17 +1,14 @@
 import {
   ApiResponseDto,
+  ExistsException,
+  MissingException,
   PhoneMethods,
   RemoveCache,
   UseCache,
   defaultHashFn,
 } from '@hermes/common';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
@@ -26,47 +23,31 @@ export class PhoneTemplateService {
   ) {}
 
   /**
-   * Yields a list of PhoneTemplates or throws a NotFoundException if
-   * the repository returns null, undefined, or an empty list.
+   * Yields a list of PhoneTemplates.
    * @returns {Promise<PhoneTemplate[]>}
    */
-  async findAll() {
-    const phoneTemplates = await this.phoneTemplateModel.findAll();
-
-    if (_.isEmpty(phoneTemplates)) {
-      throw new NotFoundException('Phone templates not found!');
-    }
-
-    return phoneTemplates;
+  findAll() {
+    return this.phoneTemplateModel.findAll();
   }
 
   /**
-   * Yields a PhoneTemplate or throws a NotFoundException if the repository
-   * returns null or undefined.
+   * Yields a PhoneTemplate.
    * @param {PhoneTemplate} deliveryMethod
    * @param {string} name
    * @returns {Promise<PhoneTemplate>}
    */
   @UseCache({ key: PhoneTemplateService.CACHE_KEY })
-  async findOne(deliveryMethod: PhoneMethods, name: string) {
-    const phoneTemplate = await this.phoneTemplateModel.findOne({
+  findOne(deliveryMethod: PhoneMethods, name: string) {
+    return this.phoneTemplateModel.findOne({
       where: { name, deliveryMethod },
     });
-
-    if (!phoneTemplate) {
-      throw new NotFoundException(
-        `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
-      );
-    }
-
-    return phoneTemplate;
   }
 
   /**
-   * Creates a new PhoneTemplate or throws a BadRequestException if a phone
+   * Creates a new PhoneTemplate or throws an ExistsException if a phone
    * template name for a phone delivery method exists in the repository.
    * @param {CreatePhoneTemplateDto} createPhoneTemplateDto
-   * @returns {Promise<ApiResponseDto<PhoneTemplate>>}
+   * @returns {Promise<PhoneTemplate>}
    */
   async create(createPhoneTemplateDto: CreatePhoneTemplateDto) {
     const existingTemplate = await this.phoneTemplateModel.findOne({
@@ -77,7 +58,7 @@ export class PhoneTemplateService {
     });
 
     if (existingTemplate) {
-      throw new BadRequestException(
+      throw new ExistsException(
         `Phone template name=${createPhoneTemplateDto.name} for deliveryMethod=${createPhoneTemplateDto.deliveryMethod} already exists!`,
       );
     }
@@ -86,14 +67,11 @@ export class PhoneTemplateService {
       ...createPhoneTemplateDto,
     });
 
-    return new ApiResponseDto<PhoneTemplate>(
-      `Successfully created phone template ${phoneTemplate.name}!`,
-      phoneTemplate,
-    );
+    return phoneTemplate;
   }
 
   /**
-   * Updates a PhoneTemplate or throws a NotFoundException if the
+   * Updates a PhoneTemplate or throws a MissingException if the
    * repository returns null or undefined.
    * @param {PhoneMethods} deliveryMethod
    * @param {string} name
@@ -114,7 +92,7 @@ export class PhoneTemplateService {
     });
 
     if (!phoneTemplate) {
-      throw new NotFoundException(
+      throw new MissingException(
         `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
       );
     }
@@ -124,14 +102,11 @@ export class PhoneTemplateService {
       context: updatePhoneTemplateDto.context,
     });
 
-    return new ApiResponseDto<PhoneTemplate>(
-      `Successfully updated phone template ${phoneTemplate.name}`,
-      phoneTemplate,
-    );
+    return phoneTemplate;
   }
 
   /**
-   * Removes a PhoneTemplate or throws a NotFoundException if the repository
+   * Removes a PhoneTemplate or throws a MissingException if the repository
    * return null or undefined.
    * @param {PhoneMethods} deliveryMethod
    * @param {string} name
@@ -144,13 +119,11 @@ export class PhoneTemplateService {
     });
 
     if (!phoneTemplate) {
-      throw new NotFoundException(
+      throw new MissingException(
         `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
       );
     }
 
     await phoneTemplate.destroy();
-
-    return new ApiResponseDto(`Successfully deleted phone template ${name}!`);
   }
 }

@@ -236,7 +236,7 @@ describe('EmailService', () => {
       expect(emailTemplateService.findOne).toHaveBeenCalledWith(template);
     });
 
-    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
+    it('should throw a "MissingException" if the service returns null/undefined', async () => {
       // Arrange.
       const template = 'test';
       const createEmailNotificationDto: CreateEmailNotificationDto = {

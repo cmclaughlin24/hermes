@@ -1,4 +1,4 @@
-import { PhoneMethods } from '@hermes/common';
+import { MissingException, PhoneMethods } from '@hermes/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
@@ -101,6 +101,12 @@ export class PhoneService implements CreateNotificationDto {
         deliveryMethod,
         templateName,
       );
+
+      if (!phoneTemplate) {
+        throw new MissingException(
+          `Phone template name=${templateName} for deliveryMethod=${deliveryMethod} not found!`,
+        );
+      }
 
       body = phoneTemplate.template;
     }

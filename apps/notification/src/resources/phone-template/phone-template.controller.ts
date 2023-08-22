@@ -1,15 +1,22 @@
-import { ApiResponseDto, PhoneMethods, Public } from '@hermes/common';
+import {
+  ApiResponseDto,
+  PhoneMethods,
+  Public,
+  errorToHttpException,
+} from '@hermes/common';
 import {
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
@@ -28,8 +35,14 @@ export class PhoneTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.phoneTemplateService.findAll();
+  async findAll() {
+    const phoneTemplates = await this.phoneTemplateService.findAll();
+
+    if (_.isEmpty(phoneTemplates)) {
+      throw new NotFoundException('Phone templates not found!');
+    }
+
+    return phoneTemplates;
   }
 
   @Get(':deliveryMethod/:name')
@@ -40,11 +53,22 @@ export class PhoneTemplateController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(
+  async findOne(
     @Param('deliveryMethod') deliveryMethod: PhoneMethods,
     @Param('name') name: string,
   ) {
-    return this.phoneTemplateService.findOne(deliveryMethod, name);
+    const phoneTemplate = await this.phoneTemplateService.findOne(
+      deliveryMethod,
+      name,
+    );
+
+    if (!phoneTemplate) {
+      throw new NotFoundException(
+        `Phone template name=${name} for deliveryMethod=${deliveryMethod} not found!`,
+      );
+    }
+
+    return phoneTemplate;
   }
 
   @Post()
@@ -65,8 +89,19 @@ export class PhoneTemplateController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createPhoneTemplateDto: CreatePhoneTemplateDto) {
-    return this.phoneTemplateService.create(createPhoneTemplateDto);
+  async create(@Body() createPhoneTemplateDto: CreatePhoneTemplateDto) {
+    try {
+      const phoneTemplate = await this.phoneTemplateService.create(
+        createPhoneTemplateDto,
+      );
+
+      return new ApiResponseDto<PhoneTemplate>(
+        `Successfully created phone template ${phoneTemplate.name}!`,
+        phoneTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':deliveryMethod/:name')
@@ -88,16 +123,25 @@ export class PhoneTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  update(
+  async update(
     @Param('deliveryMethod') deliveryMethod: PhoneMethods,
     @Param('name') name: string,
     @Body() updatePhoneTemplateDto: UpdatePhoneTemplateDto,
   ) {
-    return this.phoneTemplateService.update(
-      deliveryMethod,
-      name,
-      updatePhoneTemplateDto,
-    );
+    try {
+      const phoneTemplate = await this.phoneTemplateService.update(
+        deliveryMethod,
+        name,
+        updatePhoneTemplateDto,
+      );
+
+      return new ApiResponseDto<PhoneTemplate>(
+        `Successfully updated phone template ${phoneTemplate.name}!`,
+        phoneTemplate,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':deliveryMethod/:name')
@@ -115,10 +159,15 @@ export class PhoneTemplateController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(
+  async remove(
     @Param('deliveryMethod') deliveryMethod: PhoneMethods,
     @Param('name') name: string,
   ) {
-    return this.phoneTemplateService.remove(deliveryMethod, name);
+    try {
+      await this.phoneTemplateService.remove(deliveryMethod, name);
+      return new ApiResponseDto(`Successfully deleted phone template ${name}!`);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }
