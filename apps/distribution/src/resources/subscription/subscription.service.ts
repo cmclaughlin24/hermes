@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ApiResponseDto, MissingException } from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
@@ -52,8 +52,7 @@ export class SubscriptionService {
    * @returns {Promise<Subscription>}
    */
   async findOne(queue: string, eventType: string, subscriberId: string) {
-    // Note: Throws a NotFoundException if the distribution event does not exits.
-    const distributionEvent = await this.distributionEventService.findOne(
+    const distributionEvent = await this._getDistributionEvent(
       queue,
       eventType,
     );
@@ -82,8 +81,7 @@ export class SubscriptionService {
    * @returns {Promise<ApiResponseDto<Subscription>>}
    */
   async create(createSubscriptionDto: CreateSubscriptionDto) {
-    // Note: Throws a NotFoundException if the distribution event does not exits.
-    const distributionEvent = await this.distributionEventService.findOne(
+    const distributionEvent = await this._getDistributionEvent(
       createSubscriptionDto.queue,
       createSubscriptionDto.eventType,
     );
@@ -134,8 +132,7 @@ export class SubscriptionService {
     updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.sequelize.transaction(async (transaction) => {
-      // Note: Throws a NotFoundException if the distribution event does not exits.
-      const distributionEvent = await this.distributionEventService.findOne(
+      const distributionEvent = await this._getDistributionEvent(
         queue,
         eventType,
       );
@@ -216,8 +213,7 @@ export class SubscriptionService {
    * @returns {Promise<ApiResponseDto>}
    */
   async remove(queue: string, eventType: string, subscriberId: string) {
-    // Note: Throws a NotFoundException if the distribution event does not exits.
-    const distributionEvent = await this.distributionEventService.findOne(
+    const distributionEvent = await this._getDistributionEvent(
       queue,
       eventType,
     );
@@ -240,6 +236,28 @@ export class SubscriptionService {
     return new ApiResponseDto(
       `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
     );
+  }
+
+  /**
+   * Yields a DistributionEvent or throws a MissingException if it does
+   * not exist.
+   * @param {string} queue
+   * @param {string} eventType 
+   * @returns {Promise<DistributionEvent>}
+   */
+  private async _getDistributionEvent(queue: string, eventType: string) {
+    const distributionEvent = await this.distributionEventService.findOne(
+      queue,
+      eventType,
+    );
+
+    if (!distributionEvent) {
+      throw new MissingException(
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+      );
+    }
+
+    return distributionEvent;
   }
 
   /**

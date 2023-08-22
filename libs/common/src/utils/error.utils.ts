@@ -4,8 +4,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ExistsException } from '../exceptions/exists.exception';
-import { MissingException } from '../exceptions/missing.exception';
+import { ExistsException } from '../errors/exists.exception';
+import { MissingException } from '../errors/missing.exception';
 
 /**
  * Converts an `Error` object to a JSON representation or throws an error

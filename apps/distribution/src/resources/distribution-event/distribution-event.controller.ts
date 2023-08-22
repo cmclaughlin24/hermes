@@ -1,19 +1,24 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import { ApiResponseDto, Public, errorToHttpException } from '@hermes/common';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
+import { DistributionEvent } from './entities/distribution-event.entity';
+import { DefaultRuleException } from './errors/default-rule.exception';
 
 @ApiTags('Distribution Event')
 @Controller('distribution-event')
@@ -42,14 +47,20 @@ export class DistributionEventController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
+  async findAll(
     @Query('includeRules') includeRules: boolean,
     @Query('includeSubscriptions') includeSubscriptions: boolean,
   ) {
-    return this.distributionEventService.findAll(
+    const distributionEvents = await this.distributionEventService.findAll(
       includeRules,
       includeSubscriptions,
     );
+
+    if (_.isEmpty(distributionEvents)) {
+      throw new NotFoundException('Distribution events not found!');
+    }
+
+    return distributionEvents;
   }
 
   @Get(':queue/:eventType')
@@ -72,18 +83,26 @@ export class DistributionEventController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(
+  async findOne(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Query('includeRules') includeRules: boolean,
     @Query('includeSubscriptions') includeSubscriptions: boolean,
   ) {
-    return this.distributionEventService.findOne(
+    const distributionEvent = await this.distributionEventService.findOne(
       queue,
       eventType,
       includeRules,
       includeSubscriptions,
     );
+
+    if (!distributionEvent) {
+      throw new NotFoundException(
+        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+      );
+    }
+
+    return distributionEvent;
   }
 
   @Post()
@@ -105,8 +124,22 @@ export class DistributionEventController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  create(@Body() createDistributionEventDto: CreateDistributionEventDto) {
-    return this.distributionEventService.create(createDistributionEventDto);
+  async create(@Body() createDistributionEventDto: CreateDistributionEventDto) {
+    try {
+      const distributionEvent = await this.distributionEventService.create(
+        createDistributionEventDto,
+      );
+
+      return new ApiResponseDto<DistributionEvent>(
+        `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
+        distributionEvent,
+      );
+    } catch (error) {
+      if (error instanceof DefaultRuleException) {
+        throw new BadRequestException(error.message);
+      }
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':queue/:eventType')
@@ -128,16 +161,25 @@ export class DistributionEventController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  update(
+  async update(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Body() updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
-    return this.distributionEventService.update(
-      queue,
-      eventType,
-      updateDistributionEventDto,
-    );
+    try {
+      const distributionEvent = await this.distributionEventService.update(
+        queue,
+        eventType,
+        updateDistributionEventDto,
+      );
+
+      return new ApiResponseDto<DistributionEvent>(
+        `Successfully updated distribution event for queue=${queue} eventType=${eventType}!`,
+        distributionEvent,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':queue/:eventType')
@@ -155,10 +197,18 @@ export class DistributionEventController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(
+  async remove(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
   ) {
-    return this.distributionEventService.remove(queue, eventType);
+    try {
+      await this.distributionEventService.remove(queue, eventType);
+
+      return new ApiResponseDto(
+        `Successfully deleted distribution event for queue=${queue} eventType=${eventType}!`,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }

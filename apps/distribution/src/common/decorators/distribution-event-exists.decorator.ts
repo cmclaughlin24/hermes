@@ -1,10 +1,11 @@
+import { MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import {
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraintInterface,
 } from 'class-validator';
 import { DistributionEventService } from '../../resources/distribution-event/distribution-event.service';
 
@@ -22,10 +23,16 @@ export class DistributionEventExistsRule
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
-      await this.distributionEventService.findOne(
+      const distributionEvent = await this.distributionEventService.findOne(
         validationArguments.object['queue'],
         eventType,
       );
+
+      if (!distributionEvent) {
+        throw new MissingException(
+          `Distribution Event for queue=${validationArguments.object['queue']} eventType=${eventType} not found!`,
+        );
+      }
     } catch (error) {
       return false;
     }

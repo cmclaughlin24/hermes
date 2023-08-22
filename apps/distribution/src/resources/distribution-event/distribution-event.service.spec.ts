@@ -1,5 +1,4 @@
-import { ApiResponseDto } from '@hermes/common';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -13,6 +12,7 @@ import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 import { DistributionEvent } from './entities/distribution-event.entity';
+import { DefaultRuleException } from './errors/default-rule.exception';
 
 describe('DistributionEventService', () => {
   let service: DistributionEventService;
@@ -112,30 +112,12 @@ describe('DistributionEventService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        'Distribution events not found!',
-      );
-      distributionEventModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll(false, false)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        'Distribution events not found!',
-      );
       distributionEventModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(false, false)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(service.findAll(false, false)).resolves.toHaveLength(0);
     });
   });
 
@@ -237,17 +219,14 @@ describe('DistributionEventService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Distribution Event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} not found!`,
-      );
       distributionEventModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       expect(
         service.findOne(distributionEvent.queue, distributionEvent.eventType),
-      ).rejects.toEqual(expectedResult);
+      ).resolves.toBeNull();
     });
   });
 
@@ -274,12 +253,8 @@ describe('DistributionEventService', () => {
       expect(distributionEventModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the create distribution event', async () => {
+    it('should yield the created distribution event', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
-        distributionEvent,
-      );
       distributionEventModel.create.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
@@ -287,16 +262,16 @@ describe('DistributionEventService', () => {
         service.create({
           rules: [{ metadata: null }],
         } as CreateDistributionEventDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(distributionEvent);
     });
 
-    it('should throw a "BadRequestException" if a distribution event already exists', async () => {
+    it('should throw an "ExistsException" if a distribution event already exists', async () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
         eventType: 'unit-test',
       } as CreateDistributionEventDto;
-      const expectedResult = new BadRequestException(
+      const expectedResult = new ExistsException(
         `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} already exists!`,
       );
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
@@ -307,14 +282,14 @@ describe('DistributionEventService', () => {
       );
     });
 
-    it('should throw a "BadRequestException" if a default distribution rule is not defined (w/rules equal to empty list)', async () => {
+    it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to empty list)', async () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
         eventType: 'unit-test',
         rules: [],
       } as CreateDistributionEventDto;
-      const expectedResult = new BadRequestException(
+      const expectedResult = new DefaultRuleException(
         `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
@@ -324,14 +299,14 @@ describe('DistributionEventService', () => {
       );
     });
 
-    it('should throw a "BadRequestException" if a default distribution rule is not defined (w/rules equal to null)', async () => {
+    it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to null)', async () => {
       // Arrange.
       const createDistributionEventDto = {
         queue: 'unit-test',
         eventType: 'unit-test',
         rules: null,
       } as CreateDistributionEventDto;
-      const expectedResult = new BadRequestException(
+      const expectedResult = new DefaultRuleException(
         `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
@@ -356,34 +331,26 @@ describe('DistributionEventService', () => {
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.update(
-        queue,
-        eventType,
-        {} as UpdateDistributionEventDto,
-      );
+      await service.update(queue, eventType, {} as UpdateDistributionEventDto);
 
       // Assert.
       expect(distributionEvent.update).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should yield the updated distribution event', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully updated distribution event for queue=${queue} eventType=${eventType}!`,
-        distributionEvent,
-      );
       distributionEvent.update.mockResolvedValue(distributionEvent);
       distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
         service.update(queue, eventType, {} as UpdateDistributionEventDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(distributionEvent);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventModel.findOne.mockResolvedValue(null);
@@ -415,22 +382,9 @@ describe('DistributionEventService', () => {
       expect(distributionEvent.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResposneDto" object', async () => {
+    it('should yield a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted distribution event for queue=${queue} eventType=${eventType}!`,
-      );
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
-
-      // Act/Assert.
-      await expect(service.remove(queue, eventType)).resolves.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should yield a "NotFoundException" if the repository returns null/undefined', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventModel.findOne.mockResolvedValue(null);

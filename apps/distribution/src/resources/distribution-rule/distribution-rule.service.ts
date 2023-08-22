@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ApiResponseDto, MissingException } from '@hermes/common';
 import {
   BadRequestException,
   Injectable,
@@ -67,11 +67,16 @@ export class DistributionRuleService {
    * @returns {Promise<ApiResponseDto<DistributionRule>>}
    */
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
-    // Note: Throws a NotFoundException if the distribution event does not exits.
     const distributionEvent = await this.distributionEventService.findOne(
       createDistributionRuleDto.queue,
       createDistributionRuleDto.eventType,
     );
+
+    if (!distributionEvent) {
+      throw new MissingException(
+        `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`,
+      );
+    }
 
     if (!createDistributionRuleDto.metadata) {
       const existingRule = await this.distributionRuleModel.findOne({
@@ -80,7 +85,7 @@ export class DistributionRuleService {
 
       // Note: Because of the way constraints are handled, manually check if a default
       //       distribution rule already exists if the CreateDistributionRuleDto has a
-      //       metadata of null. 
+      //       metadata of null.
       if (existingRule) {
         throw new BadRequestException(
           'A default distribution rule already exists (metadata=null)!',

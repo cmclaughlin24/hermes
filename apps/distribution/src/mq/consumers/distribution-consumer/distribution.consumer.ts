@@ -70,6 +70,13 @@ export class DistributionConsumer extends MqConsumer {
         true,
         true,
       );
+
+      if (!distributionEvent) {
+        throw new MqUnrecoverableError(
+          `Distribution Event for queue=${this.DISTRIBUTION_QUEUE} eventType=${messageDto.type} not found!`,
+        );
+      }
+
       const distributionRule = this._getDistributionRule(
         distributionEvent,
         messageDto.metadata,
