@@ -52,6 +52,10 @@ describe('NotificationController', () => {
       context: null,
     };
 
+    afterEach(() => {
+      service.createEmailNotification.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
@@ -83,6 +87,10 @@ describe('NotificationController', () => {
       from: '+11111111111',
       body: 'Unit Testing',
     };
+
+    afterEach(() => {
+      service.createTextNotification.mockClear();
+    });
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
@@ -116,6 +124,10 @@ describe('NotificationController', () => {
       body: 'Unit Testing',
     };
 
+    afterEach(() => {
+      service.createCallNotification.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
@@ -146,6 +158,10 @@ describe('NotificationController', () => {
       subscription: {},
       notification: { title: 'Unit Test' },
     } as CreatePushNotificationDto;
+
+    afterEach(() => {
+      service.createPushNotification.mockClear();
+    });
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.

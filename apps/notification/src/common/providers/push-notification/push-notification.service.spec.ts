@@ -1,4 +1,5 @@
 import {
+  MissingException,
   Platform,
   PushNotificationDto,
   PushSubscriptionDto,
@@ -246,7 +247,7 @@ describe('PushNotificationService', () => {
       };
       pushTemplateService.findOne.mockResolvedValue({
         toJSON: () => ({ title: 'Order Received: {{product}}' }),
-        title: 'Order Received: {{product}}'
+        title: 'Order Received: {{product}}',
       });
 
       // Act.
@@ -254,6 +255,29 @@ describe('PushNotificationService', () => {
 
       // Assert.
       expect(pushTemplateService.findOne).toHaveBeenCalledWith(template);
+    });
+
+    it('should throw a "MissingException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const template = 'unit-test';
+      const createPushNotificationDto: CreatePushNotificationDto = {
+        subscriberId: 'unit-test',
+        platform: Platform.WEB,
+        subscription: {} as PushSubscriptionDto,
+        template,
+        context: {
+          product: 'The Legend of Zelda: Tears of the Kingdom',
+        },
+      };
+      const expectedResult = new MissingException(
+        `Push Notification Template ${template} does not exist!`,
+      );
+      pushTemplateService.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        service.createPushNotificationTemplate(createPushNotificationDto),
+      ).rejects.toEqual(expectedResult);
     });
 
     it('should throw an error if both "template" and "notification" properties are null/undefined', async () => {

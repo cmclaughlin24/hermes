@@ -1,17 +1,13 @@
 import {
-  ApiResponseDto,
+  ExistsException,
+  MissingException,
   PushNotificationActionDto,
   RemoveCache,
   UseCache,
-  defaultHashFn,
+  defaultHashFn
 } from '@hermes/common';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import * as _ from 'lodash';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
@@ -32,23 +28,16 @@ export class PushTemplateService {
   ) {}
 
   /**
-   * Yields a list of PushTemplate or throws a NotFoundException if
-   * the repository returns null, undefined, or an empty list.
+   * Yields a list of PushTemplates.
    * @returns {Promise<PushTemplate[]>}
    */
   async findAll() {
-    const pushTemplates = await this.pushTemplateModel.findAll({
+    return this.pushTemplateModel.findAll({
       include: {
         model: PushAction,
         attributes: { exclude: ['templateId'] },
       },
     });
-
-    if (_.isEmpty(pushTemplates)) {
-      throw new NotFoundException('Push Notification templates not found!');
-    }
-
-    return pushTemplates;
   }
 
   /**
@@ -59,27 +48,19 @@ export class PushTemplateService {
    */
   @UseCache({ key: PushTemplateService.CACHE_KEY })
   async findOne(name: string) {
-    const pushTemplate = await this.pushTemplateModel.findByPk(name, {
+    return this.pushTemplateModel.findByPk(name, {
       include: {
         model: PushAction,
         attributes: { exclude: ['templateId'] },
       },
     });
-
-    if (!pushTemplate) {
-      throw new NotFoundException(
-        `Push Notification Template with ${name} not found!`,
-      );
-    }
-
-    return pushTemplate;
   }
 
   /**
-   * Creates a new PushTemplate or throws a BadRequestException if an
+   * Creates a new PushTemplate or throws an ExistsException if an
    * push notification template name exists in the repository.
    * @param {CreatePushTemplateDto} createPushTemplateDto
-   * @returns {Promise<ApiResponseDto<PushTemplate>>}
+   * @returns {Promise<PushTemplate>}
    */
   async create(createPushTemplateDto: CreatePushTemplateDto) {
     const existingTemplate = await this.pushTemplateModel.findByPk(
@@ -87,7 +68,7 @@ export class PushTemplateService {
     );
 
     if (existingTemplate) {
-      throw new BadRequestException(
+      throw new ExistsException(
         `Push Notification Template ${createPushTemplateDto.name} already exists!`,
       );
     }
@@ -99,18 +80,15 @@ export class PushTemplateService {
       { include: [PushAction] },
     );
 
-    return new ApiResponseDto<PushTemplate>(
-      `Successfully created push notification template ${pushTemplate.name}!`,
-      pushTemplate,
-    );
+    return pushTemplate;
   }
 
   /**
-   * Updates a PushTemplate or throws a NotFoundException if the
+   * Updates a PushTemplate or throws a MissingException if the
    * repository returns null or undefined.
    * @param {string} name Template's name
    * @param {UpdatePushTemplateDto} updatePushTemplateDto
-   * @returns {Promise<ApiResponseDto<PushTemplate>>}
+   * @returns {Promise<PushTemplate>}
    */
   @RemoveCache({
     key: PushTemplateService.CACHE_KEY,
@@ -124,7 +102,7 @@ export class PushTemplateService {
       });
 
       if (!pushTemplate) {
-        throw new NotFoundException(
+        throw new MissingException(
           `Push Notification Template with ${name} not found!`,
         );
       }
@@ -143,34 +121,27 @@ export class PushTemplateService {
         pushTemplate = await pushTemplate.reload({ transaction });
       }
 
-      return new ApiResponseDto<PushTemplate>(
-        `Successfully updated push notification template ${pushTemplate.name}!`,
-        pushTemplate,
-      );
+      return pushTemplate;
     });
   }
 
   /**
-   * Removes an PushTemplate or throws a NotFoundException if the
+   * Removes an PushTemplate or throws a MissingException if the
    * repository returns null or undefined.
    * @param {string} name Template's name
-   * @returns {Promise<ApiResponseDto>}
+   * @returns {Promise<void>}
    */
   @RemoveCache({ key: PushTemplateService.CACHE_KEY })
   async remove(name: string) {
     const pushTemplate = await this.pushTemplateModel.findByPk(name);
 
     if (!pushTemplate) {
-      throw new NotFoundException(
+      throw new MissingException(
         `Push Notification Template with ${name} not found!`,
       );
     }
 
     await pushTemplate.destroy();
-
-    return new ApiResponseDto(
-      `Successfully deleted push notification template ${name}`,
-    );
   }
 
   /**

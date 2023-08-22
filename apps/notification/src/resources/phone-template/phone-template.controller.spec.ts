@@ -46,6 +46,10 @@ describe('PhoneTemplateController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of phone templates', async () => {
       // Arrange.
       const expectedResult = [phoneTemplate];
@@ -79,6 +83,10 @@ describe('PhoneTemplateController', () => {
   });
 
   describe('findOne()', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a phone template', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(phoneTemplate);
@@ -104,6 +112,10 @@ describe('PhoneTemplateController', () => {
   });
 
   describe('create()', () => {
+    afterEach(() => {
+      service.create.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
@@ -132,6 +144,10 @@ describe('PhoneTemplateController', () => {
   });
 
   describe('update()', () => {
+    afterEach(() => {
+      service.update.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
@@ -168,6 +184,10 @@ describe('PhoneTemplateController', () => {
   });
 
   describe('remove()', () => {
+    afterEach(() => {
+      service.remove.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(

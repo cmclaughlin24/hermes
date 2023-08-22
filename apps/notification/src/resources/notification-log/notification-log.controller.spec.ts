@@ -44,6 +44,10 @@ describe('NotificationLogController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of email templates', async () => {
       // Arrange.
       const expectedResult: NotificationLog[] = [notificationLog];
@@ -77,6 +81,10 @@ describe('NotificationLogController', () => {
   });
 
   describe('findOne', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a notification log', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(notificationLog);

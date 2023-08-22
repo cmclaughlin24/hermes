@@ -24,7 +24,7 @@ export class EmailTemplateService {
    * Yields a list of EmailTemplates.
    * @returns {Promise<EmailTemplate[]>}
    */
-  findAll() {
+  async findAll() {
     return this.emailTemplateModel.findAll();
   }
 
@@ -34,7 +34,7 @@ export class EmailTemplateService {
    * @returns {Promise<EmailTemplate>}
    */
   @UseCache({ key: EmailTemplateService.CACHE_KEY })
-  findOne(name: string) {
+  async findOne(name: string) {
     return this.emailTemplateModel.findByPk(name);
   }
 

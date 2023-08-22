@@ -27,7 +27,7 @@ export class NotificationLogService {
    * @param {JobState[]} states
    * @returns {Promise<NotificationLog[]>}
    */
-  findAll(jobs: string[], states: JobState[]) {
+  async findAll(jobs: string[], states: JobState[]) {
     return this.notificationLogModel.findAll({
       where: this._buildWhereClause(jobs, states),
       include: [
@@ -41,7 +41,7 @@ export class NotificationLogService {
    * @param {string} id
    * @returns {Promise<NotificationLog>}
    */
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.notificationLogModel.findByPk(id, {
       include: [
         { model: NotificationAttempt, attributes: { exclude: ['logId'] } },

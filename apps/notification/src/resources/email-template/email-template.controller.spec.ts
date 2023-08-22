@@ -45,6 +45,10 @@ describe('EmailTemplateController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of email templates', async () => {
       // Arrange.
       const expectedResult: EmailTemplate[] = [emailTemplate];
@@ -78,6 +82,10 @@ describe('EmailTemplateController', () => {
   });
 
   describe('findOne()', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield an email template', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(emailTemplate);
@@ -103,6 +111,10 @@ describe('EmailTemplateController', () => {
   });
 
   describe('create()', () => {
+    afterEach(() => {
+      service.create.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
@@ -131,6 +143,10 @@ describe('EmailTemplateController', () => {
   });
 
   describe('update()', () => {
+    afterEach(() => {
+      service.update.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
@@ -159,6 +175,10 @@ describe('EmailTemplateController', () => {
   });
 
   describe('remove()', () => {
+    afterEach(() => {
+      service.remove.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<EmailTemplate>(
@@ -175,7 +195,7 @@ describe('EmailTemplateController', () => {
     it('should throw a "NotFoundException" if an email template does not exist', async () => {
       // Arrange.
       const errorMessage = `Email Template ${emailTemplate.name} not found!`;
-      const expectedResult = new BadRequestException(errorMessage);
+      const expectedResult = new NotFoundException(errorMessage);
       service.remove.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
