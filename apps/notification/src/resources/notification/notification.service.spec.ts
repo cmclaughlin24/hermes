@@ -1,12 +1,13 @@
-import { ApiResponseDto } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CallInstance } from 'twilio/lib/rest/api/v2010/account/call';
+import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import {
-    MockEmailService,
-    MockPhoneService,
-    MockPushNotificationService,
-    createEmailServiceMock,
-    createPhoneServiceMock,
-    createPushNotificationServiceMock,
+  MockEmailService,
+  MockPhoneService,
+  MockPushNotificationService,
+  createEmailServiceMock,
+  createPhoneServiceMock,
+  createPushNotificationServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
@@ -85,13 +86,10 @@ describe('NotificationService', () => {
       );
     });
 
-    it('should yield an "ApiResponseDto" object with the created notification', async () => {
+    it('should yield a "SentMessageInfo" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully sent email with subject ${createEmailNotificationDto.subject} to ${createEmailNotificationDto.to}`,
-        {},
-      );
-      emailService.sendEmail.mockResolvedValue({});
+      const expectedResult = {};
+      emailService.sendEmail.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -128,13 +126,10 @@ describe('NotificationService', () => {
       );
     });
 
-    it('should yield an "ApiResponseDto" object with the created notification', async () => {
+    it('should yield a "MessageInstance" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully sent SMS with body ${createPhoneNotificationDto.body} to ${createPhoneNotificationDto.to}`,
-        {},
-      );
-      phoneService.sendText.mockResolvedValue({});
+      const expectedResult = {} as MessageInstance;
+      phoneService.sendText.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -171,13 +166,10 @@ describe('NotificationService', () => {
       );
     });
 
-    it('should yield an "ApiResponseDto" object with the created notification', async () => {
+    it('should yield a "CallInstance" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully made call with to ${createPhoneNotificationDto.to}`,
-        {},
-      );
-      phoneService.sendCall.mockResolvedValue({});
+      const expectedResult = {} as CallInstance;
+      phoneService.sendCall.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -213,13 +205,10 @@ describe('NotificationService', () => {
       );
     });
 
-    it('should yield an "ApiResponseDto" object with a created notification', async () => {
+    it('should yield an object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully sent push notification`,
-        {},
-      );
-      pushNotificationService.sendPushNotification.mockResolvedValue({});
+      const expectedResult = {};
+      pushNotificationService.sendPushNotification.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(

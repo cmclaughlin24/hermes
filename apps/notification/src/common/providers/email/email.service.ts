@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
+import { SentMessageInfo } from 'nodemailer';
 import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
@@ -18,7 +19,9 @@ export class EmailService implements CreateNotificationDto {
     private readonly emailTemplateService: EmailTemplateService,
   ) {}
 
-  async sendEmail(createEmailNotification: CreateEmailNotificationDto) {
+  async sendEmail(
+    createEmailNotification: CreateEmailNotificationDto,
+  ): Promise<SentMessageInfo> {
     return this.mailerService.sendMail({
       ...createEmailNotification,
       from:
@@ -74,9 +77,7 @@ export class EmailService implements CreateNotificationDto {
         await this.emailTemplateService.findOne(templateName);
 
       if (!emailTemplate) {
-        throw new MissingException(
-          `Email template ${templateName} not found!`,
-        );
+        throw new MissingException(`Email template ${templateName} not found!`);
       }
 
       subject = emailTemplate.subject;

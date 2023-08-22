@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ApiResponseDto, errorToHttpException } from '@hermes/common';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -29,12 +29,21 @@ export class NotificationController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createEmailNotification(
+  async createEmailNotification(
     @Body() createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
-    return this.notificationService.createEmailNotification(
-      createEmailNotificationDto,
-    );
+    try {
+      const result = await this.notificationService.createEmailNotification(
+        createEmailNotificationDto,
+      );
+
+      return new ApiResponseDto(
+        `Successfully sent email with subject ${createEmailNotificationDto.subject} to ${createEmailNotificationDto.to}`,
+        result,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('sms')
@@ -55,12 +64,21 @@ export class NotificationController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createTextNotification(
+  async createTextNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this.notificationService.createTextNotification(
-      createPhoneNotificationDto,
-    );
+    try {
+      const result = await this.notificationService.createTextNotification(
+        createPhoneNotificationDto,
+      );
+
+      return new ApiResponseDto(
+        `Successfully sent SMS with body ${createPhoneNotificationDto.body} to ${createPhoneNotificationDto.to}`,
+        result,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('call')
@@ -81,12 +99,21 @@ export class NotificationController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createCallNotification(
+  async createCallNotification(
     @Body() createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    return this.notificationService.createCallNotification(
-      createPhoneNotificationDto,
-    );
+    try {
+      const result = await this.notificationService.createCallNotification(
+        createPhoneNotificationDto,
+      );
+
+      return new ApiResponseDto(
+        `Successfully made call with to ${createPhoneNotificationDto.to}`,
+        result,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Post('push-notification')
@@ -107,11 +134,17 @@ export class NotificationController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  createPushNotification(
+  async createPushNotification(
     @Body() createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    return this.notificationService.createPushNotification(
-      createPushNotificationDto,
-    );
+    try {
+      const result = await this.notificationService.createPushNotification(
+        createPushNotificationDto,
+      );
+
+      return new ApiResponseDto(`Successfully sent push notification`, result);
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }
