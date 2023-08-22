@@ -9,12 +9,12 @@ import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionEventController } from './distribution-event.controller';
 import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 import { DistributionEvent } from './entities/distribution-event.entity';
-import { DefaultRuleException } from './errors/default-rule.exception';
 
 describe('DistributionEventController', () => {
   let controller: DistributionEventController;

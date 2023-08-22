@@ -4,13 +4,13 @@ import {
 } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
 import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
 import { DistributionEvent } from './entities/distribution-event.entity';
-import { DefaultRuleException } from './errors/default-rule.exception';
 
 @Injectable()
 export class DistributionEventService {

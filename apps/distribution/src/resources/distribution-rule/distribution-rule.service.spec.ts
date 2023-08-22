@@ -1,5 +1,7 @@
-import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  DeliveryMethods,
+  MissingException
+} from '@hermes/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -10,6 +12,7 @@ import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
@@ -81,26 +84,12 @@ describe('DistributionRuleService', () => {
       ).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Distribution rules not found!`,
-      );
-      distributionRuleModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll(null, null)).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        `Distribution rules not found!`,
-      );
       distributionRuleModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(null, null)).rejects.toEqual(expectedResult);
+      await expect(service.findAll(null, null)).resolves.toHaveLength(0);
     });
   });
 
@@ -127,16 +116,13 @@ describe('DistributionRuleService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const id = 'unit-test';
-      const expectedResult = new NotFoundException(
-        `Distribution rule for id=${id} not found!`,
-      );
       distributionRuleModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(id)).rejects.toEqual(expectedResult);
+      await expect(service.findOne(id)).resolves.toBeNull();
     });
   });
 
@@ -175,16 +161,25 @@ describe('DistributionRuleService', () => {
       expect(distributionRuleModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the created distribution rule', async () => {
+    it('should yield the created distribution rule', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully created distribution rule for queue=${distributionRule.queue} eventType=${distributionRule.eventType}!`,
-        distributionRule,
-      );
       distributionRuleModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.create(createDistributionRuleDto)).resolves.toEqual(
+        distributionRule,
+      );
+    });
+
+    it('should throw a "MissingException" if the distribution event does not exist', async () => {
+      // Arrange.
+      const expectedResult = new MissingException(
+        `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`,
+      );
+      distributionEventService.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(service.create(createDistributionRuleDto)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -208,22 +203,18 @@ describe('DistributionRuleService', () => {
       await expect(distributionRule.update).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the updated distribution rule', async () => {
+    it('should yield the updated distribution rule', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully updated distribution rule!`,
-        distributionRule,
-      );
       distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
 
       // Act/Assert.
-      await expect(service.update('', {})).resolves.toEqual(expectedResult);
+      await expect(service.update('', {})).resolves.toEqual(distributionRule);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
       const id = 'unit-test';
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution rule for id=${id} not found!`,
       );
       distributionRuleModel.findByPk.mockResolvedValue(null);
@@ -232,9 +223,9 @@ describe('DistributionRuleService', () => {
       await expect(service.update(id, {})).rejects.toEqual(expectedResult);
     });
 
-    it('should throw a "BadRequestException" if attempting to modify the default rule\'s metadata property', async () => {
+    it('should throw a "DefaultRuleException" if attempting to modify the default rule\'s metadata property', async () => {
       // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new DefaultRuleException(
         'The metadata for a default distribution rule must be set to null',
       );
       distributionRuleModel.findByPk.mockResolvedValue({
@@ -269,20 +260,9 @@ describe('DistributionRuleService', () => {
       expect(distributionRule.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should throw a "DefaultRuleException" if the attempting to delete the default distribution rule', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted distribution rule id=${id}!`,
-      );
-      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
-
-      // Act/Assert.
-      await expect(service.remove(id)).resolves.toEqual(expectedResult);
-    });
-
-    it('should throw a "BadRequestException" if the attempting to delete the default distribution rule', async () => {
-      // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new DefaultRuleException(
         `Distribution rule id=${id} is the default distribution rule and cannot be deleted!`,
       );
       distributionRule.metadata = null;
@@ -292,9 +272,9 @@ describe('DistributionRuleService', () => {
       await expect(service.remove(id)).rejects.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution rule for id=${id} not found!`,
       );
       distributionRuleModel.findByPk.mockResolvedValue(null);
