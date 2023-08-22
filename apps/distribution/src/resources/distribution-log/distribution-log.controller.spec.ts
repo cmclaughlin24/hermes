@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockDistributionLogService,
@@ -41,6 +42,10 @@ describe('DistributionLogController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of distribution logs', async () => {
       // Arrange.
       const expectedResult: DistributionLog[] = [log];
@@ -51,9 +56,39 @@ describe('DistributionLogController', () => {
         expectedResult,
       );
     });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution logs not found!`,
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll(null, null, null)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "NotFoundException" if the service returns an empty list', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Distribution logs not found!`,
+      );
+      service.findAll.mockResolvedValue([]);
+
+      // Act/Assert.
+      await expect(controller.findAll(null, null, null)).rejects.toEqual(
+        expectedResult,
+      );
+    });
   });
 
   describe('findOne()', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a distribution log', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(log);
@@ -61,5 +96,17 @@ describe('DistributionLogController', () => {
       // Act/Assert.
       await expect(controller.findOne('')).resolves.toEqual(log);
     });
+  });
+
+  it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+    // Arrange.
+    const id = 'test';
+    const expectedResult = new NotFoundException(
+      `Distribution log with id=${id} not found!`,
+    );
+    service.findAll.mockResolvedValue(null);
+
+    // Act/Assert.
+    await expect(controller.findOne(id)).rejects.toEqual(expectedResult);
   });
 });
