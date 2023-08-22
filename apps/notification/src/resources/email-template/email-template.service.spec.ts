@@ -62,7 +62,7 @@ describe('EmailTemplateService', () => {
       await expect(service.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should yield an empty list of email templates if the repository returns an empty list', async () => {
+    it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
       emailTemplateModel.findAll.mockResolvedValue([]);
 

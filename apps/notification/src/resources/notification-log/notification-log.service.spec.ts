@@ -5,10 +5,10 @@ import { Job, JobState } from 'bullmq';
 import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import {
-    MockRepository,
-    MockSequelize,
-    createMockRepository,
-    createMockSequelize,
+  MockRepository,
+  MockSequelize,
+  createMockRepository,
+  createMockSequelize,
 } from '../../../test/helpers/database.helper';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
@@ -113,18 +113,7 @@ describe('NotificationLogService', () => {
       expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        `Notification logs not found!`,
-      );
-      notificationLogModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll([], [])).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository return an empty list', async () => {
+    it('should yield an empty list if the repository return an empty list', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Notification logs not found!`,
@@ -132,7 +121,7 @@ describe('NotificationLogService', () => {
       notificationLogModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll([], [])).rejects.toEqual(expectedResult);
+      await expect(service.findAll([], [])).resolves.toHaveLength(0);
     });
   });
 
@@ -151,7 +140,7 @@ describe('NotificationLogService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+    it('should yield null if the repository return null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Notification Log with ${notificationLog.id} not found!`,
@@ -159,9 +148,7 @@ describe('NotificationLogService', () => {
       notificationLogModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(notificationLog.id)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(service.findOne(notificationLog.id)).resolves.toBeNull();
     });
   });
 

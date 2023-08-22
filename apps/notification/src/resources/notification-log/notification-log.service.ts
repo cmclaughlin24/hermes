@@ -1,5 +1,5 @@
 import { errorToJson } from '@hermes/common';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
@@ -22,45 +22,31 @@ export class NotificationLogService {
 
   /**
    * Yields a list of NotificationLogs filtered by the job name and/or
-   * state. Throws a NotFoundException if the repository returns null,
-   * undefined, or an empty list.
+   * state.
    * @param {string[]} jobs
    * @param {JobState[]} states
    * @returns {Promise<NotificationLog[]>}
    */
-  async findAll(jobs: string[], states: JobState[]) {
-    const notificationLogs = await this.notificationLogModel.findAll({
+  findAll(jobs: string[], states: JobState[]) {
+    return this.notificationLogModel.findAll({
       where: this._buildWhereClause(jobs, states),
       include: [
         { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
       ],
     });
-
-    if (_.isEmpty(notificationLogs)) {
-      throw new NotFoundException(`Notification logs not found!`);
-    }
-
-    return notificationLogs;
   }
 
   /**
-   * Yields a NotificationLog or throws a NotFoundException if the repository
-   * returns null or undefined.
+   * Yields a NotificationLog.
    * @param {string} id
    * @returns {Promise<NotificationLog>}
    */
-  async findOne(id: string) {
-    const notificationLog = await this.notificationLogModel.findByPk(id, {
+  findOne(id: string) {
+    return this.notificationLogModel.findByPk(id, {
       include: [
         { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
       ],
     });
-
-    if (!notificationLog) {
-      throw new NotFoundException(`Notification Log with ${id} not found!`);
-    }
-
-    return notificationLog;
   }
 
   /**

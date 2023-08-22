@@ -21,8 +21,7 @@ export class EmailTemplateService {
   ) {}
 
   /**
-   * Yields a list of EmailTemplates or throws a NotFoundException if
-   * the repository returns null, undefined, or an empty list.
+   * Yields a list of EmailTemplates.
    * @returns {Promise<EmailTemplate[]>}
    */
   findAll() {
@@ -30,8 +29,7 @@ export class EmailTemplateService {
   }
 
   /**
-   * Yields an EmailTemplate or throws a NotFoundException if the repository
-   * returns null or undefined.
+   * Yields an EmailTemplate.
    * @param {string} name Template's name
    * @returns {Promise<EmailTemplate>}
    */

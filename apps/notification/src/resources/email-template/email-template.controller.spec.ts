@@ -54,7 +54,7 @@ describe('EmailTemplateController', () => {
       await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Email templates not found!`,
@@ -65,7 +65,7 @@ describe('EmailTemplateController', () => {
       await expect(controller.findAll()).rejects.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
+    it('should throw a "NotFoundException" if the service returns an empty list', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Email templates not found!`,
@@ -88,7 +88,7 @@ describe('EmailTemplateController', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+    it('should throw a "NotFoundException" if the service return null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
         `Email Template ${emailTemplate.name} not found!`,
