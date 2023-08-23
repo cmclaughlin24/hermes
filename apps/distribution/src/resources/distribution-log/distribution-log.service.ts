@@ -1,5 +1,5 @@
 import { errorToJson } from '@hermes/common';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
@@ -20,42 +20,28 @@ export class DistributionLogService {
   ) {}
 
   /**
-   * Yields a list of DistributionLogs or throws a NotFoundExceptions if
-   * the repository returns null, undefined, or an empty list.
+   * Yields a list of DistributionLogs.
    * @param {string[]} queues
    * @param {string[]} eventTypes
    * @param {string[]} states
    * @returns {Promise<DistributionLog[]>}
    */
   async findAll(queues: string[], eventTypes: string[], states: string[]) {
-    const distributionLogs = await this.distributionLogModel.findAll({
+    return this.distributionLogModel.findAll({
       where: this._buildWhereClause(queues, eventTypes, states),
       include: [DistributionAttempt],
     });
-
-    if (_.isEmpty(distributionLogs)) {
-      throw new NotFoundException(`Distribution logs not found!`);
-    }
-
-    return distributionLogs;
   }
 
   /**
-   * Yields a DistributionLog or throws a NotFoundException if the repository
-   * returns null or undefined.
+   * Yields a DistributionLog.
    * @param {string} id
    * @returns {Promise<DistributionLog>}
    */
   async findOne(id: string) {
-    const distributionLog = await this.distributionLogModel.findByPk(id, {
+    return this.distributionLogModel.findByPk(id, {
       include: [DistributionAttempt],
     });
-
-    if (!distributionLog) {
-      throw new NotFoundException(`Distribution log with id=${id} not found!`);
-    }
-
-    return distributionLog;
   }
 
   /**

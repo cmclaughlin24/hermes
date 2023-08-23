@@ -1,4 +1,5 @@
 import { ApiResponseDto } from '@hermes/common';
+import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageController } from './message.controller';
@@ -36,27 +37,42 @@ describe('MessageController', () => {
   });
 
   describe('create()', () => {
+    const createMessageDto: CreateMessageDto = {
+      exchange: '',
+      routingKey: '',
+      message: {
+        id: '',
+        type: '',
+        payload: null,
+        metadata: null,
+        addedAt: null,
+      },
+    };
+
+    afterEach(() => {
+      service.create.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', () => {
       // Arrange.
-      const createMessageDto: CreateMessageDto = {
-        exchange: '',
-        routingKey: '',
-        message: {
-          id: '',
-          type: '',
-          payload: null,
-          metadata: null,
-          addedAt: null
-        },
-      };
       const expectedResult = new ApiResponseDto(
         `Successfully sent message to ${createMessageDto.exchange}!`,
       );
-      service.create.mockResolvedValue(expectedResult);
+      service.create.mockResolvedValue(null);
 
       // Act/Assert.
       expect(controller.create(createMessageDto)).resolves.toEqual(
         expectedResult,
+      );
+    });
+
+    it('should throw a "HttpException" if an error occurred', async () => {
+      // Arrange.
+      service.create.mockRejectedValue(new Error());
+
+      // Act/Assert.
+      await expect(controller.create(createMessageDto)).rejects.toBeInstanceOf(
+        HttpException,
       );
     });
   });

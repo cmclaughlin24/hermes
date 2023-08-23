@@ -1,5 +1,7 @@
-import { ApiResponseDto } from '@hermes/common';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  ExistsException,
+  MissingException
+} from '@hermes/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
@@ -93,22 +95,12 @@ describe('SubscriptionService', () => {
       await expect(service.findAll()).resolves.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(`Subscriptions not found!`);
-      subscriptionModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(`Subscriptions not found!`);
       subscriptionModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).rejects.toEqual(expectedResult);
+      await expect(service.findAll()).resolves.toHaveLength(0);
     });
   });
 
@@ -136,26 +128,24 @@ describe('SubscriptionService', () => {
       );
     });
 
-    it('should throw a "NotFoundException" if the repository return null/undefined', async () => {
+    it('should yield null if the repository return null/undefined', async () => {
       // Arrange.
       const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
-      const expectedResult = new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
-      );
+
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
-      subscriptionModel.findByPk.mockResolvedValue(null);
+      subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
         service.findOne(queue, eventType, subscriberId),
-      ).rejects.toEqual(expectedResult);
+      ).resolves.toBeNull();
     });
 
-    it('should throw a "NotFoundExcpetion" if the distribution event does not exist', async () => {
+    it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
@@ -202,12 +192,8 @@ describe('SubscriptionService', () => {
       expect(subscriptionModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the created subscription', async () => {
+    it('should yield the created subscription', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully created subscription!`,
-        subscription,
-      );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionEvent);
@@ -216,13 +202,13 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(service.create(createSubscriptionDto)).resolves.toEqual(
-        expectedResult,
+        subscription,
       );
     });
 
-    it('should throw a "NotFoundExcpetion" if the distribution event does not exist', async () => {
+    it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Rule for queue=${createSubscriptionDto.queue} eventType=${createSubscriptionDto.eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
@@ -233,9 +219,9 @@ describe('SubscriptionService', () => {
       );
     });
 
-    it('should throw a "BadRequestException" if a subscription already exists', async () => {
+    it('should throw a "ExistsException" if a subscription already exists', async () => {
       // Arrange.
-      const expectedResult = new BadRequestException(
+      const expectedResult = new ExistsException(
         `Subscription ${createSubscriptionDto.subscriberId} already exists!`,
       );
       distributionEventService.findOne.mockResolvedValue({
@@ -304,7 +290,7 @@ describe('SubscriptionService', () => {
       expect(subscriptionFilterModel.create).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object with the updated subscription', async () => {
+    it('should yield the updated subscription', async () => {
       // Arrange.
       const subscription = {
         filters: [
@@ -319,10 +305,6 @@ describe('SubscriptionService', () => {
         update: jest.fn(() => subscription),
         reload: jest.fn(() => subscription),
       };
-      const expectedResult = new ApiResponseDto<Subscription>(
-        `Successfully updated subscription!`,
-        subscription,
-      );
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
@@ -331,13 +313,13 @@ describe('SubscriptionService', () => {
         service.update(queue, eventType, '', {
           filters: [],
         } as UpdateSubscriptionDto),
-      ).resolves.toEqual(expectedResult);
+      ).resolves.toEqual(subscription);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
       const subscriberId = 'unit-test';
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
@@ -354,9 +336,9 @@ describe('SubscriptionService', () => {
       ).rejects.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundException" if the distribution event does not exist', async () => {
+    it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
@@ -384,22 +366,9 @@ describe('SubscriptionService', () => {
       });
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should throw a "MissingException" if the repository does have at least one subscription', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription subscriberId=${subscriberId} from all distribution event(s)!`,
-      );
-      subscriptionModel.findOne.mockResolvedValue({});
-
-      // Act/Assert.
-      await expect(service.removeAll(subscriberId)).resolves.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "NotFoundException" if the repository does have at least one subscription', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Subscription(s) with subscriberId=${subscriberId} not found!`,
       );
       subscriptionModel.findOne.mockResolvedValue(null);
@@ -434,25 +403,9 @@ describe('SubscriptionService', () => {
       expect(subscription.destroy).toHaveBeenCalled();
     });
 
-    it('should yield an "ApiResponseDto" object', async () => {
+    it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
-      );
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
-      subscriptionModel.findOne.mockResolvedValue(subscription);
-
-      // Act/Assert.
-      await expect(
-        service.remove(queue, eventType, subscriberId),
-      ).resolves.toEqual(expectedResult);
-    });
-
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({
@@ -466,9 +419,9 @@ describe('SubscriptionService', () => {
       ).rejects.toEqual(expectedResult);
     });
 
-    it('should throw a "NotFoundExcpetion" if the distribution event does not exist', async () => {
+    it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
+      const expectedResult = new MissingException(
         `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);

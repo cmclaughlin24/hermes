@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '@hermes/common';
+import { ApiResponseDto, errorToHttpException } from '@hermes/common';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -27,7 +27,15 @@ export class MessageController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  async create(@Body() createMessageDto: CreateMessageDto) {
+    try {
+      await this.messageService.create(createMessageDto);
+
+      return new ApiResponseDto(
+        `Successfully sent message to ${createMessageDto.exchange}!`,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }

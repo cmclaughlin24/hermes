@@ -1,4 +1,9 @@
-import { ApiResponseDto } from '@hermes/common';
+import {
+  ApiResponseDto,
+  ExistsException,
+  MissingException,
+} from '@hermes/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockSubscriptionService,
@@ -19,6 +24,8 @@ describe('SubscriptionController', () => {
     data: { url: 'http://localhost:9999/subscriptions' },
     filterJoin: 'and',
   } as Subscription;
+  const queue = 'unit-test';
+  const eventType = 'unit-test';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,6 +47,10 @@ describe('SubscriptionController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of subscriptions', async () => {
       // Arrange.
       const expectedResult: Subscription[] = [subscription];
@@ -48,9 +59,31 @@ describe('SubscriptionController', () => {
       // Act/Assert.
       await expect(controller.findAll()).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException('Subscriptions not found!');
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException('Subscriptions not found!');
+      service.findAll.mockResolvedValue([]);
+
+      // Act/Assert.
+      await expect(controller.findAll()).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('findOne()', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a subscription', async () => {
       // Arrange.
       service.findOne.mockResolvedValue(subscription);
@@ -60,32 +93,81 @@ describe('SubscriptionController', () => {
         controller.findOne('', '', subscription.subscriberId),
       ).resolves.toEqual(subscription);
     });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`,
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(
+        controller.findOne(queue, eventType, subscription.subscriberId),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('create()', () => {
+    afterEach(() => {
+      service.create.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<Subscription>(
         `Successfully created subscription!`,
         subscription,
       );
-      service.create.mockResolvedValue(expectedResult);
+      service.create.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(
         controller.create({} as CreateSubscriptionDto),
       ).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the distribution event does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Distribution Event for queue=${queue} eventType=${eventType} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.create.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.create({
+          subscriberId: subscription.subscriberId,
+        } as CreateSubscriptionDto),
+      ).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" if the subscription already exists', async () => {
+      // Arrange.
+      const errorMessage = `Subscription ${subscription.subscriberId} already exists!`;
+      const expectedResult = new BadRequestException(errorMessage);
+      service.create.mockRejectedValue(new ExistsException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.create({
+          subscriberId: subscription.subscriberId,
+        } as CreateSubscriptionDto),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('update()', () => {
+    afterEach(() => {
+      service.update.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<Subscription>(
         `Successfully updated subscription!`,
         subscription,
       );
-      service.update.mockResolvedValue(expectedResult);
+      service.update.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(
@@ -97,24 +179,61 @@ describe('SubscriptionController', () => {
         ),
       ).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the subscription does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.update.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.update(
+          queue,
+          eventType,
+          subscription.subscriberId,
+          {} as UpdateSubscriptionDto,
+        ),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('removeAll()', () => {
+    afterEach(() => {
+      service.removeAll.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
         `Successfully deleted subscription subscriberId=${subscription.subscriberId} from all distribution event(s)!`,
       );
-      service.removeAll.mockResolvedValue(expectedResult);
+      service.removeAll.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
         controller.removeAll(subscription.subscriberId),
       ).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the subscription does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Subscription(s) with subscriberId=${subscription.subscriberId} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.removeAll.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.removeAll(subscription.subscriberId),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('remove()', () => {
+    afterEach(() => {
+      service.remove.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const queue = 'unit-test';
@@ -122,12 +241,24 @@ describe('SubscriptionController', () => {
       const expectedResult = new ApiResponseDto(
         `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId}!`,
       );
-      service.remove.mockResolvedValue(expectedResult);
+      service.remove.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
         controller.remove(queue, eventType, subscription.subscriberId),
       ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the subscription does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.remove.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.remove(queue, eventType, subscription.subscriberId),
+      ).rejects.toEqual(expectedResult);
     });
   });
 });

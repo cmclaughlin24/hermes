@@ -1,10 +1,12 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import { ApiResponseDto, Public, errorToHttpException } from '@hermes/common';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseArrayPipe,
   ParseUUIDPipe,
@@ -13,6 +15,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
@@ -46,7 +50,7 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
+  async findAll(
     @Query(
       'queue',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
@@ -58,7 +62,16 @@ export class DistributionRuleController {
     )
     eventTypes: string[],
   ) {
-    return this.distributionRuleService.findAll(queues, eventTypes);
+    const distributionRules = await this.distributionRuleService.findAll(
+      queues,
+      eventTypes,
+    );
+
+    if (_.isEmpty(distributionRules)) {
+      throw new NotFoundException('Distribution rules not found!');
+    }
+
+    return distributionRules;
   }
 
   @Get(':id')
@@ -69,8 +82,14 @@ export class DistributionRuleController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.distributionRuleService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const distributionRule = await this.distributionRuleService.findOne(id);
+
+    if (!distributionRule) {
+      throw new NotFoundException(`Distribution rule for id=${id} not found!`);
+    }
+
+    return distributionRule;
   }
 
   @Post()
@@ -91,8 +110,22 @@ export class DistributionRuleController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  create(@Body() createDistributionRuleDto: CreateDistributionRuleDto) {
-    return this.distributionRuleService.create(createDistributionRuleDto);
+  async create(@Body() createDistributionRuleDto: CreateDistributionRuleDto) {
+    try {
+      const distributionRule = await this.distributionRuleService.create(
+        createDistributionRuleDto,
+      );
+
+      return new ApiResponseDto(
+        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType}!`,
+        distributionRule,
+      );
+    } catch (error) {
+      if (error instanceof DefaultRuleException) {
+        throw new BadRequestException(error.message);
+      }
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':id')
@@ -113,11 +146,26 @@ export class DistributionRuleController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
-    return this.distributionRuleService.update(id, updateDistributionRuleDto);
+    try {
+      const distributionRule = await this.distributionRuleService.update(
+        id,
+        updateDistributionRuleDto,
+      );
+
+      return new ApiResponseDto(
+        `Successfully updated distribution rule!`,
+        distributionRule,
+      );
+    } catch (error) {
+      if (error instanceof DefaultRuleException) {
+        throw new BadRequestException(error.message);
+      }
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':id')
@@ -139,7 +187,18 @@ export class DistributionRuleController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.distributionRuleService.remove(id);
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    try {
+      await this.distributionRuleService.remove(id);
+
+      return new ApiResponseDto(
+        `Successfully deleted distribution rule id=${id}!`,
+      );
+    } catch (error) {
+      if (error instanceof DefaultRuleException) {
+        throw new BadRequestException(error.message);
+      }
+      throw errorToHttpException(error);
+    }
   }
 }

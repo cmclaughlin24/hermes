@@ -3,11 +3,13 @@ import {
   Controller,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseArrayPipe,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
 import { DistributionLogService } from './distribution-log.service';
 
 @ApiTags('Distribution Log')
@@ -46,7 +48,7 @@ export class DistributionLogController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll(
+  async findAll(
     @Query(
       'queue',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
@@ -63,7 +65,17 @@ export class DistributionLogController {
     )
     states: string[],
   ) {
-    return this.distributionLogService.findAll(queues, eventTypes, states);
+    const distributionLogs = await this.distributionLogService.findAll(
+      queues,
+      eventTypes,
+      states,
+    );
+
+    if (_.isEmpty(distributionLogs)) {
+      throw new NotFoundException(`Distribution logs not found!`);
+    }
+
+    return distributionLogs;
   }
 
   @Get(':id')
@@ -74,7 +86,13 @@ export class DistributionLogController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(@Param('id') id: string) {
-    return this.distributionLogService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const distributionLog = await this.distributionLogService.findOne(id);
+
+    if (!distributionLog) {
+      throw new NotFoundException(`Distribution log with id=${id} not found!`);
+    }
+
+    return distributionLog;
   }
 }

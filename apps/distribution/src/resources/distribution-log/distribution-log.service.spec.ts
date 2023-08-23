@@ -1,5 +1,4 @@
 import { errorToJson } from '@hermes/common';
-import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Op } from 'sequelize';
@@ -123,30 +122,12 @@ describe('DistributionLogService', () => {
       });
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should throw an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Distribution logs not found!`,
-      );
-      distributionLogModel.findAll.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(service.findAll(null, null, null)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "NotFoundException" if the repository returns an empty list', async () => {
-      // Arrange.
-      const expectedResult = new NotFoundException(
-        `Distribution logs not found!`,
-      );
       distributionLogModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(null, null, null)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(service.findAll(null, null, null)).resolves.toHaveLength(0);
     });
   });
 
@@ -163,16 +144,13 @@ describe('DistributionLogService', () => {
       await expect(service.findOne('')).resolves.toEqual(log);
     });
 
-    it('should throw a "NotFoundException" if the repository returns null/undefined', async () => {
+    it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const id = '32641f47-785e-4f43-8249-fff97e5009d0';
-      const expectedResult = new NotFoundException(
-        `Distribution log with id=${id} not found!`,
-      );
       distributionLogModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(id)).rejects.toEqual(expectedResult);
+      await expect(service.findOne(id)).resolves.toBeNull();
     });
   });
 

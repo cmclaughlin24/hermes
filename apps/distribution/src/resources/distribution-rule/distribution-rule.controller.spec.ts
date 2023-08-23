@@ -1,9 +1,16 @@
-import { ApiResponseDto, DeliveryMethods } from '@hermes/common';
+import {
+  ApiResponseDto,
+  DeliveryMethods,
+  ExistsException,
+  MissingException,
+} from '@hermes/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockDistributionRuleService,
   createDistributionRuleServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
@@ -44,6 +51,10 @@ describe('DistributionRuleController', () => {
   });
 
   describe('findAll()', () => {
+    afterEach(() => {
+      service.findAll.mockClear();
+    });
+
     it('should yield a list of distribution rules', async () => {
       // Arrange.
       const expectedResult: DistributionRule[] = [distributionRule];
@@ -52,9 +63,35 @@ describe('DistributionRuleController', () => {
       // Act/Assert.
       await expect(controller.findAll([], [])).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        'Distribution rules not found!',
+      );
+      service.findAll.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findAll([], [])).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the service returns an empty list', async () => {
+      // Arrange.
+      const expectedResult = new NotFoundException(
+        'Distribution rules not found!',
+      );
+      service.findAll.mockResolvedValue([]);
+
+      // Act/Assert.
+      await expect(controller.findAll([], [])).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('findOne()', () => {
+    afterEach(() => {
+      service.findOne.mockClear();
+    });
+
     it('should yield a distribution rule', async () => {
       // Arrange.
       const expectedResult: DistributionRule = distributionRule;
@@ -63,54 +100,153 @@ describe('DistributionRuleController', () => {
       // Act/Assert.
       await expect(controller.findOne('')).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
+      // Arrange.
+      const id = 'unit-test';
+      const expectedResult = new NotFoundException(
+        `Distribution rule for id=${id} not found!`,
+      );
+      service.findOne.mockResolvedValue(null);
+
+      // Act/Assert.
+      await expect(controller.findOne(id)).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('create()', () => {
+    const createDistributionRuleDto = {
+      queue: 'unit-test',
+      eventType: 'unit-test',
+    } as CreateDistributionRuleDto;
+
+    afterEach(() => {
+      service.create.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const createDistributionRuleDto = {
-        queue: 'unit-test',
-        eventType: 'unit-test',
-      } as CreateDistributionRuleDto;
       const expectedResult = new ApiResponseDto<DistributionRule>(
         `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType}!`,
         distributionRule,
       );
-      service.create.mockResolvedValue(expectedResult);
+      service.create.mockResolvedValue(distributionRule);
+
+      // Act/Assert.
+      await expect(
+        controller.create(createDistributionRuleDto),
+      ).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if a distribution event does not exist', async () => {
+      // Arrange.
+      const errorMessage = `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.create.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(
         controller.create({} as CreateDistributionRuleDto),
-      ).resolves.toEqual(expectedResult);
+      ).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" if a distribution rule already exists', async () => {
+      // Arrange.
+      const errorMessage =
+        'A default distribution rule already exists (metadata=null)!';
+      const expectedResult = new BadRequestException(errorMessage);
+      service.create.mockRejectedValue(new ExistsException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.create({} as CreateDistributionRuleDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
   describe('update()', () => {
+    afterEach(() => {
+      service.update.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionRule>(
         `Successfully updated distribution rule!`,
         distributionRule,
       );
-      service.update.mockResolvedValue(expectedResult);
+      service.update.mockResolvedValue(distributionRule);
 
       // Act/Assert.
       await expect(
         controller.update('', {} as UpdateDistributionRuleDto),
       ).resolves.toEqual(expectedResult);
     });
+
+    it('should throw a "NotFoundException" if the distribution rule does not exist', async () => {
+      // Arrange.
+      const id = 'unit-test';
+      const errorMessage = `Distribution rule for id=${id} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.update.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.update(id, {} as UpdateDistributionRuleDto),
+      ).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" when modifying the default distribution rule metadata', async () => {
+      // Arrange.
+      const id = 'unit-test';
+      const errorMessage =
+        'The metadata for a default distribution rule must be set to null';
+      const expectedResult = new BadRequestException(errorMessage);
+      service.update.mockRejectedValue(new DefaultRuleException(errorMessage));
+
+      // Act/Assert.
+      await expect(
+        controller.update(id, {} as UpdateDistributionRuleDto),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('remove()', () => {
+    afterEach(() => {
+      service.remove.mockClear();
+    });
+
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto(
         `Successfully deleted distribution rule id=${distributionRule.id}!`,
       );
-      service.remove.mockResolvedValue(expectedResult);
+      service.remove.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(controller.remove('')).resolves.toEqual(expectedResult);
+    });
+
+    it('should throw a "NotFoundException" if the distribution rule does not exist', async () => {
+      // Arrange.
+      const id = 'unit-test';
+      const errorMessage = `Distribution rule for id=${id} not found!`;
+      const expectedResult = new NotFoundException(errorMessage);
+      service.remove.mockRejectedValue(new MissingException(errorMessage));
+
+      // Act/Assert.
+      await expect(controller.remove(id)).rejects.toEqual(expectedResult);
+    });
+
+    it('should throw a "BadRequestException" when attempting to delete the default distribution rule', async () => {
+      // Arrange.
+      const id = 'unit-test';
+      const errorMessage = `Distribution rule id=${id} is the default distribution rule and cannot be deleted!`;
+      const expectedResult = new BadRequestException(errorMessage);
+      service.remove.mockRejectedValue(new DefaultRuleException(errorMessage));
+
+      // Act/Assert.
+      await expect(controller.remove(id)).rejects.toEqual(expectedResult);
     });
   });
 });
