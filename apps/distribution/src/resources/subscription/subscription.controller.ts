@@ -1,15 +1,18 @@
-import { ApiResponseDto, Public } from '@hermes/common';
+import { ApiResponseDto, Public, errorToHttpException } from '@hermes/common';
 import {
   Body,
   Controller,
   Delete,
   Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import * as _ from 'lodash';
+import { Subscription } from 'rxjs';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionService } from './subscription.service';
@@ -27,8 +30,14 @@ export class SubscriptionController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findAll() {
-    return this.subscriptionService.findAll();
+  async findAll() {
+    const subscriptions = await this.subscriptionService.findAll();
+
+    if (_.isEmpty(subscriptions)) {
+      throw new NotFoundException('Subscriptions not found!');
+    }
+
+    return subscriptions;
   }
 
   @Get(':queue/:eventType/:subscriberId')
@@ -39,12 +48,24 @@ export class SubscriptionController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  findOne(
+  async findOne(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
   ) {
-    return this.subscriptionService.findOne(queue, eventType, subscriberId);
+    const subscription = await this.subscriptionService.findOne(
+      queue,
+      eventType,
+      subscriberId,
+    );
+
+    if (!subscription) {
+      throw new NotFoundException(
+        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+      );
+    }
+
+    return subscription;
   }
 
   @Post()
@@ -66,8 +87,19 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
-    return this.subscriptionService.create(createSubscriptionDto);
+  async create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
+    try {
+      const subscription = await this.subscriptionService.create(
+        createSubscriptionDto,
+      );
+
+      return new ApiResponseDto<Subscription>(
+        `Successfully created subscription!`,
+        subscription,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Patch(':queue/:eventType/:subscriberId')
@@ -88,18 +120,27 @@ export class SubscriptionController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden Resource',
   })
-  update(
+  async update(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
-    return this.subscriptionService.update(
-      queue,
-      eventType,
-      subscriberId,
-      updateSubscriptionDto,
-    );
+    try {
+      const subscription = await this.subscriptionService.update(
+        queue,
+        eventType,
+        subscriberId,
+        updateSubscriptionDto,
+      );
+
+      return new ApiResponseDto<Subscription>(
+        `Successfully updated subscription!`,
+        subscription,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':subscriberId')
@@ -117,8 +158,16 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  removeAll(@Param('subscriberId') subscriberId: string) {
-    return this.subscriptionService.removeAll(subscriberId);
+  async removeAll(@Param('subscriberId') subscriberId: string) {
+    try {
+      await this.subscriptionService.removeAll(subscriberId);
+
+      return new ApiResponseDto(
+        `Successfully deleted subscription subscriberId=${subscriberId} from all distribution event(s)!`,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 
   @Delete(':queue/:eventType/:subscriberId')
@@ -136,11 +185,19 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  remove(
+  async remove(
     @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
   ) {
-    return this.subscriptionService.remove(queue, eventType, subscriberId);
+    try {
+      await this.subscriptionService.remove(queue, eventType, subscriberId);
+
+      return new ApiResponseDto(
+        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
+      );
+    } catch (error) {
+      throw errorToHttpException(error);
+    }
   }
 }
