@@ -1,0 +1,13 @@
+<mxfile host="Electron" modified="2023-09-08T17:01:31.293Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="pUzNto7SPmmg7wa0_5CU" version="21.6.8" type="device">
+  <diagram name="Page-1" id="q3S2QjX9gyD81P1RehTN">
+    <mxGraphModel dx="2522" dy="941" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="OTcUVmgOxmmX5ECnhi8r-2" value="&lt;p style=&quot;line-height: 120%;&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Hermes | Authentication &amp;amp; Authorization Flow&lt;/font&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="50" width="790" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
