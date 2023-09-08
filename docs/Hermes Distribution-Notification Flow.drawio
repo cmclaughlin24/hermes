@@ -1,37 +1,37 @@
-<mxfile host="Electron" modified="2023-09-08T17:08:29.885Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="FL59k4DEAv5IKb_92rvz" version="21.6.8" type="device">
+<mxfile host="Electron" modified="2023-09-08T18:01:14.350Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="Jao1YUthhGo5_NEEy0HI" version="21.6.8" type="device">
   <diagram name="Page-1" id="Bv8wNoRmV69SUSG4sx8j">
-    <mxGraphModel dx="2967" dy="1107" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1591" dy="1344" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-2" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-2" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="320" y="360" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-3" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-3" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="340" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-4" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-4" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="420" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-9" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Microservice #1&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-9" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Microservice #1&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="40" y="370" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-10" value="Exchange" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-10" value="Exchange" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="320" y="720" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-11" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Microservice #2&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-11" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Microservice #2&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="40" y="730" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-12" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-12" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="560" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-14" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-14" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="700" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-15" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-15" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="780" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-16" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-11" target="cjWft2asF4GY3yw1s2Yd-10" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-16" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-11" target="cjWft2asF4GY3yw1s2Yd-10" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="280" y="640" as="sourcePoint" />
             <mxPoint x="380" y="640" as="targetPoint" />
@@ -40,7 +40,7 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-17" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;1) Microservice publishes&lt;br&gt;a message to RabbitMQ.&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="cjWft2asF4GY3yw1s2Yd-16" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-18" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-9" target="cjWft2asF4GY3yw1s2Yd-2" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-18" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-9" target="cjWft2asF4GY3yw1s2Yd-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="170" y="399.5" as="sourcePoint" />
             <mxPoint x="270" y="399.5" as="targetPoint" />
@@ -49,7 +49,7 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-19" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;1) Microservice publishes&lt;br&gt;a message to RabbitMQ.&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="cjWft2asF4GY3yw1s2Yd-18" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-20" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-10" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-20" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-10" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="500" y="550" as="sourcePoint" />
             <mxPoint x="600" y="550" as="targetPoint" />
@@ -58,7 +58,7 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-21" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;2) Exchange receives message&lt;br&gt;and routes it 0 or more queues.&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="cjWft2asF4GY3yw1s2Yd-20" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-24" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-24" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="425" y="460" as="sourcePoint" />
             <mxPoint x="525" y="460" as="targetPoint" />
@@ -67,25 +67,25 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-25" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;2) Exchange receives message&lt;br&gt;and routes it to 0 or more queues.&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="cjWft2asF4GY3yw1s2Yd-24" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-3" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-27" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-3" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="410" y="400" as="sourcePoint" />
             <mxPoint x="460" y="350" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-28" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-4" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-28" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-2" target="cjWft2asF4GY3yw1s2Yd-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="460" y="440" as="sourcePoint" />
             <mxPoint x="510" y="390" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-29" target="cjWft2asF4GY3yw1s2Yd-50" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-29" target="cjWft2asF4GY3yw1s2Yd-50" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-29" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-29" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="840" y="550" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-30" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-12" target="cjWft2asF4GY3yw1s2Yd-29" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-30" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-12" target="cjWft2asF4GY3yw1s2Yd-29" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="700" y="579.5" as="sourcePoint" />
             <mxPoint x="800" y="579.5" as="targetPoint" />
@@ -94,7 +94,7 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-31" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;3) The Distribution Service&lt;br&gt;reads the message from&lt;br&gt;the queue.&lt;/font&gt;" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="cjWft2asF4GY3yw1s2Yd-30" connectable="0" vertex="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-32" target="cjWft2asF4GY3yw1s2Yd-41" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-32" target="cjWft2asF4GY3yw1s2Yd-41" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1380" y="440" />
@@ -108,7 +108,7 @@
             <mxPoint x="-2" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-32" target="cjWft2asF4GY3yw1s2Yd-41" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-32" target="cjWft2asF4GY3yw1s2Yd-41" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1380" y="720" />
@@ -122,10 +122,10 @@
             <mxPoint x="-10" y="-4" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-32" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;5) Is there a rule with matching selectors in the metadata?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-32" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;5) Is there a rule with matching selectors in the metadata?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1320" y="522.5" width="120" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-41" target="cjWft2asF4GY3yw1s2Yd-57" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-41" target="cjWft2asF4GY3yw1s2Yd-57" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1580" y="800" />
@@ -137,13 +137,13 @@
             <mxPoint y="-18" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-41" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;6) Bypass subscriptions?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-41" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;6) Bypass subscriptions?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1520" y="522.5" width="120" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-50" target="cjWft2asF4GY3yw1s2Yd-32" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-50" target="cjWft2asF4GY3yw1s2Yd-32" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-50" target="rAESAnFBt7cgcLHixQZ8-1" edge="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;startFill=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-50" target="rAESAnFBt7cgcLHixQZ8-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="rAESAnFBt7cgcLHixQZ8-3" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;TCP&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rAESAnFBt7cgcLHixQZ8-2" vertex="1" connectable="0">
@@ -151,7 +151,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-50" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;4) Service looks up the distribution event, rules, and subscriptions for the message.&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-50" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;4) Service looks up the distribution event, rules, and subscriptions for the message.&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1040" y="540" width="200" height="80" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-57" target="cjWft2asF4GY3yw1s2Yd-60" edge="1">
@@ -162,22 +162,22 @@
             <mxPoint x="-1" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-57" target="cjWft2asF4GY3yw1s2Yd-63" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-57" target="cjWft2asF4GY3yw1s2Yd-63" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-57" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Filter subscriptions and retrieve via request (if applicable)&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-57" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Filter subscriptions and retrieve via request (if applicable)&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;strokeColor=default;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1600" y="760" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-60" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;IAM Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-60" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;IAM Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1640" y="960" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-100" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-63" target="cjWft2asF4GY3yw1s2Yd-99" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-100" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-63" target="cjWft2asF4GY3yw1s2Yd-99" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-63" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;7) Convert each subscription into notification dto(s) based on the delivery methods and windows.&amp;nbsp;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-63" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;7) Convert each subscription into notification dto(s) based on the delivery methods and windows.&amp;nbsp;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1840" y="540" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-67" target="cjWft2asF4GY3yw1s2Yd-70" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-67" target="cjWft2asF4GY3yw1s2Yd-70" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-73" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;10) The Notification Service&lt;br&gt;reads the job (message) &lt;br&gt;from BullMQ.&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-72" vertex="1" connectable="0">
@@ -185,16 +185,16 @@
             <mxPoint x="7" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-67" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;BullMQ (Redis Streams)&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-67" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;BullMQ (Redis Streams)&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2400" y="540" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-70" target="cjWft2asF4GY3yw1s2Yd-74" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-70" target="cjWft2asF4GY3yw1s2Yd-74" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-70" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Notification Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-70" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Notification Service&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;strokeColor=#006EAF;fontColor=#ffffff;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2680" y="550" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-77" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-77" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-81" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;SMTP&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-80" vertex="1" connectable="0">
@@ -202,7 +202,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-78" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-78" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-83" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;HTTP&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-82" vertex="1" connectable="0">
@@ -210,7 +210,7 @@
             <mxPoint x="-1" y="-19" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-79" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-79" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-85" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Web Push Protocol&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-84" vertex="1" connectable="0">
@@ -218,10 +218,10 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-86" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="cjWft2asF4GY3yw1s2Yd-86" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="rAESAnFBt7cgcLHixQZ8-4" edge="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-74" target="rAESAnFBt7cgcLHixQZ8-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="rAESAnFBt7cgcLHixQZ8-6" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;TCP&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rAESAnFBt7cgcLHixQZ8-5" vertex="1" connectable="0">
@@ -229,19 +229,19 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-74" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;11) Service looks up the template for the job, compiles it using Handlebars and the job payload, and sends notification.&amp;nbsp;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-74" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;11) Service looks up the template for the job, compiles it using Handlebars and the job payload, and sends notification.&amp;nbsp;&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2875" y="540" width="210" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-77" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Email Service (SendGrid)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-77" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Email Service (SendGrid)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2720" y="340" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-78" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;SMS/Voice (Twilio)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-78" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;SMS/Voice (Twilio)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2920" y="340" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-79" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Push Notifications (Web)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-79" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Push Notifications (Web)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="3120" y="340" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-86" target="cjWft2asF4GY3yw1s2Yd-88" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-86" target="cjWft2asF4GY3yw1s2Yd-88" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-90" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;No&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-89" vertex="1" connectable="0">
@@ -249,7 +249,7 @@
             <mxPoint x="3" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-86" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-86" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="3220" y="480" />
@@ -263,10 +263,10 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-86" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;12) Successful?*&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-86" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;12) Successful?*&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="3160" y="522.5" width="120" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-91" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-88" target="cjWft2asF4GY3yw1s2Yd-67" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-91" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-88" target="cjWft2asF4GY3yw1s2Yd-67" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="3220" y="915" as="sourcePoint" />
             <mxPoint x="2460" y="690" as="targetPoint" />
@@ -281,7 +281,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-88" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-96" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-88" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-97" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;No&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-96" vertex="1" connectable="0">
@@ -289,13 +289,13 @@
             <mxPoint y="1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-88" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Retry?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-88" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Retry?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="3160" y="730" width="120" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-93" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-93" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="3360" y="540" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-99" target="cjWft2asF4GY3yw1s2Yd-67" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-99" target="cjWft2asF4GY3yw1s2Yd-67" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="2270" y="720" />
@@ -309,7 +309,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-113" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-99" target="cjWft2asF4GY3yw1s2Yd-112" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-113" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-99" target="cjWft2asF4GY3yw1s2Yd-112" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-114" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;No&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="cjWft2asF4GY3yw1s2Yd-113" vertex="1" connectable="0">
@@ -317,7 +317,7 @@
             <mxPoint x="-3" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-99" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;8) Successful?*&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-99" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;&amp;nbsp;8) Successful?*&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2210" y="522.5" width="120" height="115" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-103" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;9) Publish jobs (messages)&lt;br&gt;to BullMQ.&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
@@ -326,7 +326,7 @@
         <mxCell id="cjWft2asF4GY3yw1s2Yd-109" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;* Messages will be retried when a failure occurs at any point during a flow if (1) it is a recoverable exception and (2) retry attempts have not be reached.&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="3040" y="950" width="350" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-115" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-112" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-115" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-112" target="cjWft2asF4GY3yw1s2Yd-93" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="2845" y="258" />
@@ -340,7 +340,7 @@
             <mxPoint y="4" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-112" target="cjWft2asF4GY3yw1s2Yd-117" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-112" target="cjWft2asF4GY3yw1s2Yd-117" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="2270" y="80" />
@@ -354,16 +354,16 @@
             <mxPoint x="1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-112" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Retry?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-112" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Retry?&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2210" y="200" width="120" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-119" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-117" target="cjWft2asF4GY3yw1s2Yd-118" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-119" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-117" target="cjWft2asF4GY3yw1s2Yd-118" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-117" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Dead Letter Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-117" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Dead Letter Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="320" y="110" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-127" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-118" target="cjWft2asF4GY3yw1s2Yd-125" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-127" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-118" target="cjWft2asF4GY3yw1s2Yd-125" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="700" y="150" />
@@ -378,28 +378,28 @@
             <mxPoint x="1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-118" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-118" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Queue&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;direction=south;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="560" y="130" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-125" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-125" target="cjWft2asF4GY3yw1s2Yd-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cjWft2asF4GY3yw1s2Yd-125" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;" parent="1" vertex="1">
+        <mxCell id="cjWft2asF4GY3yw1s2Yd-125" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Distribution Exchange&lt;/font&gt;" style="triangle;whiteSpace=wrap;html=1;direction=west;align=right;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="320" y="540" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="cjWft2asF4GY3yw1s2Yd-129" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot; style=&quot;font-size: 36px;&quot;&gt;Hermes | Distribution/Notification Flow&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="40" y="20" width="670" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-1" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Postgres Database&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-1" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Postgres Database&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1100" y="680" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="RSEYYGPz1Y0nfMTFapQO-2" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;TCP&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" edge="1" parent="1" source="rAESAnFBt7cgcLHixQZ8-4" target="RSEYYGPz1Y0nfMTFapQO-1">
+        <mxCell id="RSEYYGPz1Y0nfMTFapQO-2" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;TCP&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="rAESAnFBt7cgcLHixQZ8-4" target="RSEYYGPz1Y0nfMTFapQO-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-4" value="&lt;font face=&quot;Fredericka the Great&quot;&gt;Redis Cache Server&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-4" value="&lt;font face=&quot;Fredericka the Great&quot;&gt;Redis Cache Server&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2940" y="680" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="cjWft2asF4GY3yw1s2Yd-41" target="rAESAnFBt7cgcLHixQZ8-7" edge="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="cjWft2asF4GY3yw1s2Yd-41" target="rAESAnFBt7cgcLHixQZ8-7" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points" />
             <mxPoint x="1580" y="523" as="sourcePoint" />
@@ -411,13 +411,13 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="rAESAnFBt7cgcLHixQZ8-7" target="cjWft2asF4GY3yw1s2Yd-63" edge="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;curveFitting=1;jiggle=2;" parent="1" source="rAESAnFBt7cgcLHixQZ8-7" target="cjWft2asF4GY3yw1s2Yd-63" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rAESAnFBt7cgcLHixQZ8-7" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Use recipients from message.&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="rAESAnFBt7cgcLHixQZ8-7" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Use recipients from message.&lt;/font&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="1600" y="320" width="200" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="RSEYYGPz1Y0nfMTFapQO-1" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Postgres Database&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="RSEYYGPz1Y0nfMTFapQO-1" value="&lt;font data-font-src=&quot;https://fonts.googleapis.com/css?family=Fredericka+the+Great&quot; face=&quot;Fredericka the Great&quot;&gt;Postgres Database&lt;/font&gt;" style="shape=datastore;whiteSpace=wrap;html=1;sketch=1;curveFitting=1;jiggle=2;" parent="1" vertex="1">
           <mxGeometry x="2940" y="810" width="80" height="80" as="geometry" />
         </mxCell>
       </root>
