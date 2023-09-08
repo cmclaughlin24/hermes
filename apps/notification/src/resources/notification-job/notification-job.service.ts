@@ -6,17 +6,13 @@ import { CreateEmailNotificationDto } from '../../common/dto/create-email-notifi
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
 import { NotificationDto } from '../../common/interfaces/create-notification-dto.interface';
-import { queuePool } from '../../config/bull.config';
 
 @Injectable()
 export class NotificationJobService {
   constructor(
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
-  ) {
-    // Note: Add NotificationQueue to Bull Board.
-    queuePool.add(notificationQueue);
-  }
+  ) {}
 
   /**
    * Yields a Job from the notification queue or throws a NotFoundException if
@@ -85,7 +81,9 @@ export class NotificationJobService {
    * @param {CreatePushNotificationDto} createPhoneNotificationDto
    * @returns {Promise<Job>}
    */
-  async createPushNotification(createPushNotificationDto: CreatePushNotificationDto) {
+  async createPushNotification(
+    createPushNotificationDto: CreatePushNotificationDto,
+  ) {
     return this._createNotification(
       DeliveryMethods.PUSH,
       createPushNotificationDto,
