@@ -1,3 +1,5 @@
+import { ExpressAdapter } from '@bull-board/express';
+import { BullBoardModule } from '@bull-board/nestjs';
 import { OpenTelemetryModule } from '@hermes/open-telemetry';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
@@ -63,6 +65,10 @@ import { ResourcesModule } from './resources/resources.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: bullFactory,
+    }),
+    BullBoardModule.forRoot({
+      route: '/queues/admin',
+      adapter: ExpressAdapter as any,
     }),
     OpenTelemetryModule.forRootAsync({
       imports: [ConfigModule],
