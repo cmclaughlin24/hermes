@@ -1,4 +1,4 @@
-import { Public } from '@hermes/common';
+import { Public } from '@hermes/iam';
 import {
   Controller,
   Get,

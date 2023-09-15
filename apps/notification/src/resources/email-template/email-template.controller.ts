@@ -1,8 +1,5 @@
-import {
-  ApiResponseDto,
-  Public,
-  errorToHttpException
-} from '@hermes/common';
+import { ApiResponseDto, errorToHttpException } from '@hermes/common';
+import { Public } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -12,7 +9,7 @@ import {
   NotFoundException,
   Param,
   Patch,
-  Post
+  Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as _ from 'lodash';

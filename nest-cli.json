@@ -58,6 +58,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/open-telemetry/tsconfig.lib.json"
       }
+    },
+    "iam": {
+      "type": "library",
+      "root": "libs/iam",
+      "entryFile": "index",
+      "sourceRoot": "libs/iam/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/iam/tsconfig.lib.json"
+      }
     }
   }
 }

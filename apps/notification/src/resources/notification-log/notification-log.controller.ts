@@ -1,4 +1,5 @@
-import { DeliveryMethods, Public } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
+import { Public } from '@hermes/iam';
 import {
   Controller,
   Get,

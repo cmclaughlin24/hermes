@@ -1,9 +1,9 @@
 import {
   ApiResponseDto,
   DeliveryMethods,
-  Public,
   errorToHttpException,
 } from '@hermes/common';
+import { Public } from '@hermes/iam';
 import {
   Body,
   Controller,

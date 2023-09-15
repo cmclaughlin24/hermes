@@ -142,7 +142,8 @@
     "moduleNameMapper": {
       "^@hermes/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@hermes/health(|/.*)$": "<rootDir>/libs/health/src/$1",
-      "^@hermes/open-telemetry(|/.*)$": "<rootDir>/libs/open-telemetry/src/$1"
+      "^@hermes/open-telemetry(|/.*)$": "<rootDir>/libs/open-telemetry/src/$1",
+      "^@hermes/iam(|/.*)$": "<rootDir>/libs/iam/src/$1"
     }
   }
 }

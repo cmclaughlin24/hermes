@@ -1,4 +1,5 @@
-import { ApiKeyGuard, RequestLoggerMiddleware } from '@hermes/common';
+import { RequestLoggerMiddleware } from '@hermes/common';
+import { ApiKeyGuard } from '@hermes/iam';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { EmailTemplateModule } from './email-template/email-template.module';
