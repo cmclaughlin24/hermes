@@ -1,7 +1,6 @@
 import { RequestLoggerMiddleware } from '@hermes/common';
-import { ApiKeyGuard } from '@hermes/iam';
+import { IamModule } from '@hermes/iam';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { EmailTemplateModule } from './email-template/email-template.module';
 import { HealthModule } from './health/health.module';
 import { NotificationJobModule } from './notification-job/notification-job.module';
@@ -19,8 +18,8 @@ import { PushTemplateModule } from './push-template/push-template.module';
     PhoneTemplateModule,
     PushTemplateModule,
     HealthModule,
+    IamModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
 export class ResourcesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
