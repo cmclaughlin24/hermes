@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Public } from '@hermes/iam';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -24,7 +24,7 @@ export class EmailTemplateController {
   constructor(private readonly emailTemplateService: EmailTemplateService) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find email templates.',
     security: [],
@@ -42,7 +42,7 @@ export class EmailTemplateController {
   }
 
   @Get(':name')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find an email template by it's name.",
     security: [],

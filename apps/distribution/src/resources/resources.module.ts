@@ -16,7 +16,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     MessageModule,
     DistributionEventModule,
     HealthModule,
-    IamModule,
+    IamModule.register(),
   ],
 })
 export class ResourcesModule implements NestModule {

@@ -3,7 +3,7 @@ import {
   DeliveryMethods,
   errorToHttpException,
 } from '@hermes/common';
-import { Public } from '@hermes/iam';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -31,7 +31,7 @@ export class NotificationJobController {
   ) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find jobs on the notification queue by their states.',
     security: [],
@@ -65,7 +65,7 @@ export class NotificationJobController {
   }
 
   @Get(':id')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a job on the notification queue by it's id.",
     security: [],

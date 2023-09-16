@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Public } from '@hermes/iam';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -24,7 +24,7 @@ export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find subscriptions.',
     security: [],
@@ -42,7 +42,7 @@ export class SubscriptionController {
   }
 
   @Get(':queue/:eventType/:subscriberId')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a subscription by it's distribution event and external id.",
     security: [],

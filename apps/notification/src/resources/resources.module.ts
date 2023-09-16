@@ -18,7 +18,7 @@ import { PushTemplateModule } from './push-template/push-template.module';
     PhoneTemplateModule,
     PushTemplateModule,
     HealthModule,
-    IamModule,
+    IamModule.register(),
   ],
 })
 export class ResourcesModule implements NestModule {

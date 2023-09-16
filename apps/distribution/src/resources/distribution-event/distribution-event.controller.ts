@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Public } from '@hermes/iam';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   BadRequestException,
   Body,
@@ -29,7 +29,7 @@ export class DistributionEventController {
   ) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find distribution event(s).',
     security: [],
@@ -65,7 +65,7 @@ export class DistributionEventController {
   }
 
   @Get(':queue/:eventType')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find a distribution event for a queue and message type.',
     security: [],

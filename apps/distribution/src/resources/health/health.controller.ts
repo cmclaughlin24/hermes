@@ -3,7 +3,7 @@ import {
   RabbitMQHealthIndicatorOptions,
   RedisHealthIndicator,
 } from '@hermes/health';
-import { Public } from '@hermes/iam';
+import { Auth, AuthType } from '@hermes/iam';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -25,7 +25,7 @@ export class HealthController {
   ) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Check the status of the application and it's dependencies.",
     security: [],
