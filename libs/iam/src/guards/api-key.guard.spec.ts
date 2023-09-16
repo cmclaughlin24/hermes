@@ -37,7 +37,7 @@ describe('ApiKeyGuard', () => {
   });
 
   it('should be defined', () => {
-    expect(new ApiKeyGuard(reflector, configService)).toBeDefined();
+    expect(new ApiKeyGuard(configService)).toBeDefined();
   });
 
   describe('canActivate()', () => {
@@ -51,7 +51,7 @@ describe('ApiKeyGuard', () => {
     };
 
     beforeEach(() => {
-      apiKeyGuard = new ApiKeyGuard(reflector, configService);
+      apiKeyGuard = new ApiKeyGuard(configService);
     });
 
     afterEach(() => {

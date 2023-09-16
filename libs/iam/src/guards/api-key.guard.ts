@@ -1,18 +1,36 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
+import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
+import { IamModuleOptions } from '../types/iam-module-options.type';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(private readonly configService: ConfigService) {}
+  private static readonly DEFAULT_API_KEY_HEADER = 'Api-Key';
+  private static readonly DEFAULT_API_KEY = 'pass123';
+
+  private get apiKeyHeader(): string {
+    return this.options.apiKeyHeader ?? ApiKeyGuard.DEFAULT_API_KEY_HEADER;
+  }
+
+  private get apiKey(): string {
+    return this.options.apiKey ?? ApiKeyGuard.DEFAULT_API_KEY;
+  }
+
+  constructor(
+    @Inject(IAM_MODULE_OPTIONS_TOKEN)
+    private readonly options: IamModuleOptions,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const apiKeyHeader = this.configService.get('API_KEY_HEADER');
-
-    return request.header(apiKeyHeader) === this.configService.get('API_KEY');
+    return request.header(this.apiKeyHeader) === this.apiKey;
   }
 }
