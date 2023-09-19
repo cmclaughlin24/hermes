@@ -22,7 +22,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         apiKeyHeader: configService.get('API_KEY_HEADER'),
-        apiKey: configService.get('API_KEY'),
+        apiKeys: configService.get('API_KEY'),
       }),
     }),
   ],

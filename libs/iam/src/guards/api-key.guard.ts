@@ -18,8 +18,8 @@ export class ApiKeyGuard implements CanActivate {
     return this.options.apiKeyHeader ?? ApiKeyGuard.DEFAULT_API_KEY_HEADER;
   }
 
-  private get apiKey(): string {
-    return this.options.apiKey ?? ApiKeyGuard.DEFAULT_API_KEY;
+  private get apiKeys(): string[] {
+    return this.options.apiKeys?.split(',') ?? [ApiKeyGuard.DEFAULT_API_KEY];
   }
 
   constructor(
@@ -31,6 +31,6 @@ export class ApiKeyGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    return request.header(this.apiKeyHeader) === this.apiKey;
+    return this.apiKeys.includes(request.header(this.apiKeyHeader));
   }
 }
