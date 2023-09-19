@@ -66,6 +66,21 @@ services:
       - database
       - rabbitmq
       - redis
+  iam:
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile.iam
+    ports:
+      - '3002:3002'
+      - '8002:8002'
+    volumes:
+      - ./apps/iam:/app/apps/iam
+      - ./libs:/app/libs
+      - /app/node_modules
+    env_file:
+      - ./env/iam.env
+    tty: true
+    stdin_open: true
 volumes:
   pgadmin:
   redis:
