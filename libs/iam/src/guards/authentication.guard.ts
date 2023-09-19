@@ -10,6 +10,7 @@ import { AUTH_TYPE_KEY } from '../decorators/auth.decorator';
 import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
 import { AuthType } from '../types/auth-type.type';
 import { IamModuleOptions } from '../types/iam-module-options.type';
+import { AccessTokenGuard } from './access-token.guard';
 import { ApiKeyGuard } from './api-key.guard';
 
 @Injectable()
@@ -24,12 +25,14 @@ export class AuthenticationGuard implements CanActivate {
   > = {
     [AuthType.NONE]: { canActivate: () => true },
     [AuthType.API_KEY]: this.apiKeyGuard,
+    [AuthType.BEARER]: this.accessTokenGuard,
   };
 
   constructor(
     @Inject(IAM_MODULE_OPTIONS_TOKEN)
     private readonly options: IamModuleOptions,
     private readonly reflector: Reflector,
+    private readonly accessTokenGuard: AccessTokenGuard,
     private readonly apiKeyGuard: ApiKeyGuard,
   ) {}
 

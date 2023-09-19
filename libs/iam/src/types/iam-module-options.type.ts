@@ -3,7 +3,7 @@ import { AuthType } from './auth-type.type';
 
 export interface IamModuleOptions {
   /**
-   * 
+   * Optional parameter for specifying the default authentication types.
    */
   defaultAuthTypes?: AuthType[];
 
