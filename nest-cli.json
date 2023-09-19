@@ -32,6 +32,15 @@
         "tsConfigPath": "apps/distribution/tsconfig.app.json"
       }
     },
+    "iam": {
+      "type": "application",
+      "root": "apps/iam",
+      "entryFile": "main",
+      "sourceRoot": "apps/iam/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/iam/tsconfig.app.json"
+      }
+    },
     "common": {
       "type": "library",
       "root": "libs/common",
@@ -59,7 +68,7 @@
         "tsConfigPath": "libs/open-telemetry/tsconfig.lib.json"
       }
     },
-    "iam": {
+    "iam-lib": {
       "type": "library",
       "root": "libs/iam",
       "entryFile": "index",
