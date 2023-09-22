@@ -9,7 +9,7 @@ export class SubscriptionFilterDto {
     example: 'key.key',
   })
   @IsString()
-  @Matches(/^(([a-zA-Z0-9](\.)?)*)+$/)
+  @Matches(/^(\w+|\*)(\.(\w+|\*))*\.*$/)
   field: string;
 
   @ApiProperty({
