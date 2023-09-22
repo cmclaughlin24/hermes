@@ -1,4 +1,4 @@
-import * as flatten from 'flat';
+import { flatten } from 'flat';
 import * as _ from 'lodash';
 import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
 import { Subscription } from '../../resources/subscription/entities/subscription.entity';
