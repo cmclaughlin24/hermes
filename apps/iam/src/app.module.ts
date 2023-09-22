@@ -2,6 +2,7 @@ import { OpenTelemetryModule } from '@hermes/open-telemetry';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { GraphqlModule } from './graphql/graphql.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -30,6 +31,7 @@ import * as Joi from 'joi';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
+    GraphqlModule,
   ],
 })
 export class AppModule {}

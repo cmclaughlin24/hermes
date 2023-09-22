@@ -1,3 +1,7 @@
+if (process.env.ENABLE_OPEN_TELEMETRY === 'true') {
+  require('./config/open-telemetry.config');
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
