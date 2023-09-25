@@ -4,14 +4,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+import { join } from 'path';
 import { databaseFactory } from './config/database.config';
-import { GraphqlModule } from './graphql/graphql.module';
+import { ResourcesModule } from './resources/resources.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: process.env.NODE_ENV === 'production',
-      envFilePath: `${process.cwd()}/env/iam.env`,
+      envFilePath: join(process.cwd(), 'env', 'iam.env'),
       validationSchema: Joi.object({
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8002),
@@ -43,7 +44,7 @@ import { GraphqlModule } from './graphql/graphql.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    GraphqlModule,
+    ResourcesModule,
   ],
 })
 export class AppModule {}
