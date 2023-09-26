@@ -7,7 +7,8 @@
     "webpack": true,
     "tsConfigPath": "apps/notification/tsconfig.app.json",
     "plugins": [
-      "@nestjs/swagger/plugin"
+      "@nestjs/swagger/plugin",
+      "@nestjs/graphql"
     ],
     "assets": [
       "/templates/*"
