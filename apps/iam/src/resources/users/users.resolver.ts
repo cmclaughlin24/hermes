@@ -1,4 +1,6 @@
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLError } from 'graphql';
 import { CreateUserInput } from './dto/create-user.input';
 import { User } from './entities/users.entity';
 import { UsersService } from './users.service';
@@ -14,7 +16,15 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user', nullable: true })
   async findOne(@Args('id') id: string) {
-    return this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
+
+    if (!user) {
+      throw new GraphQLError(`User ${id} not found!`, {
+        extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+      });
+    }
+
+    return user;
   }
 
   @Mutation(() => User, { name: 'signUp' })

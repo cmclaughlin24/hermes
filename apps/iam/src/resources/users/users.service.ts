@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return null;
+    return this.userRepository.findOne({ where: { id } });
   }
 
   async create(createUserInput: CreateUserInput) {
