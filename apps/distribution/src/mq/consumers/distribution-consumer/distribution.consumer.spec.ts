@@ -3,16 +3,16 @@ import { getQueueToken } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockDistributionEventService,
-  createConfigServiceMock,
-  createDistributionEventServiceMock,
+    MockDistributionEventService,
+    createConfigServiceMock,
+    createDistributionEventServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import {
-  MockQueue,
-  createQueueMock,
+    MockQueue,
+    createQueueMock,
 } from '../../../../test/helpers/queue.helper';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
-import { SubscriberService } from '../../../common/providers/subscriber/subscriber.service';
+import { SubscriberService } from '../../../common/services/subscriber/subscriber.service';
 import { SubscriptionType } from '../../../common/types/subscription-type.type';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';

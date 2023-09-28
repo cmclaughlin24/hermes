@@ -11,7 +11,7 @@ import { validateOrReject } from 'class-validator';
 import * as _ from 'lodash';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { SubscriberDto } from '../../../common/dto/subscriber.dto';
-import { SubscriberService } from '../../../common/providers/subscriber/subscriber.service';
+import { SubscriberService } from '../../../common/services/subscriber/subscriber.service';
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';

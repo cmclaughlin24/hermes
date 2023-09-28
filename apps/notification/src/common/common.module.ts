@@ -7,9 +7,9 @@ import { EmailTemplateModule } from '../resources/email-template/email-template.
 import { PhoneTemplateModule } from '../resources/phone-template/phone-template.module';
 import { PushTemplateModule } from '../resources/push-template/push-template.module';
 import { EmailTemplateExistsRule } from './decorators/email-template-exists.decorator';
-import { EmailService } from './providers/email/email.service';
-import { PhoneService } from './providers/phone/phone.service';
-import { PushNotificationService } from './providers/push-notification/push-notification.service';
+import { EmailService } from './services/email/email.service';
+import { PhoneService } from './services/phone/phone.service';
+import { PushNotificationService } from './services/push-notification/push-notification.service';
 
 @Module({
   imports: [

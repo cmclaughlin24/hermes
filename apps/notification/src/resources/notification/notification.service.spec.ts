@@ -2,19 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CallInstance } from 'twilio/lib/rest/api/v2010/account/call';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import {
-  MockEmailService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
+    MockEmailService,
+    MockPhoneService,
+    MockPushNotificationService,
+    createEmailServiceMock,
+    createPhoneServiceMock,
+    createPushNotificationServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
-import { EmailService } from '../../common/providers/email/email.service';
-import { PhoneService } from '../../common/providers/phone/phone.service';
-import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
+import { EmailService } from '../../common/services/email/email.service';
+import { PhoneService } from '../../common/services/phone/phone.service';
+import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {

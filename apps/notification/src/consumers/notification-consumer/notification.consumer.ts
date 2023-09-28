@@ -7,9 +7,9 @@ import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
-import { EmailService } from '../../common/providers/email/email.service';
-import { PhoneService } from '../../common/providers/phone/phone.service';
-import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
+import { EmailService } from '../../common/services/email/email.service';
+import { PhoneService } from '../../common/services/phone/phone.service';
+import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 
 const KEEP_JOB_OPTIONS: KeepJobs = {
