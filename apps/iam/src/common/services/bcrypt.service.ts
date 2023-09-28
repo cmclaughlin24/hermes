@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { compare } from 'bcrypt';
 import { HashingService } from './hashing.service';
 
 @Injectable()
@@ -8,6 +9,6 @@ export class BcryptService extends HashingService {
   }
   
   compare(data: string | Buffer, encrypted: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    return compare(data, encrypted);
   }
 }
