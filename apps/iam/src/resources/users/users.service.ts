@@ -22,6 +22,12 @@ export class UsersService {
 
   async create(createUserInput: CreateUserInput) {
     try {
-    } catch (error) {}
+      const user = new User();
+      user.email = createUserInput.email;
+      user.password = await this.hashingService.hash(createUserInput.password);
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw error;
+    }
   }
 }
