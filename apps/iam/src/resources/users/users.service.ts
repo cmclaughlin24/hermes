@@ -24,6 +24,7 @@ export class UsersService {
     try {
       const user = new User();
       user.email = createUserInput.email;
+      user.phoneNumber = createUserInput.phoneNumber;
       user.password = await this.hashingService.hash(createUserInput.password);
       return this.userRepository.save(user);
     } catch (error) {
