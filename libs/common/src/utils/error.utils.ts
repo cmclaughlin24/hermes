@@ -1,9 +1,11 @@
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 import {
   BadRequestException,
   HttpException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { GraphQLError } from 'graphql';
 import { ExistsException } from '../errors/exists.exception';
 import { MissingException } from '../errors/missing.exception';
 
@@ -46,19 +48,42 @@ export function errorToHttpException(error: Error): HttpException {
 
   let exception = new InternalServerErrorException(error.message);
 
-  if (isBadRequestException(error)) {
+  if (isExistsException(error)) {
     exception = new BadRequestException(error.message);
-  } else if (isNotFoundException(error)) {
+  } else if (isMissingException(error)) {
     exception = new NotFoundException(error.message);
   }
 
   return exception;
 }
 
-function isBadRequestException(error: Error) {
+/**
+ * Converts an `Error` object into a `GraphQLError` or throws an error
+ * @param {Error} error `Error` object to be converted to a `GraphQLError`
+ * @returns {GraphQLError}
+ */
+export function errorToGraphQLException(error: Error): GraphQLError {
+  if (!error) {
+    throw new Error(
+      'Invalid Argument: cannot convert argument of null/undefined; expected instance of Error',
+    );
+  }
+
+  let exception = new GraphQLError(error.message, {
+    extensions: { code: ApolloServerErrorCode.INTERNAL_SERVER_ERROR },
+  });
+
+  if (isMissingException(error)) {
+    exception.extensions.code = ApolloServerErrorCode.BAD_USER_INPUT;
+  }
+
+  return exception;
+}
+
+function isExistsException(error: Error) {
   return error instanceof ExistsException;
 }
 
-function isNotFoundException(error: Error) {
+function isMissingException(error: Error) {
   return error instanceof MissingException;
 }

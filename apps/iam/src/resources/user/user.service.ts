@@ -1,3 +1,4 @@
+import { MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,13 +14,47 @@ export class UserService {
     private readonly hashingService: HashingService,
   ) {}
 
-  async findAll() {}
+  async findAll() {
+    return this.userRepository.find();
+  }
 
-  async findOne(id: string) {}
+  async findOne(id: string) {
+    return this.userRepository.findOneBy({ id });
+  }
 
-  async create(createUserInput: CreateUserInput) {}
+  async create(createUserInput: CreateUserInput) {
+    try {
+      const user = this.userRepository.create({
+        ...createUserInput,
+      });
 
-  async update(id: string, updateUserInput: UpdateUserInput) {}
+      return this.userRepository.save(user);
+    } catch (error) {
+      // Fixme: Check if the unique constraint has been violated and throw an ExistsException.
+      throw error;
+    }
+  }
 
-  async delete(id: string) {}
+  async update(id: string, updateUserInput: UpdateUserInput) {
+    const user = await this.userRepository.preload({
+      id,
+      ...updateUserInput,
+    });
+
+    if (!user) {
+      throw new MissingException(`User userId=${id} not found!`);
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  async delete(id: string) {
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new MissingException(`User userId=${id} not found!`);
+    }
+
+    return this.userRepository.remove(user);
+  }
 }
