@@ -1,8 +1,7 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
-import { AuthenticationModule } from './authentication/authentication.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -10,8 +9,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    UsersModule,
-    AuthenticationModule,
+    UserModule,
   ],
 })
 export class ResourcesModule {}

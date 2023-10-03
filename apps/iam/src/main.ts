@@ -5,7 +5,7 @@ if (process.env.ENABLE_OPEN_TELEMETRY === 'true') {
 import { useOpenTelemetry } from '@hermes/open-telemetry';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { useGlobalPipes } from './config/use-global';
+import { useGlobalPipes } from './config/use-global.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
