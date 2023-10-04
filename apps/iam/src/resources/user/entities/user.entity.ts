@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ID, ObjectType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -19,6 +19,10 @@ export class User {
 
   @Column({ unique: true })
   phoneNumber: string;
+
+  @Column()
+  @HideField()
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;

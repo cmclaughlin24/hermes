@@ -32,7 +32,7 @@ export class UserService {
         ...createUserInput,
       });
 
-      return this.userRepository.save(user);
+      return await this.userRepository.save(user);
     } catch (error) {
       if (error.code === PostgresError.UNIQUE_VIOLATION) {
         throw new ExistsException(
