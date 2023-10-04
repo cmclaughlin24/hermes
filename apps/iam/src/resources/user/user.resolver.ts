@@ -31,13 +31,9 @@ export class UserResolver {
 
   @Mutation(() => User, { name: 'createUser' })
   async create(@Args('createUserInput') createUserInput: CreateUserInput) {
-    try {
-      const user = await this.userService.create(createUserInput);
-
-      return user;
-    } catch (error) {
+    return this.userService.create(createUserInput).catch((error) => {
       throw errorToGraphQLException(error);
-    }
+    });
   }
 
   @Mutation(() => User, { name: 'updateUser' })
@@ -45,23 +41,15 @@ export class UserResolver {
     @Args('userId') id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
-    try {
-      const user = await this.userService.update(id, updateUserInput);
-
-      return user;
-    } catch (error) {
+    return this.userService.update(id, updateUserInput).catch((error) => {
       throw errorToGraphQLException(error);
-    }
+    });
   }
 
   @Mutation(() => User, { name: 'removeUser' })
   async delete(@Args('userId') id: string) {
-    try {
-      const user = await this.userService.delete(id);
-
-      return user;
-    } catch (error) {
+    return this.userService.delete(id).catch((error) => {
       throw errorToGraphQLException(error);
-    }
+    });
   }
 }
