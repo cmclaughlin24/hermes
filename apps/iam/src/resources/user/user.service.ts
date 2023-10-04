@@ -1,4 +1,8 @@
-import { MissingException } from '@hermes/common';
+import {
+  ExistsException,
+  MissingException,
+  PostgresError,
+} from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -30,7 +34,11 @@ export class UserService {
 
       return this.userRepository.save(user);
     } catch (error) {
-      // Fixme: Check if the unique constraint has been violated and throw an ExistsException.
+      if (error.code === PostgresError.UNIQUE_VIOLATION) {
+        throw new ExistsException(
+          `User with email=${createUserInput.email} or phoneNumber=${createUserInput.phoneNumber} already exists!`,
+        );
+      }
       throw error;
     }
   }

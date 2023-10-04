@@ -73,7 +73,7 @@ export function errorToGraphQLException(error: Error): GraphQLError {
     extensions: { code: ApolloServerErrorCode.INTERNAL_SERVER_ERROR },
   });
 
-  if (isMissingException(error)) {
+  if (isExistsException(error) || isMissingException(error)) {
     exception.extensions.code = ApolloServerErrorCode.BAD_USER_INPUT;
   }
 
