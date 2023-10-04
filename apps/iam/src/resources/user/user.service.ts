@@ -27,20 +27,22 @@ export class UserService {
   }
 
   async create(createUserInput: CreateUserInput) {
-    try {
-      const user = this.userRepository.create({
-        ...createUserInput,
-      });
+    const hashedPassword = await this.hashingService.hash(
+      createUserInput.password,
+    );
+    const user = this.userRepository.create({
+      ...createUserInput,
+      password: hashedPassword,
+    });
 
-      return await this.userRepository.save(user);
-    } catch (error) {
+    return this.userRepository.save(user).catch((error) => {
       if (error.code === PostgresError.UNIQUE_VIOLATION) {
         throw new ExistsException(
           `User with email=${createUserInput.email} or phoneNumber=${createUserInput.phoneNumber} already exists!`,
         );
       }
       throw error;
-    }
+    });
   }
 
   async update(id: string, updateUserInput: UpdateUserInput) {
