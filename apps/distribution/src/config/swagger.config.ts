@@ -18,6 +18,14 @@ export function setupSwaggerDocument(app: INestApplication) {
       '@golevelup/nestjs-rabbitmq',
       'https://github.com/golevelup/nestjs',
     )
+    .addBasicAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'Authorization',
+    )
     .addApiKey(
       {
         type: 'apiKey',
