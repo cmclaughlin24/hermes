@@ -1,7 +1,7 @@
-import { ApiKeyGuard, DeliveryMethods } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
+import { IamModule } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -41,11 +41,18 @@ describe('[Feature] Distribution Event', () => {
             logging: false,
           }),
         }),
+        IamModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => ({
+            apiKeyHeader: configService.get('API_KEY_HEADER'),
+            apiKeys: configService.get('API_KEY'),
+          }),
+        }),
         DistributionEventModule,
         DistributionRuleModule,
         SubscriptionModule,
       ],
-      providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -132,7 +139,7 @@ describe('[Feature] Distribution Event', () => {
         .expect(expectedResponse);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createDistributionEventDto: CreateDistributionEventDto = {
         queue: queueName,
@@ -151,7 +158,7 @@ describe('[Feature] Distribution Event', () => {
       return request(httpServer)
         .post('/distribution-event')
         .send(createDistributionEventDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -213,7 +220,7 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const updateDistributionEventDto: UpdateDistributionEventDto = {
         metadataLabels: ['languageCode', 'region'],
@@ -223,7 +230,7 @@ describe('[Feature] Distribution Event', () => {
       return request(httpServer)
         .patch(`/distribution-event/${queueName}/${eventType}`)
         .send(updateDistributionEventDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
@@ -250,11 +257,11 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.OK);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
         .delete(`/distribution-event/${queueName}/${eventType}`)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {

@@ -1,7 +1,6 @@
-import { ApiKeyGuard } from '@hermes/common';
+import { IamModule } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -37,9 +36,16 @@ describe('[Feature] Email Template', () => {
             logging: false,
           }),
         }),
+        IamModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => ({
+            apiKeyHeader: configService.get('API_KEY_HEADER'),
+            apiKeys: configService.get('API_KEY'),
+          }),
+        }),
         EmailTemplateModule,
       ],
-      providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -86,7 +92,7 @@ describe('[Feature] Email Template', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createEmailTemplateDto: CreateEmailTemplateDto = {
         name: templateName,
@@ -99,7 +105,7 @@ describe('[Feature] Email Template', () => {
       return request(httpServer)
         .post('/email-template')
         .send(createEmailTemplateDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -159,7 +165,7 @@ describe('[Feature] Email Template', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const updateEmailTemplateDto = {
         template: '<h1>End-to-End Testing</h1>',
@@ -169,7 +175,7 @@ describe('[Feature] Email Template', () => {
       return request(httpServer)
         .patch(`/email-template/${templateName}`)
         .send(updateEmailTemplateDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
@@ -196,11 +202,11 @@ describe('[Feature] Email Template', () => {
         .expect(HttpStatus.OK);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
         .delete(`/email-template/${templateName}`)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {

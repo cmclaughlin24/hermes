@@ -18,7 +18,7 @@ export class UserResolver {
 
   @Query(() => User, { name: 'user' })
   async findOne(@Args('userId') id: string) {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findById(id);
 
     if (!user) {
       throw new GraphQLError(`User userId=${id} not found!`, {

@@ -22,8 +22,12 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     return this.userRepository.findOneBy({ id });
+  }
+
+  async findByEmail(email: string) {
+    return this.userRepository.findOneBy({ email });
   }
 
   async create(createUserInput: CreateUserInput) {
@@ -59,7 +63,7 @@ export class UserService {
   }
 
   async delete(id: string) {
-    const user = await this.findOne(id);
+    const user = await this.findById(id);
 
     if (!user) {
       throw new MissingException(`User userId=${id} not found!`);
