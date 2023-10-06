@@ -8,6 +8,12 @@ export interface IamModuleOptions {
   defaultAuthTypes?: AuthType[];
 
   /**
+   * Optional parameter for specifying the enabled authentication types. If not provided,
+   * the default is all.
+   */
+  enableAuthTypes?: AuthType[];
+
+  /**
    * Optional parameter for a function that checks if `AuthenticationGuard` should be
    * exectued against the current execution context.
    * @param {ExecutionContext} context

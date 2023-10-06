@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import * as _ from 'lodash';
 import { AUTH_TYPE_KEY } from '../decorators/auth.decorator';
 import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
 import { AuthType } from '../types/auth-type.type';
@@ -46,7 +47,7 @@ export class AuthenticationGuard implements CanActivate {
         context.getHandler(),
         context.getClass(),
       ]) ?? this.defaultAuthTypes;
-    const guards = authTypes.map((type) => this.authTypeGuardMap[type]).flat();
+    const guards = this._getAuthGuards(authTypes);
     let error = new UnauthorizedException();
 
     for (const instance of guards) {
@@ -62,5 +63,19 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     throw error;
+  }
+
+  private _getAuthGuards(authTypes: AuthType[]) {
+    return authTypes
+      .filter((type) => this._isAuthEnabled(type))
+      .map((type) => this.authTypeGuardMap[type])
+      .flat();
+  }
+
+  private _isAuthEnabled(authType: AuthType): boolean {
+    if (_.isEmpty(this.options.enableAuthTypes)) {
+      return true;
+    }
+    return this.options.enableAuthTypes.includes(authType);
   }
 }
