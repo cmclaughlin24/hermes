@@ -1,5 +1,6 @@
 import { MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { HashingService } from '../../common/services/hashing.service';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
@@ -10,6 +11,7 @@ export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(signUpInput: SignUpInput) {
@@ -35,7 +37,11 @@ export class AuthenticationService {
     if (!isValidPassword) {
       // Fixme: Throw a custom exception for invalid password.
     }
+
+    // Fixme: Generate JWT and Refresh Tokens.
   }
 
   async verifyToken(token: string) {}
+
+  private async _signToken<T>(userId: string, expiresIn: number, payload?: T) {}
 }

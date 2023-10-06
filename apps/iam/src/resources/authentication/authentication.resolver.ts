@@ -17,8 +17,16 @@ export class AuthenticationResolver {
   }
 
   @Mutation(() => User, { name: 'signIn' })
-  async signIn(@Args('signInInput') signInInput: SignInInput) {}
+  async signIn(@Args('signInInput') signInInput: SignInInput) {
+    return this.authenticationService.signIn(signInInput).catch((error) => {
+      throw errorToGraphQLException(error);
+    });
+  }
 
   @Mutation(() => Boolean, { name: 'verifyAccessToken' })
-  async verifyToken(@Args('token') token: string) {}
+  async verifyToken(@Args('token') token: string) {
+    return this.authenticationService.verifyToken(token).catch((error) => {
+      throw errorToGraphQLException(error);
+    });
+  }
 }
