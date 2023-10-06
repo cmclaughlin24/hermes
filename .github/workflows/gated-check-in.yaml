@@ -19,7 +19,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run Unit Tests
-        run: npm test -- --detectOpenHandles
+        run: npm test -- --forceExit
   e2e-test:
     runs-on: ubuntu-latest
     steps:
