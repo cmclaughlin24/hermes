@@ -19,7 +19,7 @@ describe('[Feature] Push Template', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `${process.cwd()}/env/notification.env`,
+          envFilePath: `${process.cwd()}/env/e2e.env`,
         }),
         SequelizeModule.forRootAsync({
           imports: [ConfigModule],
