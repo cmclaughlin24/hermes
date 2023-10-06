@@ -23,7 +23,8 @@ jobs:
   e2e-test:
     runs-on: ubuntu-latest
     steps:
-      - name: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Install Node
         uses: actions/setup-node@v3
         with:
