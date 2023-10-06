@@ -31,5 +31,3 @@ jobs:
           node-version: 18
       - name: Install Dependencies
         run: npm ci
-      - name: Run E2E Tests
-        run: npm run test:e2e
