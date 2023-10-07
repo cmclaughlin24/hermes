@@ -20,14 +20,14 @@ describe('[Feature] Notification Log', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: `${process.cwd()}/env/notification.env`,
+          envFilePath: `${process.cwd()}/env/e2e.env`,
         }),
         SequelizeModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
             dialect: 'postgres',
-            host: 'localhost',
+            host: configService.get('DB_HOST'),
             port: configService.get('DB_PORT'),
             username: configService.get('DB_USERNAME'),
             password: configService.get('DB_PASSWORD'),
