@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - 'main'
+    paths:
+      - 'apps/distribution/*'
+      - 'libs/*'
+  workflow_dispatch:
 
 jobs:
   build:
