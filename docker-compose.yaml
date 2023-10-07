@@ -6,6 +6,8 @@ services:
       - '5432:5432'
     environment:
       POSTGRES_PASSWORD: pass123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   pgadmin:
     image: dpage/pgadmin4
     ports:
@@ -67,6 +69,7 @@ services:
       - rabbitmq
       - redis
 volumes:
+  pgdata:
   pgadmin:
   redis:
   rabbitmq:
