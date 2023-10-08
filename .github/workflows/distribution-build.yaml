@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - 'main'
-    paths:
-      - 'apps/distribution/*'
-      - 'libs/*'
+    paths-ignore:
+      - 'apps/notification/*'
   workflow_dispatch:
 
 jobs:
