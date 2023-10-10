@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
       - name: Cache Dependencies
+        id: cache
         uses: actions/cache@v3
         with:
           path: node_modules
@@ -38,6 +39,7 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
       - name: Cache Dependencies
+        id: cache
         uses: actions/cache@v3
         with:
           path: node_modules
@@ -58,6 +60,7 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
       - name: Cache Dependencies
+        id: cache
         uses: actions/cache@v3
         with:
           path: node_modules
