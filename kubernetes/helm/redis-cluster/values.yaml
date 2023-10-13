@@ -11,6 +11,8 @@ targetPorts:
   client: 6379
   gossip: 16379
 
+replicaCount: 6
+
 redisConfig: |
     cluster-enabled yes
     cluster-config-file nodes.conf

@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 6
-  serviceName: {{ .Chart.Name }}
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Release.Name }}
   selector:
     matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
   template:
@@ -21,18 +21,18 @@ spec:
             - containerPort: {{ .Values.targetPorts.gossip }}
               name: gossip
           volumeMounts:
-            - name: {{ .Chart.Name }}-config
+            - name: {{ .Release.Name }}-config
               mountPath: /config
-            - name: {{ .Chart.Name }}-data
+            - name: {{ .Release.Name }}-data
               mountPath: /data
           command: ['redis-server', '/config/redis.conf']
       volumes:
-        - name: {{ .Chart.Name }}-config
+        - name: {{ .Release.Name }}-config
           configMap:
-            name: {{ .Chart.Name }}-config
+            name: {{ .Release.Name }}-config
   volumeClaimTemplates:
     - metadata:
-        name: {{ .Chart.Name }}-data
+        name: {{ .Release.Name }}-data
       spec:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: standard
