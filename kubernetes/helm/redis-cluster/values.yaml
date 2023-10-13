@@ -10,3 +10,9 @@ ports:
 targetPorts:
   client: 6379
   gossip: 16379
+
+redisConfig: |
+    cluster-enabled yes
+    cluster-config-file nodes.conf
+    cluster-node-timeout 5000
+    appendonly yes
