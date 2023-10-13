@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  # Fixme: Decide how the name should be handled. (Release name vs. Chart Name)
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 6
+  # Fixme: Convert to using a helper for the service name.
+  serviceName: {{ .Release.Name }}-service
+  selector:
+    matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
+  template:
+    metadata:
+      labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: {{ .Values.targetPorts.client }}
+              name: client
+            - containerPort: {{ .Values.targetPorts.gossip }}
+              name: gossip
+          volumeMounts:
+            # Fixme: Convert to using a helper for the ConfigMap name.
+            - name: {{ .Release.Name }}-config
+              mountPath: /config
+            - name: redis-data
+              mountPath: /data
+          command: ['redis-server', '/config/redis.conf']
+      volumes:
+        - name: {{ .Release.Name }}-config
+          configMap:
+            name: {{ .Release.Name }}-config
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 500M

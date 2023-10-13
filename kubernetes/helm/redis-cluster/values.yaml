@@ -1,0 +1,12 @@
+selectorLabels:
+  app: redis
+
+# Note: Port(s) on the service that listen for traffic.
+ports:
+  client: 6379
+  gossip: 16379
+
+# Note: Port(s) on the pods where traffic should be routed. 
+targetPorts:
+  client: 6379
+  gossip: 16379
