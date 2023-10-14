@@ -12,26 +12,33 @@ spec:
       labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
     spec:
       containers:
+        {{ with .Values.notification }}
         - name: notification
-          image: cmclaughlin24/notification:latest
+          image: cmclaughlin24/notification:{{ .tag | default "latest" }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
-          env: {{ toYaml .Values.environment | nindent 12 }}
-          {{- if .Values.readinessProbe }}
-          readinessProbe: {{ toYaml .Values.readinessProbe | nindent 12 }}            
+            - containerPort: {{ $.Values.service.targetPort }}
+          env: {{ toYaml .environment | nindent 12 }}
+          {{- if .readinessProbe }}
+          readinessProbe: {{ toYaml .readinessProbe | nindent 12 }}            
           {{- end }}
-          {{- if .Values.livenessProbe }}
-          livenessProbe: {{ toYaml .Values.livenessProbe | nindent 12 }}  
+          {{- if .livenessProbe }}
+          livenessProbe: {{ toYaml .livenessProbe | nindent 12 }}  
           {{- end }}
-          # Todo: Add support for resource management.
-      {{- if .Values.enableOpenTelemetry }}
+          {{- if .resources }}
+          resources: {{ toYaml .resources | nindent 12 }}
+          {{- end }}
+        {{ end }}
+      {{- if .Values.openTelemetry.enable }}
         - name: open-telemetry
-          image: otel/opentelemetry-collector-contrib:latest
+          image: otel/opentelemetry-collector-contrib:{{ .Values.openTelemetry.tag | default "latest" }}
           # Todo: Verify that container ports do not need to be defined for pod internal communication.
           volumeMounts:
             # Todo: Allow OpenTelemetry ConfigMap name to defined.
             - name: otel-config
               mountPath: /etc/otelcol-contrib/config.yaml
+          {{- if .Values.openTelemetry.resources }}
+          resources: {{ toYaml .Values.openTelemetry.resources | nindent 12}}
+          {{- end }}
       volumes:
         - name: otel-config
           configMap:

@@ -8,16 +8,22 @@ service:
 
 replicaCount: 2
 
-environment: {}
+notification:
+  tag: null
+  environment: {}
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+      httpHeaders:
+        - name: Accept
+          value: application/json
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  livenessProbe: {}
+  resources: {}
 
-readinessProbe:
-  httpGet:
-    path: /health
-    port: 3000
-    httpHeaders:
-      - name: Accept
-        value: application/json
-    initialDelaySeconds: 5
-    periodSeconds: 5
-
-enableOpenTelemetry: false
+openTelemetry:
+  enable: true
+  tag: null
+  resources: {}
