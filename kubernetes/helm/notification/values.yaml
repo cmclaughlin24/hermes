@@ -10,7 +10,7 @@ replicaCount: 2
 
 notification:
   tag: null
-  environment: {}
+  environment: null
   readinessProbe:
     httpGet:
       path: /health

@@ -40,4 +40,4 @@ iam.env
 notification.env
 
 # Kubernetes
-*-local.yaml
+/kubernetes/**/*-local.yaml

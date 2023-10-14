@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
   namespace: {{ .Release.Namespace }}
-  data:
-    redis.conf: | {{ .Values.redisConfig | nindent 6 }}
+data:
+  redis.conf: | {{ .Values.redisConfig | nindent 4 }}
