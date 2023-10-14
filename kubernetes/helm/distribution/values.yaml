@@ -1,0 +1,30 @@
+selectorLabels:
+  app: distribution
+
+service:
+  type: LoadBalancer
+  port: 3001
+  targetPort: 3001
+
+replicaCount: 1
+
+distribution:
+  tag: null
+  environment: null
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3001
+      httpHeaders:
+        - name: Accept
+          value: application/json
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  livenessProbe: {}
+  resources: {}
+
+openTelemetry:
+  enable: false
+  tag: null
+  resources: {}
+  config: null

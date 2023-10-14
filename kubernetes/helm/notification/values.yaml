@@ -18,8 +18,8 @@ notification:
       httpHeaders:
         - name: Accept
           value: application/json
-      initialDelaySeconds: 5
-      periodSeconds: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
   livenessProbe: {}
   resources: {}
 
