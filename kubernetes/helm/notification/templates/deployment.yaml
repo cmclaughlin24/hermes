@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
+  template:
+    metadata:
+      labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
+    spec:
+      containers:
+        - name: notification
+          image: cmclaughlin24/notification:latest
+          ports:
+            - containerPort: 3000
+          env: {{ toYaml .Values.environment | nindent 12 }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe: {{ toYaml .Values.readinessProbe | nindent 12 }}            
+          {{- end }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe: {{ toYaml .Values.livenessProbe | nindent 12 }}  
+          {{- end }}
+          # Todo: Add support for resource management. 

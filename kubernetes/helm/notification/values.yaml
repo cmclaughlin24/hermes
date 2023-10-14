@@ -1,0 +1,21 @@
+selectorLabels:
+  app: notification
+
+service:
+  type: LoadBalancer
+  port: 3000
+  targetPort: 3000
+
+replicaCount: 2
+
+environment: {}
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+    httpHeaders:
+      - name: Accept
+        value: application/json
+    initialDelaySeconds: 5
+    periodSeconds: 5

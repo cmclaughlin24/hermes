@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   selector: {{ toYaml .Values.selectorLabels | nindent 4 }}
+  # Todo: Update values.yaml to support defining the service type.
   type: ClusterIP
   ports:
     - protocol: TCP
