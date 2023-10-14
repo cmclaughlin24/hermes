@@ -19,3 +19,5 @@ readinessProbe:
         value: application/json
     initialDelaySeconds: 5
     periodSeconds: 5
+
+enableOpenTelemetry: false

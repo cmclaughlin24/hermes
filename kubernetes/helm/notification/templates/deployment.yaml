@@ -15,7 +15,7 @@ spec:
         - name: notification
           image: cmclaughlin24/notification:latest
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.service.targetPort }}
           env: {{ toYaml .Values.environment | nindent 12 }}
           {{- if .Values.readinessProbe }}
           readinessProbe: {{ toYaml .Values.readinessProbe | nindent 12 }}            
@@ -23,4 +23,17 @@ spec:
           {{- if .Values.livenessProbe }}
           livenessProbe: {{ toYaml .Values.livenessProbe | nindent 12 }}  
           {{- end }}
-          # Todo: Add support for resource management. 
+          # Todo: Add support for resource management.
+      {{- if .Values.enableOpenTelemetry }}
+        - name: open-telemetry
+          image: otel/opentelemetry-collector-contrib:latest
+          # Todo: Verify that container ports do not need to be defined for pod internal communication.
+          volumeMounts:
+            # Todo: Allow OpenTelemetry ConfigMap name to defined.
+            - name: otel-config
+              mountPath: /etc/otelcol-contrib/config.yaml
+      volumes:
+        - name: otel-config
+          configMap:
+            name: otel-config
+      {{- end }}
