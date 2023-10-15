@@ -18,3 +18,13 @@ redisConfig: |
     cluster-config-file nodes.conf
     cluster-node-timeout 5000
     appendonly yes
+
+serviceAccount:
+  name: redis-cluster-init
+
+redisClusterInit:
+  enable: true
+  image:
+    repository: bitnami/kubectl
+    tag: null
+  clusterReplicas: 1
