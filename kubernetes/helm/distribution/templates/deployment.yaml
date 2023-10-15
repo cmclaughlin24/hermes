@@ -41,5 +41,5 @@ spec:
       volumes:
         - name: otel-config
           configMap:
-            name: otel-config
+            name: {{ .Release.Name }}-otel-config
       {{- end }}
