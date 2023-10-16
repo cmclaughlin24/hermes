@@ -1,0 +1,28 @@
+selectorLabels:
+  app: redis
+
+# Note: Port(s) on the service that listen for traffic.
+ports:
+  client: 6379
+  gossip: 16379
+
+# Note: Port(s) on the pods where traffic should be routed. 
+targetPorts:
+  client: 6379
+  gossip: 16379
+
+replicaCount: 6
+
+redisConfig: |
+    cluster-enabled yes
+    cluster-config-file nodes.conf
+    cluster-node-timeout 5000
+    appendonly yes
+
+redisClusterInit:
+  enable: true
+  image:
+    repository: bitnami/kubectl
+    tag: null
+  clusterReplicas: 1
+  serviceAccount: redis-cluster-init

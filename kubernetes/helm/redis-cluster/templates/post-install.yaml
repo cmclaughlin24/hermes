@@ -1,0 +1,52 @@
+{{ with .Values.redisClusterInit }}
+{{- if .enable }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-init
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ .serviceAccount }}
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-pods
+          image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+          command: ["/bin/sh", "-c"]
+          args:
+          - |
+            #!/bin/sh
+            # Set the desired number of pods
+            CLUSTER_COUNT={{ $.Values.replicaCount }}
+
+            # Wait until the desired number of Redis pods are ready
+            until [ "$(kubectl get pods -l {{ include "redis-cluster.labelsAsString" $ }} -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}' -n {{ $.Release.Namespace }} | grep -o "True" | wc -l)" -eq "$CLUSTER_COUNT" ]; do
+              echo "Waiting for $CLUSTER_COUNT Redis Pods to be ready..."
+              sleep 5
+            done
+      containers:
+      - name: post-install-job
+        image: {{ .image.repository }}:{{ .image.tag | default "latest" }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          #!/bin/sh
+          # Fetch all pod IP Addresses and store them in a variable
+          REDIS_NODES=$(kubectl get pods -l {{ include "redis-cluster.labelsAsString" $ }} -n {{ $.Release.Namespace }} -o json | jq -r '.items | map(.status.podIP) | join(":{{ $.Values.ports.client }} ")'):{{ $.Values.ports.client }}
+
+          # Create the Redis Cluster
+          kubectl exec {{ $.Release.Name }}-0 -n {{ $.Release.Namespace }} -- redis-cli --cluster create --cluster-replicas {{ .clusterReplicas }} --cluster-yes $REDIS_NODES
+
+          # Print Cluster Configuration
+          for x in $(seq 0 {{ sub $.Values.replicaCount 1 }}); do echo "{{ $.Release.Name }}-$x"; kubectl exec {{ $.Release.Name }}-$x -n {{ $.Release.Namespace }} -- redis-cli role; echo; done
+{{- else }}
+# How to initialize Redis Cluster Manually
+# 1) Get Pod IP Address: kubectl get pods -o wide OR export REDIS_NODES=$(kubectl get pods -l app=redis -n [CLUSTER NAMESAPCE] -o json | jq -r '.items | map(.status.podIP) | join(":6379 ")'):6379
+# 2) Initialize Cluster: kubectl exec -it redis-cluster-0 -n [CLUSTER NAMESPACE] -- redis-cli --cluster create --cluster-replicas 1 --cluster-yes [POD IP_ADDRESS:PORT]
+# 3) View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n [CLUSTER NAMESPACE] -- redis-cli role; echo; done
+{{- end }}
+{{ end }}

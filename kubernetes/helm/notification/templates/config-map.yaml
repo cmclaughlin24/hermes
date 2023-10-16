@@ -1,0 +1,10 @@
+{{- if .Values.openTelemetry.enable }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # Todo: Allow OpenTelemetry ConfigMap name to defined.
+  name: {{ .Release.Name }}-otel-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yaml: | {{ .Values.openTelemetry.config | nindent 4 }}
+{{- end }}
