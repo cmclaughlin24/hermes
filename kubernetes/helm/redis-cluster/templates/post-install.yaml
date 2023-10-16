@@ -11,7 +11,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: {{ $.Values.serviceAccount.name }}
+      serviceAccountName: {{ .serviceAccount }}
       restartPolicy: Never
       initContainers:
         - name: wait-for-pods
@@ -20,12 +20,11 @@ spec:
           args:
           - |
             #!/bin/sh
-
             # Set the desired number of pods
             CLUSTER_COUNT={{ $.Values.replicaCount }}
 
             # Wait until the desired number of Redis pods are ready
-            until [ "$(kubectl get pods -l app=redis -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}' -n {{ $.Release.Namespace }} | grep -o "True" | wc -l)" -eq "$CLUSTER_COUNT" ]; do
+            until [ "$(kubectl get pods -l {{ include "redis-cluster.labelsAsString" $ }} -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}' -n {{ $.Release.Namespace }} | grep -o "True" | wc -l)" -eq "$CLUSTER_COUNT" ]; do
               echo "Waiting for $CLUSTER_COUNT Redis Pods to be ready..."
               sleep 5
             done
@@ -37,8 +36,7 @@ spec:
         - |
           #!/bin/sh
           # Fetch all pod IP Addresses and store them in a variable
-          # Todo: Find a way to convert the selectors for the pods into a string from values.yaml
-          REDIS_NODES=$(kubectl get pods -l app=redis -n {{ $.Release.Namespace }} -o json | jq -r '.items | map(.status.podIP) | join(":{{ $.Values.ports.client }} ")'):{{ $.Values.ports.client }}
+          REDIS_NODES=$(kubectl get pods -l {{ include "redis-cluster.labelsAsString" $ }} -n {{ $.Release.Namespace }} -o json | jq -r '.items | map(.status.podIP) | join(":{{ $.Values.ports.client }} ")'):{{ $.Values.ports.client }}
 
           # Create the Redis Cluster
           kubectl exec {{ $.Release.Name }}-0 -n {{ $.Release.Namespace }} -- redis-cli --cluster create --cluster-replicas {{ .clusterReplicas }} --cluster-yes $REDIS_NODES
