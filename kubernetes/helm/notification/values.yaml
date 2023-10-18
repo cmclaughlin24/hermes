@@ -1,0 +1,30 @@
+selectorLabels:
+  app: notification
+
+service:
+  type: LoadBalancer
+  port: 3000
+  targetPort: 3000
+
+replicaCount: 2
+
+notification:
+  tag: null
+  environment: null
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+      httpHeaders:
+        - name: Accept
+          value: application/json
+      initialDelaySeconds: 10
+      periodSeconds: 10
+  livenessProbe: {}
+  resources: {}
+
+openTelemetry:
+  enable: false
+  tag: null
+  resources: {}
+  config: null

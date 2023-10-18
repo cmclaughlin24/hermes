@@ -15,6 +15,6 @@ data:
   enableRedisCluster: 'true'
   notificationQueue: 'notification'
   notificationPrefix: '{notification}'
-  ENABLE_OPEN_TELEMETRY: 'true'
-  OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
-  OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=your-api-key"
+  enableOpenTelemetry: 'true'
+  otelExporterOtlpEndpoint: "https://api.honeycomb.io"
+  otelExporterOtlpHeaders: "x-honeycomb-team=your-api-key"

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Release.Name }}
+  selector:
+    matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
+  template:
+    metadata:
+      labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: {{ .Values.targetPorts.client }}
+              name: client
+            - containerPort: {{ .Values.targetPorts.gossip }}
+              name: gossip
+          volumeMounts:
+            - name: {{ .Release.Name }}-config
+              mountPath: /config
+            - name: {{ .Release.Name }}-data
+              mountPath: /data
+          command: ['redis-server', '/config/redis.conf']
+      volumes:
+        - name: {{ .Release.Name }}-config
+          configMap:
+            name: {{ .Release.Name }}-config
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Release.Name }}-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 500M
