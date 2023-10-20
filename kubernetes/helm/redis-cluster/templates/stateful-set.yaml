@@ -21,15 +21,15 @@ spec:
             - containerPort: {{ .Values.targetPorts.gossip }}
               name: gossip
           volumeMounts:
-            - name: {{ .Release.Name }}-config
+            - name: {{ include "redis-cluster.configMapName" . }}
               mountPath: /config
             - name: {{ .Release.Name }}-data
               mountPath: /data
           command: ['redis-server', '/config/redis.conf']
       volumes:
-        - name: {{ .Release.Name }}-config
+        - name: {{ include "redis-cluster.configMapName" . }}
           configMap:
-            name: {{ .Release.Name }}-config
+            name: {{ include "redis-cluster.configMapName" . }}
   volumeClaimTemplates:
     - metadata:
         name: {{ .Release.Name }}-data

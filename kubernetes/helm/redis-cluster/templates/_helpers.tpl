@@ -13,3 +13,11 @@ Redis Cluster.
 {{- end }}
 {{- printf $output | trimSuffix "," }}
 {{- end }}
+
+{{/*
+Create the name of the ConfigMap to be used to configure
+Redis.
+*/}}
+{{- define "redis-cluster.configMapName" }}
+  {{- print .Release.Name "-config" }}
+{{- end }}
