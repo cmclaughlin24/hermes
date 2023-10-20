@@ -36,6 +36,6 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: env-store
-                  key: dbPassword
+                secretKeyRef:
+                  name: database-credentials
+                  key: password
