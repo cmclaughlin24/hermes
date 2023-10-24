@@ -33,13 +33,13 @@ spec:
           image: otel/opentelemetry-collector-contrib:{{ .Values.openTelemetry.tag | default "latest" }}
           volumeMounts:
             # Todo: Allow OpenTelemetry ConfigMap name to defined.
-            - name: otel-config
+            - name: {{ include "notification.otelConfigMapName" . }}
               mountPath: /etc/otelcol-contrib
           {{- if .Values.openTelemetry.resources }}
           resources: {{ toYaml .Values.openTelemetry.resources | nindent 12}}
           {{- end }}
       volumes:
-        - name: otel-config
+        - name: {{ include "notification.otelConfigMapName" . }}
           configMap:
-            name: {{ .Release.Name }}-otel-config
+            name: {{ include "notification.otelConfigMapName" . }}
       {{- end }}

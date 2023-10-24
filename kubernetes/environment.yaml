@@ -6,8 +6,6 @@ metadata:
 data:
   dbHost: ${DB_HOST}
   dbPort: ${DB_PORT}
-  dbUsername: ${DB_USERNAME}
-  dbPassword: ${DB_PASSWORD}
   dbName: ${DB_NAME}
   rabbitmqUri: 'amqp://guest:guest@rabbitmq-service.hermes'
   redisHost: 'redis-cluster-service.hermes'
