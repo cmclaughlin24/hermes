@@ -27,6 +27,7 @@ import { ResourcesModule } from './resources/resources.module';
         DB_USERNAME: Joi.required(),
         DB_PASSWORD: Joi.required(),
         DB_NAME: Joi.required(),
+        DB_SYNC: Joi.boolean().default(false),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8000),
