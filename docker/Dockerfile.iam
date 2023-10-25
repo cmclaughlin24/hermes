@@ -9,7 +9,6 @@ RUN npm install
 COPY /apps/iam ./apps/iam
 COPY /libs ./libs
 
-ENV NODE_ENV='production'
 ENV PORT=3002
 ENV ENABLE_DEVTOOLS=true
 ENV DEVTOOLS_PORT=8002

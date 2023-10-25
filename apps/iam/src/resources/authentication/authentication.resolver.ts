@@ -4,6 +4,7 @@ import { User } from '../user/entities/user.entity';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
+import { Tokens } from './entities/tokens.entity';
 
 @Resolver()
 export class AuthenticationResolver {
@@ -16,11 +17,16 @@ export class AuthenticationResolver {
     });
   }
 
-  @Mutation(() => User, { name: 'signIn' })
+  @Mutation(() => Tokens, { name: 'signIn' })
   async signIn(@Args('signInInput') signInInput: SignInInput) {
-    return this.authenticationService.signIn(signInInput).catch((error) => {
+    try {
+      const [accessToken, refreshToken] =
+        await this.authenticationService.signIn(signInInput);
+
+      return { accessToken, refreshToken };
+    } catch (error) {
       throw errorToGraphQLException(error);
-    });
+    }
   }
 
   @Mutation(() => Boolean, { name: 'verifyAccessToken' })
