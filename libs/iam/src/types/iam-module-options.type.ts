@@ -1,4 +1,5 @@
 import { ExecutionContext } from '@nestjs/common';
+import { AccessTokenService } from '../services/access-token.service';
 import { AuthType } from './auth-type.type';
 
 export interface IamModuleOptions {
@@ -35,4 +36,9 @@ export interface IamModuleOptions {
    * - key1,key2,key3
    */
   apiKeys?: string;
+
+  /**
+   * Fixme: Add documentation on usage.
+   */
+  accessTokenService?: AccessTokenService;
 }
