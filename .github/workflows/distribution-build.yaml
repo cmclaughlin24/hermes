@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
     paths-ignore:
+      - 'apps/iam/*'
       - 'apps/notification/*'
   workflow_dispatch:
 
