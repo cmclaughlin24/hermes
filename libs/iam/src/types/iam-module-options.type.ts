@@ -38,7 +38,11 @@ export interface IamModuleOptions {
   apiKeys?: string;
 
   /**
-   * Fixme: Add documentation on usage.
+   * Optional parameter represents an instance of a service that extends the `AccessTokenService`
+   * abstract class. It is used to validate and decode access tokens to ensure the
+   * authenticity of the requesting entity.
+   * 
+   * Note: This paremeter is required if the `AuthType.BEARER` is enabled.
    */
   accessTokenService?: AccessTokenService;
 }

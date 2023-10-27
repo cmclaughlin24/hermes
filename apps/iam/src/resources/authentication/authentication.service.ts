@@ -52,7 +52,19 @@ export class AuthenticationService {
     return this._generateTokens(user);
   }
 
-  async verifyToken(token: string) {}
+  // Fixme: Update to send token payload back to requesting service.
+  async verifyToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.jwtSecret,
+        audience: this.jwtAudience,
+      });
+      
+      return !!payload;
+    } catch (error) {
+      return false;
+    }
+  }
 
   private async _generateTokens(user: User) {
     // Fixme: Send additional user information to be used in payload.

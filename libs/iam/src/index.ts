@@ -1,3 +1,4 @@
+export * from './constants/iam.constants';
 export * from './decorators/auth.decorator';
 export * from './guards/api-key.guard';
 export * from './iam.module';
