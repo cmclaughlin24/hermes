@@ -53,6 +53,7 @@ import { ResourcesModule } from './resources/resources.module';
         REMOVE_SUBSCRIBER_URL: Joi.string().required(),
         SUBSCRIBER_API_KEY_HEADER: Joi.string().required(),
         SUBSCRIBER_API_KEY: Joi.string().required(),
+        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
         VAPID_SUBJECT: Joi.required(),
         VAPID_PUBLIC_KEY: Joi.required(),
         VAPID_PRIVATE_KEY: Joi.required(),

@@ -1,13 +1,12 @@
-import { isRabbitContext } from '@golevelup/nestjs-rabbitmq';
-import { RequestLoggerMiddleware } from '@hermes/common';
-import { IamModule } from '@hermes/iam';
 import {
-  ExecutionContext,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+  IamAccessTokenService,
+  IamClientModule,
+  RequestLoggerMiddleware,
+} from '@hermes/common';
+import { IamModule } from '@hermes/iam';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { iamFactory } from '../config/iam.config';
 import { DistributionEventModule } from './distribution-event/distribution-event.module';
 import { DistributionLogModule } from './distribution-log/distribution-log.module';
 import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
@@ -24,13 +23,9 @@ import { SubscriptionModule } from './subscription/subscription.module';
     DistributionEventModule,
     HealthModule,
     IamModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        apiKeyHeader: configService.get('API_KEY_HEADER'),
-        apiKeys: configService.get('API_KEY'),
-        useContext: (context: ExecutionContext) => !isRabbitContext(context),
-      }),
+      imports: [ConfigModule, IamClientModule],
+      inject: [ConfigService, IamAccessTokenService],
+      useFactory: iamFactory,
     }),
   ],
 })
