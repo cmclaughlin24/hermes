@@ -10,6 +10,8 @@ import { InvalidPasswordException } from './errors/invalid-password.exception';
 
 @Resolver()
 export class AuthenticationResolver {
+  private static readonly UNAUTHENTICATED_ERROR_CODE = 'UNAUTHENTICATED';
+
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Mutation(() => User, { name: 'signUp' })
@@ -29,7 +31,9 @@ export class AuthenticationResolver {
     } catch (error) {
       if (error instanceof InvalidPasswordException) {
         throw new GraphQLError('Unauthorized: Invalid password', {
-          extensions: { code: 'UNAUTHENTICATED' },
+          extensions: {
+            code: AuthenticationResolver.UNAUTHENTICATED_ERROR_CODE,
+          },
         });
       }
       throw errorToGraphQLException(error);

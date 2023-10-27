@@ -56,11 +56,11 @@ export class AuthenticationService {
   // Fixme: Update to send token payload back to requesting service.
   async verifyToken(token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync<any>(token, {
         secret: this.jwtSecret,
         audience: this.jwtAudience,
       });
-      
+
       return !!payload;
     } catch (error) {
       return false;
