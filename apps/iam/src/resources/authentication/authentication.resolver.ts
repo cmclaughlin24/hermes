@@ -1,10 +1,12 @@
 import { errorToGraphQLException } from '@hermes/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { GraphQLError } from 'graphql';
 import { User } from '../user/entities/user.entity';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
 import { Tokens } from './entities/tokens.entity';
+import { InvalidPasswordException } from './errors/invalid-password.exception';
 
 @Resolver()
 export class AuthenticationResolver {
@@ -25,6 +27,11 @@ export class AuthenticationResolver {
 
       return { accessToken, refreshToken };
     } catch (error) {
+      if (error instanceof InvalidPasswordException) {
+        throw new GraphQLError('Unauthorized: Invalid password', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
       throw errorToGraphQLException(error);
     }
   }

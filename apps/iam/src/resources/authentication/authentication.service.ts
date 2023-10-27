@@ -7,6 +7,7 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
+import { InvalidPasswordException } from './errors/invalid-password.exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -46,7 +47,7 @@ export class AuthenticationService {
     );
 
     if (!isValidPassword) {
-      // Fixme: Throw a custom exception for invalid password.
+      throw new InvalidPasswordException();
     }
 
     return this._generateTokens(user);
