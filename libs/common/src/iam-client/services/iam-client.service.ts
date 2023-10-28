@@ -17,7 +17,7 @@ export class IamClientService extends AccessTokenService {
     super();
   }
 
-  async verify(token: string): Promise<ActiveUserData> {
+  async verifyAccessToken(token: string): Promise<ActiveUserData> {
     const request = this.httpService
       .post(this.VERIFY_TOKEN_URL, {
         query: `
