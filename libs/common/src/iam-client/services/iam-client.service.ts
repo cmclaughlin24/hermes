@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, map } from 'rxjs';
 
 @Injectable()
-export class IamAccessTokenService extends AccessTokenService {
+export class IamClientService extends AccessTokenService {
   private readonly VERIFY_TOKEN_URL = this.configService.get(
     'VERIFY_ACCESS_TOKEN_URL',
   );

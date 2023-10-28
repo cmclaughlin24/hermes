@@ -1,7 +1,7 @@
 import {
-  IamAccessTokenService,
   IamClientModule,
-  RequestLoggerMiddleware,
+  IamClientService,
+  RequestLoggerMiddleware
 } from '@hermes/common';
 import { IamModule } from '@hermes/iam';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
@@ -26,7 +26,7 @@ import { PushTemplateModule } from './push-template/push-template.module';
     HealthModule,
     IamModule.registerAsync({
       imports: [ConfigModule, IamClientModule],
-      inject: [ConfigService, IamAccessTokenService],
+      inject: [ConfigService, IamClientService],
       useFactory: iamFactory,
     }),
   ],

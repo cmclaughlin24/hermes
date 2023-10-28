@@ -1,6 +1,6 @@
 import {
-  IamAccessTokenService,
   IamClientModule,
+  IamClientService,
   RequestLoggerMiddleware,
 } from '@hermes/common';
 import { IamModule } from '@hermes/iam';
@@ -24,7 +24,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     HealthModule,
     IamModule.registerAsync({
       imports: [ConfigModule, IamClientModule],
-      inject: [ConfigService, IamAccessTokenService],
+      inject: [ConfigService, IamClientService],
       useFactory: iamFactory,
     }),
   ],

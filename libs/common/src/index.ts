@@ -7,7 +7,7 @@ export * from './dto/push-subscription.dto';
 export * from './errors/exists.exception';
 export * from './errors/missing.exception';
 export * from './iam-client/iam-client.module';
-export * from './iam-client/services/iam-access-token.service';
+export * from './iam-client/services/iam-client.service';
 export * from './middleware/request-logger.middleware';
 export * from './types/cache-options.type';
 export * from './types/delivery-methods.type';
