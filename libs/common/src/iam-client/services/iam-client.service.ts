@@ -1,11 +1,11 @@
-import { AccessTokenService, ActiveUserData } from '@hermes/iam';
+import { ActiveUserData, TokenService } from '@hermes/iam';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, map } from 'rxjs';
 
 @Injectable()
-export class IamClientService extends AccessTokenService {
+export class IamClientService extends TokenService {
   private readonly VERIFY_TOKEN_URL = this.configService.get(
     'VERIFY_ACCESS_TOKEN_URL',
   );

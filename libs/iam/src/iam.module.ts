@@ -4,7 +4,7 @@ import { AccessTokenGuard } from './guards/access-token.guard';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { AuthenticationGuard } from './guards/authentication.guard';
 import { IAM_MODULE_OPTIONS_TOKEN, IamModuleDefinitionClass } from './iam.module-definition';
-import { AccessTokenService } from './services/access-token.service';
+import { TokenService } from './services/token.service';
 import { IamModuleOptions } from './types/iam-module-options.type';
 
 @Module({
@@ -16,16 +16,16 @@ import { IamModuleOptions } from './types/iam-module-options.type';
     AccessTokenGuard,
     ApiKeyGuard,
     {
-      provide: AccessTokenService,
+      provide: TokenService,
       inject: [IAM_MODULE_OPTIONS_TOKEN],
-      useFactory: (options: IamModuleOptions) => options.accessTokenService
+      useFactory: (options: IamModuleOptions) => options.tokenService
     }
   ],
   exports: [],
 })
 export class IamModule extends IamModuleDefinitionClass {
   static register(options: IamModuleOptions = {}): DynamicModule {
-    // Fixme: Add validation on options (e.g. AccessTokenService must be present if enabled.)
+    // Fixme: Add validation on options (e.g. TokenService must be present if enabled.)
     return super.register(options);
   }
 }

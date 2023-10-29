@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { IAM_USER_KEY } from '../constants/iam.constants';
-import { AccessTokenService } from '../services/access-token.service';
+import { AccessTokenService } from '../services/token.service';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {

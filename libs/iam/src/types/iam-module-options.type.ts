@@ -1,5 +1,5 @@
 import { ExecutionContext } from '@nestjs/common';
-import { AccessTokenService } from '../services/access-token.service';
+import { TokenService } from '../services/token.service';
 import { AuthType } from './auth-type.type';
 
 export interface IamModuleOptions {
@@ -38,11 +38,11 @@ export interface IamModuleOptions {
   apiKeys?: string;
 
   /**
-   * Optional parameter represents an instance of a service that extends the `AccessTokenService`
+   * Optional parameter represents an instance of a service that extends the `TokenService`
    * abstract class. It is used to validate and decode access tokens to ensure the
    * authenticity of the requesting entity.
    * 
    * Note: This paremeter is required if the `AuthType.BEARER` is enabled.
    */
-  accessTokenService?: AccessTokenService;
+  tokenService?: TokenService;
 }

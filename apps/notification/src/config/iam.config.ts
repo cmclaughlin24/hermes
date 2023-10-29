@@ -10,6 +10,6 @@ export function iamFactory(
     defaultAuthTypes: [AuthType.BEARER, AuthType.API_KEY],
     apiKeyHeader: configService.get('API_KEY_HEADER'),
     apiKeys: configService.get('API_KEY'),
-    accessTokenService: iamClientService,
+    tokenService: iamClientService,
   };
 }
