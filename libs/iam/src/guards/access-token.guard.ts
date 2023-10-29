@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { IAM_USER_KEY } from '../constants/iam.constants';
-import { AccessTokenService } from '../services/token.service';
+import { TokenService } from '../services/token.service';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
-  constructor(private readonly accessTokenService: AccessTokenService) {}
+  constructor(private readonly tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -21,7 +21,7 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.accessTokenService.verifyAccessToken(token);
+      const payload = await this.tokenService.verifyAccessToken(token);
 
       request[IAM_USER_KEY] = payload;
     } catch (error) {
