@@ -49,6 +49,7 @@ export function telemetryWrapper(
       const name = options.name || method.name;
       const spanOptions = options ?? {};
 
+      // Bug: Passing an empty options argument causes over writes default options in the span.
       return tracer.startActiveSpan(name, spanOptions, (span) => {
         if (method.constructor.name === 'AsyncFunction') {
           return method
