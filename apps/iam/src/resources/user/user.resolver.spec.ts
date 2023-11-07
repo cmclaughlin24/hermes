@@ -99,7 +99,7 @@ describe('UserResolver', () => {
       );
     });
 
-    it('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if a user\'s email/phone number already exists', async () => {
+    it('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if the email or phone number is already in use', async () => {
       // Arrange.
       const errorMessage = `User with email=${user.email} or phoneNumber=${user.phoneNumber} already exists!`;
       const expectedResult = new GraphQLError(errorMessage, {
@@ -144,12 +144,12 @@ describe('UserResolver', () => {
 
   describe('remove()', () => {
     afterEach(() => {
-      service.delete.mockClear();
+      service.remove.mockClear();
     });
 
     it('should yield the deleted user', async () => {
       // Arrange.
-      service.delete.mockResolvedValue(user);
+      service.remove.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(resolver.delete(userId)).resolves.toEqual(user);
@@ -161,7 +161,7 @@ describe('UserResolver', () => {
       const expectedResult = new GraphQLError(errorMessage, {
         extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
       });
-      service.delete.mockRejectedValue(new MissingException(errorMessage));
+      service.remove.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(resolver.delete(userId)).rejects.toEqual(expectedResult);

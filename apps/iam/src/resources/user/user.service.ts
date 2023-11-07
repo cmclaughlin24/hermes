@@ -18,18 +18,38 @@ export class UserService {
     private readonly hashingService: HashingService,
   ) {}
 
+  /**
+   * Yields a list of users.
+   * @returns {Promise<User[]>}
+   */
   async findAll() {
     return this.userRepository.find();
   }
 
+  /**
+   * Yields a user by id.
+   * @param {string} id
+   * @returns {Promise<User>}
+   */
   async findById(id: string) {
     return this.userRepository.findOneBy({ id });
   }
 
+  /**
+   * Yields a user by email.
+   * @param {string} email
+   * @returns {Promise<User>}
+   */
   async findByEmail(email: string) {
     return this.userRepository.findOneBy({ email });
   }
 
+  /**
+   * Creates a new user or throws an `ExistsExcception` if an email
+   * or phone number already exists.
+   * @param {CreateUserInput} createUserInput
+   * @returns {Promise<User>}
+   */
   async create(createUserInput: CreateUserInput) {
     const hashedPassword = await this.hashingService.hash(
       createUserInput.password,
@@ -49,6 +69,13 @@ export class UserService {
     });
   }
 
+  /**
+   * Updates a user or throws a `MissingException` if the repository
+   * returns null or undefined.
+   * @param {string} id
+   * @param {UpdateUserInput} updateUserInput
+   * @returns {Promise<User>}
+   */
   async update(id: string, updateUserInput: UpdateUserInput) {
     const user = await this.userRepository.preload({
       id,
@@ -62,7 +89,13 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async delete(id: string) {
+  /**
+   * Removes a user or throws a `MissingException` if the repository
+   * returns null or undefined.
+   * @param {string} id
+   * @returns {Promise<User>}
+   */
+  async remove(id: string) {
     const user = await this.findById(id);
 
     if (!user) {

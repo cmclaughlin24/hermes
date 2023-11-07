@@ -48,7 +48,7 @@ export class UserResolver {
 
   @Mutation(() => User, { name: 'removeUser' })
   async delete(@Args('userId') id: string) {
-    return this.userService.delete(id).catch((error) => {
+    return this.userService.remove(id).catch((error) => {
       throw errorToGraphQLException(error);
     });
   }
