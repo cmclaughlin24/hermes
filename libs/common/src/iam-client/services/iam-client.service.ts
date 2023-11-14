@@ -22,7 +22,9 @@ export class IamClientService extends TokenService {
       .post(this.VERIFY_TOKEN_URL, {
         query: `
         mutation {
-          verifyAccessToken(token: "${token}")
+          verifyAccessToken(token: "${token}") {
+            sub
+          }
         }
       `,
       })

@@ -1,1 +1,3 @@
-export interface ActiveUserData {}
+export interface ActiveUserData {
+  sub: string;
+}

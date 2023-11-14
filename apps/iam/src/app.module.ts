@@ -13,6 +13,7 @@ import { ResourcesModule } from './resources/resources.module';
     ConfigModule.forRoot({
       ignoreEnvFile: process.env.NODE_ENV === 'production',
       envFilePath: join(process.cwd(), 'env', 'iam.env'),
+      isGlobal: true,
       validationSchema: Joi.object({
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8002),

@@ -1,4 +1,5 @@
 import { MissingException } from '@hermes/common';
+import { ActiveUserData } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +9,8 @@ import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
+import { InvalidTokenException } from './errors/invalid-token.exception';
+import { RefreshTokenStorage } from './refresh-token.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -24,12 +27,14 @@ export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
+    private readonly refreshTokenStorage: RefreshTokenStorage,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
   async signUp(signUpInput: SignUpInput) {
     const user = await this.userService.create(signUpInput);
+    return !!user;
   }
 
   async signIn(signInInput: SignInInput) {
@@ -53,17 +58,34 @@ export class AuthenticationService {
     return this._generateTokens(user);
   }
 
-  // Fixme: Update to send token payload back to requesting service.
   async verifyToken(token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync<any>(token, {
+      const payload = await this.jwtService.verifyAsync<ActiveUserData>(token, {
         secret: this.jwtSecret,
         audience: this.jwtAudience,
+        issuer: this.jwtIssuer,
       });
 
-      return !!payload;
+      return payload;
     } catch (error) {
-      return false;
+      throw new InvalidTokenException();
+    }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const { sub, refreshTokenId } = await this.jwtService.verifyAsync<
+        Pick<ActiveUserData, 'sub'> & { refreshTokenId: string }
+      >(refreshToken, {
+        secret: this.jwtSecret,
+        audience: this.jwtAudience,
+        issuer: this.jwtIssuer,
+      });
+      const user = await this.userService.findById(sub);
+
+      return this._generateTokens(user);
+    } catch (error) {
+      throw new InvalidTokenException();
     }
   }
 
