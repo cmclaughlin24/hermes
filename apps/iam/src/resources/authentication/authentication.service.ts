@@ -3,6 +3,7 @@ import { ActiveUserData } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 import { HashingService } from '../../common/services/hashing.service';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
@@ -83,6 +84,16 @@ export class AuthenticationService {
       });
       const user = await this.userService.findById(sub);
 
+      if (!(await this.refreshTokenStorage.validate(user.id, refreshTokenId))) {
+        // Fixme: Refactor to remove refresh token if provided token is invalid to
+        //        revoke refresh token family (https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation)
+        throw new InvalidTokenException();
+      }
+
+      // Note: Remove refresh token from cache storage after one usage to prevent a
+      //       replay attack. (Refresh Token Rotation)
+      await this.refreshTokenStorage.remove(user.id);
+
       return this._generateTokens(user);
     } catch (error) {
       throw new InvalidTokenException();
@@ -90,13 +101,21 @@ export class AuthenticationService {
   }
 
   private async _generateTokens(user: User) {
+    const refreshTokenId = randomUUID();
+
     // Fixme: Send additional user information to be used in payload.
     const [accessToken, refreshToken] = await Promise.all([
       this._signToken<{}>(user.id, this.accessTokenTtl, {}),
-      this._signToken<{}>(user.id, this.refreshTokenTtl, {}),
+      this._signToken<{ refreshTokenId: string }>(
+        user.id,
+        this.refreshTokenTtl,
+        { refreshTokenId },
+      ),
     ]);
 
-    // Fixme: Store the refresh token so that it can be validated.
+    // Note: Insert refresh token into cache storage so it may be invalidated
+    //       after one usage to prevent a replay attack. (Refresh Token Rotation)
+    await this.refreshTokenStorage.insert(user.id, refreshTokenId);
 
     return [accessToken, refreshToken];
   }

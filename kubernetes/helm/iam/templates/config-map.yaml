@@ -1,0 +1,9 @@
+{{- if .Values.openTelemetry.enable }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "iam.otelConfigMapName" . }}
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yaml: | {{ .Values.openTelemetry.config | nindent 4 }}
+{{- end }}
