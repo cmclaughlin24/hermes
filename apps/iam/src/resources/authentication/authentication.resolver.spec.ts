@@ -1,6 +1,15 @@
+import { ApolloServerErrorCode } from '@apollo/server/errors';
+import { ExistsException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
+import { GraphQLError } from 'graphql';
 import { AuthenticationResolver } from './authentication.resolver';
 import { AuthenticationService } from './authentication.service';
+import { SignInInput } from './dto/sign-in.input';
+import { SignUpInput } from './dto/sign-up.input';
+import { ActiveUser } from './entities/active-user.entity';
+import { InvalidPasswordException } from './errors/invalid-password.exception';
+import { InvalidTokenException } from './errors/invalid-token.exception';
 
 type MockAuthenticationService = Partial<
   Record<keyof AuthenticationService, jest.Mock>
@@ -37,30 +46,170 @@ describe('AuthenticationResolver', () => {
   });
 
   describe('signUp()', () => {
-    it.todo('should yield true if...');
+    const signUpInput: SignUpInput = {
+      email: 'ori@moon-studios.com',
+      phoneNumber: '+19999999999',
+      password: 'the-blind-forest',
+    };
 
-    it.todo('should yield false otherwise');
+    afterEach(() => {
+      service.signUp.mockClear();
+    });
 
-    it.todo('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if...');
+    it('should yield true if the sign up was successful', async () => {
+      // Arrange.
+      service.signUp.mockResolvedValue(true);
+
+      // Act/Assert.
+      await expect(resolver.signUp(signUpInput)).resolves.toBeTruthy();
+    });
+
+    it('should yield false otherwise', async () => {
+      // Arrange.
+      service.signUp.mockResolvedValue(false);
+
+      // Act/Assert.
+      await expect(resolver.signUp(signUpInput)).resolves.toBeFalsy();
+    });
+
+    it('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if the email or phone number is already in use', async () => {
+      // Arrange.
+      const errorMessage = `User with email=${signUpInput.email} or phoneNumber=${signUpInput.phoneNumber} already exists!`;
+      const expectedResult = new GraphQLError(errorMessage, {
+        extensions: {
+          code: ApolloServerErrorCode.BAD_USER_INPUT,
+        },
+      });
+      service.signUp.mockRejectedValue(new ExistsException(errorMessage));
+
+      // Act/Assert.
+      await expect(service.signUp(signUpInput)).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('signIn()', () => {
-    it.todo('should yield a "Tokens" object');
+    const signInInput: SignInInput = {
+      email: 'ku@moon-studios.com',
+      password: '+18888888888',
+    };
 
-    it.todo('a "GraphQLError" with a "UNAUTHENTICATED" code if...');
+    afterEach(() => {
+      service.signIn.mockClear();
+    });
 
-    it.todo('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if...');
+    it('should yield a "Tokens" object if the sign in was successful', async () => {
+      // Arrange.
+      const accessToken = 'naru';
+      const refreshToken = 'gumo';
+      service.signIn.mockResolvedValue([accessToken, refreshToken]);
+
+      // Act/Assert.
+      await expect(resolver.signIn(signInInput)).resolves.toEqual({
+        accessToken,
+        refreshToken,
+      });
+    });
+
+    it('a "GraphQLError" with a "UNAUTHENTICATED" code if the sign in failed', async () => {
+      // Arrange.
+      const expectedResult = new GraphQLError(
+        'Unauthorized: Invalid password',
+        {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        },
+      );
+      service.signIn.mockRejectedValue(new InvalidPasswordException());
+
+      // Act/Assert.
+      await expect(resolver.signIn(signInInput)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "GraphQLError" with a "BAD_USER_INPUT" code if the email does not exist', async () => {
+      // Arrange.
+      const errorMessage = `User with email=${signInInput.email} not found!`;
+      const expectedResult = new GraphQLError(errorMessage, {
+        extensions: {
+          code: ApolloServerErrorCode.BAD_USER_INPUT,
+        },
+      });
+      service.signIn.mockRejectedValue(new ExistsException(errorMessage));
+
+      // Act/Assert.
+      await expect(resolver.signIn(signInInput)).rejects.toEqual(
+        expectedResult,
+      );
+    });
   });
 
   describe('verifyToken()', () => {
-    it.todo('should yield an "ActiveUser" object');
+    afterEach(() => {
+      service.verifyToken.mockClear();
+    });
 
-    it.todo('a "GraphQLError" with a "UNAUTHENTICATED" code if...');
+    it('should yield an "ActiveUser" object if the token is valid', async () => {
+      // Arrange.
+      const expectedResult: ActiveUser = {
+        sub: randomUUID(),
+      };
+      service.verifyToken.mockResolvedValue(expectedResult);
+
+      // Act/Assert.
+      await expect(resolver.verifyToken('')).resolves.toEqual(expectedResult);
+    });
+
+    it('a "GraphQLError" with a "UNAUTHENTICATED" code if the token is invalid', async () => {
+      // Arrange.
+      const expectedResult = new GraphQLError(
+        'Unauthorized: Invalid access token',
+        {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        },
+      );
+      service.verifyToken.mockRejectedValue(new InvalidTokenException());
+
+      // Act/Assert.
+      await expect(resolver.verifyToken('')).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('refreshToken()', () => {
-    it.todo('should yield a "Tokens" object');
+    afterEach(() => {
+      service.refreshToken.mockClear();
+    });
 
-    it.todo('a "GraphQLError" with a "UNAUTHENTICATED" code if...');
+    it('should yield a "Tokens" object if the token is valid', async () => {
+      // Arrange.
+      const accessToken = 'seir';
+      const refreshToken = 'naru';
+      service.refreshToken.mockResolvedValue([accessToken, refreshToken]);
+
+      // Act/Assert.
+      await expect(resolver.refreshToken('')).resolves.toEqual({
+        accessToken,
+        refreshToken,
+      });
+    });
+
+    it('a "GraphQLError" with a "UNAUTHENTICATED" code if the token is invalid', async () => {
+      // Arrange.
+      const expectedResult = new GraphQLError(
+        'Unauthorized: Invalid refresh token',
+        {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        },
+      );
+      service.refreshToken.mockRejectedValue(new InvalidTokenException());
+
+      // Act/Assert.
+      await expect(resolver.refreshToken('')).rejects.toEqual(expectedResult);
+    });
   });
 });
