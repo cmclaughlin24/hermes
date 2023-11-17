@@ -1,0 +1,20 @@
+selectorLabels:
+  app: iam
+
+service:
+  type: LoadBalancer
+  port: 3002
+  targetPort: 3002
+
+iam:
+  tag: null
+  environment: null
+  readinessProbe: {}
+  livenessProbe: {}
+  resources: {}
+
+openTelemetry:
+  enable: false
+  tag: null
+  resources: {}
+  config: null

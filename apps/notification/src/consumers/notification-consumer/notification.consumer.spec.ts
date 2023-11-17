@@ -2,21 +2,21 @@ import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
-  MockEmailService,
-  MockNotificationLogService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
-  createNotificationLogServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
+    MockEmailService,
+    MockNotificationLogService,
+    MockPhoneService,
+    MockPushNotificationService,
+    createEmailServiceMock,
+    createNotificationLogServiceMock,
+    createPhoneServiceMock,
+    createPushNotificationServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
-import { EmailService } from '../../common/providers/email/email.service';
-import { PhoneService } from '../../common/providers/phone/phone.service';
-import { PushNotificationService } from '../../common/providers/push-notification/push-notification.service';
+import { EmailService } from '../../common/services/email/email.service';
+import { PhoneService } from '../../common/services/phone/phone.service';
+import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';
 import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
 import { NotificationConsumer } from './notification.consumer';
 

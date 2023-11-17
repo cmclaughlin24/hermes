@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { SequelizeModule } from '@nestjs/sequelize';
 import * as Joi from 'joi';
+import { join } from 'path';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';
@@ -15,14 +16,14 @@ import { ResourcesModule } from './resources/resources.module';
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: process.env.NODE_ENV === 'production',
-      envFilePath: `${process.cwd()}/env/distribution.env`,
+      envFilePath: join(process.cwd(), 'env', 'distribution.env'),
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
         API_KEY: Joi.required(),
-        DB_HOST: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8001),
+        DB_HOST: Joi.required(),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),
         DB_PASSWORD: Joi.required(),
@@ -40,6 +41,7 @@ import { ResourcesModule } from './resources/resources.module';
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         SUBSCRIBERS_REQUEST_URL: Joi.string().required(),
+        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
       }),
     }),
     SequelizeModule.forRootAsync({

@@ -1,4 +1,5 @@
-import { ApiResponseDto, Public, errorToHttpException } from '@hermes/common';
+import { ApiResponseDto, errorToHttpException } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -23,7 +24,7 @@ export class PushTemplateController {
   constructor(private readonly pushTemplateService: PushTemplateService) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find push notification templates.',
     security: [],
@@ -41,7 +42,7 @@ export class PushTemplateController {
   }
 
   @Get(':name')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a push notification template by it's name.",
     security: [],

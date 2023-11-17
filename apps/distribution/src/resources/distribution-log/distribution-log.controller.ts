@@ -1,4 +1,4 @@
-import { Public } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Controller,
   Get,
@@ -20,7 +20,7 @@ export class DistributionLogController {
   ) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find logs by their queue, message type, and/or states.',
     security: [],
@@ -79,7 +79,7 @@ export class DistributionLogController {
   }
 
   @Get(':id')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a log by it's id.",
     security: [],

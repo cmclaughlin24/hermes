@@ -1,7 +1,6 @@
-import { ApiKeyGuard } from '@hermes/common';
+import { IamModule } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -36,9 +35,16 @@ describe('[Feature] Push Template', () => {
             logging: false,
           }),
         }),
+        IamModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: (configService: ConfigService) => ({
+            apiKeyHeader: configService.get('API_KEY_HEADER'),
+            apiKeys: configService.get('API_KEY'),
+          }),
+        }),
         PushTemplateModule,
       ],
-      providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -83,7 +89,7 @@ describe('[Feature] Push Template', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createPushTemplateDto = {
         name: templateName,
@@ -95,7 +101,7 @@ describe('[Feature] Push Template', () => {
       return request(httpServer)
         .post('/push-template')
         .send(createPushTemplateDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -160,7 +166,7 @@ describe('[Feature] Push Template', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Assert.
       const updatePushTemplateDto = {
         actions: [
@@ -175,7 +181,7 @@ describe('[Feature] Push Template', () => {
       return request(httpServer)
         .patch(`/push-template/${templateName}`)
         .send(updatePushTemplateDto)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status is the resource does not exist', () => {
@@ -202,11 +208,11 @@ describe('[Feature] Push Template', () => {
         .expect(HttpStatus.OK);
     });
 
-    it('should respond with a FORBIDDEN status if the request is not authorized', () => {
+    it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
         .delete(`/push-template/${templateName}`)
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {

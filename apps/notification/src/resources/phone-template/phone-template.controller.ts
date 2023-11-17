@@ -1,9 +1,9 @@
 import {
   ApiResponseDto,
   PhoneMethods,
-  Public,
   errorToHttpException,
 } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -28,7 +28,7 @@ export class PhoneTemplateController {
   constructor(private readonly phoneTemplateService: PhoneTemplateService) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find phone templates.',
     security: [],
@@ -46,7 +46,7 @@ export class PhoneTemplateController {
   }
 
   @Get(':deliveryMethod/:name')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a phone template by it's name.",
     security: [],

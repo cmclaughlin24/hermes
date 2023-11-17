@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { SequelizeModule } from '@nestjs/sequelize';
 import * as Joi from 'joi';
+import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
 import { databaseFactory } from './config/database.config';
@@ -17,7 +18,7 @@ import { ResourcesModule } from './resources/resources.module';
   imports: [
     ConfigModule.forRoot({
       ignoreEnvFile: process.env.NODE_ENV === 'production',
-      envFilePath: `${process.cwd()}/env/notification.env`,
+      envFilePath: join(process.cwd(), 'env', 'notification.env'),
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
@@ -52,6 +53,7 @@ import { ResourcesModule } from './resources/resources.module';
         REMOVE_SUBSCRIBER_URL: Joi.string().required(),
         SUBSCRIBER_API_KEY_HEADER: Joi.string().required(),
         SUBSCRIBER_API_KEY: Joi.string().required(),
+        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
         VAPID_SUBJECT: Joi.required(),
         VAPID_PUBLIC_KEY: Joi.required(),
         VAPID_PRIVATE_KEY: Joi.required(),

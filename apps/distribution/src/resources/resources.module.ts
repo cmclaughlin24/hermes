@@ -1,12 +1,18 @@
-import { ApiKeyGuard, RequestLoggerMiddleware } from '@hermes/common';
+import {
+  IamClientModule,
+  IamClientService,
+  RequestLoggerMiddleware,
+} from '@hermes/common';
+import { IamModule } from '@hermes/iam';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { iamFactory } from '../config/iam.config';
 import { DistributionEventModule } from './distribution-event/distribution-event.module';
 import { DistributionLogModule } from './distribution-log/distribution-log.module';
 import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
+import { HealthModule } from './health/health.module';
 import { MessageModule } from './message/message.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -16,8 +22,12 @@ import { HealthModule } from './health/health.module';
     MessageModule,
     DistributionEventModule,
     HealthModule,
+    IamModule.registerAsync({
+      imports: [ConfigModule, IamClientModule],
+      inject: [ConfigService, IamClientService],
+      useFactory: iamFactory,
+    }),
   ],
-  providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
 export class ResourcesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

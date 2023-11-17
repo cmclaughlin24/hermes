@@ -36,6 +36,12 @@
       ],
       "@hermes/open-telemetry/*": [
         "libs/open-telemetry/src/*"
+      ],
+      "@hermes/iam": [
+        "libs/iam/src"
+      ],
+      "@hermes/iam/*": [
+        "libs/iam/src/*"
       ]
     }
   }

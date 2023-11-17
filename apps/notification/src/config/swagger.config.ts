@@ -19,6 +19,14 @@ export function setupSwaggerDocument(app: INestApplication) {
       'NestJS Queues',
       'https://docs.nestjs.com/techniques/queues',
     )
+    .addBasicAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'Authorization',
+    )
     .addApiKey(
       {
         type: 'apiKey',

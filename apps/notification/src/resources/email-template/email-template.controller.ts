@@ -1,8 +1,5 @@
-import {
-  ApiResponseDto,
-  Public,
-  errorToHttpException
-} from '@hermes/common';
+import { ApiResponseDto, errorToHttpException } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -12,7 +9,7 @@ import {
   NotFoundException,
   Param,
   Patch,
-  Post
+  Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as _ from 'lodash';
@@ -27,7 +24,7 @@ export class EmailTemplateController {
   constructor(private readonly emailTemplateService: EmailTemplateService) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find email templates.',
     security: [],
@@ -45,7 +42,7 @@ export class EmailTemplateController {
   }
 
   @Get(':name')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find an email template by it's name.",
     security: [],

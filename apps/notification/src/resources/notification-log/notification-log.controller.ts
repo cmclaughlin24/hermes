@@ -1,4 +1,5 @@
-import { DeliveryMethods, Public } from '@hermes/common';
+import { DeliveryMethods } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import {
   Controller,
   Get,
@@ -21,7 +22,7 @@ export class NotificationLogController {
   ) {}
 
   @Get()
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: 'Find logs by their job name and/or states.',
     security: [],
@@ -69,7 +70,7 @@ export class NotificationLogController {
   }
 
   @Get(':id')
-  @Public()
+  @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a log by it's id.",
     security: [],

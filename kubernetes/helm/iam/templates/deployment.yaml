@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
+  template:
+    metadata:
+      labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
+    spec:
+      containers:
+        {{ with .Values.iam }}
+        - name: iam
+          image: cmclaughlin24/iam:{{ .tag | default "latest" }}
+          ports:
+            - containerPort: {{ $.Values.service.targetPort }}
+          env: {{ toYaml .environment | nindent 12 }}
+          {{- if .readinessProbe }}
+          readinessProbe: {{ toYaml .readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe: {{ toYaml .livenessProbe | nindent 12 }}  
+          {{- end }}
+          {{- if .resources }}
+          resources: {{ toYaml .resources | nindent 12 }}
+          {{- end }}
+        {{ end }}
+      {{- if .Values.openTelemetry.enable }}
+        - name: open-telemetry
+          image: otel/opentelemetry-collector-contrib:{{ .Values.openTelemetry.tag | default "latest" }}
+          volumeMounts:
+            - name: {{ include "iam.otelConfigMapName" . }}
+              mountPath: /etc/otelcol-contrib
+          {{- if .Values.openTelemetry.resources }}
+          resources: {{ toYaml .Values.openTelemetry.resources | nindent 12}}
+          {{- end }}
+      volumes:
+        - name: {{ include "iam.otelConfigMapName" . }}
+          configMap:
+            name: {{ include "iam.otelConfigMapName" . }}
+      {{- end }}

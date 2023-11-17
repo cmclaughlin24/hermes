@@ -1,5 +1,5 @@
 /**
- * This custom execption class is designed to be thrown when
+ * This custom exception class is designed to be thrown when
  * one or more the default distribution rule modification constraints
  * is violated.
  * @examples

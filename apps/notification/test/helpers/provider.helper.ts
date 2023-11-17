@@ -1,8 +1,8 @@
 import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
-import { EmailService } from '../../src/common/providers/email/email.service';
-import { PhoneService } from '../../src/common/providers/phone/phone.service';
-import { PushNotificationService } from '../../src/common/providers/push-notification/push-notification.service';
+import { EmailService } from '../../src/common/services/email/email.service';
+import { PhoneService } from '../../src/common/services/phone/phone.service';
+import { PushNotificationService } from '../../src/common/services/push-notification/push-notification.service';
 import { EmailTemplateService } from '../../src/resources/email-template/email-template.service';
 import { NotificationLogService } from '../../src/resources/notification-log/notification-log.service';
 import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
