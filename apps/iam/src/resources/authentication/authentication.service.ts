@@ -33,11 +33,23 @@ export class AuthenticationService {
     private readonly configService: ConfigService,
   ) {}
 
+  /**
+   * Yields true if the sign up was successful or false otherwise.
+   * @param {SignUpInput} signUpInput
+   * @returns {Promise<boolean>}
+   */
   async signUp(signUpInput: SignUpInput) {
     const user = await this.userService.create(signUpInput);
     return !!user;
   }
 
+  /**
+   * Yields a tuple containing the access and refresh tokens. Throws
+   * a `MissingException` if the user does not exist or an `InvalidPasswordException`
+   * if the password is incorrect.
+   * @param {SignInInput} signInInput
+   * @returns {Promise<[string, string]>}
+   */
   async signIn(signInInput: SignInInput) {
     const user = await this.userService.findByEmail(signInInput.email);
 
@@ -59,6 +71,12 @@ export class AuthenticationService {
     return this._generateTokens(user);
   }
 
+  /**
+   * Yields an `ActiveUserData` or throws an `InvalidTokenException` if the token
+   * is invalid.
+   * @param {string} token
+   * @returns {Promise<ActiveUserData>}
+   */
   async verifyToken(token: string) {
     try {
       const payload = await this.jwtService.verifyAsync<ActiveUserData>(token, {
@@ -73,6 +91,17 @@ export class AuthenticationService {
     }
   }
 
+  /**
+   * Yields a tuple containing the access and refresh tokens or throws an
+   * `InvalidTokenException` it the token is invalid.
+   *
+   * Note: A token is invalidated when it is redeemed for the first time
+   *       (replay attack) or if an attempt to redeem an previously used token
+   *       is made (revoke token family). This is known as Refresh Token Rotation.
+   *
+   * @param {string} refreshToken
+   * @returns {Promise<[string, string]>}
+   */
   async refreshToken(refreshToken: string) {
     try {
       const { sub, refreshTokenId } = await this.jwtService.verifyAsync<
@@ -83,16 +112,15 @@ export class AuthenticationService {
         issuer: this.jwtIssuer,
       });
       const user = await this.userService.findById(sub);
+      const isValid = await this.refreshTokenStorage
+        .validate(user.id, refreshTokenId)
+        .finally(async () => {
+          await this.refreshTokenStorage.remove(user.id);
+        });
 
-      if (!(await this.refreshTokenStorage.validate(user.id, refreshTokenId))) {
-        // Fixme: Refactor to remove refresh token if provided token is invalid to
-        //        revoke refresh token family (https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation)
+      if (!isValid) {
         throw new InvalidTokenException();
       }
-
-      // Note: Remove refresh token from cache storage after one usage to prevent a
-      //       replay attack. (Refresh Token Rotation)
-      await this.refreshTokenStorage.remove(user.id);
 
       return this._generateTokens(user);
     } catch (error) {
@@ -100,7 +128,12 @@ export class AuthenticationService {
     }
   }
 
-  private async _generateTokens(user: User) {
+  /**
+   * Yields a tuple containing the access and refresh tokens.
+   * @param {User} user
+   * @returns {Promise<[string, string]>}
+   */
+  private async _generateTokens(user: User): Promise<[string, string]> {
     const refreshTokenId = randomUUID();
 
     // Fixme: Send additional user information to be used in payload.
@@ -120,6 +153,13 @@ export class AuthenticationService {
     return [accessToken, refreshToken];
   }
 
+  /**
+   * Yields a JSON Web Token (JWT).
+   * @param {string} userId 
+   * @param {number} expiresIn 
+   * @param {T} payload 
+   * @returns {Promise<string>}
+   */
   private async _signToken<T>(userId: string, expiresIn: number, payload?: T) {
     return this.jwtService.signAsync(
       {
