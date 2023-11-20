@@ -11,13 +11,13 @@ import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 
 @Resolver()
+@Auth(AuthType.NONE)
 export class AuthenticationResolver {
   private static readonly UNAUTHENTICATED_ERROR_CODE = 'UNAUTHENTICATED';
 
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Mutation(() => Boolean, { name: 'signUp' })
-  @Auth(AuthType.NONE)
   async signUp(@Args('signUpInput') signUpInput: SignUpInput) {
     return this.authenticationService.signUp(signUpInput).catch((error) => {
       throw errorToGraphQLException(error);
@@ -25,7 +25,6 @@ export class AuthenticationResolver {
   }
 
   @Mutation(() => Tokens, { name: 'signIn' })
-  @Auth(AuthType.NONE)
   async signIn(@Args('signInInput') signInInput: SignInInput) {
     try {
       const [accessToken, refreshToken] =
