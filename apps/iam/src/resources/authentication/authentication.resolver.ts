@@ -1,4 +1,5 @@
 import { errorToGraphQLException } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { AuthenticationService } from './authentication.service';
@@ -10,6 +11,7 @@ import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 
 @Resolver()
+@Auth(AuthType.NONE)
 export class AuthenticationResolver {
   private static readonly UNAUTHENTICATED_ERROR_CODE = 'UNAUTHENTICATED';
 

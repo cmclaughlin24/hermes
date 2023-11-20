@@ -4,10 +4,10 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
 import { IamModuleOptions } from '../types/iam-module-options.type';
+import { getRequest } from '../utils/iam.utils';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
@@ -30,7 +30,7 @@ export class ApiKeyGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = getRequest(context);
     return this.apiKeys.includes(request.header(this.apiKeyHeader));
   }
 }
