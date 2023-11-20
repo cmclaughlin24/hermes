@@ -1,4 +1,5 @@
 import { errorToGraphQLException } from '@hermes/common';
+import { Auth, AuthType } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { AuthenticationService } from './authentication.service';
@@ -16,6 +17,7 @@ export class AuthenticationResolver {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Mutation(() => Boolean, { name: 'signUp' })
+  @Auth(AuthType.NONE)
   async signUp(@Args('signUpInput') signUpInput: SignUpInput) {
     return this.authenticationService.signUp(signUpInput).catch((error) => {
       throw errorToGraphQLException(error);
@@ -23,6 +25,7 @@ export class AuthenticationResolver {
   }
 
   @Mutation(() => Tokens, { name: 'signIn' })
+  @Auth(AuthType.NONE)
   async signIn(@Args('signInInput') signInInput: SignInInput) {
     try {
       const [accessToken, refreshToken] =

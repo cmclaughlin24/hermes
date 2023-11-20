@@ -7,13 +7,14 @@ import {
 import { Request } from 'express';
 import { IAM_USER_KEY } from '../constants/iam.constants';
 import { TokenService } from '../services/token.service';
+import { getRequest } from '../utils/iam.utils';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
   constructor(private readonly tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = getRequest(context);
     const token = this._extractToken(request);
 
     if (!token) {

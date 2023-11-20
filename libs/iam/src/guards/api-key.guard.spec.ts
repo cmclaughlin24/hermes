@@ -82,6 +82,7 @@ describe('ApiKeyGuard', () => {
     it('should yield true if the api key is equivalent to one of the api keys', () => {
       // Arrange.
       const context: any = {
+        getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
           getRequest: jest.fn(() => ({ header: jest.fn(() => apiKey) })),
@@ -98,6 +99,7 @@ describe('ApiKeyGuard', () => {
     it('should yield false otherwise', () => {
       // Arrange.
       const context: any = {
+        getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
           getRequest: jest.fn(() => ({ header: jest.fn(() => 'e2e-test') })),

@@ -43,6 +43,7 @@ describe('AccessTokenGuard', () => {
     it('should yield true if the access token is valid', async () => {
       // Arrange.
       const context: any = {
+        getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
           getRequest: jest.fn(() => ({
@@ -59,6 +60,7 @@ describe('AccessTokenGuard', () => {
     it('should throw an "UnauthorizedException" if the authorization header does not include a token', async () => {
       // Arrange.
       const context: any = {
+        getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
           getRequest: jest.fn(() => ({ headers: {} })),
@@ -75,6 +77,7 @@ describe('AccessTokenGuard', () => {
     it('should throw an "UnauthorizedException" if the access token is invalid', async () => {
       // Arrange.
       const context: any = {
+        getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
           getRequest: jest.fn(() => ({

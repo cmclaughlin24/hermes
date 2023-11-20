@@ -15,6 +15,8 @@ import { ResourcesModule } from './resources/resources.module';
       envFilePath: join(process.cwd(), 'env', 'iam.env'),
       isGlobal: true,
       validationSchema: Joi.object({
+        API_KEY_HEADER: Joi.required(),
+        API_KEY: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8002),
         DB_HOST: Joi.required(),
@@ -28,6 +30,8 @@ import { ResourcesModule } from './resources/resources.module';
         JWT_TOKEN_ISSUER: Joi.required(),
         JWT_ACCESS_TOKEN_TTL: Joi.number().default(3600),
         JWT_REFRESH_TOKEN_TTL: Joi.number().default(86400),
+        REDIS_HOST: Joi.required(),
+        REDIS_PORT: Joi.number().required(),
         ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
       }),
     }),
