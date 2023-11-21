@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Permission } from '../../permission/entities/permission.entity';
 
 @Entity()
 @ObjectType()
@@ -29,4 +32,8 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @JoinTable()
+  @ManyToMany(() => Permission, (permission) => permission.users)
+  permissions?: Permission[];
 }

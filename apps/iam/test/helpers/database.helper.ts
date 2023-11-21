@@ -13,4 +13,5 @@ export const createMockRepository = <T = any>(): MockRepository<T> => ({
   remove: jest.fn(),
   save: jest.fn(),
   preload: jest.fn(),
+  createQueryBuilder: jest.fn(),
 });
