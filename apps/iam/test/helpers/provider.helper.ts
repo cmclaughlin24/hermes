@@ -1,6 +1,7 @@
 import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { PermissionService } from '../../src/resources/permission/permission.service';
 import { UserService } from '../../src/resources/user/user.service';
 
 export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
@@ -22,6 +23,20 @@ export type MockJwtService = Partial<Record<keyof JwtService, jest.Mock>>;
 export const createJwtServiceMock = (): MockJwtService => ({
   signAsync: jest.fn(),
   verifyAsync: jest.fn(),
+});
+
+export type MockPermissionService = Partial<
+  Record<keyof PermissionService, jest.Mock>
+>;
+
+export const createPermissionServiceMock = (): MockPermissionService => ({
+  findAll: jest.fn(),
+  findUserPermissions: jest.fn(),
+  findById: jest.fn(),
+  findByResourceAction: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  remove: jest.fn(),
 });
 
 export type MockUserService = Partial<Record<keyof UserService, jest.Mock>>;

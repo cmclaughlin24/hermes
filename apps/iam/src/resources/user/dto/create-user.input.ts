@@ -1,5 +1,13 @@
 import { InputType } from '@nestjs/graphql';
-import { IsEmail, IsPhoneNumber, IsStrongPassword } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsOptional,
+  IsPhoneNumber,
+  IsStrongPassword,
+  ValidateNested,
+} from 'class-validator';
+import { CreatePermissionInput } from '../../permission/dto/create-permission.input';
 
 @InputType()
 export class CreateUserInput {
@@ -13,4 +21,9 @@ export class CreateUserInput {
     minLength: 6,
   })
   password: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePermissionInput)
+  permissions?: CreatePermissionInput[];
 }

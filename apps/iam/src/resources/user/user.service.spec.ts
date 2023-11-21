@@ -10,7 +10,9 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../test/helpers/database.helper';
+import { createPermissionServiceMock } from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
+import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
@@ -47,6 +49,10 @@ describe('UserService', () => {
         {
           provide: HashingService,
           useValue: createHashingServiceMock(),
+        },
+        {
+          provide: PermissionService,
+          useValue: createPermissionServiceMock(),
         },
       ],
     }).compile();
@@ -166,6 +172,8 @@ describe('UserService', () => {
       expect(hashingService.hash).toHaveBeenCalled();
     });
 
+    it.todo('should assign permission(s) to the user');
+
     it('should yield the created user', async () => {
       // Arrange.
       repository.save.mockResolvedValue(user);
@@ -211,6 +219,8 @@ describe('UserService', () => {
       // Assert.
       expect(repository.preload).toHaveBeenCalled();
     });
+
+    it.todo('should update the assigned permission(s) of the user');
 
     it('should yield the updated user', async () => {
       // Arrange.

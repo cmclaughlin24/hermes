@@ -8,6 +8,7 @@ import { VerifyTokenService } from '../common/services/verify-token.service';
 import { iamFactory } from '../config/iam.config';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
     }),
     UserModule,
     AuthenticationModule,
+    PermissionModule,
   ],
 })
 export class ResourcesModule {}

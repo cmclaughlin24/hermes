@@ -1,6 +1,6 @@
 import { ApolloServerErrorCode } from '@apollo/server/errors';
 import { errorToGraphQLException } from '@hermes/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -17,7 +17,7 @@ export class UserResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  async findOne(@Args('userId') id: string) {
+  async findOne(@Args('userId', { type: () => ID }) id: string) {
     const user = await this.userService.findById(id);
 
     if (!user) {
@@ -38,7 +38,7 @@ export class UserResolver {
 
   @Mutation(() => User, { name: 'updateUser' })
   async update(
-    @Args('userId') id: string,
+    @Args('userId', { type: () => ID }) id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
     return this.userService.update(id, updateUserInput).catch((error) => {
@@ -47,7 +47,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User, { name: 'removeUser' })
-  async delete(@Args('userId') id: string) {
+  async delete(@Args('userId', { type: () => ID }) id: string) {
     return this.userService.remove(id).catch((error) => {
       throw errorToGraphQLException(error);
     });
