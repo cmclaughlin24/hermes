@@ -154,6 +154,7 @@ describe('AuthenticationResolver', () => {
       // Arrange.
       const expectedResult: ActiveUser = {
         sub: randomUUID(),
+        permissions: [],
       };
       service.verifyToken.mockResolvedValue(expectedResult);
 

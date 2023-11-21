@@ -48,6 +48,7 @@ describe('VerifyTokenService', () => {
       // Arrange.
       const expectedResult: ActiveUserData = {
         sub: randomUUID(),
+        permissions: [],
       };
       jwtService.verifyAsync.mockResolvedValue(expectedResult);
 

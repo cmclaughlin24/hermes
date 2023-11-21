@@ -113,20 +113,34 @@ describe('UserService', () => {
 
   describe('findByEmail()', () => {
     afterEach(() => {
-      repository.findOneBy.mockClear();
+      repository.findOne.mockClear();
     });
 
     it('should yield a user', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(user);
+      repository.findOne.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.findByEmail(user.email)).resolves.toEqual(user);
     });
 
+    it("should include the user's permissions if requested", async () => {
+      // Arrange.
+      repository.findOne.mockResolvedValue(user);
+
+      // Act.
+      await service.findByEmail(user.email, true);
+
+      // Assert.
+      expect(repository.findOne).toHaveBeenCalledWith({
+        where: { email: user.email },
+        relations: ['permissions'],
+      });
+    });
+
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(null);
+      repository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findByEmail(user.email)).resolves.toBeNull();

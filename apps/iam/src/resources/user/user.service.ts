@@ -44,10 +44,14 @@ export class UserService {
   /**
    * Yields a user by email.
    * @param {string} email
+   * @param {boolean} includePermissions
    * @returns {Promise<User>}
    */
-  async findByEmail(email: string) {
-    return this.userRepository.findOneBy({ email });
+  async findByEmail(email: string, includePermissions: boolean = false) {
+    return this.userRepository.findOne({
+      where: { email },
+      relations: includePermissions ? ['permissions'] : [],
+    });
   }
 
   /**
@@ -134,7 +138,7 @@ export class UserService {
    * Yields a permission by resource and action or throws a `MissingException` if
    * a permission does not exist.
    * @param {string} resource
-   * @param {PermissionAction} action 
+   * @param {PermissionAction} action
    * @returns {Promise<Permission>}
    */
   private async _findPermission(resource: string, action: PermissionAction) {
