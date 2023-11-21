@@ -6,4 +6,5 @@ export * from './services/token.service';
 export * from './types/active-user.type';
 export * from './types/auth-type.type';
 export * from './types/iam-module-options.type';
+export * from './utils/iam.utils';
 
