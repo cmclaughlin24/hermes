@@ -1,4 +1,4 @@
-import { ActiveUserData, TokenService } from '@hermes/iam';
+import { ActiveEntity, TokenService } from '@hermes/iam';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +17,7 @@ export class IamClientService extends TokenService {
     super();
   }
 
-  async verifyAccessToken(token: string): Promise<ActiveUserData> {
+  async verifyAccessToken(token: string): Promise<ActiveEntity> {
     const request = this.httpService
       .post(this.VERIFY_TOKEN_URL, {
         query: `

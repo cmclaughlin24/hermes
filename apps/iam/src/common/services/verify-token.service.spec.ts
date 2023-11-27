@@ -1,12 +1,12 @@
-import { ActiveUserData } from '@hermes/iam';
+import { ActiveEntity } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import {
-  MockJwtService,
-  createConfigServiceMock,
-  createJwtServiceMock,
+    MockJwtService,
+    createConfigServiceMock,
+    createJwtServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { VerifyTokenService } from './verify-token.service';
 
@@ -44,9 +44,9 @@ describe('VerifyTokenService', () => {
       jwtService.verifyAsync.mockClear();
     });
 
-    it('should yield the "ActiveUserData" if the token is valid', async () => {
+    it('should yield the "ActiveEntity" if the token is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveUserData = {
+      const expectedResult: ActiveEntity = {
         sub: randomUUID(),
         permissions: [],
       };

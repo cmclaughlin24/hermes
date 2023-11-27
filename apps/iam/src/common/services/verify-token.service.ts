@@ -1,4 +1,4 @@
-import { ActiveUserData, TokenService } from '@hermes/iam';
+import { ActiveEntity, TokenService } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -16,13 +16,8 @@ export class VerifyTokenService extends TokenService {
     super();
   }
 
-  /**
-   * Yields an `ActiveUserData` object.
-   * @param {string} token
-   * @returns {Promise<ActiveUserData>}
-   */
-  verifyAccessToken(token: string): Promise<ActiveUserData> {
-    return this.jwtService.verifyAsync<ActiveUserData>(token, {
+  verifyAccessToken(token: string): Promise<ActiveEntity> {
+    return this.jwtService.verifyAsync<ActiveEntity>(token, {
       secret: this.jwtSecret,
       audience: this.jwtAudience,
       issuer: this.jwtIssuer,

@@ -1,15 +1,15 @@
 import { MissingException } from '@hermes/common';
-import { ActiveUserData } from '@hermes/iam';
+import { ActiveEntity } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import {
-  MockJwtService,
-  MockUserService,
-  createConfigServiceMock,
-  createJwtServiceMock,
-  createUserServiceMock,
+    MockJwtService,
+    MockUserService,
+    createConfigServiceMock,
+    createJwtServiceMock,
+    createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
 import { VerifyTokenService } from '../../common/services/verify-token.service';
@@ -198,9 +198,9 @@ describe('AuthenticationService', () => {
       verifyTokenSerivce.verifyAccessToken.mockClear();
     });
 
-    it('should yield an "ActiveUserData" object if the token is valid', async () => {
+    it('should yield an "ActiveEntity" object if the token is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveUserData = {
+      const expectedResult: ActiveEntity = {
         sub: randomUUID(),
         permissions: [],
       };

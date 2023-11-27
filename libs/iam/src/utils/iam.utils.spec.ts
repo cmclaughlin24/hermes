@@ -78,4 +78,6 @@ describe('iam.utils.ts', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('unpackPermissions()', () => {});
 });
