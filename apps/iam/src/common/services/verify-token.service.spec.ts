@@ -4,9 +4,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import {
-    MockJwtService,
-    createConfigServiceMock,
-    createJwtServiceMock,
+  MockJwtService,
+  createConfigServiceMock,
+  createJwtServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { VerifyTokenService } from './verify-token.service';
 
@@ -48,7 +48,7 @@ describe('VerifyTokenService', () => {
       // Arrange.
       const expectedResult: ActiveEntity = {
         sub: randomUUID(),
-        permissions: [],
+        authorization_details: [],
       };
       jwtService.verifyAsync.mockResolvedValue(expectedResult);
 

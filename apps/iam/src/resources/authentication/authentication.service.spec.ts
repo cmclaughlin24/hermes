@@ -5,11 +5,11 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import {
-    MockJwtService,
-    MockUserService,
-    createConfigServiceMock,
-    createJwtServiceMock,
-    createUserServiceMock,
+  MockJwtService,
+  MockUserService,
+  createConfigServiceMock,
+  createJwtServiceMock,
+  createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
 import { VerifyTokenService } from '../../common/services/verify-token.service';
@@ -202,7 +202,7 @@ describe('AuthenticationService', () => {
       // Arrange.
       const expectedResult: ActiveEntity = {
         sub: randomUUID(),
-        permissions: [],
+        authorization_details: [],
       };
       verifyTokenSerivce.verifyAccessToken.mockResolvedValue(expectedResult);
 
