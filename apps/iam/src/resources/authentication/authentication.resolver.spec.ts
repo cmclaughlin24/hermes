@@ -7,7 +7,7 @@ import { AuthenticationResolver } from './authentication.resolver';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
-import { ActiveEntity } from './entities/active-entity.entity';
+import { ActiveEntityData } from './entities/active-entity.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 
@@ -150,9 +150,9 @@ describe('AuthenticationResolver', () => {
       service.verifyToken.mockClear();
     });
 
-    it('should yield an "ActiveEntity" object if the token is valid', async () => {
+    it('should yield an "ActiveEntityData" object if the token is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveEntity = {
+      const expectedResult: ActiveEntityData = {
         sub: randomUUID(),
         authorization_details: [],
       };

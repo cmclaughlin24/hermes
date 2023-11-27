@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
-import { ActiveEntity } from './entities/active-entity.entity';
+import { ActiveEntityData } from './entities/active-entity.entity';
 import { Tokens } from './entities/tokens.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
@@ -43,7 +43,7 @@ export class AuthenticationResolver {
     }
   }
 
-  @Mutation(() => ActiveEntity, { name: 'verifyAccessToken' })
+  @Mutation(() => ActiveEntityData, { name: 'verifyAccessToken' })
   async verifyToken(@Args('token') token: string) {
     return this.authenticationService.verifyToken(token).catch((error) => {
       if (error instanceof InvalidTokenException) {

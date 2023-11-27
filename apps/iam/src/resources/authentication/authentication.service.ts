@@ -1,5 +1,5 @@
 import { MissingException } from '@hermes/common';
-import { ActiveEntity, packPermissions } from '@hermes/iam';
+import { ActiveEntityData, packPermissions } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -75,10 +75,10 @@ export class AuthenticationService {
   }
 
   /**
-   * Yields an `ActiveEntity` or throws an `InvalidTokenException` if the token
+   * Yields an `ActiveEntityData` or throws an `InvalidTokenException` if the token
    * is invalid.
    * @param {string} token
-   * @returns {Promise<ActiveEntity>}
+   * @returns {Promise<ActiveEntityData>}
    */
   async verifyToken(token: string) {
     try {
@@ -104,7 +104,7 @@ export class AuthenticationService {
   async refreshToken(refreshToken: string) {
     try {
       const { sub, refreshTokenId } = await this.jwtService.verifyAsync<
-        Pick<ActiveEntity, 'sub'> & { refreshTokenId: string }
+        Pick<ActiveEntityData, 'sub'> & { refreshTokenId: string }
       >(refreshToken, {
         secret: this.jwtSecret,
         audience: this.jwtAudience,
@@ -138,7 +138,7 @@ export class AuthenticationService {
 
     // Fixme: Send additional user information to be used in payload.
     const [accessToken, refreshToken] = await Promise.all([
-      this._signToken<Partial<ActiveEntity>>(user.id, this.accessTokenTtl, {
+      this._signToken<Partial<ActiveEntityData>>(user.id, this.accessTokenTtl, {
         authorization_details: permissions,
       }),
       this._signToken<{ refreshTokenId: string }>(

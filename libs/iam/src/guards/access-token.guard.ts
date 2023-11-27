@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { IAM_USER_KEY } from '../constants/iam.constants';
+import { IAM_ENTITY_KEY } from '../constants/iam.constants';
 import { TokenService } from '../services/token.service';
 import { getRequest } from '../utils/iam.utils';
 
@@ -24,7 +24,7 @@ export class AccessTokenGuard implements CanActivate {
     try {
       const payload = await this.tokenService.verifyAccessToken(token);
 
-      request[IAM_USER_KEY] = payload;
+      request[IAM_ENTITY_KEY] = payload;
     } catch (error) {
       throw new UnauthorizedException();
     }

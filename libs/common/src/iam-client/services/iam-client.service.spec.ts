@@ -48,7 +48,7 @@ describe('IamClientService', () => {
       httpService.post.mockClear();
     });
 
-    it('should yield the "ActiveEntity" if the token is valid', async () => {
+    it('should yield the "ActiveEntityData" if the token is valid', async () => {
       // Arrange.
       const expectedResult = { data: { data: { verifyAccessToken: {} } } };
       httpService.post.mockImplementation(() => of(expectedResult));

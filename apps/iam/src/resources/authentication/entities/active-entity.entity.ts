@@ -1,8 +1,8 @@
-import { ActiveEntity as IamActiveEntity } from '@hermes/iam';
+import { ActiveEntityData as IamActiveEntityData } from '@hermes/iam';
 import { ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class ActiveEntity implements IamActiveEntity {
+export class ActiveEntityData implements IamActiveEntityData {
   sub: string;
   authorization_details: string[];
 }
