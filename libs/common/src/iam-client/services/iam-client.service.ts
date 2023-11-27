@@ -24,6 +24,7 @@ export class IamClientService extends TokenService {
         mutation {
           verifyAccessToken(token: "${token}") {
             sub
+            authorization_details
           }
         }
       `,

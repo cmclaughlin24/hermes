@@ -3,7 +3,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { AuthenticationGuard } from './guards/authentication.guard';
-import { IAM_MODULE_OPTIONS_TOKEN, IamModuleDefinitionClass } from './iam.module-definition';
+import {
+  IAM_MODULE_OPTIONS_TOKEN,
+  IamModuleDefinitionClass,
+} from './iam.module-definition';
 import { TokenService } from './services/token.service';
 import { IamModuleOptions } from './types/iam-module-options.type';
 
@@ -18,10 +21,9 @@ import { IamModuleOptions } from './types/iam-module-options.type';
     {
       provide: TokenService,
       inject: [IAM_MODULE_OPTIONS_TOKEN],
-      useFactory: (options: IamModuleOptions) => options.tokenService
-    }
+      useFactory: (options: IamModuleOptions) => options.tokenService,
+    },
   ],
-  exports: [],
 })
 export class IamModule extends IamModuleDefinitionClass {
   static register(options: IamModuleOptions = {}): DynamicModule {
