@@ -1,5 +1,5 @@
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { getRequest, packPermissions } from './iam.utils';
+import { getRequest, packPermissions, unpackPermissions } from './iam.utils';
 
 jest.mock('@nestjs/graphql');
 
@@ -79,5 +79,34 @@ describe('iam.utils.ts', () => {
     });
   });
 
-  describe('unpackPermissions()', () => {});
+  describe('unpackPermissions()', () => {
+    it('should yield a permissions map', () => {
+      // Arrange.
+      const permissions = ['Metroid=FightRidley,KillMetroids'];
+      const expectedResult = new Map<string, string[]>();
+      expectedResult.set('Metroid', ['FightRidley', 'KillMetroids']);
+
+      // Act.
+      const result = unpackPermissions<string>(permissions);
+
+      // Assert.
+      expect(result).toEqual(expectedResult);
+    });
+
+    it('should yield an empty map if null/undefined is provided as the argument', () => {
+      // Act.
+      const result = unpackPermissions(null);
+
+      // Assert.
+      expect(result).toEqual(new Map());
+    });
+
+    it('should yield an empty if an empty list is provided as the argument', () => {
+      // Act.
+      const result = unpackPermissions([]);
+
+      // Assert.
+      expect(result).toEqual(new Map());
+    });
+  });
 });
