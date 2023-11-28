@@ -13,7 +13,7 @@ import { EmailTemplate } from './entities/email-template.entity';
 
 @Injectable()
 export class EmailTemplateService {
-  static readonly CACHE_KEY = 'email-template';
+  private static readonly CACHE_KEY = 'email-template';
 
   constructor(
     @InjectModel(EmailTemplate)

@@ -15,7 +15,7 @@ import { PhoneTemplate } from './entities/phone-template.entity';
 
 @Injectable()
 export class PhoneTemplateService {
-  static readonly CACHE_KEY = 'phone-template';
+  private static readonly CACHE_KEY = 'phone-template';
 
   constructor(
     @InjectModel(PhoneTemplate)

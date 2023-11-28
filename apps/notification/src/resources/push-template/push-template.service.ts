@@ -17,7 +17,7 @@ import { PushTemplate } from './entities/push-template.entity';
 
 @Injectable()
 export class PushTemplateService {
-  static readonly CACHE_KEY = 'push-notification';
+  private static readonly CACHE_KEY = 'push-notification';
 
   constructor(
     @InjectModel(PushTemplate)

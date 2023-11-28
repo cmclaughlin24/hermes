@@ -49,3 +49,26 @@ export function packPermissions<T>(
     .map(([resource, actions]) => `${resource}=${actions.join(',')}`)
     .value();
 }
+
+/**
+ * Yields a permissions map where the key is the resource and the value is a
+ * list of allowed actions for that resource.
+ * @example
+ * - "VideoGameCharacters=List,Get,Create" => "VideoGameCharacters ['List', 'Get', 'Create']"
+ * @param {string[]} permissions
+ * @returns {Map<string, T[]>}
+ */
+export function unpackPermissions<T>(permissions: string[]) {
+  const map = new Map<string, T[]>();
+
+  if (_.isEmpty(permissions)) {
+    return map;
+  }
+
+  for (const permission of permissions) {
+    const [resource, actions] = permission.split('=');
+    map.set(resource, actions.split(',') as T[]);
+  }
+
+  return map;
+}

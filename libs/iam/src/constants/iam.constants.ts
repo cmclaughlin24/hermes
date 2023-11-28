@@ -1,1 +1,1 @@
-export const IAM_USER_KEY = 'user';
+export const IAM_ENTITY_KEY = 'entity';

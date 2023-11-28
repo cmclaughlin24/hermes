@@ -1,5 +1,10 @@
-import { ActiveUserData } from '../types/active-user.type';
+import { ActiveEntityData } from '../types/active-entity-data.type';
 
 export abstract class TokenService {
-  abstract verifyAccessToken(token: string): Promise<ActiveUserData>;
+  /**
+   * Yields an `ActiveEntityData` object.
+   * @param {string} token
+   * @returns {Promise<ActiveEntityData>}
+   */
+  abstract verifyAccessToken(token: string): Promise<ActiveEntityData>;
 }

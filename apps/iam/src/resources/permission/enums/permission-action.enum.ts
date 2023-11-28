@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum PermissionAction {
-  LIST = 'List',
-  GET = 'Get',
-  CREATE = 'Create',
-  UPDATE = 'Update',
-  REMOVE = 'Remove',
+  LIST = 'list',
+  GET = 'get',
+  CREATE = 'create',
+  UPDATE = 'update',
+  REMOVE = 'remove',
 }
 
 registerEnumType(PermissionAction, {

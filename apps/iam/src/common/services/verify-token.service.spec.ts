@@ -1,4 +1,4 @@
-import { ActiveUserData } from '@hermes/iam';
+import { ActiveEntityData } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -44,11 +44,11 @@ describe('VerifyTokenService', () => {
       jwtService.verifyAsync.mockClear();
     });
 
-    it('should yield the "ActiveUserData" if the token is valid', async () => {
+    it('should yield the "ActiveEntityData" if the token is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveUserData = {
+      const expectedResult: ActiveEntityData = {
         sub: randomUUID(),
-        permissions: [],
+        authorization_details: [],
       };
       jwtService.verifyAsync.mockResolvedValue(expectedResult);
 
