@@ -10,7 +10,6 @@ import {
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
 import { Permission } from './entities/permission.entity';
-import { PermissionAction } from './enums/permission-action.enum';
 import { PermissionResolver } from './permission.resolver';
 import { PermissionService } from './permission.service';
 
@@ -45,7 +44,7 @@ describe('PermissionResolver', () => {
         {
           id: randomUUID(),
           resource: 'VideoGameCharacters',
-          action: PermissionAction.LIST,
+          action: 'list',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -69,7 +68,7 @@ describe('PermissionResolver', () => {
       const expectedResult: Permission = {
         id: permissionId,
         resource: 'VideoGameCharacters',
-        action: PermissionAction.GET,
+        action: 'get',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -101,7 +100,7 @@ describe('PermissionResolver', () => {
   describe('create()', () => {
     const createPermissionInput: CreatePermissionInput = {
       resource: 'VideoGameCharacters',
-      action: PermissionAction.CREATE,
+      action: 'create',
     };
 
     afterEach(() => {
@@ -144,7 +143,7 @@ describe('PermissionResolver', () => {
     const permissionId = randomUUID();
     const updatePermissionInput: UpdatePermissionInput = {
       resource: 'VideoGameCharacters',
-      action: PermissionAction.UPDATE,
+      action: 'update',
     };
 
     afterEach(() => {
@@ -195,7 +194,7 @@ describe('PermissionResolver', () => {
       const expectedResult: Permission = {
         id: permissionId,
         resource: 'VideoGameCharacters',
-        action: PermissionAction.REMOVE,
+        action: 'remove',
         createdAt: new Date(),
         updatedAt: new Date(),
       };

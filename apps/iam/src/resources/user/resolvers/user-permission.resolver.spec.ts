@@ -5,7 +5,6 @@ import {
   createPermissionServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { Permission } from '../../permission/entities/permission.entity';
-import { PermissionAction } from '../../permission/enums/permission-action.enum';
 import { PermissionService } from '../../permission/permission.service';
 import { User } from '../entities/user.entity';
 import { UserPermissionResolver } from './user-permission.resolver';
@@ -46,7 +45,7 @@ describe('UserPermissionResolver', () => {
         {
           id: randomUUID(),
           resource: 'VideoGameConsole',
-          action: PermissionAction.LIST,
+          action: 'list',
           createdAt: new Date(),
           updatedAt: new Date(),
         },

@@ -1,7 +1,6 @@
 import { InputType } from '@nestjs/graphql';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { PermissionAction } from '../enums/permission-action.enum';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class CreatePermissionInput {
@@ -10,6 +9,8 @@ export class CreatePermissionInput {
   @Transform(({ value }: TransformFnParams) => value?.trim())
   resource: string;
 
-  @IsEnum(PermissionAction)
-  action: PermissionAction;
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  action: string;
 }

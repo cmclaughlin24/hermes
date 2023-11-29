@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
 import { Permission } from './entities/permission.entity';
-import { PermissionAction } from './enums/permission-action.enum';
 
 @Injectable()
 export class PermissionService {
@@ -52,10 +51,10 @@ export class PermissionService {
   /**
    * Yields a permission by resource and action.
    * @param {string} resource
-   * @param {PermissionAction} action
+   * @param {string} action
    * @returns {Promise<Permission>}
    */
-  async findByResourceAction(resource: string, action: PermissionAction) {
+  async findByResourceAction(resource: string, action: string) {
     return this.permissionRepository.findOneBy({ resource, action });
   }
 

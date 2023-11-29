@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { HashingService } from '../../common/services/hashing.service';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
 import { Permission } from '../permission/entities/permission.entity';
-import { PermissionAction } from '../permission/enums/permission-action.enum';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -138,10 +137,10 @@ export class UserService {
    * Yields a permission by resource and action or throws a `MissingException` if
    * a permission does not exist.
    * @param {string} resource
-   * @param {PermissionAction} action
+   * @param {string} action
    * @returns {Promise<Permission>}
    */
-  private async _findPermission(resource: string, action: PermissionAction) {
+  private async _findPermission(resource: string, action: string) {
     const permission = await this.permissionService.findByResourceAction(
       resource,
       action,

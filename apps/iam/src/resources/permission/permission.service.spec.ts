@@ -13,7 +13,6 @@ import {
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
 import { Permission } from './entities/permission.entity';
-import { PermissionAction } from './enums/permission-action.enum';
 import { PermissionService } from './permission.service';
 
 describe('PermissionService', () => {
@@ -50,7 +49,7 @@ describe('PermissionService', () => {
         {
           id: randomUUID(),
           resource: 'VideoGame',
-          action: PermissionAction.LIST,
+          action: 'list',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -92,7 +91,7 @@ describe('PermissionService', () => {
         {
           id: randomUUID(),
           resource: 'VideoGame',
-          action: PermissionAction.CREATE,
+          action: 'create',
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -126,7 +125,7 @@ describe('PermissionService', () => {
       const expectedResult: Permission = {
         id: permissionId,
         resource: 'VideoGame',
-        action: PermissionAction.GET,
+        action: 'get',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -149,7 +148,7 @@ describe('PermissionService', () => {
 
   describe('findByResourceAction()', () => {
     const resource = 'VideoGame';
-    const action = PermissionAction.GET;
+    const action = 'get';
 
     afterEach(() => {
       repository.findOneBy.mockClear();
@@ -186,7 +185,7 @@ describe('PermissionService', () => {
   describe('create()', () => {
     const createPermissionInput: CreatePermissionInput = {
       resource: 'VideoGame',
-      action: PermissionAction.CREATE,
+      action: 'create',
     };
 
     afterEach(() => {
@@ -243,7 +242,7 @@ describe('PermissionService', () => {
     const permissionId = randomUUID();
     const updatePermissionInput: UpdatePermissionInput = {
       resource: 'VideoGame',
-      action: PermissionAction.UPDATE,
+      action: 'update',
     };
 
     afterEach(() => {
@@ -335,7 +334,7 @@ describe('PermissionService', () => {
       const expectedResult: Permission = {
         id: permissionId,
         resource: 'VideoGame',
-        action: PermissionAction.REMOVE,
+        action: 'remove',
         createdAt: new Date(),
         updatedAt: new Date(),
       };

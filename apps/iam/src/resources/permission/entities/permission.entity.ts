@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { PermissionAction } from '../enums/permission-action.enum';
 
 @Entity()
 @Unique(['resource', 'action'])
@@ -22,17 +21,8 @@ export class Permission {
   @Column()
   resource: string;
 
-  @Column({
-    enumName: 'PermissionAction',
-    enum: [
-      PermissionAction.LIST,
-      PermissionAction.GET,
-      PermissionAction.CREATE,
-      PermissionAction.UPDATE,
-      PermissionAction.REMOVE,
-    ],
-  })
-  action: PermissionAction;
+  @Column()
+  action: string;
 
   @CreateDateColumn()
   createdAt: Date;

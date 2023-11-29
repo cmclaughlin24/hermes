@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { HashingService } from '../../common/services/hashing.service';
 import { VerifyTokenService } from '../../common/services/verify-token.service';
-import { PermissionAction } from '../permission/enums/permission-action.enum';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
@@ -134,7 +133,7 @@ export class AuthenticationService {
    */
   private async _generateTokens(user: User): Promise<[string, string]> {
     const refreshTokenId = randomUUID();
-    const permissions = packPermissions<PermissionAction>(user.permissions);
+    const permissions = packPermissions<string>(user.permissions);
 
     // Fixme: Send additional user information to be used in payload.
     const [accessToken, refreshToken] = await Promise.all([
