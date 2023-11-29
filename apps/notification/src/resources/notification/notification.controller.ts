@@ -1,4 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
+import { Permission } from '@hermes/iam';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -9,9 +10,15 @@ import { NotificationService } from './notification.service';
 @ApiTags('Notification')
 @Controller('notification')
 export class NotificationController {
+  private static readonly RESOURCE_IDENTIFIER = 'notification';
+
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post('email')
+  @Permission({
+    resource: NotificationController.RESOURCE_IDENTIFIER,
+    action: 'send_email',
+  })
   @ApiOperation({
     summary: 'Send an email notification.',
     security: [{ ApiKeyAuth: [] }],
@@ -47,6 +54,10 @@ export class NotificationController {
   }
 
   @Post('sms')
+  @Permission({
+    resource: NotificationController.RESOURCE_IDENTIFIER,
+    action: 'send_sms',
+  })
   @ApiOperation({
     summary: 'Send a SMS notification.',
     security: [{ ApiKeyAuth: [] }],
@@ -82,6 +93,10 @@ export class NotificationController {
   }
 
   @Post('call')
+  @Permission({
+    resource: NotificationController.RESOURCE_IDENTIFIER,
+    action: 'send_call',
+  })
   @ApiOperation({
     summary: 'Send a call notification.',
     security: [{ ApiKeyAuth: [] }],
@@ -117,6 +132,10 @@ export class NotificationController {
   }
 
   @Post('push-notification')
+  @Permission({
+    resource: NotificationController.RESOURCE_IDENTIFIER,
+    action: 'send_push',
+  })
   @ApiOperation({
     summary: 'Send a push notification.',
     security: [{ ApiKeyAuth: [] }],

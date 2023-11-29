@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, Permission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -21,6 +21,8 @@ import { EmailTemplate } from './entities/email-template.entity';
 @ApiTags('Email Template')
 @Controller('email-template')
 export class EmailTemplateController {
+  private static readonly RESOURCE_IDENTIFIER = 'email_template';
+
   constructor(private readonly emailTemplateService: EmailTemplateService) {}
 
   @Get()
@@ -60,6 +62,10 @@ export class EmailTemplateController {
   }
 
   @Post()
+  @Permission({
+    resource: EmailTemplateController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a new email template.',
     security: [{ ApiKeyAuth: [] }],
@@ -93,6 +99,10 @@ export class EmailTemplateController {
   }
 
   @Patch(':name')
+  @Permission({
+    resource: EmailTemplateController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update an email template.',
     security: [{ ApiKeyAuth: [] }],
@@ -131,6 +141,10 @@ export class EmailTemplateController {
   }
 
   @Delete(':name')
+  @Permission({
+    resource: EmailTemplateController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove an email template.',
     security: [{ ApiKeyAuth: [] }],

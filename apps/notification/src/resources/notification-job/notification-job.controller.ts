@@ -3,7 +3,7 @@ import {
   DeliveryMethods,
   errorToHttpException,
 } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, Permission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -26,6 +26,8 @@ import { NotificationJobService } from './notification-job.service';
 @ApiTags('Notification Job')
 @Controller('notification-job')
 export class NotificationJobController {
+  private static readonly RESOURCE_IDENTIFIER = 'notification_job';
+
   constructor(
     private readonly notificationJobService: NotificationJobService,
   ) {}
@@ -83,6 +85,10 @@ export class NotificationJobController {
   }
 
   @Post('email')
+  @Permission({
+    resource: NotificationJobController.RESOURCE_IDENTIFIER,
+    action: 'schedule_email',
+  })
   @ApiOperation({
     summary: 'Schedule a notification "email" job.',
     security: [{ ApiKeyAuth: [] }],
@@ -115,6 +121,10 @@ export class NotificationJobController {
   }
 
   @Post('sms')
+  @Permission({
+    resource: NotificationJobController.RESOURCE_IDENTIFIER,
+    action: 'schedule_sms',
+  })
   @ApiOperation({
     summary: 'Schedule a notification "sms" job.',
     security: [{ ApiKeyAuth: [] }],
@@ -147,6 +157,10 @@ export class NotificationJobController {
   }
 
   @Post('call')
+  @Permission({
+    resource: NotificationJobController.RESOURCE_IDENTIFIER,
+    action: 'schedule_call',
+  })
   @ApiOperation({
     summary: 'Schedule a notification "call" job.',
     security: [{ ApiKeyAuth: [] }],
@@ -179,6 +193,10 @@ export class NotificationJobController {
   }
 
   @Post('push-notification')
+  @Permission({
+    resource: NotificationJobController.RESOURCE_IDENTIFIER,
+    action: 'schedule_push',
+  })
   @ApiOperation({
     summary: 'Schedule a notification "push-notification" job.',
     security: [{ ApiKeyAuth: [] }],
