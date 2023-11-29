@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Permission } from '@hermes/iam';
+import { IamPermission } from '@hermes/iam';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
@@ -15,7 +15,7 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post('email')
-  @Permission({
+  @IamPermission({
     resource: NotificationController.RESOURCE_IDENTIFIER,
     action: 'send_email',
   })
@@ -54,7 +54,7 @@ export class NotificationController {
   }
 
   @Post('sms')
-  @Permission({
+  @IamPermission({
     resource: NotificationController.RESOURCE_IDENTIFIER,
     action: 'send_sms',
   })
@@ -93,7 +93,7 @@ export class NotificationController {
   }
 
   @Post('call')
-  @Permission({
+  @IamPermission({
     resource: NotificationController.RESOURCE_IDENTIFIER,
     action: 'send_call',
   })
@@ -132,7 +132,7 @@ export class NotificationController {
   }
 
   @Post('push-notification')
-  @Permission({
+  @IamPermission({
     resource: NotificationController.RESOURCE_IDENTIFIER,
     action: 'send_push',
   })

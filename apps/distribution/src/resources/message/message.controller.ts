@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Permission } from '@hermes/iam';
+import { IamPermission } from '@hermes/iam';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -13,7 +13,7 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: MessageController.RESOURCE_IDENTIFIER,
     action: 'publish',
   })

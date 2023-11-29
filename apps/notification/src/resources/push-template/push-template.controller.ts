@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -64,7 +64,7 @@ export class PushTemplateController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: PushTemplateController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -101,7 +101,7 @@ export class PushTemplateController {
   }
 
   @Patch(':name')
-  @Permission({
+  @IamPermission({
     resource: PushTemplateController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -143,7 +143,7 @@ export class PushTemplateController {
   }
 
   @Delete(':name')
-  @Permission({
+  @IamPermission({
     resource: PushTemplateController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })

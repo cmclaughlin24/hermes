@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -62,7 +62,7 @@ export class EmailTemplateController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: EmailTemplateController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -99,7 +99,7 @@ export class EmailTemplateController {
   }
 
   @Patch(':name')
-  @Permission({
+  @IamPermission({
     resource: EmailTemplateController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -141,7 +141,7 @@ export class EmailTemplateController {
   }
 
   @Delete(':name')
-  @Permission({
+  @IamPermission({
     resource: EmailTemplateController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })

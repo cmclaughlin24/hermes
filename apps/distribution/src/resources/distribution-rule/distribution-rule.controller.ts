@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   BadRequestException,
   Body,
@@ -96,7 +96,7 @@ export class DistributionRuleController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: DistributionRuleController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -136,7 +136,7 @@ export class DistributionRuleController {
   }
 
   @Patch(':id')
-  @Permission({
+  @IamPermission({
     resource: DistributionRuleController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -180,7 +180,7 @@ export class DistributionRuleController {
   }
 
   @Delete(':id')
-  @Permission({
+  @IamPermission({
     resource: DistributionRuleController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })

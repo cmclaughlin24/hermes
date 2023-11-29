@@ -1,5 +1,6 @@
 import { ApolloServerErrorCode } from '@apollo/server/errors';
 import { errorToGraphQLException } from '@hermes/common';
+import { IamPermission } from '@hermes/iam';
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { CreateUserInput } from './dto/create-user.input';
@@ -9,14 +10,24 @@ import { UserService } from './user.service';
 
 @Resolver()
 export class UserResolver {
+  private static readonly RESOURCE_IDENTIFIER = 'user';
+
   constructor(private readonly userService: UserService) {}
 
   @Query(() => [User], { name: 'users' })
+  @IamPermission({
+    resource: UserResolver.RESOURCE_IDENTIFIER,
+    action: 'list',
+  })
   async findAll() {
     return this.userService.findAll();
   }
 
   @Query(() => User, { name: 'user' })
+  @IamPermission({
+    resource: UserResolver.RESOURCE_IDENTIFIER,
+    action: 'get',
+  })
   async findOne(@Args('userId', { type: () => ID }) id: string) {
     const user = await this.userService.findById(id);
 
@@ -30,6 +41,10 @@ export class UserResolver {
   }
 
   @Mutation(() => User, { name: 'createUser' })
+  @IamPermission({
+    resource: UserResolver.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   async create(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.userService.create(createUserInput).catch((error) => {
       throw errorToGraphQLException(error);
@@ -37,6 +52,10 @@ export class UserResolver {
   }
 
   @Mutation(() => User, { name: 'updateUser' })
+  @IamPermission({
+    resource: UserResolver.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   async update(
     @Args('userId', { type: () => ID }) id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
@@ -47,6 +66,10 @@ export class UserResolver {
   }
 
   @Mutation(() => User, { name: 'removeUser' })
+  @IamPermission({
+    resource: UserResolver.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   async delete(@Args('userId', { type: () => ID }) id: string) {
     return this.userService.remove(id).catch((error) => {
       throw errorToGraphQLException(error);

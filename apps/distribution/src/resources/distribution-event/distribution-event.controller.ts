@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   BadRequestException,
   Body,
@@ -109,7 +109,7 @@ export class DistributionEventController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: DistributionEventController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -150,7 +150,7 @@ export class DistributionEventController {
   }
 
   @Patch(':queue/:eventType')
-  @Permission({
+  @IamPermission({
     resource: DistributionEventController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -194,7 +194,7 @@ export class DistributionEventController {
   }
 
   @Delete(':queue/:eventType')
-  @Permission({
+  @IamPermission({
     resource: DistributionEventController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })

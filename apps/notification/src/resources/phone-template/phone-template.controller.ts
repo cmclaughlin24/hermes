@@ -3,7 +3,7 @@ import {
   PhoneMethods,
   errorToHttpException,
 } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -74,7 +74,7 @@ export class PhoneTemplateController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -111,7 +111,7 @@ export class PhoneTemplateController {
   }
 
   @Patch(':deliveryMethod/:name')
-  @Permission({
+  @IamPermission({
     resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -155,7 +155,7 @@ export class PhoneTemplateController {
   }
 
   @Delete(':deliveryMethod/:name')
-  @Permission({
+  @IamPermission({
     resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })

@@ -3,7 +3,7 @@ import {
   DeliveryMethods,
   errorToHttpException,
 } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -85,7 +85,7 @@ export class NotificationJobController {
   }
 
   @Post('email')
-  @Permission({
+  @IamPermission({
     resource: NotificationJobController.RESOURCE_IDENTIFIER,
     action: 'schedule_email',
   })
@@ -121,7 +121,7 @@ export class NotificationJobController {
   }
 
   @Post('sms')
-  @Permission({
+  @IamPermission({
     resource: NotificationJobController.RESOURCE_IDENTIFIER,
     action: 'schedule_sms',
   })
@@ -157,7 +157,7 @@ export class NotificationJobController {
   }
 
   @Post('call')
-  @Permission({
+  @IamPermission({
     resource: NotificationJobController.RESOURCE_IDENTIFIER,
     action: 'schedule_call',
   })
@@ -193,7 +193,7 @@ export class NotificationJobController {
   }
 
   @Post('push-notification')
-  @Permission({
+  @IamPermission({
     resource: NotificationJobController.RESOURCE_IDENTIFIER,
     action: 'schedule_push',
   })

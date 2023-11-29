@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType, Permission } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -72,7 +72,7 @@ export class SubscriptionController {
   }
 
   @Post()
-  @Permission({
+  @IamPermission({
     resource: SubscriptionController.RESOURCE_IDENTIFIER,
     action: 'create',
   })
@@ -110,7 +110,7 @@ export class SubscriptionController {
   }
 
   @Patch(':queue/:eventType/:subscriberId')
-  @Permission({
+  @IamPermission({
     resource: SubscriptionController.RESOURCE_IDENTIFIER,
     action: 'update',
   })
@@ -155,7 +155,7 @@ export class SubscriptionController {
   }
 
   @Delete(':subscriberId')
-  @Permission({
+  @IamPermission({
     resource: SubscriptionController.RESOURCE_IDENTIFIER,
     action: 'remove',
   })
