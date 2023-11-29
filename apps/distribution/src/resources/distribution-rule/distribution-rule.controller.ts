@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, Permission } from '@hermes/iam';
 import {
   BadRequestException,
   Body,
@@ -25,6 +25,8 @@ import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 @ApiTags('Distribution Rule')
 @Controller('distribution-rule')
 export class DistributionRuleController {
+  private static readonly RESOURCE_IDENTIFIER = 'distribution_rule';
+
   constructor(
     private readonly distributionRuleService: DistributionRuleService,
   ) {}
@@ -94,6 +96,10 @@ export class DistributionRuleController {
   }
 
   @Post()
+  @Permission({
+    resource: DistributionRuleController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a distribution rule.',
     security: [{ ApiKeyAuth: [] }],
@@ -130,6 +136,10 @@ export class DistributionRuleController {
   }
 
   @Patch(':id')
+  @Permission({
+    resource: DistributionRuleController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update a distribution rule.',
     security: [{ ApiKeyAuth: [] }],
@@ -170,6 +180,10 @@ export class DistributionRuleController {
   }
 
   @Delete(':id')
+  @Permission({
+    resource: DistributionRuleController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove a distribution rule.',
     security: [{ ApiKeyAuth: [] }],

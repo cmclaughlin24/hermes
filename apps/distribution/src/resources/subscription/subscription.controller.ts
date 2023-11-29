@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, Permission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -21,6 +21,8 @@ import { SubscriptionService } from './subscription.service';
 @ApiTags('Subscription')
 @Controller('subscription')
 export class SubscriptionController {
+  private static readonly RESOURCE_IDENTIFIER = 'subscription';
+
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Get()
@@ -70,6 +72,10 @@ export class SubscriptionController {
   }
 
   @Post()
+  @Permission({
+    resource: SubscriptionController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -104,6 +110,10 @@ export class SubscriptionController {
   }
 
   @Patch(':queue/:eventType/:subscriberId')
+  @Permission({
+    resource: SubscriptionController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update a subscription.',
     security: [{ ApiKeyAuth: [] }],
@@ -145,6 +155,10 @@ export class SubscriptionController {
   }
 
   @Delete(':subscriberId')
+  @Permission({
+    resource: SubscriptionController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove a subscription from all distribution event(s).',
     security: [{ ApiKeyAuth: [] }],
