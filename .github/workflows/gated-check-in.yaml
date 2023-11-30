@@ -48,7 +48,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Run Unit Tests
-        run: npm run test:cov -- --forceExit
+        run: npm test -- --forceExit
   e2e-test:
     needs: install-dependencies
     runs-on: ubuntu-latest
