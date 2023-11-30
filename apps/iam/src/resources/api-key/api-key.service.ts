@@ -32,7 +32,7 @@ export class ApiKeyService {
 
   /**
    * Creates a new api key or throws an `ExistsException` if an api key
-   * name already exists for a user.
+   * name already exists.
    * @param {CreateApiKeyInput} createApiKeyInput
    * @param {string} userId 
    * @returns {Promise<string>}
@@ -60,7 +60,7 @@ export class ApiKeyService {
     } catch (error) {
       if (error.code === PostgresError.UNIQUE_VIOLATION) {
         throw new ExistsException(
-          `Api key with name=${createApiKeyInput.name} already exists for user id=${userId}!`,
+          `Api key with name=${createApiKeyInput.name} already exists!`,
         );
       }
       throw error;

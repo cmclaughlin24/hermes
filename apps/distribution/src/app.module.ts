@@ -20,7 +20,6 @@ import { ResourcesModule } from './resources/resources.module';
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
-        API_KEY: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8001),
         DB_HOST: Joi.required(),

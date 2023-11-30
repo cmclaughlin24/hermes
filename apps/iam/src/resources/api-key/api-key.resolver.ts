@@ -1,5 +1,5 @@
 import { errorToGraphQLException } from '@hermes/common';
-import { ActiveEntity, Auth, AuthType } from '@hermes/iam';
+import { ActiveEntity, Auth, AuthType, IamPermission } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { ActiveEntityData } from '../../common/entities/active-entity.entity';
@@ -16,6 +16,10 @@ export class ApiKeyResolver {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @Mutation(() => String, { name: 'createApiKey' })
+  @IamPermission({
+    resource: ApiKeyResolver.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   create(
     @Args('createApiKeyInput') createApiKeyInput: CreateApiKeyInput,
     @ActiveEntity('sub') userId: string,
@@ -28,6 +32,10 @@ export class ApiKeyResolver {
   }
 
   @Mutation(() => ApiKey, { name: 'removeApiKey' })
+  @IamPermission({
+    resource: ApiKeyResolver.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   remove(@Args('id') id: string, @ActiveEntity('sub') userId: string) {
     return this.apiKeyService.remove(id, userId).catch((error) => {
       throw errorToGraphQLException(error);

@@ -1,10 +1,19 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
+import { TokenService } from '../services/token.service';
 import { IamModuleOptions } from '../types/iam-module-options.type';
 import { ApiKeyGuard } from './api-key.guard';
 
+type MockTokenService = Partial<Record<keyof TokenService, jest.Mock>>;
+
+const createTokenServiceMock = (): MockTokenService => ({
+  verifyApiKey: jest.fn(),
+});
+
 describe('ApiKeyGuard', () => {
   let iamModuleOptions: IamModuleOptions;
+  let tokenService: MockTokenService;
 
   const apiKey = 'unit-test';
 
@@ -15,17 +24,25 @@ describe('ApiKeyGuard', () => {
           provide: IAM_MODULE_OPTIONS_TOKEN,
           useValue: { apiKeys: apiKey } as IamModuleOptions,
         },
+        {
+          provide: TokenService,
+          useValue: createTokenServiceMock(),
+        },
       ],
     }).compile();
 
     iamModuleOptions = module.get<IamModuleOptions>(IAM_MODULE_OPTIONS_TOKEN);
+    tokenService = module.get<MockTokenService>(TokenService);
   });
 
   describe('apiKeyHeader()', () => {
     it('should yield the api key header passed in the "IamModuleOptions"', () => {
       // Arrange.
       const expectedResult = 'unit-test';
-      const apiKeyGuard = new ApiKeyGuard({ apiKeyHeader: expectedResult });
+      const apiKeyGuard = new ApiKeyGuard(
+        { apiKeyHeader: expectedResult },
+        tokenService as any,
+      );
 
       // Act/Assert.
       // @ts-ignore
@@ -34,7 +51,7 @@ describe('ApiKeyGuard', () => {
 
     it('should yield the default api key header otherwise', () => {
       // Arrange.
-      const apiKeyGuard = new ApiKeyGuard({});
+      const apiKeyGuard = new ApiKeyGuard({}, tokenService as any);
 
       // Act/Assert.
       // @ts-ignore
@@ -42,44 +59,25 @@ describe('ApiKeyGuard', () => {
     });
   });
 
-  describe('apiKeys()', () => {
-    it('should yield the list of api keys passed in the "IamModuleOptions"', () => {
-      // Arrange.
-      const apiKeys = 'unit-test,e2e-test';
-      const apiKeyGuard = new ApiKeyGuard({ apiKeys });
-      const expectedResult = apiKeys.split(',');
-
-      // Act/Assert.
-      // @ts-ignore
-      expect(apiKeyGuard.apiKeys).toEqual(expectedResult);
-    });
-
-    it('should yield the list of default api keys otherwise', () => {
-      // Arrange.
-      const apiKeyGuard = new ApiKeyGuard({});
-
-      // Act/Assert.
-      // @ts-ignore
-      expect(apiKeyGuard.apiKeys).toEqual([ApiKeyGuard.DEFAULT_API_KEY]);
-    });
-  });
-
   it('should be defined', () => {
-    expect(new ApiKeyGuard(iamModuleOptions)).toBeDefined();
+    expect(
+      new ApiKeyGuard(iamModuleOptions, tokenService as any),
+    ).toBeDefined();
   });
 
   describe('canActivate()', () => {
     let apiKeyGuard: ApiKeyGuard;
 
     beforeEach(() => {
-      apiKeyGuard = new ApiKeyGuard(iamModuleOptions);
+      apiKeyGuard = new ApiKeyGuard(iamModuleOptions, tokenService as any);
     });
 
     afterEach(() => {
       apiKeyGuard = null;
+      tokenService.verifyApiKey.mockClear();
     });
 
-    it('should yield true if the api key is equivalent to one of the api keys', () => {
+    it('should yield true if the api key is valid', () => {
       // Arrange.
       const context: any = {
         getType: jest.fn(() => 'http'),
@@ -96,21 +94,41 @@ describe('ApiKeyGuard', () => {
       expect(result).toBeTruthy();
     });
 
-    it('should yield false otherwise', () => {
+    it('should throw an "UnauthorizedException" if the api key header does not include an api key', async () => {
       // Arrange.
       const context: any = {
         getType: jest.fn(() => 'http'),
         getHandler: jest.fn(),
         switchToHttp: jest.fn(() => ({
-          getRequest: jest.fn(() => ({ header: jest.fn(() => 'e2e-test') })),
+          getRequest: jest.fn(() => ({ header: () => null })),
         })),
       };
+      const expectedResult = new UnauthorizedException();
 
-      // Act.
-      const result = apiKeyGuard.canActivate(context);
+      // Act/Assert.
+      await expect(apiKeyGuard.canActivate(context)).rejects.toEqual(
+        expectedResult,
+      );
+    });
 
-      // Assert.
-      expect(result).toBeFalsy();
+    it('should throw an "UnauthorizedException" if the api key is invalid', async () => {
+      // Arrange.
+      const context: any = {
+        getType: jest.fn(() => 'http'),
+        getHandler: jest.fn(),
+        switchToHttp: jest.fn(() => ({
+          getRequest: jest.fn(() => ({
+            header: () => 'metroid-prime-ii-echoes',
+          })),
+        })),
+      };
+      const expectedResult = new UnauthorizedException();
+      tokenService.verifyApiKey.mockRejectedValue({});
+
+      // Act/Assert.
+      await expect(apiKeyGuard.canActivate(context)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 });

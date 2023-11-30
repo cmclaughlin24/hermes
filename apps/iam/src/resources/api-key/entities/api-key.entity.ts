@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique(['name', 'createdBy', 'deletedAt'])
+@Unique(['name', 'deletedAt'])
 @ObjectType()
 export class ApiKey {
   @PrimaryGeneratedColumn('uuid')

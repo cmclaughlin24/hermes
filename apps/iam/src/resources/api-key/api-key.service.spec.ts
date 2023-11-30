@@ -107,10 +107,10 @@ describe('ApiKeyService', () => {
 
     it.todo('shoul yield the created api key');
 
-    it('should throw an "ExistsException" if an api key name already exists for a user', async () => {
+    it('should throw an "ExistsException" if an api key name already exists', async () => {
       // Arrange.
       const expectedResult = new ExistsException(
-        `Api key with name=${createApiKeyInput.name} already exists for user id=${userId}!`,
+        `Api key with name=${createApiKeyInput.name} already exists!`,
       );
       permissionService.findByResourceAction.mockResolvedValue(permission);
       repository.save.mockRejectedValue({

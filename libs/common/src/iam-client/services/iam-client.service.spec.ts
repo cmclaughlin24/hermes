@@ -74,4 +74,36 @@ describe('IamClientService', () => {
       );
     });
   });
+
+  describe('verifyApiKey()', () => {
+    afterEach(() => {
+      httpService.post.mockClear();
+    });
+
+    it('should yield the "ActiveEntityData" if the api key is valid', async () => {
+      // Arrange.
+      const expectedResult = { data: { data: { verifyApiKey: {} } } };
+      httpService.post.mockImplementation(() => of(expectedResult));
+
+      // Act/Assert.
+      await expect(service.verifyApiKey('metroid-prime-remastered')).resolves.toEqual(
+        expectedResult.data.data.verifyApiKey,
+      );
+    });
+
+    it('should throw an error if the token is invalid', async () => {
+      // Arrange.
+      const expectedResult = new Error(
+        'Prior to Metroid Prime, Retro Studios had not released a single game.',
+      );
+      httpService.post.mockImplementation(() =>
+        throwError(() => expectedResult),
+      );
+
+      // Act/Assert.
+      await expect(service.verifyApiKey('omega-pirates')).rejects.toEqual(
+        expectedResult,
+      );
+    });
+  });
 });

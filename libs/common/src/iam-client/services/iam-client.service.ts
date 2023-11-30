@@ -33,4 +33,21 @@ export class IamClientService extends TokenService {
 
     return firstValueFrom(request);
   }
+
+  async verifyApiKey(apiKey: string): Promise<ActiveEntityData> {
+    const request = this.httpService
+      .post(this.VERIFY_TOKEN_URL, {
+        query: `
+        mutation {
+          verifyApiKey(apiKey: "${apiKey}") {
+            sub
+            authorization_details
+          }
+        }
+      `,
+      })
+      .pipe(map(({ data: payload }) => payload.data.verifyApiKey));
+
+    return firstValueFrom(request);
+  }
 }
