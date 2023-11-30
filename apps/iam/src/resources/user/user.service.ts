@@ -54,7 +54,7 @@ export class UserService {
   }
 
   /**
-   * Creates a new user or throws an `ExistsExcception` if an email
+   * Creates a new user or throws an `ExistsException` if an email
    * or phone number already exists.
    * @param {CreateUserInput} createUserInput
    * @returns {Promise<User>}

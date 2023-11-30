@@ -1,0 +1,3 @@
+export enum GraphQLErrorCode {
+  UNAUTHENTICATED_ERROR_CODE = 'UNAUTHENTICATED',
+}

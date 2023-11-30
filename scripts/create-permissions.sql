@@ -22,6 +22,8 @@ VALUES
   (gen_random_uuid(), 'permission', 'create'),
   (gen_random_uuid(), 'permission', 'update'),
   (gen_random_uuid(), 'permission', 'remove'),
+  (gen_random_uuid(), 'api_key', 'create'),
+  (gen_random_uuid(), 'api_key', 'remove'),
   /* Notification Service Permissions */
   (gen_random_uuid(), 'email_template', 'create'),
   (gen_random_uuid(), 'email_template', 'update'),

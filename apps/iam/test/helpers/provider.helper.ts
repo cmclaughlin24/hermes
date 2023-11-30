@@ -1,6 +1,7 @@
 import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { HashingService } from '../../src/common/services/hashing.service';
 import { PermissionService } from '../../src/resources/permission/permission.service';
 import { UserService } from '../../src/resources/user/user.service';
 
@@ -16,6 +17,13 @@ export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
 
 export const createConfigServiceMock = (): MockConfigService => ({
   get: jest.fn(),
+});
+
+export type MockHashingService = Partial<Record<keyof HashingService, jest.Mock>>;
+
+export const createHashingServiceMock = (): MockHashingService => ({
+  hash: jest.fn(),
+  compare: jest.fn(),
 });
 
 export type MockJwtService = Partial<Record<keyof JwtService, jest.Mock>>;

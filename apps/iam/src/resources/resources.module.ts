@@ -9,6 +9,7 @@ import { iamFactory } from '../config/iam.config';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
 import { PermissionModule } from './permission/permission.module';
+import { ApiKeyModule } from './api-key/api-key.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PermissionModule } from './permission/permission.module';
     UserModule,
     AuthenticationModule,
     PermissionModule,
+    ApiKeyModule,
   ],
 })
 export class ResourcesModule {}
