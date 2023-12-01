@@ -40,7 +40,7 @@ import { ResourcesModule } from './resources/resources.module';
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         SUBSCRIBERS_REQUEST_URL: Joi.string().required(),
-        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
+        IAM_CLIENT_URL: Joi.string().required(),
       }),
     }),
     SequelizeModule.forRootAsync({

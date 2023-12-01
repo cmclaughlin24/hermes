@@ -7,7 +7,7 @@ import { firstValueFrom, map } from 'rxjs';
 @Injectable()
 export class IamClientService extends TokenService {
   private readonly VERIFY_TOKEN_URL = this.configService.get(
-    'VERIFY_ACCESS_TOKEN_URL',
+    'IAM_CLIENT_URL',
   );
 
   constructor(
