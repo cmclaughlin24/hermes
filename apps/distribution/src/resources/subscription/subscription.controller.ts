@@ -186,6 +186,10 @@ export class SubscriptionController {
   }
 
   @Delete(':queue/:eventType/:subscriberId')
+  @IamPermission({
+    resource: SubscriptionController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove a subscription to a distribution event.',
     security: [{ ApiKeyAuth: [] }],

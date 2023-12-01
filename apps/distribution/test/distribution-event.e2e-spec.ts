@@ -12,18 +12,9 @@ import { CreateDistributionEventDto } from '../src/resources/distribution-event/
 import { UpdateDistributionEventDto } from '../src/resources/distribution-event/dto/update-distribution-event.dto';
 import { DistributionRuleModule } from '../src/resources/distribution-rule/distribution-rule.module';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
+import { createTokenServiceMock } from './helpers/provider.helper';
 
-const tokenService = {
-  verifyApiKey: async function (apiKey) {
-    if (apiKey === process.env.API_KEY) {
-      return {
-        sub: randomUUID(),
-        authorization_details: ['distribution_event=create,update,remove'],
-      };
-    }
-    return null;
-  },
-};
+const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Distribution Event', () => {
   let app: INestApplication;
@@ -72,6 +63,17 @@ describe('[Feature] Distribution Event', () => {
     useGlobalPipes(app);
     await app.init();
     httpServer = app.getHttpServer();
+  });
+
+  beforeEach(() => {
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: ['distribution_event=create,update,remove'],
+    });
+  });
+
+  afterEach(() => {
+    setActiveEntityData.mockClear();
   });
 
   afterAll(async () => {
@@ -174,9 +176,32 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const createDistributionEventDto: CreateDistributionEventDto = {
+        queue: queueName,
+        eventType: eventType,
+        metadataLabels: ['languageCode'],
+        rules: [
+          {
+            metadata: null,
+            deliveryMethods: [DeliveryMethods.SMS],
+            text: 'The NES was originally going to distributed by Atari in the United States.',
+          },
+        ],
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_event=update,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/distribution-event')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createDistributionEventDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
   });
 
   describe('Get Distribution Events [GET /]', () => {
@@ -250,9 +275,23 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const updateDistributionEventDto: UpdateDistributionEventDto = {
+        metadataLabels: ['languageCode', 'region'],
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_event=create,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/distribution-event/${queueName}/${eventType}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateDistributionEventDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
@@ -285,9 +324,19 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_event=create,update'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/distribution-event/${queueName}/${eventType}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.

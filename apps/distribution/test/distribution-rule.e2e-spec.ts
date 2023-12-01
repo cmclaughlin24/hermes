@@ -13,21 +13,9 @@ import { DistributionRuleModule } from '../src/resources/distribution-rule/distr
 import { CreateDistributionRuleDto } from '../src/resources/distribution-rule/dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../src/resources/distribution-rule/dto/update-distribution-rule.dto';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
+import { createTokenServiceMock } from './helpers/provider.helper';
 
-const tokenService = {
-  verifyApiKey: async function (apiKey) {
-    if (apiKey === process.env.API_KEY) {
-      return {
-        sub: randomUUID(),
-        authorization_details: [
-          'distribution_event=create,remove',
-          'distribution_rule=create,update,remove',
-        ],
-      };
-    }
-    return null;
-  },
-};
+const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Distribution Rule', () => {
   let app: INestApplication;
@@ -94,6 +82,10 @@ describe('[Feature] Distribution Rule', () => {
         },
       ],
     };
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: ['distribution_event=create,remove'],
+    });
 
     const { body } = await request(httpServer)
       .post('/distribution-event')
@@ -103,6 +95,20 @@ describe('[Feature] Distribution Rule', () => {
     defaultDistributionRule = body.data.rules.find(
       (rule) => rule.metadata === null,
     );
+  });
+
+  beforeEach(() => {
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: [
+        'distribution_event=create,remove',
+        'distribution_rule=create,update,remove',
+      ],
+    });
+  });
+
+  afterEach(() => {
+    setActiveEntityData.mockClear();
   });
 
   afterAll(async () => {
@@ -195,9 +201,29 @@ describe('[Feature] Distribution Rule', () => {
         .expect(HttpStatus.NOT_FOUND);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const createDistributionRuleDto: CreateDistributionRuleDto = {
+        queue: queueName,
+        eventType: eventType,
+        metadata: JSON.stringify({
+          videoGame: 'Duck Hunt',
+        }),
+        deliveryMethods: [DeliveryMethods.CALL, DeliveryMethods.SMS],
+        text: 'Duck Hunt released in 1984 for the Nintendo Entertainment System (NES).',
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_rule=update,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/distribution-rule')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createDistributionRuleDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
   });
 
   describe('Get Distribution Rules [GET /]', () => {
@@ -283,9 +309,25 @@ describe('[Feature] Distribution Rule', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const updateDistributionRuleDto: UpdateDistributionRuleDto = {
+        bypassSubscriptions: true,
+        emailTemplate:
+          'Call of Duty has been played for nearly 25 billion hours.',
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_rule=create,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/distribution-rule/${distributionRuleId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateDistributionRuleDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
@@ -336,9 +378,19 @@ describe('[Feature] Distribution Rule', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['distribution_rule=create,update'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/distribution-rule/${distributionRuleId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
