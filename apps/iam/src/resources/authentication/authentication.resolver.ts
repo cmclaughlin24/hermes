@@ -2,10 +2,11 @@ import { errorToGraphQLException } from '@hermes/common';
 import { Auth, AuthType } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
+import { ActiveEntityData } from '../../common/entities/active-entity.entity';
+import { GraphQLErrorCode } from '../../common/types/graphql-error-code.type';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
-import { ActiveEntityData } from './entities/active-entity.entity';
 import { Tokens } from './entities/tokens.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
@@ -13,8 +14,6 @@ import { InvalidTokenException } from './errors/invalid-token.exception';
 @Resolver()
 @Auth(AuthType.NONE)
 export class AuthenticationResolver {
-  private static readonly UNAUTHENTICATED_ERROR_CODE = 'UNAUTHENTICATED';
-
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Mutation(() => Boolean, { name: 'signUp' })
@@ -35,7 +34,7 @@ export class AuthenticationResolver {
       if (error instanceof InvalidPasswordException) {
         throw new GraphQLError('Unauthorized: Invalid password', {
           extensions: {
-            code: AuthenticationResolver.UNAUTHENTICATED_ERROR_CODE,
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         });
       }
@@ -49,7 +48,7 @@ export class AuthenticationResolver {
       if (error instanceof InvalidTokenException) {
         throw new GraphQLError('Unauthorized: Invalid access token', {
           extensions: {
-            code: AuthenticationResolver.UNAUTHENTICATED_ERROR_CODE,
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         });
       }
@@ -68,7 +67,7 @@ export class AuthenticationResolver {
       if (error instanceof InvalidTokenException) {
         throw new GraphQLError('Unauthorized: Invalid refresh token', {
           extensions: {
-            code: AuthenticationResolver.UNAUTHENTICATED_ERROR_CODE,
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         });
       }

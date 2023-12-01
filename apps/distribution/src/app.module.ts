@@ -20,7 +20,6 @@ import { ResourcesModule } from './resources/resources.module';
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
-        API_KEY: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8001),
         DB_HOST: Joi.required(),
@@ -41,7 +40,7 @@ import { ResourcesModule } from './resources/resources.module';
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         SUBSCRIBERS_REQUEST_URL: Joi.string().required(),
-        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
+        IAM_CLIENT_URL: Joi.string().required(),
       }),
     }),
     SequelizeModule.forRootAsync({

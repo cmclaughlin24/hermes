@@ -22,7 +22,6 @@ import { ResourcesModule } from './resources/resources.module';
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
-        API_KEY: Joi.required(),
         DB_HOST: Joi.required(),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),
@@ -53,7 +52,7 @@ import { ResourcesModule } from './resources/resources.module';
         REMOVE_SUBSCRIBER_URL: Joi.string().required(),
         SUBSCRIBER_API_KEY_HEADER: Joi.string().required(),
         SUBSCRIBER_API_KEY: Joi.string().required(),
-        VERIFY_ACCESS_TOKEN_URL: Joi.string().required(),
+        IAM_CLIENT_URL: Joi.string().required(),
         VAPID_SUBJECT: Joi.required(),
         VAPID_PUBLIC_KEY: Joi.required(),
         VAPID_PRIVATE_KEY: Joi.required(),

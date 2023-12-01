@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { AuthenticationGuard } from './guards/authentication.guard';
+import { AuthorizationGuard } from './guards/authorization.guard';
 import {
   IAM_MODULE_OPTIONS_TOKEN,
   IamModuleDefinitionClass,
@@ -16,6 +17,10 @@ import { IamModuleOptions } from './types/iam-module-options.type';
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizationGuard,
+    },
     AccessTokenGuard,
     ApiKeyGuard,
     {
@@ -28,6 +33,7 @@ import { IamModuleOptions } from './types/iam-module-options.type';
 export class IamModule extends IamModuleDefinitionClass {
   static register(options: IamModuleOptions = {}): DynamicModule {
     // Fixme: Add validation on options (e.g. TokenService must be present if enabled.)
+    // Fixme: Implement disabling the AuthorizationGuard.
     return super.register(options);
   }
 }

@@ -3,11 +3,12 @@ import { ExistsException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import { GraphQLError } from 'graphql';
+import { ActiveEntityData } from '../../common/entities/active-entity.entity';
+import { GraphQLErrorCode } from '../../common/types/graphql-error-code.type';
 import { AuthenticationResolver } from './authentication.resolver';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
-import { ActiveEntityData } from './entities/active-entity.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 
@@ -116,7 +117,7 @@ describe('AuthenticationResolver', () => {
         'Unauthorized: Invalid password',
         {
           extensions: {
-            code: 'UNAUTHENTICATED',
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         },
       );
@@ -168,7 +169,7 @@ describe('AuthenticationResolver', () => {
         'Unauthorized: Invalid access token',
         {
           extensions: {
-            code: 'UNAUTHENTICATED',
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         },
       );
@@ -203,7 +204,7 @@ describe('AuthenticationResolver', () => {
         'Unauthorized: Invalid refresh token',
         {
           extensions: {
-            code: 'UNAUTHENTICATED',
+            code: GraphQLErrorCode.UNAUTHENTICATED_ERROR_CODE,
           },
         },
       );

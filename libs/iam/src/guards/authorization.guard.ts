@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IAM_ENTITY_KEY } from '../constants/iam.constants';
-import { PERMISSION_KEY } from '../decorators/permission.decorator';
+import { PERMISSION_KEY } from '../decorators/iam-permission.decorator';
 import { ActiveEntityData } from '../types/active-entity-data.type';
 import { IamPermissionOptions } from '../types/iam-permission-options.type';
 import { getRequest, unpackPermissions } from '../utils/iam.utils';

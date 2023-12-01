@@ -15,6 +15,12 @@ export interface IamModuleOptions {
   enableAuthTypes?: AuthType[];
 
   /**
+   * Optional parameter for specifying to check the requesting entity's allowed actions
+   * for that resource. If not provided, the default is `true`.
+   */
+  disableAuthorization?: boolean;
+
+  /**
    * Optional parameter for a function that checks if `AuthenticationGuard` should be
    * exectued against the current execution context.
    * @param {ExecutionContext} context
@@ -29,20 +35,11 @@ export interface IamModuleOptions {
   apiKeyHeader?: string;
 
   /**
-   * Optional parameter for specifying multiple Api Key(s). The keys should be
-   * provided as a comma-separated string. If not provided, defaults to `pass123`.
-   * @examples
-   * - key1
-   * - key1,key2,key3
-   */
-  apiKeys?: string;
-
-  /**
    * Optional parameter represents an instance of a service that extends the `TokenService`
-   * abstract class. It is used to validate and decode access tokens to ensure the
-   * authenticity of the requesting entity.
-   * 
-   * Note: This paremeter is required if the `AuthType.BEARER` is enabled.
+   * abstract class. It is used to validate and decode access tokens and api keys to ensure
+   * the authenticity of the requesting entity.
+   *
+   * Note: This paremeter is required if the `AuthType.BEARER` or `AuthType.API_KEY` is enabled.
    */
   tokenService?: TokenService;
 }

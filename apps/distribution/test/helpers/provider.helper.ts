@@ -1,3 +1,4 @@
+import { TokenService } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
 import { DistributionEventService } from '../../src/resources/distribution-event/distribution-event.service';
 import { DistributionLogService } from '../../src/resources/distribution-log/distribution-log.service';
@@ -56,3 +57,23 @@ export const createSubscriptionServiceMock = (): MockSubscriptionService => ({
   removeAll: jest.fn(),
   remove: jest.fn(),
 });
+
+/**
+ * Yields a tuple containing a mock `TokenService` and a mock function
+ * for setting the returned `ActiveEntityData`.
+ * @returns {[TokenService, jest.Mock]}
+ */
+export const createTokenServiceMock = (): [TokenService, jest.Mock] => {
+  const setActiveEntityData = jest.fn();
+
+  const tokenService = {
+    verifyApiKey: async function (apiKey) {
+      if (apiKey === process.env.API_KEY) {
+        return setActiveEntityData();
+      }
+      return null;
+    },
+  };
+
+  return [tokenService, setActiveEntityData];
+};

@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -21,6 +21,8 @@ import { PushTemplateService } from './push-template.service';
 @ApiTags('Push Template')
 @Controller('push-template')
 export class PushTemplateController {
+  private static readonly RESOURCE_IDENTIFIER = 'push_template';
+
   constructor(private readonly pushTemplateService: PushTemplateService) {}
 
   @Get()
@@ -62,6 +64,10 @@ export class PushTemplateController {
   }
 
   @Post()
+  @IamPermission({
+    resource: PushTemplateController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a new push notification template.',
     security: [{ ApiKeyAuth: [] }],
@@ -95,6 +101,10 @@ export class PushTemplateController {
   }
 
   @Patch(':name')
+  @IamPermission({
+    resource: PushTemplateController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update a push notification template.',
     security: [{ ApiKeyAuth: [] }],
@@ -133,6 +143,10 @@ export class PushTemplateController {
   }
 
   @Delete(':name')
+  @IamPermission({
+    resource: PushTemplateController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove a push notification template.',
     security: [{ ApiKeyAuth: [] }],

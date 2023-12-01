@@ -1,5 +1,5 @@
 import { ApiResponseDto, errorToHttpException } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   BadRequestException,
   Body,
@@ -24,6 +24,8 @@ import { DistributionEvent } from './entities/distribution-event.entity';
 @ApiTags('Distribution Event')
 @Controller('distribution-event')
 export class DistributionEventController {
+  private static readonly RESOURCE_IDENTIFIER = 'distribution_event';
+
   constructor(
     private readonly distributionEventService: DistributionEventService,
   ) {}
@@ -107,6 +109,10 @@ export class DistributionEventController {
   }
 
   @Post()
+  @IamPermission({
+    resource: DistributionEventController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -144,6 +150,10 @@ export class DistributionEventController {
   }
 
   @Patch(':queue/:eventType')
+  @IamPermission({
+    resource: DistributionEventController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update a distribution event.',
     security: [{ ApiKeyAuth: [] }],
@@ -184,6 +194,10 @@ export class DistributionEventController {
   }
 
   @Delete(':queue/:eventType')
+  @IamPermission({
+    resource: DistributionEventController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove a distribution event.',
     security: [{ ApiKeyAuth: [] }],

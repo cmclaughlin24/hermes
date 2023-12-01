@@ -1,9 +1,10 @@
 import { DeliveryMethods } from '@hermes/common';
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { FilterJoinOps, FilterOps } from '../src/common/types/filter.type';
 import { SubscriptionType } from '../src/common/types/subscription-type.type';
@@ -14,6 +15,9 @@ import { DistributionRuleModule } from '../src/resources/distribution-rule/distr
 import { CreateSubscriptionDto } from '../src/resources/subscription/dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from '../src/resources/subscription/dto/update-subscription.dto';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
+import { createTokenServiceMock } from './helpers/provider.helper';
+
+const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Subscription', () => {
   let app: INestApplication;
@@ -48,9 +52,9 @@ describe('[Feature] Subscription', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         SubscriptionModule,
@@ -79,11 +83,29 @@ describe('[Feature] Subscription', () => {
         },
       ],
     };
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: ['distribution_event=create,remove'],
+    });
 
     await request(httpServer)
       .post('/distribution-event')
       .set(process.env.API_KEY_HEADER, process.env.API_KEY)
       .send(createDistributionEventDto);
+  });
+
+  beforeEach(() => {
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: [
+        'distribution_event=create,remove',
+        'subscription=create,update,remove',
+      ],
+    });
+  });
+
+  afterEach(() => {
+    setActiveEntityData.mockClear();
   });
 
   afterAll(async () => {
@@ -158,6 +180,33 @@ describe('[Feature] Subscription', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const createSubscriptionDto: CreateSubscriptionDto = {
+        queue: queueName,
+        eventType: eventType,
+        subscriberId: subscriberId,
+        subscriptionType: SubscriptionType.REQUEST,
+        data: {
+          url: '',
+          id: 'The GameBoy was the first video game console played in space.',
+        },
+        filterJoin: FilterJoinOps.AND,
+        filters: [],
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['subscription=update,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/subscription')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createSubscriptionDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
     it('should respond with a NOT_FOUND status if the distribution event does not exist', () => {
       // Arrange.
       const createSubscriptionDto: CreateSubscriptionDto = {
@@ -204,7 +253,9 @@ describe('[Feature] Subscription', () => {
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .get(
+          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
+        )
         .expect(HttpStatus.NOT_FOUND);
     });
   });
@@ -258,6 +309,24 @@ describe('[Feature] Subscription', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const updateSubscriptionDto: UpdateSubscriptionDto = {
+        filterJoin: FilterJoinOps.NOT,
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['subscription=create,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updateSubscriptionDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
       const updateSubscriptionDto: UpdateSubscriptionDto = {
@@ -269,7 +338,9 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .patch(
+          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
+        )
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.NOT_FOUND);
@@ -296,10 +367,26 @@ describe('[Feature] Subscription', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['subscription=create,update'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}-not-found`)
+        .delete(
+          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
+        )
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.NOT_FOUND);
     });

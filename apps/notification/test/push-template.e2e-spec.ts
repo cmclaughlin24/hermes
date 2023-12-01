@@ -1,11 +1,15 @@
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
+import { createTokenServiceMock } from './helpers/provider.helper';
+
+const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Push Template', () => {
   let app: INestApplication;
@@ -38,9 +42,9 @@ describe('[Feature] Push Template', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         PushTemplateModule,
@@ -51,6 +55,17 @@ describe('[Feature] Push Template', () => {
     useGlobalPipes(app);
     await app.init();
     httpServer = app.getHttpServer();
+  });
+
+  beforeEach(() => {
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: ['push_template=create,update,remove'],
+    });
+  });
+
+  afterEach(() => {
+    setActiveEntityData.mockClear();
   });
 
   afterAll(async () => {
@@ -103,6 +118,25 @@ describe('[Feature] Push Template', () => {
         .send(createPushTemplateDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const createPushTemplateDto = {
+        name: templateName,
+        body: "Europe is Sony's largest market for the Playstation.",
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['push_template=update,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/push-template')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createPushTemplateDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
   });
 
   describe('Get Push Templates [GET /]', () => {
@@ -134,7 +168,7 @@ describe('[Feature] Push Template', () => {
 
   describe('Update Push Template [PATCH /:name]', () => {
     it('should respond with an OK status if the resource was updated', () => {
-      // Assert.
+      // Arrange.
       const updatePushTemplateDto = {
         actions: [
           {
@@ -153,7 +187,7 @@ describe('[Feature] Push Template', () => {
     });
 
     it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
-      // Assert.
+      // Arrange.
       const updatePushTemplateDto = {
         renotify: 12345,
       };
@@ -167,7 +201,7 @@ describe('[Feature] Push Template', () => {
     });
 
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
-      // Assert.
+      // Arrange.
       const updatePushTemplateDto = {
         actions: [
           {
@@ -184,8 +218,31 @@ describe('[Feature] Push Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const updatePushTemplateDto = {
+        actions: [
+          {
+            action: 'CONFIRM',
+            title: 'Confirm',
+          },
+        ],
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['push_template=create,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/push-template/${templateName}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updatePushTemplateDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
     it('should respond with a NOT_FOUND status is the resource does not exist', () => {
-      // Assert.
+      // Arrange.
       const updatePushTemplateDto = {
         renotify: true,
       };
@@ -213,6 +270,20 @@ describe('[Feature] Push Template', () => {
       return request(httpServer)
         .delete(`/push-template/${templateName}`)
         .expect(HttpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['push_template=create,update'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/push-template/${templateName}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.FORBIDDEN);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {

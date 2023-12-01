@@ -7,7 +7,7 @@ import { firstValueFrom, map } from 'rxjs';
 @Injectable()
 export class IamClientService extends TokenService {
   private readonly VERIFY_TOKEN_URL = this.configService.get(
-    'VERIFY_ACCESS_TOKEN_URL',
+    'IAM_CLIENT_URL',
   );
 
   constructor(
@@ -30,6 +30,23 @@ export class IamClientService extends TokenService {
       `,
       })
       .pipe(map(({ data: payload }) => payload.data.verifyAccessToken));
+
+    return firstValueFrom(request);
+  }
+
+  async verifyApiKey(apiKey: string): Promise<ActiveEntityData> {
+    const request = this.httpService
+      .post(this.VERIFY_TOKEN_URL, {
+        query: `
+        mutation {
+          verifyApiKey(apiKey: "${apiKey}") {
+            sub
+            authorization_details
+          }
+        }
+      `,
+      })
+      .pipe(map(({ data: payload }) => payload.data.verifyApiKey));
 
     return firstValueFrom(request);
   }

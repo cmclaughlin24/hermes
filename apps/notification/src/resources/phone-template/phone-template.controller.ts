@@ -3,7 +3,7 @@ import {
   PhoneMethods,
   errorToHttpException,
 } from '@hermes/common';
-import { Auth, AuthType } from '@hermes/iam';
+import { Auth, AuthType, IamPermission } from '@hermes/iam';
 import {
   Body,
   Controller,
@@ -25,6 +25,8 @@ import { PhoneTemplateService } from './phone-template.service';
 @ApiTags('Phone Template')
 @Controller('phone-template')
 export class PhoneTemplateController {
+  private static readonly RESOURCE_IDENTIFIER = 'phone_template'
+
   constructor(private readonly phoneTemplateService: PhoneTemplateService) {}
 
   @Get()
@@ -72,6 +74,10 @@ export class PhoneTemplateController {
   }
 
   @Post()
+  @IamPermission({
+    resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
+    action: 'create',
+  })
   @ApiOperation({
     summary: 'Create a new phone template.',
     security: [{ ApiKeyAuth: [] }],
@@ -105,6 +111,10 @@ export class PhoneTemplateController {
   }
 
   @Patch(':deliveryMethod/:name')
+  @IamPermission({
+    resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
+    action: 'update',
+  })
   @ApiOperation({
     summary: 'Update a phone template.',
     security: [{ ApiKeyAuth: [] }],
@@ -145,6 +155,10 @@ export class PhoneTemplateController {
   }
 
   @Delete(':deliveryMethod/:name')
+  @IamPermission({
+    resource: PhoneTemplateController.RESOURCE_IDENTIFIER,
+    action: 'remove',
+  })
   @ApiOperation({
     summary: 'Remove an email template.',
     security: [{ ApiKeyAuth: [] }],

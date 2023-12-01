@@ -5,9 +5,11 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import {
+  MockHashingService,
   MockJwtService,
   MockUserService,
   createConfigServiceMock,
+  createHashingServiceMock,
   createJwtServiceMock,
   createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
@@ -20,13 +22,6 @@ import { SignUpInput } from './dto/sign-up.input';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 import { RefreshTokenStorage } from './refresh-token.storage';
-
-type MockHashingService = Partial<Record<keyof HashingService, jest.Mock>>;
-
-const createHashingServiceMock = (): MockHashingService => ({
-  hash: jest.fn(),
-  compare: jest.fn(),
-});
 
 type MockVerifyTokenService = Partial<
   Record<keyof VerifyTokenService, jest.Mock>

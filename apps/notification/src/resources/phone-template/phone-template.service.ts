@@ -80,7 +80,7 @@ export class PhoneTemplateService {
    */
   @RemoveCache({
     key: PhoneTemplateService.CACHE_KEY,
-    hashFn: (key, args) => defaultHashFn(key, [args[0]]),
+    hashFn: (key, args) => defaultHashFn(key, [args[0], args[1]]),
   })
   async update(
     deliveryMethod: PhoneMethods,
