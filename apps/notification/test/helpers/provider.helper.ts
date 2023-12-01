@@ -1,3 +1,4 @@
+import { TokenService } from '@hermes/iam';
 import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../../src/common/services/email/email.service';
@@ -96,3 +97,23 @@ export const createNotificationLogServiceMock =
     findOne: jest.fn(),
     log: jest.fn(),
   });
+
+/**
+ * Yields a tuple containing a mock `TokenService` and a mock function
+ * for setting the returned `ActiveEntityData`.
+ * @returns {[TokenService, jest.Mock]}
+ */
+export const createTokenServiceMock = (): [TokenService, jest.Mock] => {
+  const setActiveEntityData = jest.fn();
+
+  const tokenService = {
+    verifyApiKey: async function (apiKey) {
+      if (apiKey === process.env.API_KEY) {
+        return setActiveEntityData();
+      }
+      return null;
+    },
+  };
+
+  return [tokenService, setActiveEntityData];
+};

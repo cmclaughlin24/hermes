@@ -9,18 +9,9 @@ import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreatePhoneTemplateDto } from '../src/resources/phone-template/dto/create-phone-template.dto';
 import { PhoneTemplateModule } from '../src/resources/phone-template/phone-template.module';
+import { createTokenServiceMock } from './helpers/provider.helper';
 
-const tokenService = {
-  verifyApiKey: async function (apiKey) {
-    if (apiKey === process.env.API_KEY) {
-      return {
-        sub: randomUUID(),
-        authorization_details: ['phone_template=create,update,remove'],
-      };
-    }
-    return null;
-  },
-};
+const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Phone Template', () => {
   let app: INestApplication;
@@ -66,6 +57,17 @@ describe('[Feature] Phone Template', () => {
     useGlobalPipes(app);
     await app.init();
     httpServer = app.getHttpServer();
+  });
+
+  beforeEach(() => {
+    setActiveEntityData.mockReturnValue({
+      sub: randomUUID(),
+      authorization_details: ['phone_template=create,update,remove'],
+    });
+  });
+
+  afterEach(() => {
+    setActiveEntityData.mockClear();
   });
 
   afterAll(async () => {
@@ -122,9 +124,26 @@ describe('[Feature] Phone Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const createPhoneTemplateDto: CreatePhoneTemplateDto = {
+        deliveryMethod: DeliveryMethods.SMS,
+        name: templateName,
+        template: '',
+        context: {},
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['phone_template=update,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .post('/phone-template')
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(createPhoneTemplateDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
   });
 
   describe('Get Phone Templates [GET /]', () => {
@@ -199,9 +218,24 @@ describe('[Feature] Phone Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      const updatePhoneTemplateDto = {
+        template:
+          'The idea for Kingdom Hearts came about because a Square executive was talking to Disney executive in an elevator; they shared a building in Japan',
+      };
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['phone_template=create,remove'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .patch(`/phone-template/${DeliveryMethods.SMS}/${templateName}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .send(updatePhoneTemplateDto)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it.todo(
       'should respond with a NOT_FOUND status if the resource does not exist',
@@ -224,9 +258,19 @@ describe('[Feature] Phone Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    it.todo(
-      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
-    );
+    it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
+      // Arrange.
+      setActiveEntityData.mockReturnValue({
+        sub: randomUUID(),
+        authorization_details: ['phone_template=create,update'],
+      });
+
+      // Act/Assert.
+      return request(httpServer)
+        .delete(`/phone-template/${DeliveryMethods.SMS}/${templateName}`)
+        .set(process.env.API_KEY_HEADER, process.env.API_KEY)
+        .expect(HttpStatus.FORBIDDEN);
+    });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
