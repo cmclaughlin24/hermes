@@ -107,7 +107,13 @@ export const createTokenServiceMock = (): [TokenService, jest.Mock] => {
   const setActiveEntityData = jest.fn();
 
   const tokenService = {
-    verifyApiKey: async function (apiKey) {
+    verifyAccessToken: async function (token: string) {
+      if (token === process.env.ACCESS_TOKEN) {
+        return setActiveEntityData();
+      }
+      return null;
+    },
+    verifyApiKey: async function (apiKey: string) {
       if (apiKey === process.env.API_KEY) {
         return setActiveEntityData();
       }

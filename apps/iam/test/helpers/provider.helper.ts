@@ -1,3 +1,4 @@
+import { TokenService } from '@hermes/iam';
 import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -19,7 +20,9 @@ export const createConfigServiceMock = (): MockConfigService => ({
   get: jest.fn(),
 });
 
-export type MockHashingService = Partial<Record<keyof HashingService, jest.Mock>>;
+export type MockHashingService = Partial<
+  Record<keyof HashingService, jest.Mock>
+>;
 
 export const createHashingServiceMock = (): MockHashingService => ({
   hash: jest.fn(),
@@ -57,3 +60,29 @@ export const createUserServiceMock = (): MockUserService => ({
   update: jest.fn(),
   remove: jest.fn(),
 });
+
+/**
+ * Yields a tuple containing a mock `TokenService` and a mock function
+ * for setting the returned `ActiveEntityData`.
+ * @returns {[TokenService, jest.Mock]}
+ */
+export const createTokenServiceMock = (): [TokenService, jest.Mock] => {
+  const setActiveEntityData = jest.fn();
+
+  const tokenService = {
+    verifyAccessToken: async function (token: string) {
+      if (token === process.env.ACCESS_TOKEN) {
+        return setActiveEntityData();
+      }
+      return null;
+    },
+    verifyApiKey: async function (apiKey: string) {
+      if (apiKey === process.env.API_KEY) {
+        return setActiveEntityData();
+      }
+      return null;
+    },
+  };
+
+  return [tokenService, setActiveEntityData];
+};
