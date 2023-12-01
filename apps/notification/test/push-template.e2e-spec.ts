@@ -1,11 +1,24 @@
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
+
+const tokenService = {
+  verifyApiKey: async function (apiKey) {
+    if (apiKey === process.env.API_KEY) {
+      return {
+        sub: randomUUID(),
+        authorization_details: ['push_template=create,update,remove'],
+      };
+    }
+    return null;
+  },
+};
 
 describe('[Feature] Push Template', () => {
   let app: INestApplication;
@@ -38,9 +51,9 @@ describe('[Feature] Push Template', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         PushTemplateModule,
@@ -103,6 +116,10 @@ describe('[Feature] Push Template', () => {
         .send(createPushTemplateDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
   });
 
   describe('Get Push Templates [GET /]', () => {
@@ -184,6 +201,10 @@ describe('[Feature] Push Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
+
     it('should respond with a NOT_FOUND status is the resource does not exist', () => {
       // Assert.
       const updatePushTemplateDto = {
@@ -214,6 +235,10 @@ describe('[Feature] Push Template', () => {
         .delete(`/push-template/${templateName}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.

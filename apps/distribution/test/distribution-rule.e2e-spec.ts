@@ -1,9 +1,10 @@
 import { DeliveryMethods } from '@hermes/common';
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionEventModule } from '../src/resources/distribution-event/distribution-event.module';
@@ -12,6 +13,21 @@ import { DistributionRuleModule } from '../src/resources/distribution-rule/distr
 import { CreateDistributionRuleDto } from '../src/resources/distribution-rule/dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../src/resources/distribution-rule/dto/update-distribution-rule.dto';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
+
+const tokenService = {
+  verifyApiKey: async function (apiKey) {
+    if (apiKey === process.env.API_KEY) {
+      return {
+        sub: randomUUID(),
+        authorization_details: [
+          'distribution_event=create,remove',
+          'distribution_rule=create,update,remove',
+        ],
+      };
+    }
+    return null;
+  },
+};
 
 describe('[Feature] Distribution Rule', () => {
   let app: INestApplication;
@@ -47,9 +63,9 @@ describe('[Feature] Distribution Rule', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         DistributionRuleModule,
@@ -178,6 +194,10 @@ describe('[Feature] Distribution Rule', () => {
         .send(createDistributionRuleDto)
         .expect(HttpStatus.NOT_FOUND);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
   });
 
   describe('Get Distribution Rules [GET /]', () => {
@@ -263,6 +283,10 @@ describe('[Feature] Distribution Rule', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
+
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
       const updateDistributionRuleDto: UpdateDistributionRuleDto = {
@@ -311,6 +335,10 @@ describe('[Feature] Distribution Rule', () => {
         .delete(`/distribution-rule/${distributionRuleId}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.

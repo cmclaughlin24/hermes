@@ -1,9 +1,10 @@
 import { DeliveryMethods } from '@hermes/common';
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionEventModule } from '../src/resources/distribution-event/distribution-event.module';
@@ -11,6 +12,18 @@ import { CreateDistributionEventDto } from '../src/resources/distribution-event/
 import { UpdateDistributionEventDto } from '../src/resources/distribution-event/dto/update-distribution-event.dto';
 import { DistributionRuleModule } from '../src/resources/distribution-rule/distribution-rule.module';
 import { SubscriptionModule } from '../src/resources/subscription/subscription.module';
+
+const tokenService = {
+  verifyApiKey: async function (apiKey) {
+    if (apiKey === process.env.API_KEY) {
+      return {
+        sub: randomUUID(),
+        authorization_details: ['distribution_event=create,update,remove'],
+      };
+    }
+    return null;
+  },
+};
 
 describe('[Feature] Distribution Event', () => {
   let app: INestApplication;
@@ -44,9 +57,9 @@ describe('[Feature] Distribution Event', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         DistributionEventModule,
@@ -160,6 +173,10 @@ describe('[Feature] Distribution Event', () => {
         .send(createDistributionEventDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
   });
 
   describe('Get Distribution Events [GET /]', () => {
@@ -233,6 +250,10 @@ describe('[Feature] Distribution Event', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
+
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
       const updateDistributionEventDto: UpdateDistributionEventDto = {
@@ -263,6 +284,10 @@ describe('[Feature] Distribution Event', () => {
         .delete(`/distribution-event/${queueName}/${eventType}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.

@@ -1,13 +1,26 @@
 import { DeliveryMethods } from '@hermes/common';
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreatePhoneTemplateDto } from '../src/resources/phone-template/dto/create-phone-template.dto';
 import { PhoneTemplateModule } from '../src/resources/phone-template/phone-template.module';
+
+const tokenService = {
+  verifyApiKey: async function (apiKey) {
+    if (apiKey === process.env.API_KEY) {
+      return {
+        sub: randomUUID(),
+        authorization_details: ['phone_template=create,update,remove'],
+      };
+    }
+    return null;
+  },
+};
 
 describe('[Feature] Phone Template', () => {
   let app: INestApplication;
@@ -40,9 +53,9 @@ describe('[Feature] Phone Template', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         PhoneTemplateModule,
@@ -108,6 +121,10 @@ describe('[Feature] Phone Template', () => {
         .send(createPhoneTemplateDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
   });
 
   describe('Get Phone Templates [GET /]', () => {
@@ -183,6 +200,10 @@ describe('[Feature] Phone Template', () => {
     });
 
     it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
+
+    it.todo(
       'should respond with a NOT_FOUND status if the resource does not exist',
     );
   });
@@ -202,6 +223,10 @@ describe('[Feature] Phone Template', () => {
         .delete(`/phone-template/${DeliveryMethods.SMS}/${templateName}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.

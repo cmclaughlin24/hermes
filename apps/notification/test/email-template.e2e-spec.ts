@@ -1,12 +1,25 @@
-import { IamModule } from '@hermes/iam';
+import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreateEmailTemplateDto } from '../src/resources/email-template/dto/create-email-template.dto';
 import { EmailTemplateModule } from '../src/resources/email-template/email-template.module';
+
+const tokenService = {
+  verifyApiKey: async function (apiKey) {
+    if (apiKey === process.env.API_KEY) {
+      return {
+        sub: randomUUID(),
+        authorization_details: ['email_template=create,update,remove'],
+      };
+    }
+    return null;
+  },
+};
 
 describe('[Feature] Email Template', () => {
   let app: INestApplication;
@@ -39,9 +52,9 @@ describe('[Feature] Email Template', () => {
         IamModule.registerAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
-          useFactory: (configService: ConfigService) => ({
+          useFactory: (configService: ConfigService): IamModuleOptions => ({
             apiKeyHeader: configService.get('API_KEY_HEADER'),
-            apiKeys: configService.get('API_KEY'),
+            tokenService,
           }),
         }),
         EmailTemplateModule,
@@ -107,6 +120,10 @@ describe('[Feature] Email Template', () => {
         .send(createEmailTemplateDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
   });
 
   describe('Get Email Templates [GET /]', () => {
@@ -178,6 +195,10 @@ describe('[Feature] Email Template', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
+
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Arrange.
       const updateEmailTemplateDto = {
@@ -208,6 +229,10 @@ describe('[Feature] Email Template', () => {
         .delete(`/email-template/${templateName}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
+    it.todo(
+      'should respond with a FORBIDDEN status if the requester does not have sufficient permissions',
+    );
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
