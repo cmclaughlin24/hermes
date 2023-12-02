@@ -16,6 +16,7 @@ import { HashingService } from '../../common/services/hashing.service';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
 import { PermissionService } from '../permission/permission.service';
 import { CreateApiKeyInput } from './dto/create-api-key.input';
+import { ActiveKeyData } from './entities/active-key.entity';
 import { ApiKey } from './entities/api-key.entity';
 import { InvalidApiKeyException } from './errors/invalid-api-key.exception';
 
@@ -46,6 +47,7 @@ export class ApiKeyService {
       sub: apiKeyId,
       name: createApiKeyInput.name,
       authorization_details: packPermissions(permissions),
+      exp: this._generateExpiresAt(),
     });
     const hashedKey = await this.hashingService.hash(apiKey);
 
@@ -105,14 +107,14 @@ export class ApiKeyService {
    * @returns {Promise<ActiveEntityData>}
    */
   async verifyApiKey(apiKey: string) {
-    const entity = this._extractEntityFromApiKey(apiKey);
+    const entity = this._extractDataFromApiKey(apiKey);
     const apiKeyEntity = await this._getApiKey(entity.sub);
     const isValidApiKey = await this.hashingService.compare(
       apiKey,
       apiKeyEntity.apiKey,
     );
 
-    if (!isValidApiKey) {
+    if (!isValidApiKey || this._isExpired(entity.exp)) {
       throw new InvalidApiKeyException();
     }
 
@@ -124,12 +126,36 @@ export class ApiKeyService {
     return this.apiKeyRepository.findOneBy({ id });
   }
 
-  private _generateApiKey(activeEntityData: ActiveEntityData) {
-    return Buffer.from(JSON.stringify(activeEntityData)).toString('base64');
+  /**
+   * Yields an api key.
+   * @param {ActiveKeyData} activeKeyData
+   * @returns {string}
+   */
+  private _generateApiKey(activeKeyData: ActiveKeyData) {
+    return Buffer.from(JSON.stringify(activeKeyData)).toString('base64');
   }
 
-  private _extractEntityFromApiKey(apiKey: string): ActiveEntityData {
+  /**
+   * Yields the `ActiveKeyData` object extracted from an api key.
+   * @param {string} apiKey
+   * @returns {ActiveKeyData}
+   */
+  private _extractDataFromApiKey(apiKey: string): ActiveKeyData {
     return JSON.parse(Buffer.from(apiKey, 'base64').toString('ascii'));
+  }
+
+  private _generateExpiresAt(): number {
+    return new Date().setFullYear(new Date().getFullYear() + 1);
+  }
+
+  /**
+   * Yields true if the current datatime is greater than the api key
+   * expiration datetime.
+   * @param {number} expiresAt
+   * @returns {boolean}
+   */
+  private _isExpired(expiresAt: number): boolean {
+    return new Date().getTime() > expiresAt;
   }
 
   /**

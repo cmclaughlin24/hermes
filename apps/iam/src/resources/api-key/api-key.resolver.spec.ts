@@ -3,11 +3,11 @@ import { ExistsException, MissingException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import { GraphQLError } from 'graphql';
-import { ActiveEntityData } from '../../common/entities/active-entity.entity';
 import { GraphQLErrorCode } from '../../common/types/graphql-error-code.type';
 import { ApiKeyResolver } from './api-key.resolver';
 import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyInput } from './dto/create-api-key.input';
+import { ActiveKeyData } from './entities/active-key.entity';
 import { ApiKey } from './entities/api-key.entity';
 import { InvalidApiKeyException } from './errors/invalid-api-key.exception';
 
@@ -124,12 +124,13 @@ describe('ApiKeyResolver', () => {
       service.verifyApiKey.mockClear();
     });
 
-    it('should yield an "ActiveEntityData" object if the api key is valid', async () => {
+    it('should yield an "ActiveKeyData" object if the api key is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveEntityData = {
+      const expectedResult: ActiveKeyData = {
         name: 'Gears of War',
         sub: randomUUID(),
         authorization_details: ['Actions=FightLocus'],
+        exp: 0,
       };
       service.verifyApiKey.mockResolvedValue(expectedResult);
 

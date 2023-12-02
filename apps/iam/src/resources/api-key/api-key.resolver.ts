@@ -2,10 +2,10 @@ import { errorToGraphQLException } from '@hermes/common';
 import { ActiveEntity, Auth, AuthType, IamPermission } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { ActiveEntityData } from '../../common/entities/active-entity.entity';
 import { GraphQLErrorCode } from '../../common/types/graphql-error-code.type';
 import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyInput } from './dto/create-api-key.input';
+import { ActiveKeyData } from './entities/active-key.entity';
 import { ApiKey } from './entities/api-key.entity';
 import { InvalidApiKeyException } from './errors/invalid-api-key.exception';
 
@@ -42,7 +42,7 @@ export class ApiKeyResolver {
     });
   }
 
-  @Mutation(() => ActiveEntityData, { name: 'verifyApiKey' })
+  @Mutation(() => ActiveKeyData, { name: 'verifyApiKey' })
   @Auth(AuthType.NONE)
   verifyApiKey(@Args('apiKey') apiKey: string) {
     return this.apiKeyService.verifyApiKey(apiKey).catch((error) => {
