@@ -105,7 +105,7 @@ describe('ApiKeyService', () => {
       expect(hashingService.hash).toHaveBeenCalled();
     });
 
-    it.todo('shoul yield the created api key');
+    it.todo('should yield the created api key');
 
     it('should throw an "ExistsException" if an api key name already exists', async () => {
       // Arrange.
@@ -222,7 +222,7 @@ describe('ApiKeyService', () => {
       );
     });
 
-    it('should throw an "InvalidApiKeyException" if the api key is invalid', async () => {
+    it('should throw an "InvalidApiKeyException" if the api key is invalid (invalid hash)', async () => {
       // Arrange.
       repository.findOneBy.mockResolvedValue({
         id: 'f7928d2b-f42c-4396-89ac-ffff7a0af0f7',
@@ -234,5 +234,9 @@ describe('ApiKeyService', () => {
         InvalidApiKeyException,
       );
     });
+
+    it.todo(
+      'should throw an "InvalidApiKeyException" if the api key is invalid (expired)',
+    );
   });
 });

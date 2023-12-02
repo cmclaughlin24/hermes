@@ -2,11 +2,11 @@ import { errorToGraphQLException } from '@hermes/common';
 import { Auth, AuthType } from '@hermes/iam';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { ActiveEntityData } from '../../common/entities/active-entity.entity';
 import { GraphQLErrorCode } from '../../common/types/graphql-error-code.type';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
+import { ActiveUserData } from './entities/active-user.entity';
 import { Tokens } from './entities/tokens.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
@@ -42,7 +42,7 @@ export class AuthenticationResolver {
     }
   }
 
-  @Mutation(() => ActiveEntityData, { name: 'verifyAccessToken' })
+  @Mutation(() => ActiveUserData, { name: 'verifyAccessToken' })
   async verifyToken(@Args('token') token: string) {
     return this.authenticationService.verifyToken(token).catch((error) => {
       if (error instanceof InvalidTokenException) {
