@@ -47,6 +47,7 @@ describe('VerifyTokenService', () => {
     it('should yield the "ActiveEntityData" if the token is valid', async () => {
       // Arrange.
       const expectedResult: ActiveEntityData = {
+        name: 'Marin',
         sub: randomUUID(),
         authorization_details: [],
       };

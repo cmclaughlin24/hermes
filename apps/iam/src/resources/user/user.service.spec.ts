@@ -31,6 +31,7 @@ describe('UserService', () => {
 
   const user: User = {
     id: randomUUID(),
+    name: 'Amy the Hedgehog',
     email: 'amy.hedgehog@sega.com',
     phoneNumber: '+18888888888',
     password: 'sonic-the-hedgehog',
@@ -149,6 +150,7 @@ describe('UserService', () => {
 
   describe('create()', () => {
     const createUserInput: CreateUserInput = {
+      name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
       password: user.password,

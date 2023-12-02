@@ -34,7 +34,7 @@ export class ApiKeyService {
    * Creates a new api key or throws an `ExistsException` if an api key
    * name already exists.
    * @param {CreateApiKeyInput} createApiKeyInput
-   * @param {string} userId 
+   * @param {string} userId
    * @returns {Promise<string>}
    */
   async create(createApiKeyInput: CreateApiKeyInput, userId: string) {
@@ -44,6 +44,7 @@ export class ApiKeyService {
     );
     const apiKey = this._generateApiKey({
       sub: apiKeyId,
+      name: createApiKeyInput.name,
       authorization_details: packPermissions(permissions),
     });
     const hashedKey = await this.hashingService.hash(apiKey);
@@ -72,12 +73,12 @@ export class ApiKeyService {
   /**
    * Removes an api key or throws a `MissingException` if the repository
    * returns null or undefined.
-   * 
+   *
    * Note: A soft (paranoid) delete is performed so that audit history can
    *       be maintained for operations performed by the entity.
-   * 
+   *
    * @param {string} id
-   * @param {string} userId 
+   * @param {string} userId
    * @returns {Promise<ApiKey>}
    */
   @RemoveCache({

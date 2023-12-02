@@ -127,6 +127,7 @@ describe('ApiKeyResolver', () => {
     it('should yield an "ActiveEntityData" object if the api key is valid', async () => {
       // Arrange.
       const expectedResult: ActiveEntityData = {
+        name: 'Gears of War',
         sub: randomUUID(),
         authorization_details: ['Actions=FightLocus'],
       };
