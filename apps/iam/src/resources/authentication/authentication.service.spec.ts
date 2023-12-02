@@ -95,6 +95,7 @@ describe('AuthenticationService', () => {
 
   describe('signUp()', () => {
     const signUpInput: SignUpInput = {
+      name: 'Falco Lombardi',
       email: 'falco.lombardi@nintendo.com',
       phoneNumber: '+19999999999',
       password: 'star-fox',
@@ -196,6 +197,7 @@ describe('AuthenticationService', () => {
     it('should yield an "ActiveEntityData" object if the token is valid', async () => {
       // Arrange.
       const expectedResult: ActiveEntityData = {
+        name: 'Slippy Toad',
         sub: randomUUID(),
         authorization_details: [],
       };

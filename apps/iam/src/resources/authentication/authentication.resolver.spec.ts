@@ -48,6 +48,7 @@ describe('AuthenticationResolver', () => {
 
   describe('signUp()', () => {
     const signUpInput: SignUpInput = {
+      name: 'Ori',
       email: 'ori@moon-studios.com',
       phoneNumber: '+19999999999',
       password: 'the-blind-forest',
@@ -154,6 +155,7 @@ describe('AuthenticationResolver', () => {
     it('should yield an "ActiveEntityData" object if the token is valid', async () => {
       // Arrange.
       const expectedResult: ActiveEntityData = {
+        name: 'Shriek',
         sub: randomUUID(),
         authorization_details: [],
       };

@@ -1,9 +1,11 @@
 import { InputType } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   IsEmail,
+  IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
+  IsString,
   IsStrongPassword,
   ValidateNested,
 } from 'class-validator';
@@ -11,6 +13,11 @@ import { CreatePermissionInput } from '../../permission/dto/create-permission.in
 
 @InputType()
 export class CreateUserInput {
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }: TransformFnParams) => value.trim())
+  name: string;
+
   @IsEmail()
   email: string;
 

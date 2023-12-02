@@ -19,6 +19,7 @@ describe('UserResolver', () => {
   const userId = randomUUID();
   const user: User = {
     id: userId,
+    name: 'Knuckles the Echidna',
     email: 'knuckles.echidna@sega.com',
     phoneNumber: '+19999999999',
     password: 'super-secret-password',

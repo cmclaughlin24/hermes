@@ -138,6 +138,7 @@ export class AuthenticationService {
     // Fixme: Send additional user information to be used in payload.
     const [accessToken, refreshToken] = await Promise.all([
       this._signToken<Partial<ActiveEntityData>>(user.id, this.accessTokenTtl, {
+        name: user.name,
         authorization_details: permissions,
       }),
       this._signToken<{ refreshTokenId: string }>(
