@@ -43,11 +43,12 @@ export class ApiKeyService {
     const permissions = await this._getPermissions(
       createApiKeyInput.permissions,
     );
+    const expiresAt = this._generateExpiresAt();
     const apiKey = this._generateApiKey({
       sub: apiKeyId,
       name: createApiKeyInput.name,
       authorization_details: packPermissions(permissions),
-      exp: this._generateExpiresAt(),
+      exp: expiresAt.getTime(),
     });
     const hashedKey = await this.hashingService.hash(apiKey);
 
@@ -56,6 +57,7 @@ export class ApiKeyService {
         id: apiKeyId,
         name: createApiKeyInput.name,
         apiKey: hashedKey,
+        expiresAt: expiresAt,
         createdBy: userId,
       });
 
@@ -144,8 +146,10 @@ export class ApiKeyService {
     return JSON.parse(Buffer.from(apiKey, 'base64').toString('ascii'));
   }
 
-  private _generateExpiresAt(): number {
-    return new Date().setFullYear(new Date().getFullYear() + 1);
+  private _generateExpiresAt() {
+    const expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    return expiresAt;
   }
 
   /**

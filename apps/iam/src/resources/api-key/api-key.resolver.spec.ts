@@ -89,6 +89,7 @@ describe('ApiKeyResolver', () => {
         id: randomUUID(),
         name: 'gears-of-war-2',
         apiKey: '',
+        expiresAt: new Date(),
         createdBy: userId,
         createdAt: new Date(),
         deletedBy: null,

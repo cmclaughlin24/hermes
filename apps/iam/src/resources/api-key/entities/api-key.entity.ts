@@ -24,6 +24,9 @@ export class ApiKey {
   apiKey: string;
 
   @Column()
+  expiresAt: Date;
+
+  @Column()
   createdBy: string;
 
   @CreateDateColumn()
