@@ -6,7 +6,8 @@ import {
   defaultHashFn,
 } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplate } from './entities/email-template.entity';
@@ -16,8 +17,8 @@ export class EmailTemplateService {
   private static readonly CACHE_KEY = 'email-template';
 
   constructor(
-    @InjectModel(EmailTemplate)
-    private readonly emailTemplateModel: typeof EmailTemplate,
+    @InjectRepository(EmailTemplate)
+    private readonly emailTemplateRepository: Repository<EmailTemplate>,
   ) {}
 
   /**
@@ -25,7 +26,7 @@ export class EmailTemplateService {
    * @returns {Promise<EmailTemplate[]>}
    */
   async findAll() {
-    return this.emailTemplateModel.findAll();
+    return this.emailTemplateRepository.find();
   }
 
   /**
@@ -35,7 +36,7 @@ export class EmailTemplateService {
    */
   @UseCache({ key: EmailTemplateService.CACHE_KEY })
   async findOne(name: string) {
-    return this.emailTemplateModel.findByPk(name);
+    return this.emailTemplateRepository.findOneBy({ name });
   }
 
   /**
@@ -45,9 +46,9 @@ export class EmailTemplateService {
    * @returns {Promise<EmailTemplate>}
    */
   async create(createEmailTemplateDto: CreateEmailTemplateDto) {
-    const existingTemplate = await this.emailTemplateModel.findByPk(
-      createEmailTemplateDto.name,
-    );
+    const existingTemplate = await this.emailTemplateRepository.findOneBy({
+      name: createEmailTemplateDto.name,
+    });
 
     if (existingTemplate) {
       throw new ExistsException(
@@ -55,11 +56,11 @@ export class EmailTemplateService {
       );
     }
 
-    const emailTemplate = await this.emailTemplateModel.create({
-      ...createEmailTemplateDto,
-    });
+    const emailTemplate = this.emailTemplateRepository.create(
+      createEmailTemplateDto,
+    );
 
-    return emailTemplate;
+    return this.emailTemplateRepository.save(emailTemplate);
   }
 
   /**
@@ -74,19 +75,16 @@ export class EmailTemplateService {
     hashFn: (key: string, args: any[]) => defaultHashFn(key, [args[0]]),
   })
   async update(name: string, updateEmailTemplateDto: UpdateEmailTemplateDto) {
-    let emailTemplate = await this.emailTemplateModel.findByPk(name);
+    const emailTemplate = await this.emailTemplateRepository.preload({
+      name,
+      ...updateEmailTemplateDto,
+    });
 
     if (!emailTemplate) {
       throw new MissingException(`Email Template ${name} not found!`);
     }
 
-    emailTemplate = await emailTemplate.update({
-      subject: updateEmailTemplateDto.subject ?? emailTemplate.subject,
-      template: updateEmailTemplateDto.template ?? emailTemplate.template,
-      context: updateEmailTemplateDto.context ?? emailTemplate.context,
-    });
-
-    return emailTemplate;
+    return this.emailTemplateRepository.save(emailTemplate);
   }
 
   /**
@@ -97,12 +95,14 @@ export class EmailTemplateService {
    */
   @RemoveCache({ key: EmailTemplateService.CACHE_KEY })
   async remove(name: string) {
-    const emailTemplate = await this.emailTemplateModel.findByPk(name);
+    const emailTemplate = await this.emailTemplateRepository.findOneBy({
+      name,
+    });
 
     if (!emailTemplate) {
       throw new MissingException(`Email Template ${name} not found!`);
     }
 
-    await emailTemplate.destroy();
+    await this.emailTemplateRepository.remove(emailTemplate);
   }
 }

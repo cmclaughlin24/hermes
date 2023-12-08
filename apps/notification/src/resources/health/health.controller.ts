@@ -11,7 +11,7 @@ import {
   HealthCheck,
   HealthCheckService,
   HttpHealthIndicator,
-  SequelizeHealthIndicator,
+  TypeOrmHealthIndicator
 } from '@nestjs/terminus';
 
 @ApiTags('Health')
@@ -21,7 +21,7 @@ export class HealthController {
     private readonly configService: ConfigService,
     private readonly health: HealthCheckService,
     private readonly httpIndicator: HttpHealthIndicator,
-    private readonly sequelizeIndicator: SequelizeHealthIndicator,
+    private readonly typeOrmIndicator: TypeOrmHealthIndicator,
     private readonly redisIndicator: RedisHealthIndicator,
     private readonly twilioIndicator: TwilioHealthIndicator,
   ) {}
@@ -41,7 +41,7 @@ export class HealthController {
     const mailerPassword = this.configService.get('MAILER_PASSWORD');
 
     return this.health.check([
-      () => this.sequelizeIndicator.pingCheck('database'),
+      () => this.typeOrmIndicator.pingCheck('database'),
       () => this.redisIndicator.pingCheck('redis'),
       () => this.twilioIndicator.pingCheck('twilio', twilioOptions),
       // Note: Health check for Send Grid is to verify the validity of the API Key.

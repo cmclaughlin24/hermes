@@ -1,26 +1,19 @@
-import {
-  BelongsTo,
-  Column,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { PushTemplate } from './push-template.entity';
 
-@Table({ createdAt: false, updatedAt: false })
-export class PushAction extends Model {
-  @Column({ primaryKey: true })
+@Entity()
+export class PushAction {
+  @PrimaryColumn()
   action: string;
 
-  @Column
+  @Column()
   title: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   icon: string;
 
-  @ForeignKey(() => PushTemplate)
-  templateId: string;
-
-  @BelongsTo(() => PushTemplate)
+  @ManyToOne(() => PushTemplate, (template) => template.actions, {
+    onDelete: 'CASCADE',
+  })
   template: PushTemplate;
 }

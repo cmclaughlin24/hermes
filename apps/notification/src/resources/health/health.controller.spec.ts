@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   HealthCheckService,
   HttpHealthIndicator,
-  SequelizeHealthIndicator,
+  TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigServiceMock } from '../../../test/helpers/provider.helper';
@@ -25,12 +25,12 @@ export const createHttpHealthIndicatorMock = (): MockHttpHealthIndicator => ({
   pingCheck: jest.fn(),
 });
 
-export type MockSequelizeHealthIndicator = Partial<
-  Record<keyof SequelizeHealthIndicator, jest.Mock>
+export type MockTypeOrmHealthIndicator = Partial<
+  Record<keyof TypeOrmHealthIndicator, jest.Mock>
 >;
 
-export const createSequelizeHealthIndicatorMock =
-  (): MockSequelizeHealthIndicator => ({
+export const createTypeOrmHealthIndicatorMock =
+  (): MockTypeOrmHealthIndicator => ({
     pingCheck: jest.fn(),
   });
 
@@ -72,8 +72,8 @@ describe('HealthController', () => {
           useValue: createHttpHealthIndicatorMock(),
         },
         {
-          provide: SequelizeHealthIndicator,
-          useValue: createSequelizeHealthIndicatorMock(),
+          provide: TypeOrmHealthIndicator,
+          useValue: createTypeOrmHealthIndicatorMock(),
         },
         {
           provide: RedisHealthIndicator,

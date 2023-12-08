@@ -1,23 +1,33 @@
-import { PhoneMethods } from '@hermes/common';
-import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { DeliveryMethods, PhoneMethods } from '@hermes/common';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Table
-export class PhoneTemplate extends Model {
-  @Column({ primaryKey: true })
+@Entity()
+export class PhoneTemplate {
+  @PrimaryColumn()
   name: string;
 
-  @Column({ primaryKey: true })
+  @Column({
+    primary: true,
+    enumName: 'phone-methods',
+    enum: [DeliveryMethods.CALL, DeliveryMethods.SMS],
+  })
   deliveryMethod: PhoneMethods;
 
-  @Column({ type: DataType.STRING(2000) })
+  @Column({ length: 2000 })
   template: string;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   context: string;
 
-  @CreatedAt
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdatedAt
+  @UpdateDateColumn()
   updatedAt: Date;
 }

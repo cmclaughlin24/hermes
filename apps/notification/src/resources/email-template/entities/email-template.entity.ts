@@ -1,25 +1,28 @@
-import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Table
-export class EmailTemplate extends Model {
-  @Column({
-    primaryKey: true,
-    unique: true,
-  })
+@Entity()
+export class EmailTemplate {
+  @PrimaryColumn()
   name: string;
 
-  @Column
+  @Column()
   subject: string;
 
-  @Column({ type: DataType.STRING(2000) })
+  @Column({ length: 2000 })
   template: string;
 
-  @Column({ type: DataType.JSON })
+  @Column({ type: 'simple-json', nullable: true })
   context: string;
 
-  @CreatedAt
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdatedAt
+  @UpdateDateColumn()
   updatedAt: Date;
 }

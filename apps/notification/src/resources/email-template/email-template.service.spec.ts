@@ -15,7 +15,7 @@ import { EmailTemplate } from './entities/email-template.entity';
 
 describe('EmailTemplateService', () => {
   let service: EmailTemplateService;
-  let emailTemplateModel: MockRepository;
+  let emailTemplateRepository: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,7 +33,7 @@ describe('EmailTemplateService', () => {
     }).compile();
 
     service = module.get<EmailTemplateService>(EmailTemplateService);
-    emailTemplateModel = module.get<MockRepository>(
+    emailTemplateRepository = module.get<MockRepository>(
       getModelToken(EmailTemplate),
     );
   });
@@ -44,7 +44,7 @@ describe('EmailTemplateService', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      emailTemplateModel.findAll.mockClear();
+      emailTemplateRepository.find.mockClear();
     });
 
     it('should yield a list of email templates', async () => {
@@ -56,7 +56,7 @@ describe('EmailTemplateService', () => {
           context: null,
         } as EmailTemplate,
       ];
-      emailTemplateModel.findAll.mockResolvedValue(expectedResult);
+      emailTemplateRepository.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toEqual(expectedResult);
@@ -64,7 +64,7 @@ describe('EmailTemplateService', () => {
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      emailTemplateModel.findAll.mockResolvedValue([]);
+      emailTemplateRepository.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toHaveLength(0);
@@ -73,7 +73,7 @@ describe('EmailTemplateService', () => {
 
   describe('findOne()', () => {
     afterEach(() => {
-      emailTemplateModel.findByPk.mockClear();
+      emailTemplateRepository.findOneBy.mockClear();
     });
 
     it('should yield an email template', async () => {
@@ -83,7 +83,7 @@ describe('EmailTemplateService', () => {
         template: '<h1>Unit Testing</h1>',
         context: null,
       } as EmailTemplate;
-      emailTemplateModel.findByPk.mockResolvedValue(expectedResult);
+      emailTemplateRepository.findOneBy.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findOne(expectedResult.name)).resolves.toEqual(
@@ -94,7 +94,7 @@ describe('EmailTemplateService', () => {
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const name = 'test';
-      emailTemplateModel.findByPk.mockResolvedValue(null);
+      emailTemplateRepository.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findOne(name)).resolves.toBeNull();
@@ -113,25 +113,27 @@ describe('EmailTemplateService', () => {
     const emailTemplate = { ...createEmailTemplateDto } as EmailTemplate;
 
     afterEach(() => {
-      emailTemplateModel.create.mockClear();
+      emailTemplateRepository.create.mockClear();
+      emailTemplateRepository.save.mockClear();
     });
 
     it('should create an email template', async () => {
       // Arrange.
-      emailTemplateModel.findByPk.mockResolvedValue(null);
-      emailTemplateModel.create.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.findOneBy.mockResolvedValue(null);
+      emailTemplateRepository.create.mockResolvedValue(emailTemplate);
 
       // Act.
       await service.create(createEmailTemplateDto);
 
       // Assert.
-      expect(emailTemplateModel.create).toHaveBeenCalled();
+      expect(emailTemplateRepository.create).toHaveBeenCalled();
     });
 
     it('should yield the created email template', async () => {
       // Arrange.
-      emailTemplateModel.findByPk.mockResolvedValue(null);
-      emailTemplateModel.create.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.findOneBy.mockResolvedValue(null);
+      emailTemplateRepository.create.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.save.mockResolvedValue(emailTemplate);
 
       // Act.
       const func = service.create.bind(service, createEmailTemplateDto);
@@ -145,7 +147,7 @@ describe('EmailTemplateService', () => {
       const expectedResult = new ExistsException(
         `Email Template ${createEmailTemplateDto.name} already exists!`,
       );
-      emailTemplateModel.findByPk.mockResolvedValue({
+      emailTemplateRepository.findOneBy.mockResolvedValue({
         name: 'test',
       } as EmailTemplate);
 
@@ -158,8 +160,8 @@ describe('EmailTemplateService', () => {
   });
 
   describe('update()', () => {
+    const name = 'test';
     const updateEmailTemplateDto: UpdateEmailTemplateDto = {
-      name: 'test',
       template: '<h1>{{title}}</h1>',
       context: {
         title: 'string',
@@ -167,36 +169,31 @@ describe('EmailTemplateService', () => {
     };
     const emailTemplate = {
       ...updateEmailTemplateDto,
-      update: jest.fn(),
     };
 
     afterEach(() => {
-      emailTemplateModel.update.mockClear();
+      emailTemplateRepository.preload.mockClear();
+      emailTemplateRepository.save.mockClear();
     });
 
     it('should update an email template', async () => {
       // Arrange.
-      emailTemplateModel.findByPk.mockResolvedValue(emailTemplate);
-      emailTemplate.update.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.preload.mockResolvedValue(emailTemplate);
 
       // Act.
-      await service.update(updateEmailTemplateDto.name, updateEmailTemplateDto);
+      await service.update(name, updateEmailTemplateDto);
 
       // Assert.
-      expect(emailTemplate.update).toHaveBeenCalled();
+      expect(emailTemplateRepository.preload).toHaveBeenCalled();
     });
 
     it('should yield the updated email template', async () => {
       // Arrange.
-      emailTemplateModel.findByPk.mockResolvedValue(emailTemplate);
-      emailTemplate.update.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.preload.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.save.mockResolvedValue(emailTemplate);
 
       // Act.
-      const func = service.update.bind(
-        service,
-        updateEmailTemplateDto.name,
-        updateEmailTemplateDto,
-      );
+      const func = service.update.bind(service, name, updateEmailTemplateDto);
 
       // Assert.
       await expect(func()).resolves.toEqual(emailTemplate);
@@ -208,7 +205,7 @@ describe('EmailTemplateService', () => {
       const expectedResult = new NotFoundException(
         `Email Template ${name} not found!`,
       );
-      emailTemplateModel.findByPk.mockResolvedValue(null);
+      emailTemplateRepository.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -219,22 +216,22 @@ describe('EmailTemplateService', () => {
 
   describe('remove()', () => {
     const name = 'test';
-    const emailTemplate = { destroy: jest.fn() };
+    const emailTemplate = {};
 
     afterEach(() => {
-      emailTemplateModel.destroy.mockClear();
+      emailTemplateRepository.remove.mockClear();
     });
 
     it('should remove an email template', async () => {
       // Arrange.
-      emailTemplateModel.findByPk.mockResolvedValue(emailTemplate);
-      emailTemplate.destroy.mockResolvedValue(null);
+      emailTemplateRepository.findOneBy.mockResolvedValue(emailTemplate);
+      emailTemplateRepository.remove.mockResolvedValue(null);
 
       // Act.
       await service.remove(name);
 
       // Assert.
-      expect(emailTemplate.destroy).toHaveBeenCalled();
+      expect(emailTemplateRepository.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the repository return null/undefined', async () => {
@@ -242,7 +239,7 @@ describe('EmailTemplateService', () => {
       const expectedResult = new MissingException(
         `Email Template ${name} not found!`,
       );
-      emailTemplateModel.findByPk.mockResolvedValue(null);
+      emailTemplateRepository.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.remove(name)).rejects.toEqual(expectedResult);

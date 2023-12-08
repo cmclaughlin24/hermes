@@ -1,10 +1,9 @@
 import { errorToJson } from '@hermes/common';
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
-import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { DataSource, In, Repository } from 'typeorm';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
 
@@ -13,11 +12,11 @@ export class NotificationLogService {
   private readonly logger = new Logger(NotificationLogService.name);
 
   constructor(
-    @InjectModel(NotificationLog)
-    private readonly notificationLogModel: typeof NotificationLog,
-    @InjectModel(NotificationAttempt)
-    private readonly notificationAttemptModel: typeof NotificationAttempt,
-    private readonly sequelize: Sequelize,
+    @InjectRepository(NotificationLog)
+    private readonly notificationLogRepository: Repository<NotificationLog>,
+    @InjectRepository(NotificationAttempt)
+    private readonly notificationAttemptRepository: Repository<NotificationAttempt>,
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
@@ -28,11 +27,9 @@ export class NotificationLogService {
    * @returns {Promise<NotificationLog[]>}
    */
   async findAll(jobs: string[], states: JobState[]) {
-    return this.notificationLogModel.findAll({
+    return this.notificationLogRepository.find({
       where: this._buildWhereClause(jobs, states),
-      include: [
-        { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
-      ],
+      relations: { attemptHistory: true },
     });
   }
 
@@ -42,10 +39,9 @@ export class NotificationLogService {
    * @returns {Promise<NotificationLog>}
    */
   async findOne(id: string) {
-    return this.notificationLogModel.findByPk(id, {
-      include: [
-        { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
-      ],
+    return this.notificationLogRepository.findOne({
+      where: { id },
+      relations: { attemptHistory: true },
     });
   }
 
@@ -82,15 +78,11 @@ export class NotificationLogService {
     const where: any = {};
 
     if (!_.isEmpty(jobs)) {
-      where.job = {
-        [Op.or]: jobs,
-      };
+      where.job = In(jobs);
     }
 
     if (!_.isEmpty(states)) {
-      where.state = {
-        [Op.or]: states,
-      };
+      where.state = In(states);
     }
 
     return Object.keys(where).length > 0 ? where : null;
@@ -110,35 +102,28 @@ export class NotificationLogService {
     result: any,
     error: Record<string, any>,
   ) {
-    return this.sequelize.transaction(async (transaction) => {
-      const log = await this.notificationLogModel.create(
-        {
-          job: job.name,
-          state: state,
-          attempts: job.attemptsMade,
-          data: job.data,
-          addedAt: new Date(job.timestamp),
-          finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
-        },
-        { transaction },
-      );
-
-      // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
-      if (state === 'completed' || state === 'failed') {
-        await this.notificationAttemptModel.create(
-          {
-            logId: log.id,
-            attempt: job.attemptsMade,
-            processedAt: new Date(job.processedOn),
-            result: result,
-            error: error,
-          },
-          { transaction },
-        );
-      }
-
-      return log.id;
+    const attempts =
+      state === 'completed' || state === 'failed'
+        ? [
+            this.notificationAttemptRepository.create({
+              attempt: job.attemptsMade,
+              processedAt: new Date(job.processedOn),
+              result: result,
+              error: error,
+            }),
+          ]
+        : [];
+    const log = this.notificationLogRepository.create({
+      job: job.name,
+      state: state,
+      attempts: job.attemptsMade,
+      data: job.data,
+      addedAt: new Date(job.timestamp),
+      finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
+      attemptHistory: attempts,
     });
+
+    return this.notificationLogRepository.save(log).then((l) => l.id);
   }
 
   /**
@@ -156,48 +141,46 @@ export class NotificationLogService {
     result: any,
     error: Record<string, any>,
   ) {
-    return this.sequelize.transaction(async (transaction) => {
-      let log = await this.notificationLogModel.findByPk(
-        job.data.notification_database_id,
-        { transaction },
-      );
+    const queryRunner = this.dataSource.createQueryRunner();
 
-      if (log.attempts > job.attemptsMade) {
-        this.logger.warn(
-          `[${this._updateLog.name}] Notification Log attempts (${log.attempts}) greater than job attemps (${job.attemptsMade}), no update`,
-        );
-        return log.id;
-      }
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
+    try {
       // Note: Remove the database id from the job's data before updating the record.
       const data = { ...job.data };
       delete data.notification_database_id;
 
-      log = await log.update(
-        {
-          state: state,
-          attempts: job.attemptsMade,
-          data: data,
-          finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
-        },
-        { transaction },
-      );
+      const log = await this.notificationLogRepository.preload({
+        id: job.data.notification_database_id,
+        state: state,
+        attempts: job.attemptsMade,
+        data: data,
+        finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
+      });
 
       // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
       if (state === 'completed' || state === 'failed') {
-        await this.notificationAttemptModel.create(
-          {
-            logId: log.id,
-            attempt: job.attemptsMade,
-            processedAt: new Date(job.processedOn),
-            result: result,
-            error: error,
-          },
-          { transaction },
-        );
+        const attempt = await this.notificationAttemptRepository.create({
+          attempt: job.attemptsMade,
+          processedAt: new Date(job.processedOn),
+          result: result,
+          error: error,
+          log,
+        });
+
+        await this.notificationAttemptRepository.save(attempt);
       }
 
-      return log.id;
-    });
+      return this.notificationLogRepository.save(log).then(async (l) => {
+        await queryRunner.commitTransaction();
+        return l.id;
+      });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
