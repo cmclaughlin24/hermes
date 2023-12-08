@@ -1,78 +1,76 @@
 import { TextDirection } from '@hermes/common';
 import {
   Column,
-  CreatedAt,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-  UpdatedAt,
-} from 'sequelize-typescript';
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { PushAction } from './push-action.entity';
 
-@Table
-export class PushTemplate extends Model {
-  @Column({ primaryKey: true })
+@Entity()
+export class PushTemplate {
+  @PrimaryColumn()
   name: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   badge: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   body: string;
 
-  @Column({ type: DataType.JSON })
+  @Column({ type: 'simple-json', nullable: true })
   data: string;
 
   @Column({
-    type: DataType.ENUM(
-      TextDirection.AUTO,
-      TextDirection.LTR,
-      TextDirection.RTL,
-    ),
-    allowNull: true,
+    enumName: 'TextDirection',
+    enum: [TextDirection.AUTO, TextDirection.LTR, TextDirection.RTL],
+    nullable: true,
   })
   dir: TextDirection;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   icon: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   image: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   lang: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   renotify: boolean;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   requireInteraction: boolean;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   silent: boolean;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   tag: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   timestamp: string;
 
-  @Column
+  @Column()
   title: string;
 
   @Column({
-    allowNull: true,
-    type: DataType.ARRAY(DataType.INTEGER),
+    type: 'simple-array',
+    nullable: true,
   })
   vibrate: number[];
 
-  @CreatedAt
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdatedAt
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @HasMany(() => PushAction, { onDelete: 'CASCADE' })
+  @OneToMany(() => PushAction, (action) => action.template, {
+    cascade: true,
+  })
   actions: PushAction[];
 }

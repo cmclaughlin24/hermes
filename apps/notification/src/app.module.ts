@@ -5,7 +5,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { join } from 'path';
 import './common/helpers/handlebar.helpers';
@@ -58,7 +58,7 @@ import { ResourcesModule } from './resources/resources.module';
         VAPID_PRIVATE_KEY: Joi.required(),
       }),
     }),
-    SequelizeModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: databaseFactory,

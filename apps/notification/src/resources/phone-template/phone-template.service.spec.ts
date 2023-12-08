@@ -4,7 +4,6 @@ import {
   MissingException,
 } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -19,7 +18,7 @@ import { PhoneTemplateService } from './phone-template.service';
 
 describe('PhoneTemplateService', () => {
   let service: PhoneTemplateService;
-  let phoneTemplateModel: MockRepository;
+  let phoneTemplateRepository: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,7 +36,7 @@ describe('PhoneTemplateService', () => {
     }).compile();
 
     service = module.get<PhoneTemplateService>(PhoneTemplateService);
-    phoneTemplateModel = module.get<MockRepository>(
+    phoneTemplateRepository = module.get<MockRepository>(
       getModelToken(PhoneTemplate),
     );
   });
@@ -54,13 +53,13 @@ describe('PhoneTemplateService', () => {
     } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateModel.findAll.mockClear();
+      phoneTemplateRepository.find.mockClear();
     });
 
     it('should yield a list of phone templates', async () => {
       // Arrange.
       const expectedResult = [phoneTemplate];
-      phoneTemplateModel.findAll.mockResolvedValue(expectedResult);
+      phoneTemplateRepository.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toEqual(expectedResult);
@@ -68,7 +67,7 @@ describe('PhoneTemplateService', () => {
 
     it('should yield an empty list if the repository yields an empty list', async () => {
       // Arrange.
-      phoneTemplateModel.findAll.mockResolvedValue([]);
+      phoneTemplateRepository.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toHaveLength(0);
@@ -83,12 +82,12 @@ describe('PhoneTemplateService', () => {
     } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateModel.findOne.mockClear();
+      phoneTemplateRepository.findOneBy.mockClear();
     });
 
     it('should yield a phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(phoneTemplate);
 
       // Act/Assert.
       await expect(
@@ -98,10 +97,7 @@ describe('PhoneTemplateService', () => {
 
     it('should yield null if the repository yields null/undefined', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Phone template name=${phoneTemplate.name} for deliveryMethod=${phoneTemplate.deliveryMethod} not found!`,
-      );
-      phoneTemplateModel.findOne.mockResolvedValue(null);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -120,25 +116,28 @@ describe('PhoneTemplateService', () => {
     const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateModel.create.mockClear();
+      phoneTemplateRepository.findOneBy.mockClear();
+      phoneTemplateRepository.create.mockClear();
+      phoneTemplateRepository.save.mockClear();
     });
 
     it('should create a phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(null);
-      phoneTemplateModel.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(null);
+      phoneTemplateRepository.create.mockResolvedValue(phoneTemplate);
 
       // Act.
       await service.create(createPhoneTemplateDto);
 
       // Assert.
-      expect(phoneTemplateModel.create).toHaveBeenCalled();
+      expect(phoneTemplateRepository.create).toHaveBeenCalled();
     });
 
     it('should yield the created phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(null);
-      phoneTemplateModel.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(null);
+      phoneTemplateRepository.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.save.mockResolvedValue(phoneTemplate);
 
       // Assert.
       await expect(service.create(createPhoneTemplateDto)).resolves.toEqual(
@@ -151,7 +150,7 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new ExistsException(
         `Phone template name=${createPhoneTemplateDto.name} for deliveryMethod=${createPhoneTemplateDto.deliveryMethod} already exists!`,
       );
-      phoneTemplateModel.findOne.mockResolvedValue({
+      phoneTemplateRepository.findOneBy.mockResolvedValue({
         name: 'test',
       } as PhoneTemplate);
 
@@ -167,28 +166,34 @@ describe('PhoneTemplateService', () => {
       template: '<Response><Say>Hello There!</Say></Response>',
       context: null,
     };
-    const phoneTemplate = { name: 'unit-test', update: jest.fn() };
+    const phoneTemplate = { name: 'unit-test' };
 
     afterEach(() => {
-      phoneTemplate.update.mockClear();
+      phoneTemplateRepository.preload.mockClear();
+      phoneTemplateRepository.save.mockClear();
     });
 
     it('should update a phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
-      phoneTemplate.update.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.preload.mockResolvedValue(phoneTemplate);
 
       // Act.
       await service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto);
 
       // Assert.
-      expect(phoneTemplate.update).toHaveBeenCalledWith(updatePhoneTemplateDto);
+      expect(phoneTemplateRepository.preload).toHaveBeenCalledWith({
+        name: '',
+        deliveryMethod: DeliveryMethods.CALL,
+        ...updatePhoneTemplateDto,
+      });
     });
 
     it('should yield the updated phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
-      phoneTemplate.update.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.preload.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.save.mockResolvedValue(phoneTemplate);
 
       // Act/Assert.
       await expect(
@@ -201,7 +206,7 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.CALL} not found!`,
       );
-      phoneTemplateModel.findOne.mockResolvedValue(null);
+      phoneTemplateRepository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -215,21 +220,22 @@ describe('PhoneTemplateService', () => {
   });
 
   describe('remove()', () => {
-    const phoneTemplate = { name: 'unit-test', destroy: jest.fn() };
+    const phoneTemplate = { name: 'unit-test' };
 
     afterEach(() => {
-      phoneTemplate.destroy.mockClear();
+      phoneTemplateRepository.findOneBy.mockClear();
+      phoneTemplateRepository.remove.mockClear();
     });
 
     it('should remove a phone template', async () => {
       // Arrange.
-      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(phoneTemplate);
 
       // Act.
       await service.remove(DeliveryMethods.SMS, '');
 
       // Assert.
-      expect(phoneTemplate.destroy).toHaveBeenCalled();
+      expect(phoneTemplateRepository.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the phone template does not exist', async () => {
@@ -237,7 +243,7 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.SMS} not found!`,
       );
-      phoneTemplateModel.findOne.mockResolvedValue(null);
+      phoneTemplateRepository.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(

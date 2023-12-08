@@ -1,47 +1,44 @@
 import {
   Column,
-  CreatedAt,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-  UpdatedAt
-} from 'sequelize-typescript';
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { NotificationAttempt } from './notification-attempt.entity';
 
-@Table
-export class NotificationLog extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
+@Entity()
+export class NotificationLog {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column
+  @Column()
   job: string;
 
-  @Column
+  @Column()
   state: string;
 
-  @Column
+  @Column()
   attempts: number;
 
-  @Column({ type: DataType.JSON })
+  @Column('simple-json')
   data: string;
 
-  @Column
+  @Column()
   addedAt: Date;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   finishedAt: Date;
 
-  @CreatedAt
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdatedAt
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @HasMany(() => NotificationAttempt)
+  @OneToMany(() => NotificationAttempt, (attempt) => attempt.log, {
+    cascade: true,
+  })
   attemptHistory: NotificationAttempt[];
 }

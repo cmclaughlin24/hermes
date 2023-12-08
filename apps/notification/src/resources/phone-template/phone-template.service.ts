@@ -8,7 +8,8 @@ import {
   defaultHashFn,
 } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
@@ -18,8 +19,8 @@ export class PhoneTemplateService {
   private static readonly CACHE_KEY = 'phone-template';
 
   constructor(
-    @InjectModel(PhoneTemplate)
-    private readonly phoneTemplateModel: typeof PhoneTemplate,
+    @InjectRepository(PhoneTemplate)
+    private readonly phoneTemplateRepository: Repository<PhoneTemplate>,
   ) {}
 
   /**
@@ -27,7 +28,7 @@ export class PhoneTemplateService {
    * @returns {Promise<PhoneTemplate[]>}
    */
   findAll() {
-    return this.phoneTemplateModel.findAll();
+    return this.phoneTemplateRepository.find();
   }
 
   /**
@@ -38,8 +39,9 @@ export class PhoneTemplateService {
    */
   @UseCache({ key: PhoneTemplateService.CACHE_KEY })
   findOne(deliveryMethod: PhoneMethods, name: string) {
-    return this.phoneTemplateModel.findOne({
-      where: { name, deliveryMethod },
+    return this.phoneTemplateRepository.findOneBy({
+      name,
+      deliveryMethod,
     });
   }
 
@@ -50,11 +52,9 @@ export class PhoneTemplateService {
    * @returns {Promise<PhoneTemplate>}
    */
   async create(createPhoneTemplateDto: CreatePhoneTemplateDto) {
-    const existingTemplate = await this.phoneTemplateModel.findOne({
-      where: {
-        name: createPhoneTemplateDto.name,
-        deliveryMethod: createPhoneTemplateDto.deliveryMethod,
-      },
+    const existingTemplate = await this.phoneTemplateRepository.findOneBy({
+      name: createPhoneTemplateDto.name,
+      deliveryMethod: createPhoneTemplateDto.deliveryMethod,
     });
 
     if (existingTemplate) {
@@ -63,11 +63,11 @@ export class PhoneTemplateService {
       );
     }
 
-    const phoneTemplate = await this.phoneTemplateModel.create({
-      ...createPhoneTemplateDto,
-    });
+    const phoneTemplate = this.phoneTemplateRepository.create(
+      createPhoneTemplateDto,
+    );
 
-    return phoneTemplate;
+    return this.phoneTemplateRepository.save(phoneTemplate);
   }
 
   /**
@@ -87,8 +87,10 @@ export class PhoneTemplateService {
     name: string,
     updatePhoneTemplateDto: UpdatePhoneTemplateDto,
   ) {
-    let phoneTemplate = await this.phoneTemplateModel.findOne({
-      where: { name, deliveryMethod },
+    const phoneTemplate = await this.phoneTemplateRepository.preload({
+      name,
+      deliveryMethod,
+      ...updatePhoneTemplateDto,
     });
 
     if (!phoneTemplate) {
@@ -97,12 +99,7 @@ export class PhoneTemplateService {
       );
     }
 
-    phoneTemplate = await phoneTemplate.update({
-      template: updatePhoneTemplateDto.template ?? phoneTemplate.template,
-      context: updatePhoneTemplateDto.context,
-    });
-
-    return phoneTemplate;
+    return this.phoneTemplateRepository.save(phoneTemplate);
   }
 
   /**
@@ -114,8 +111,9 @@ export class PhoneTemplateService {
    */
   @RemoveCache({ key: PhoneTemplateService.CACHE_KEY })
   async remove(deliveryMethod: PhoneMethods, name: string) {
-    const phoneTemplate = await this.phoneTemplateModel.findOne({
-      where: { name, deliveryMethod },
+    const phoneTemplate = await this.phoneTemplateRepository.findOneBy({
+      name,
+      deliveryMethod,
     });
 
     if (!phoneTemplate) {
@@ -124,6 +122,6 @@ export class PhoneTemplateService {
       );
     }
 
-    await phoneTemplate.destroy();
+    await this.phoneTemplateRepository.remove(phoneTemplate);
   }
 }

@@ -2,8 +2,8 @@ import { DeliveryMethods } from '@hermes/common';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { useGlobalPipes } from '../src/config/use-global.config';
@@ -26,19 +26,18 @@ describe('[Feature] Phone Template', () => {
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,
         }),
-        SequelizeModule.forRootAsync({
+        TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            dialect: 'postgres',
+            type: 'postgres',
             host: configService.get('DB_HOST'),
             port: configService.get('DB_PORT'),
             username: configService.get('DB_USERNAME'),
             password: configService.get('DB_PASSWORD'),
             database: configService.get('DB_NAME'),
-            autoLoadModels: true,
+            autoLoadEntities: true,
             synchronize: true,
-            logging: false,
           }),
         }),
         IamModule.registerAsync({

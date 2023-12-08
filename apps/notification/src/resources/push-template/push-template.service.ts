@@ -4,12 +4,11 @@ import {
   PushNotificationActionDto,
   RemoveCache,
   UseCache,
-  defaultHashFn
+  defaultHashFn,
 } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Transaction } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushAction } from './entities/push-action.entity';
@@ -20,11 +19,10 @@ export class PushTemplateService {
   private static readonly CACHE_KEY = 'push-notification';
 
   constructor(
-    @InjectModel(PushTemplate)
-    private readonly pushTemplateModel: typeof PushTemplate,
-    @InjectModel(PushAction)
-    private readonly pushActionModel: typeof PushAction,
-    private readonly sequelize: Sequelize,
+    @InjectRepository(PushTemplate)
+    private readonly pushTemplateRepository: Repository<PushTemplate>,
+    @InjectRepository(PushAction)
+    private readonly pushActionRepository: Repository<PushAction>,
   ) {}
 
   /**
@@ -32,11 +30,8 @@ export class PushTemplateService {
    * @returns {Promise<PushTemplate[]>}
    */
   async findAll() {
-    return this.pushTemplateModel.findAll({
-      include: {
-        model: PushAction,
-        attributes: { exclude: ['templateId'] },
-      },
+    return this.pushTemplateRepository.find({
+      relations: { actions: true },
     });
   }
 
@@ -48,11 +43,9 @@ export class PushTemplateService {
    */
   @UseCache({ key: PushTemplateService.CACHE_KEY })
   async findOne(name: string) {
-    return this.pushTemplateModel.findByPk(name, {
-      include: {
-        model: PushAction,
-        attributes: { exclude: ['templateId'] },
-      },
+    return this.pushTemplateRepository.findOne({
+      where: { name },
+      relations: { actions: true },
     });
   }
 
@@ -63,9 +56,9 @@ export class PushTemplateService {
    * @returns {Promise<PushTemplate>}
    */
   async create(createPushTemplateDto: CreatePushTemplateDto) {
-    const existingTemplate = await this.pushTemplateModel.findByPk(
-      createPushTemplateDto.name,
-    );
+    const existingTemplate = await this.pushTemplateRepository.findOneBy({
+      name: createPushTemplateDto.name,
+    });
 
     if (existingTemplate) {
       throw new ExistsException(
@@ -73,14 +66,16 @@ export class PushTemplateService {
       );
     }
 
-    const pushTemplate = await this.pushTemplateModel.create(
-      {
-        ...createPushTemplateDto,
-      },
-      { include: [PushAction] },
-    );
+    const actions =
+      createPushTemplateDto.actions?.map((action) =>
+        this.pushActionRepository.create({ ...action }),
+      ) ?? [];
+    const pushTemplate = this.pushTemplateRepository.create({
+      ...createPushTemplateDto,
+      actions,
+    });
 
-    return pushTemplate;
+    return this.pushTemplateRepository.save(pushTemplate);
   }
 
   /**
@@ -95,34 +90,26 @@ export class PushTemplateService {
     hashFn: (key, args) => defaultHashFn(key, [args[0]]),
   })
   async update(name: string, updatePushTemplateDto: UpdatePushTemplateDto) {
-    return this.sequelize.transaction(async (transaction) => {
-      let pushTemplate = await this.pushTemplateModel.findByPk(name, {
-        include: [PushAction],
-        transaction,
-      });
-
-      if (!pushTemplate) {
-        throw new MissingException(
-          `Push Notification Template with ${name} not found!`,
-        );
-      }
-
-      const { actions: actionsDto, ...templateDto } = updatePushTemplateDto;
-
-      pushTemplate = await pushTemplate.update(
-        { ...templateDto },
-        { transaction },
-      );
-
-      // Note: All existing PushActions should be removed on an empty array.
-      if (updatePushTemplateDto.actions) {
-        await this._updatePushActions(pushTemplate, actionsDto, transaction);
-
-        pushTemplate = await pushTemplate.reload({ transaction });
-      }
-
-      return pushTemplate;
+    const actions =
+      updatePushTemplateDto.actions &&
+      (await Promise.all(
+        updatePushTemplateDto.actions.map((action) =>
+          this._preloadPushActions(action),
+        ),
+      ));
+    const pushTemplate = await this.pushTemplateRepository.preload({
+      name,
+      ...updatePushTemplateDto,
+      actions,
     });
+
+    if (!pushTemplate) {
+      throw new MissingException(
+        `Push Notification Template with ${name} not found!`,
+      );
+    }
+
+    return this.pushTemplateRepository.save(pushTemplate);
   }
 
   /**
@@ -133,7 +120,7 @@ export class PushTemplateService {
    */
   @RemoveCache({ key: PushTemplateService.CACHE_KEY })
   async remove(name: string) {
-    const pushTemplate = await this.pushTemplateModel.findByPk(name);
+    const pushTemplate = await this.pushTemplateRepository.findOneBy({ name });
 
     if (!pushTemplate) {
       throw new MissingException(
@@ -141,57 +128,24 @@ export class PushTemplateService {
       );
     }
 
-    await pushTemplate.destroy();
+    await this.pushTemplateRepository.remove(pushTemplate);
   }
 
   /**
-   * Creates, updates, or removes actions for a push notification.
-   * @param {PushTemplate} template
-   * @param {PushNotificationActionDto[]} actions
-   * @param {Transaction} transaction
+   * Updates an existing push action or creates a new action if the repository
+   * returns null or undefined.
+   * @param {PushNotificationActionDto} action
+   * @returns {Promise<PushAction>}
    */
-  private async _updatePushActions(
-    template: PushTemplate,
-    actions: PushNotificationActionDto[],
-    transaction: Transaction,
-  ) {
-    // Todo: Refactor add/update/remove logic into one for-of loop if possible.
-    for (const existingAction of template.actions) {
-      const action = actions.find(
-        (actionDto) => actionDto.action === existingAction.action,
-      );
+  private async _preloadPushActions(action: PushNotificationActionDto) {
+    const existingAction = await this.pushActionRepository.preload({
+      ...action,
+    });
 
-      if (action) {
-        continue;
-      }
-
-      await existingAction.destroy({ transaction });
+    if (existingAction) {
+      return existingAction;
     }
 
-    for (const action of actions) {
-      const existingAction = template.actions.find(
-        (curr) => curr.action === action.action,
-      );
-
-      if (!existingAction) {
-        await this.pushActionModel.create(
-          {
-            templateId: template.id,
-            action: action.action,
-            title: action.title,
-            icon: action.icon,
-          },
-          { transaction },
-        );
-      } else {
-        await existingAction.update(
-          {
-            title: action.title ?? existingAction.title,
-            icon: action.icon ?? existingAction.icon,
-          },
-          { transaction },
-        );
-      }
-    }
+    return this.pushActionRepository.create(action);
   }
 }

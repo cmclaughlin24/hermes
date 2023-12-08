@@ -1,34 +1,24 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table
-} from 'sequelize-typescript';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { NotificationLog } from './notification-log.entity';
 
-@Table({ updatedAt: false, createdAt: false })
-export class NotificationAttempt extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-  })
-  @ForeignKey(() => NotificationLog)
+@Entity()
+export class NotificationAttempt {
+  @PrimaryColumn()
   logId: string;
 
-  @Column({ primaryKey: true })
+  @PrimaryColumn()
   attempt: number;
 
-  @Column
+  @Column()
   processedAt: Date;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   result: any;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   error: any;
 
-  @BelongsTo(() => NotificationLog)
+  @ManyToOne(() => NotificationLog, (log) => log.attemptHistory)
+  @JoinColumn({ name: 'logId' })
   log: NotificationLog;
 }

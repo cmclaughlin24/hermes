@@ -1,14 +1,12 @@
-import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, JobState } from 'bullmq';
-import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { DataSource, In } from 'typeorm';
 import {
+  MockDataSource,
   MockRepository,
-  MockSequelize,
+  createMockDataSource,
   createMockRepository,
-  createMockSequelize,
 } from '../../../test/helpers/database.helper';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
@@ -16,9 +14,9 @@ import { NotificationLogService } from './notification-log.service';
 
 describe('NotificationLogService', () => {
   let service: NotificationLogService;
-  let notificationLogModel: MockRepository;
-  let notificationAttempt: MockRepository;
-  let sequelize: MockSequelize;
+  let notificationLogRepository: MockRepository;
+  let notificationAttemptRepository: MockRepository;
+  let dataSource: MockDataSource;
 
   const notificationLog: NotificationLog = {
     id: 'test1',
@@ -43,20 +41,20 @@ describe('NotificationLogService', () => {
           useValue: createMockRepository<NotificationAttempt>(),
         },
         {
-          provide: Sequelize,
-          useValue: createMockSequelize(),
+          provide: DataSource,
+          useValue: createMockDataSource(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationLogService>(NotificationLogService);
-    notificationLogModel = module.get<MockRepository>(
+    notificationLogRepository = module.get<MockRepository>(
       getModelToken(NotificationLog),
     );
-    notificationAttempt = module.get<MockRepository>(
+    notificationAttemptRepository = module.get<MockRepository>(
       getModelToken(NotificationAttempt),
     );
-    sequelize = module.get<MockSequelize>(Sequelize);
+    dataSource = module.get<MockDataSource>(DataSource);
   });
 
   it('should be defined', () => {
@@ -65,13 +63,13 @@ describe('NotificationLogService', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      notificationLogModel.findAll.mockClear();
+      notificationLogRepository.find.mockClear();
     });
 
     it('should yield a list of notification logs', async () => {
       // Arrange.
       const expectedResult: NotificationLog[] = [notificationLog];
-      notificationLogModel.findAll.mockResolvedValue(expectedResult);
+      notificationLogRepository.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll([], [])).resolves.toEqual(expectedResult);
@@ -81,44 +79,41 @@ describe('NotificationLogService', () => {
       // Arrange.
       const jobs = ['email', 'sms'];
       const expectedResult = {
-        where: { job: { [Op.or]: jobs } },
-        include: [
-          { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
-        ],
+        where: { job: In(jobs) },
+        relations: { attemptHistory: true },
       };
-      notificationLogModel.findAll.mockResolvedValue([notificationLog]);
+      notificationLogRepository.find.mockResolvedValue([notificationLog]);
 
       // Act.
       await service.findAll(jobs, []);
 
       // Assert.
-      expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
+      expect(notificationLogRepository.find).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should yield a list filtered by job state(s)', async () => {
       // Arrange.
       const states: JobState[] = ['completed'];
       const expectedResult = {
-        where: { state: { [Op.or]: states } },
-        include: [
-          { model: NotificationAttempt, attributes: { exclude: ['logId'] } },
-        ],
+        where: { state: In(states) },
+        relations: { attemptHistory: true },
       };
-      notificationLogModel.findAll.mockResolvedValue([notificationLog]);
+      notificationLogRepository.find.mockResolvedValue([notificationLog]);
 
       // Act.
       await service.findAll([], states);
 
       // Assert.
-      expect(notificationLogModel.findAll).toHaveBeenCalledWith(expectedResult);
+      expect(notificationLogRepository.find).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should yield an empty list if the repository return an empty list', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Notification logs not found!`,
-      );
-      notificationLogModel.findAll.mockResolvedValue([]);
+      notificationLogRepository.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll([], [])).resolves.toHaveLength(0);
@@ -127,12 +122,12 @@ describe('NotificationLogService', () => {
 
   describe('findOne()', () => {
     afterEach(() => {
-      notificationLogModel.findByPk.mockClear();
+      notificationLogRepository.findOne.mockClear();
     });
 
     it('should yield a notification log', async () => {
       // Arrange.
-      notificationLogModel.findByPk.mockResolvedValue(notificationLog);
+      notificationLogRepository.findOne.mockResolvedValue(notificationLog);
 
       // Act/Assert.
       await expect(service.findOne(notificationLog.id)).resolves.toEqual(
@@ -142,10 +137,7 @@ describe('NotificationLogService', () => {
 
     it('should yield null if the repository return null/undefined', async () => {
       // Arrange.
-      const expectedResult = new NotFoundException(
-        `Notification Log with ${notificationLog.id} not found!`,
-      );
-      notificationLogModel.findByPk.mockResolvedValue(null);
+      notificationLogRepository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findOne(notificationLog.id)).resolves.toBeNull();
@@ -153,14 +145,11 @@ describe('NotificationLogService', () => {
   });
 
   describe('log()', () => {
-    beforeEach(() => {
-      sequelize.transaction.mockImplementation((callback) => callback());
-    });
-
     afterEach(() => {
-      notificationLogModel.create.mockClear();
-      notificationLogModel.update.mockClear();
-      notificationAttempt.create.mockClear();
+      notificationLogRepository.create.mockClear();
+      notificationLogRepository.preload.mockClear();
+      notificationLogRepository.save.mockClear();
+      notificationAttemptRepository.create.mockClear();
     });
 
     it('should create a notification log if the "notification_database_id" property is null/undefined (no attempt)', async () => {
@@ -178,17 +167,19 @@ describe('NotificationLogService', () => {
         data: job.data,
         addedAt: new Date(job.timestamp),
         finishedAt: null,
+        attemptHistory: [],
       };
-      notificationLogModel.create.mockResolvedValue({ id: 'test' });
+      notificationLogRepository.create.mockResolvedValue({ id: 'test' });
+      notificationLogRepository.save.mockResolvedValue(expectedResult);
 
       // Act.
       await service.log(job, 'delayed', null, null);
 
       // Assert.
-      expect(notificationLogModel.create).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
-      expect(notificationAttempt.create).not.toHaveBeenCalled();
+      expect(notificationLogRepository.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
+      expect(notificationAttemptRepository.create).not.toHaveBeenCalled();
     });
 
     it('should create a notification log if the "notification_database_id" property is null/undefined (completed attempt)', async () => {
@@ -201,24 +192,26 @@ describe('NotificationLogService', () => {
         processedOn: new Date().getTime(),
       } as Job;
       const expectedResult = {
-        logId: 'test',
         attempt: job.attemptsMade,
         processedAt: new Date(job.processedOn),
         result: null,
         error: null,
       };
-      notificationLogModel.create.mockResolvedValue({
-        id: expectedResult.logId,
+      notificationLogRepository.create.mockResolvedValue({
+        id: 'test',
+      });
+      notificationLogRepository.save.mockResolvedValue({
+        id: 'test',
       });
 
       // Act.
       await service.log(job, 'completed', null, null);
 
       // Assert.
-      expect(notificationLogModel.create).toHaveBeenCalled();
-      expect(notificationAttempt.create).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
+      expect(notificationLogRepository.create).toHaveBeenCalled();
+      expect(notificationAttemptRepository.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should create a notification log if the "notification_database_id" property is null/undefined (failed attempt)', async () => {
@@ -231,24 +224,26 @@ describe('NotificationLogService', () => {
         processedOn: new Date().getTime(),
       } as Job;
       const expectedResult = {
-        logId: 'test',
         attempt: job.attemptsMade,
         processedAt: new Date(job.processedOn),
         result: null,
         error: null,
       };
-      notificationLogModel.create.mockResolvedValue({
-        id: expectedResult.logId,
+      notificationLogRepository.create.mockResolvedValue({
+        id: 'test',
+      });
+      notificationLogRepository.save.mockResolvedValue({
+        id: 'test',
       });
 
       // Act.
       await service.log(job, 'failed', null, null);
 
       // Assert.
-      expect(notificationLogModel.create).toHaveBeenCalled();
-      expect(notificationAttempt.create).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
+      expect(notificationLogRepository.create).toHaveBeenCalled();
+      expect(notificationAttemptRepository.create).toHaveBeenCalledWith(
+        expectedResult,
+      );
     });
 
     it('should update a notification log if the "notification_datatbase_id" property is defined (no attempt)', async () => {
@@ -260,7 +255,6 @@ describe('NotificationLogService', () => {
       } as Job;
       const log = {
         attempts: 1,
-        update: jest.fn(() => ({ id: 'test' })),
       };
       const expectedResult = {
         state: 'delayed',
@@ -268,27 +262,38 @@ describe('NotificationLogService', () => {
         data: {},
         finishedAt: null,
       };
-      notificationLogModel.findByPk.mockResolvedValue(log);
+      notificationLogRepository.preload.mockResolvedValue({
+        state: expectedResult.state,
+        attempts: job.attemptsMade,
+        data: expectedResult.data,
+        finishedAt: null,
+      });
+      notificationLogRepository.save.mockResolvedValue(expectedResult);
 
       // Act.
       await service.log(job, 'delayed', null, null);
 
       // Assert.
-      expect(log.update).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
-      expect(notificationAttempt.create).not.toHaveBeenCalled();
+      expect(notificationLogRepository.save).toHaveBeenCalledWith(
+        expectedResult,
+      );
+      expect(notificationAttemptRepository.create).not.toHaveBeenCalled();
     });
 
-    it.todo('should update a notification log if the "notification_database_id" property is defined (completed attempt)');
-    
-    it.todo('should update a notification log if the "notification_database_id" property is defined (failed attempt)');
+    it.todo(
+      'should update a notification log if the "notification_database_id" property is defined (completed attempt)',
+    );
+
+    it.todo(
+      'should update a notification log if the "notification_database_id" property is defined (failed attempt)',
+    );
 
     it("should yield the notification log's database id (create)", async () => {
       // Arrange.
       const job = { name: 'email', attemptsMade: 2, data: {} } as Job;
       const expectedId = 'test';
-      notificationLogModel.create.mockResolvedValue({ id: 'test' });
+      notificationLogRepository.create.mockResolvedValue({ id: expectedId });
+      notificationLogRepository.save.mockResolvedValue({ id: expectedId });
 
       // Act/Assert.
       await expect(service.log(job, 'completed', null, null)).resolves.toBe(
@@ -306,34 +311,14 @@ describe('NotificationLogService', () => {
       } as Job;
       const log = {
         attempts: 1,
-        update: jest.fn(() => ({ id: expectedResult })),
       };
-      notificationLogModel.findByPk.mockResolvedValue(log);
+      notificationLogRepository.preload.mockResolvedValue(log);
+      notificationLogRepository.save.mockResolvedValue({ id: expectedResult });
 
       // Act/Assert.
       await expect(service.log(job, 'failed', null, null)).resolves.toBe(
         expectedResult,
       );
-    });
-
-    it('should not update a notification log if the number of attempts in the notification log are greater than the number attempts in the job', async () => {
-      // Arrange.
-      const job = {
-        name: 'email',
-        attemptsMade: 2,
-        data: { notification_database_id: 'test' },
-      } as Job;
-      const log = {
-        attempts: 3,
-        update: jest.fn(() => ({ id: 'test' })),
-      };
-      notificationLogModel.findByPk.mockResolvedValue(log);
-
-      // Act.
-      await service.log(job, 'failed', null, null);
-
-      // Assert.
-      expect(log.update).not.toHaveBeenCalled();
     });
   });
 });

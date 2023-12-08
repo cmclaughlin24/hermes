@@ -1,7 +1,7 @@
 import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import * as request from 'supertest';
 import { NotificationLogModule } from '../src/resources/notification-log/notification-log.module';
@@ -22,19 +22,18 @@ describe('[Feature] Notification Log', () => {
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,
         }),
-        SequelizeModule.forRootAsync({
+        TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => ({
-            dialect: 'postgres',
+            type: 'postgres',
             host: configService.get('DB_HOST'),
             port: configService.get('DB_PORT'),
             username: configService.get('DB_USERNAME'),
             password: configService.get('DB_PASSWORD'),
             database: configService.get('DB_NAME'),
-            autoLoadModels: true,
+            autoLoadEntities: true,
             synchronize: true,
-            logging: false,
           }),
         }),
         NotificationLogModule,

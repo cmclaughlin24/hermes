@@ -7,7 +7,6 @@ import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
-import { PushTemplate } from '../../../resources/push-template/entities/push-template.entity';
 import { PushTemplateService } from '../../../resources/push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
@@ -98,11 +97,7 @@ export class PushNotificationService implements CreateNotificationDto {
         );
       }
 
-      // Note: Will already be in JSON format if pulled from Cache.
-      notification =
-        pushTemplate instanceof PushTemplate
-          ? pushTemplate.toJSON()
-          : pushTemplate;
+      notification = pushTemplate;
     }
 
     if (!notification) {
