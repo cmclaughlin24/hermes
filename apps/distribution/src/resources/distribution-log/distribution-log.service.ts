@@ -21,14 +21,13 @@ export class DistributionLogService {
 
   /**
    * Yields a list of DistributionLogs.
-   * @param {string[]} queues
    * @param {string[]} eventTypes
    * @param {string[]} states
    * @returns {Promise<DistributionLog[]>}
    */
-  async findAll(queues: string[], eventTypes: string[], states: string[]) {
+  async findAll(eventTypes: string[], states: string[]) {
     return this.distributionLogModel.findAll({
-      where: this._buildWhereClause(queues, eventTypes, states),
+      where: this._buildWhereClause(eventTypes, states),
       include: [DistributionAttempt],
     });
   }
@@ -71,23 +70,15 @@ export class DistributionLogService {
   /**
    * Yields an object containing key-value pairs with the filter(s) (queues, messsageTypes,
    * and/or states) that should be applied on a DistributionLog repository query.
-   * @param {string[]} queues
    * @param {string[]} eventTypes
    * @param {string[]} states
    * @returns
    */
   private _buildWhereClause(
-    queues: string[],
     eventTypes: string[],
     states: string[],
   ) {
     const where: any = {};
-
-    if (!_.isEmpty(queues)) {
-      where.queue = {
-        [Op.or]: queues,
-      };
-    }
 
     if (!_.isEmpty(eventTypes)) {
       where.eventType = {
@@ -123,7 +114,6 @@ export class DistributionLogService {
       const log = await this.distributionLogModel.create(
         {
           id: distributionJob.id,
-          queue: distributionJob.queue,
           eventType: distributionJob.type,
           state,
           attempts: distributionJob.attemptsMade,

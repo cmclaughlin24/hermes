@@ -1,6 +1,5 @@
 export interface DistributionJob {
   id: string; 
-  queue: string;
   type: string;
   attemptsMade: number;
   metadata: any;

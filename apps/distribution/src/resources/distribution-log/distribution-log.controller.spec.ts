@@ -52,7 +52,7 @@ describe('DistributionLogController', () => {
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.findAll(null, null, null)).resolves.toEqual(
+      await expect(controller.findAll(null, null)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -65,7 +65,7 @@ describe('DistributionLogController', () => {
       service.findAll.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(controller.findAll(null, null, null)).rejects.toEqual(
+      await expect(controller.findAll(null, null)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -78,7 +78,7 @@ describe('DistributionLogController', () => {
       service.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(controller.findAll(null, null, null)).rejects.toEqual(
+      await expect(controller.findAll(null, null)).rejects.toEqual(
         expectedResult,
       );
     });

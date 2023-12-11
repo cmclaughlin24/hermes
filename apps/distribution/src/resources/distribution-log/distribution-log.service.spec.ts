@@ -23,7 +23,6 @@ describe('DistributionLogService', () => {
 
   const log = {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
-    queue: 'unit-test',
     state: MessageState.COMPLETED,
     attempts: 2,
   } as DistributionLog;
@@ -72,24 +71,9 @@ describe('DistributionLogService', () => {
       distributionLogModel.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll(null, null, null)).resolves.toEqual(
+      await expect(service.findAll(null, null)).resolves.toEqual(
         expectedResult,
       );
-    });
-
-    it('should yield a list of distribution logs filtered by queue(s)', async () => {
-      // Arrange.
-      const queues = ['unit-test'];
-      distributionLogModel.findAll.mockResolvedValue([log]);
-
-      // Act.
-      await service.findAll(queues, null, null);
-
-      //Assert.
-      expect(distributionLogModel.findAll).toHaveBeenCalledWith({
-        where: { queue: { [Op.or]: queues } },
-        include: [DistributionAttempt],
-      });
     });
 
     it('should yield a list of distribution logs filtered by eventType(s)', async () => {
@@ -98,7 +82,7 @@ describe('DistributionLogService', () => {
       distributionLogModel.findAll.mockResolvedValue([log]);
 
       // Act.
-      await service.findAll(null, eventTypes, null);
+      await service.findAll(eventTypes, null);
 
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
@@ -113,7 +97,7 @@ describe('DistributionLogService', () => {
       distributionLogModel.findAll.mockResolvedValue([log]);
 
       // Act.
-      await service.findAll(null, null, states);
+      await service.findAll(null, states);
 
       //Assert.
       expect(distributionLogModel.findAll).toHaveBeenCalledWith({
@@ -127,7 +111,7 @@ describe('DistributionLogService', () => {
       distributionLogModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(null, null, null)).resolves.toHaveLength(0);
+      await expect(service.findAll(null, null)).resolves.toHaveLength(0);
     });
   });
 
@@ -157,7 +141,6 @@ describe('DistributionLogService', () => {
   describe('log()', () => {
     const job: DistributionJob = {
       id: 'unit-test',
-      queue: 'unit-test',
       type: 'unit-test',
       attemptsMade: 0,
       metadata: null,
@@ -182,7 +165,6 @@ describe('DistributionLogService', () => {
       // Arrange.
       const expectedResult = {
         id: job.id,
-        queue: job.queue,
         eventType: job.type,
         state: MessageState.ACTIVE,
         attempts: job.attemptsMade,

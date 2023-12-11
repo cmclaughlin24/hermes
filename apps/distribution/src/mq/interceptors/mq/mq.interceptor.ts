@@ -49,7 +49,6 @@ export class MqInterceptor implements NestInterceptor {
       context.getHandler(),
     );
     const distributionJob: DistributionJob = {
-      queue,
       attemptsMade: getAttempts(amqpMsg, queue),
       processedAt: new Date(),
       finishedAt: null,
@@ -76,9 +75,9 @@ export class MqInterceptor implements NestInterceptor {
    * Stores a record in the database containing information about the job's current
    * state, number of attempts, processing time, and response stream.
    * @param {DistributionJob} job
-   * @param {MessageState} state 
-   * @param {any} result 
-   * @param {Error} error 
+   * @param {MessageState} state
+   * @param {any} result
+   * @param {Error} error
    */
   private async _log(
     job: DistributionJob,

@@ -22,22 +22,15 @@ export class DistributionLogController {
   @Get()
   @Auth(AuthType.NONE)
   @ApiOperation({
-    summary: 'Find logs by their queue, message type, and/or states.',
+    summary: 'Find logs by their event type, and/or states.',
     security: [],
-  })
-  @ApiQuery({
-    name: 'queue',
-    required: false,
-    type: String,
-    isArray: true,
-    description: 'A list of Rabbitmq queues.',
   })
   @ApiQuery({
     name: 'eventType',
     required: false,
     type: String,
     isArray: true,
-    description: 'A list of message types.',
+    description: 'A list of event types.',
   })
   @ApiQuery({
     name: 'state',
@@ -50,11 +43,6 @@ export class DistributionLogController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   async findAll(
     @Query(
-      'queue',
-      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
-    )
-    queues: string[],
-    @Query(
       'eventType',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
@@ -66,7 +54,6 @@ export class DistributionLogController {
     states: string[],
   ) {
     const distributionLogs = await this.distributionLogService.findAll(
-      queues,
       eventTypes,
       states,
     );

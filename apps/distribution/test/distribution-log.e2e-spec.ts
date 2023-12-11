@@ -13,7 +13,6 @@ describe('[Feature] Distribution Log', () => {
   let httpServer: HttpServer;
   let distributionLogService: DistributionLogService;
 
-  const queueName = 'e2e-test';
   const eventType = 'e2e-test__distribution-log';
   let log;
 
@@ -55,7 +54,6 @@ describe('[Feature] Distribution Log', () => {
     // Note: Create distribution log entrie(s) for E2E test cases.
     const distributionJob: DistributionJob = {
       id: 'f1b98d1a-3ba0-4974-9e74-ac69bbe9b553',
-      queue: queueName,
       type: eventType,
       attemptsMade: 1,
       metadata: null,
