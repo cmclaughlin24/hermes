@@ -24,7 +24,6 @@ describe('SubscriptionController', () => {
     data: { url: 'http://localhost:9999/subscriptions' },
     filterJoin: 'and',
   } as Subscription;
-  const queue = 'unit-test';
   const eventType = 'unit-test';
 
   beforeEach(async () => {
@@ -90,20 +89,20 @@ describe('SubscriptionController', () => {
 
       // Act/Assert.
       await expect(
-        controller.findOne('', '', subscription.subscriberId),
+        controller.findOne('', subscription.subscriberId),
       ).resolves.toEqual(subscription);
     });
 
     it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`,
+        `Subscription with eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`,
       );
       service.findAll.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        controller.findOne(queue, eventType, subscription.subscriberId),
+        controller.findOne(eventType, subscription.subscriberId),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -129,7 +128,7 @@ describe('SubscriptionController', () => {
 
     it('should throw a "NotFoundException" if the distribution event does not exist', async () => {
       // Arrange.
-      const errorMessage = `Distribution Event for queue=${queue} eventType=${eventType} not found!`;
+      const errorMessage = `Distribution Event for eventType=${eventType} not found!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.create.mockRejectedValue(new MissingException(errorMessage));
 
@@ -173,7 +172,6 @@ describe('SubscriptionController', () => {
       await expect(
         controller.update(
           '',
-          '',
           subscription.subscriberId,
           {} as UpdateSubscriptionDto,
         ),
@@ -182,14 +180,13 @@ describe('SubscriptionController', () => {
 
     it('should throw a "NotFoundException" if the subscription does not exist', async () => {
       // Arrange.
-      const errorMessage = `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
+      const errorMessage = `Subscription with eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.update.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(
         controller.update(
-          queue,
           eventType,
           subscription.subscriberId,
           {} as UpdateSubscriptionDto,
@@ -236,28 +233,27 @@ describe('SubscriptionController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const queue = 'unit-test';
       const eventType = 'unit-test';
       const expectedResult = new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId}!`,
+        `Successfully deleted subscription eventType=${eventType} subscriberId=${subscription.subscriberId}!`,
       );
       service.remove.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        controller.remove(queue, eventType, subscription.subscriberId),
+        controller.remove(eventType, subscription.subscriberId),
       ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the subscription does not exist', async () => {
       // Arrange.
-      const errorMessage = `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
+      const errorMessage = `Subscription with eventType=${eventType} subscriberId=${subscription.subscriberId} not found!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.remove.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(
-        controller.remove(queue, eventType, subscription.subscriberId),
+        controller.remove(eventType, subscription.subscriberId),
       ).rejects.toEqual(expectedResult);
     });
   });

@@ -41,8 +41,6 @@ describe('DistributionEventService', () => {
 
   describe('findAll', () => {
     const distributionEvent = {
-      id: 'unit-test',
-      queue: 'unit-test',
       eventType: 'unit-test',
     } as DistributionEvent;
 
@@ -123,45 +121,36 @@ describe('DistributionEventService', () => {
 
   describe('findOne()', () => {
     const distributionEvent = {
-      id: 'unit-test',
-      queue: 'unit-test',
       eventType: 'unit-test',
     } as DistributionEvent;
 
     afterEach(() => {
-      distributionEventModel.findOne.mockClear();
+      distributionEventModel.findByPk.mockClear();
     });
 
     it('should yield a distribution event (w/o rules & subscriptions)', async () => {
       // Arrange.
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
-        service.findOne(distributionEvent.queue, distributionEvent.eventType),
+        service.findOne(distributionEvent.eventType),
       ).resolves.toEqual(distributionEvent);
     });
 
     it('should yield a distribution event (w/rules)', async () => {
       // Arrange.
       const expectedResult = {
-        where: {
-          queue: distributionEvent.queue,
-          eventType: distributionEvent.eventType,
-        },
         include: [{ model: DistributionRule }],
       };
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.findOne(
-        distributionEvent.queue,
-        distributionEvent.eventType,
-        true,
-      );
+      await service.findOne(distributionEvent.eventType, true);
 
       // Assert.
-      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+      expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
+        distributionEvent.eventType,
         expectedResult,
       );
     });
@@ -169,24 +158,16 @@ describe('DistributionEventService', () => {
     it('should yield a distribution event (w/subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        where: {
-          queue: distributionEvent.queue,
-          eventType: distributionEvent.eventType,
-        },
         include: [{ model: Subscription, include: [SubscriptionFilter] }],
       };
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.findOne(
-        distributionEvent.queue,
-        distributionEvent.eventType,
-        false,
-        true,
-      );
+      await service.findOne(distributionEvent.eventType, false, true);
 
       // Assert.
-      await expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+      await expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
+        distributionEvent.eventType,
         expectedResult,
       );
     });
@@ -194,45 +175,34 @@ describe('DistributionEventService', () => {
     it('should yield a distribution event (w/rules & subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        where: {
-          queue: distributionEvent.queue,
-          eventType: distributionEvent.eventType,
-        },
         include: [
           { model: DistributionRule },
           { model: Subscription, include: [SubscriptionFilter] },
         ],
       };
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.findOne(
-        distributionEvent.queue,
-        distributionEvent.eventType,
-        true,
-        true,
-      );
+      await service.findOne(distributionEvent.eventType, true, true);
 
       // Assert.
-      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
+      expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
+        distributionEvent.eventType,
         expectedResult,
       );
     });
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      distributionEventModel.findOne.mockResolvedValue(null);
+      distributionEventModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      expect(
-        service.findOne(distributionEvent.queue, distributionEvent.eventType),
-      ).resolves.toBeNull();
+      expect(service.findOne(distributionEvent.eventType)).resolves.toBeNull();
     });
   });
 
   describe('create()', () => {
     const distributionEvent = {
-      queue: 'unit-test',
       eventType: 'unit-test',
     };
 
@@ -268,13 +238,12 @@ describe('DistributionEventService', () => {
     it('should throw an "ExistsException" if a distribution event already exists', async () => {
       // Arrange.
       const createDistributionEventDto = {
-        queue: 'unit-test',
         eventType: 'unit-test',
       } as CreateDistributionEventDto;
       const expectedResult = new ExistsException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} already exists!`,
+        `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
       );
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(service.create(createDistributionEventDto)).rejects.toEqual(
@@ -285,12 +254,11 @@ describe('DistributionEventService', () => {
     it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to empty list)', async () => {
       // Arrange.
       const createDistributionEventDto = {
-        queue: 'unit-test',
         eventType: 'unit-test',
         rules: [],
       } as CreateDistributionEventDto;
       const expectedResult = new DefaultRuleException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
       // Act/Assert.
@@ -302,12 +270,11 @@ describe('DistributionEventService', () => {
     it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to null)', async () => {
       // Arrange.
       const createDistributionEventDto = {
-        queue: 'unit-test',
         eventType: 'unit-test',
         rules: null,
       } as CreateDistributionEventDto;
       const expectedResult = new DefaultRuleException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
 
       // Act/Assert.
@@ -319,19 +286,19 @@ describe('DistributionEventService', () => {
 
   describe('update()', () => {
     const distributionEvent = { update: jest.fn() };
-    const queue = 'unit-test';
     const eventType = 'unit-test';
 
     afterEach(() => {
       distributionEvent.update.mockClear();
+      distributionEventModel.findByPk.mockClear();
     });
 
     it('should update a distribution event', async () => {
       // Arrange.
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.update(queue, eventType, {} as UpdateDistributionEventDto);
+      await service.update(eventType, {} as UpdateDistributionEventDto);
 
       // Assert.
       expect(distributionEvent.update).toHaveBeenCalled();
@@ -340,31 +307,30 @@ describe('DistributionEventService', () => {
     it('should yield the updated distribution event', async () => {
       // Arrange.
       distributionEvent.update.mockResolvedValue(distributionEvent);
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
-        service.update(queue, eventType, {} as UpdateDistributionEventDto),
+        service.update(eventType, {} as UpdateDistributionEventDto),
       ).resolves.toEqual(distributionEvent);
     });
 
     it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Event for eventType=${eventType} not found!`,
       );
-      distributionEventModel.findOne.mockResolvedValue(null);
+      distributionEventModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.update(queue, eventType, {} as UpdateDistributionEventDto),
+        service.update(eventType, {} as UpdateDistributionEventDto),
       ).rejects.toEqual(expectedResult);
     });
   });
 
   describe('remove()', () => {
     const distributionEvent = { destroy: jest.fn() };
-    const queue = 'unit-test';
     const eventType = 'unit-test';
 
     afterEach(() => {
@@ -373,10 +339,10 @@ describe('DistributionEventService', () => {
 
     it('should remove a distribution event', async () => {
       // Arrange.
-      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
+      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act.
-      await service.remove(queue, eventType);
+      await service.remove(eventType);
 
       // Assert.
       expect(distributionEvent.destroy).toHaveBeenCalled();
@@ -385,12 +351,12 @@ describe('DistributionEventService', () => {
     it('should yield a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Event for eventType=${eventType} not found!`,
       );
-      distributionEventModel.findOne.mockResolvedValue(null);
+      distributionEventModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.remove(queue, eventType)).rejects.toEqual(
+      await expect(service.remove( eventType)).rejects.toEqual(
         expectedResult,
       );
     });

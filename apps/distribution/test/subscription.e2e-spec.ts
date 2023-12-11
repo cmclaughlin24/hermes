@@ -23,7 +23,6 @@ describe('[Feature] Subscription', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
 
-  const queueName = 'e2e-test';
   const eventType = 'e2e-test__subscription';
   const subscriberId = 'e2e-test';
 
@@ -72,7 +71,6 @@ describe('[Feature] Subscription', () => {
   beforeAll(async () => {
     // Note: Create Distribution Event to be used during test run.
     const createDistributionEventDto: CreateDistributionEventDto = {
-      queue: queueName,
       eventType: eventType,
       metadataLabels: ['videoGame'],
       rules: [
@@ -111,7 +109,7 @@ describe('[Feature] Subscription', () => {
   afterAll(async () => {
     // Note: Remove Distribution Event used during test run.
     await request(httpServer)
-      .delete(`/distribution-event/${queueName}/${eventType}`)
+      .delete(`/distribution-event/${eventType}`)
       .set(process.env.API_KEY_HEADER, process.env.API_KEY);
 
     await app.close();
@@ -121,7 +119,6 @@ describe('[Feature] Subscription', () => {
     it('should respond with a CREATED status if the resource was created', () => {
       // Arrange.
       const createSubscriptionDto: CreateSubscriptionDto = {
-        queue: queueName,
         eventType: eventType,
         subscriberId: subscriberId,
         subscriptionType: SubscriptionType.REQUEST,
@@ -144,7 +141,6 @@ describe('[Feature] Subscription', () => {
     it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
       // Arrange.
       const createSubscriptionDto = {
-        queue: queueName,
         eventType: eventType,
         filterJoin: FilterJoinOps.AND,
         filters: [],
@@ -161,7 +157,6 @@ describe('[Feature] Subscription', () => {
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createSubscriptionDto: CreateSubscriptionDto = {
-        queue: queueName,
         eventType: eventType,
         subscriberId: subscriberId,
         subscriptionType: SubscriptionType.REQUEST,
@@ -183,7 +178,6 @@ describe('[Feature] Subscription', () => {
     it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
       // Arrange.
       const createSubscriptionDto: CreateSubscriptionDto = {
-        queue: queueName,
         eventType: eventType,
         subscriberId: subscriberId,
         subscriptionType: SubscriptionType.REQUEST,
@@ -210,7 +204,6 @@ describe('[Feature] Subscription', () => {
     it('should respond with a NOT_FOUND status if the distribution event does not exist', () => {
       // Arrange.
       const createSubscriptionDto: CreateSubscriptionDto = {
-        queue: queueName,
         eventType: `${eventType}-not-found`,
         subscriberId: subscriberId,
         subscriptionType: SubscriptionType.REQUEST,
@@ -242,25 +235,23 @@ describe('[Feature] Subscription', () => {
     );
   });
 
-  describe('Get Subscription [GET /:queue/:eventType/:subscriberId]', () => {
+  describe('Get Subscription [GET /:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource exists', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .get(`/subscription/${eventType}/${subscriberId}`)
         .expect(HttpStatus.OK);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(
-          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
-        )
+        .get(`/subscription/${eventType}/${subscriberId}-not-found`)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Update Subscription [PATCH /:queue/:eventType/:subscriberId]', () => {
+  describe('Update Subscription [PATCH /:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource was updated', () => {
       // Arrange.
       const updateSubscriptionDto: UpdateSubscriptionDto = {
@@ -276,7 +267,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .patch(`/subscription/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.OK);
@@ -290,7 +281,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .patch(`/subscription/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.BAD_REQUEST);
@@ -304,7 +295,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .patch(`/subscription/${eventType}/${subscriberId}`)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
@@ -321,7 +312,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .patch(`/subscription/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.FORBIDDEN);
@@ -338,9 +329,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(
-          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
-        )
+        .patch(`/subscription/${eventType}/${subscriberId}-not-found`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateSubscriptionDto)
         .expect(HttpStatus.NOT_FOUND);
@@ -351,11 +340,11 @@ describe('[Feature] Subscription', () => {
     // Todo: Implement E2E Tests for removing a subscriber from all distribution events.
   });
 
-  describe('Remove Subscription [DELETE /:queue/:eventType/:subscriberId]', () => {
+  describe('Remove Subscription [DELETE /:eventType/:subscriberId]', () => {
     it('should respond with an OK status if the resource was deleted', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .delete(`/subscription/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.OK);
     });
@@ -363,7 +352,7 @@ describe('[Feature] Subscription', () => {
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .delete(`/subscription/${eventType}/${subscriberId}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
@@ -376,7 +365,7 @@ describe('[Feature] Subscription', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .delete(`/subscription/${queueName}/${eventType}/${subscriberId}`)
+        .delete(`/subscription/${eventType}/${subscriberId}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.FORBIDDEN);
     });
@@ -384,9 +373,7 @@ describe('[Feature] Subscription', () => {
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(
-          `/subscription/${queueName}/${eventType}/${subscriberId}-not-found`,
-        )
+        .delete(`/subscription/${eventType}/${subscriberId}-not-found`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.NOT_FOUND);
     });

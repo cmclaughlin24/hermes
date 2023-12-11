@@ -1,7 +1,4 @@
-import {
-  ExistsException,
-  MissingException
-} from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Sequelize } from 'sequelize-typescript';
@@ -34,7 +31,6 @@ describe('SubscriptionService', () => {
   let distributionEventService: MockDistributionEventService;
   let sequelize: MockSequelize;
 
-  const queue = 'unit-test';
   const eventType = 'unit-test';
 
   beforeEach(async () => {
@@ -123,7 +119,7 @@ describe('SubscriptionService', () => {
       subscriptionModel.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne(queue, eventType, '')).resolves.toEqual(
+      await expect(service.findOne(eventType, '')).resolves.toEqual(
         expectedResult,
       );
     });
@@ -139,19 +135,19 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.findOne(queue, eventType, subscriberId),
+        service.findOne(eventType, subscriberId),
       ).resolves.toBeNull();
     });
 
     it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Rule for eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne(queue, eventType, '')).rejects.toEqual(
+      await expect(service.findOne(eventType, '')).rejects.toEqual(
         expectedResult,
       );
     });
@@ -161,14 +157,13 @@ describe('SubscriptionService', () => {
     const createSubscriptionDto: CreateSubscriptionDto = {
       subscriberId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
       filterJoin: FilterJoinOps.NOT,
-      queue: 'distribution',
       eventType: 'test',
       subscriptionType: SubscriptionType.REQUEST,
       data: { url: 'http://localhost:9999/subscriptions' },
     };
     const subscription = {
       subscriberId: createSubscriptionDto.subscriberId,
-      distributionEventId: '',
+      distributionEventType: '',
       filterJoin: createSubscriptionDto.filterJoin,
       data: { url: 'http://localhost:9999/subscriptions' },
     } as Subscription;
@@ -209,7 +204,7 @@ describe('SubscriptionService', () => {
     it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Rule for queue=${createSubscriptionDto.queue} eventType=${createSubscriptionDto.eventType} not found!`,
+        `Distribution Rule for eventType=${createSubscriptionDto.eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
 
@@ -256,7 +251,7 @@ describe('SubscriptionService', () => {
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act.
-      await service.update(queue, eventType, '', {} as UpdateSubscriptionDto);
+      await service.update(eventType, '', {} as UpdateSubscriptionDto);
 
       // Assert.
       expect(subscription.update).toHaveBeenCalled();
@@ -281,7 +276,7 @@ describe('SubscriptionService', () => {
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act.
-      await service.update(queue, eventType, '', {
+      await service.update(eventType, '', {
         filters,
       } as UpdateSubscriptionDto);
 
@@ -310,7 +305,7 @@ describe('SubscriptionService', () => {
 
       // Act/Assert.
       await expect(
-        service.update(queue, eventType, '', {
+        service.update(eventType, '', {
           filters: [],
         } as UpdateSubscriptionDto),
       ).resolves.toEqual(subscription);
@@ -320,32 +315,27 @@ describe('SubscriptionService', () => {
       // Arrange.
       const subscriberId = 'unit-test';
       const expectedResult = new MissingException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+        `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.update(
-          queue,
-          eventType,
-          subscriberId,
-          {} as UpdateSubscriptionDto,
-        ),
+        service.update(eventType, subscriberId, {} as UpdateSubscriptionDto),
       ).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Rule for eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        service.update(queue, eventType, '', {} as UpdateSubscriptionDto),
+        service.update(eventType, '', {} as UpdateSubscriptionDto),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -397,7 +387,7 @@ describe('SubscriptionService', () => {
       } as DistributionRule);
 
       // Act.
-      await service.remove(queue, eventType, subscriberId);
+      await service.remove(eventType, subscriberId);
 
       // Assert.
       expect(subscription.destroy).toHaveBeenCalled();
@@ -406,7 +396,7 @@ describe('SubscriptionService', () => {
     it('should throw a "MissingException" if the repository returns null/undefined', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+        `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
@@ -414,22 +404,22 @@ describe('SubscriptionService', () => {
       subscriptionModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(
-        service.remove(queue, eventType, subscriberId),
-      ).rejects.toEqual(expectedResult);
+      await expect(service.remove(eventType, subscriberId)).rejects.toEqual(
+        expectedResult,
+      );
     });
 
     it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Rule for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Rule for eventType=${eventType} not found!`,
       );
       distributionEventService.findOne.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(
-        service.remove(queue, eventType, subscriberId),
-      ).rejects.toEqual(expectedResult);
+      await expect(service.remove(eventType, subscriberId)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 });

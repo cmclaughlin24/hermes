@@ -14,7 +14,7 @@ import { DistributionEvent } from '../../distribution-event/entities/distributio
   indexes: [
     {
       unique: true,
-      fields: ['distributionEventId', 'metadata'],
+      fields: ['distributionEventType', 'metadata'],
     },
   ],
 })
@@ -27,7 +27,7 @@ export class DistributionRule extends Model {
   id: string;
 
   @ForeignKey(() => DistributionEvent)
-  distributionEventId: string;
+  distributionEventType: string;
 
   @Column({ type: DataType.TEXT })
   metadata: string;

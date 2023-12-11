@@ -11,14 +11,6 @@ import { DistributionEventRuleDto } from './distribution-event-rule.dto';
 
 export class CreateDistributionEventDto {
   @ApiProperty({
-    description: 'Name of the Rabbitmq queue the message is consumed from',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
-  queue: string;
-
-  @ApiProperty({
     description: 'Type of the event',
   })
   @IsString()

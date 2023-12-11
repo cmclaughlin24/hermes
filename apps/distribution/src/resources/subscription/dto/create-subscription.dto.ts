@@ -27,14 +27,6 @@ export class CreateSubscriptionDto {
   subscriberId: string;
 
   @ApiProperty({
-    description: 'Name of the Rabbitmq queue the message is consumed from',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
-  queue: string;
-
-  @ApiProperty({
     description: 'Name of the event the subscription applies to',
   })
   @IsString()

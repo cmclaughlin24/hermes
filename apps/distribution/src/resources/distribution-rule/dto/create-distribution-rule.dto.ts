@@ -13,14 +13,6 @@ import * as _ from 'lodash';
 
 export class CreateDistributionRuleDto {
   @ApiProperty({
-    description: 'Name of the Rabbitmq queue the message is consumed from',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @Transform(({ value }: TransformFnParams) => value?.trim())
-  queue: string;
-
-  @ApiProperty({
     description: 'The event the rule should be applied to',
   })
   @IsString()

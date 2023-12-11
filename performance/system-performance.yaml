@@ -33,7 +33,6 @@ scenarios:
             Distribution-Api-Key: 'notification123'
           json:
             subscriberId: '{{ $randomString() }}'
-            queue: 'distribution'
             eventType: 'monthly-newsletter'
             subscriptionType: 'user'
             data:
@@ -59,7 +58,6 @@ scenarios:
             Distribution-Api-Key: 'notification123'
           json:
             subscriberId: '{{ $randomString() }}'
-            queue: 'distribution'
             eventType: 'monthly-newsletter'
             subscriptionType: 'user'
             data:
@@ -84,7 +82,7 @@ scenarios:
             - json: '$[0].subscriberId'
               as: updateSubscriptionId
       - patch:
-          url: '/subscription/distribution/monthly-newsletter/{{updateSubscriptionId}}'
+          url: '/subscription/monthly-newsletter/{{updateSubscriptionId}}'
           headers:
             Content-Type: 'application/json'
             Distribution-Api-Key: 'notification123'
@@ -106,7 +104,7 @@ scenarios:
             - json: '$[0].subscriberId'
               as: removeSubscriptionId
       - delete:
-          url: '/subscription/distribution/monthly-newsletter/{{removeSubscriptionId}}'
+          url: '/subscription/monthly-newsletter/{{removeSubscriptionId}}'
           headers:
             Content-Type: 'application/json'
             Distribution-Api-Key: 'notification123'

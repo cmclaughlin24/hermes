@@ -43,7 +43,7 @@ export class SubscriptionController {
     return subscriptions;
   }
 
-  @Get(':queue/:eventType/:subscriberId')
+  @Get(':eventType/:subscriberId')
   @Auth(AuthType.NONE)
   @ApiOperation({
     summary: "Find a subscription by it's distribution event and external id.",
@@ -52,19 +52,17 @@ export class SubscriptionController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful Operation' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   async findOne(
-    @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
   ) {
     const subscription = await this.subscriptionService.findOne(
-      queue,
       eventType,
       subscriberId,
     );
 
     if (!subscription) {
       throw new NotFoundException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+        `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
     }
 
@@ -109,7 +107,7 @@ export class SubscriptionController {
     }
   }
 
-  @Patch(':queue/:eventType/:subscriberId')
+  @Patch(':eventType/:subscriberId')
   @IamPermission({
     resource: SubscriptionController.RESOURCE_IDENTIFIER,
     action: 'update',
@@ -132,14 +130,12 @@ export class SubscriptionController {
     description: 'Forbidden Resource',
   })
   async update(
-    @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     try {
       const subscription = await this.subscriptionService.update(
-        queue,
         eventType,
         subscriberId,
         updateSubscriptionDto,
@@ -185,7 +181,7 @@ export class SubscriptionController {
     }
   }
 
-  @Delete(':queue/:eventType/:subscriberId')
+  @Delete(':eventType/:subscriberId')
   @IamPermission({
     resource: SubscriptionController.RESOURCE_IDENTIFIER,
     action: 'remove',
@@ -205,15 +201,14 @@ export class SubscriptionController {
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   async remove(
-    @Param('queue') queue: string,
     @Param('eventType') eventType: string,
     @Param('subscriberId') subscriberId: string,
   ) {
     try {
-      await this.subscriptionService.remove(queue, eventType, subscriberId);
+      await this.subscriptionService.remove(eventType, subscriberId);
 
       return new ApiResponseDto(
-        `Successfully deleted subscription queue=${queue} eventType=${eventType} subscriberId=${subscriberId}!`,
+        `Successfully deleted subscription eventType=${eventType} subscriberId=${subscriberId}!`,
       );
     } catch (error) {
       throw errorToHttpException(error);
