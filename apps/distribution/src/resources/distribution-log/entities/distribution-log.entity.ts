@@ -20,9 +20,6 @@ export class DistributionLog extends Model {
   id: string;
 
   @Column
-  queue: string;
-
-  @Column
   eventType: string;
 
   @Column
