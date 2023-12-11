@@ -3,7 +3,6 @@ import { hasSelectors } from '@hermes/common';
 import { OTelSpan, telemetryWrapper } from '@hermes/open-telemetry';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { SpanKind } from '@opentelemetry/api';
 import { ConsumeMessage } from 'amqplib';
 import { Queue } from 'bullmq';
@@ -30,19 +29,14 @@ const otelCreateNotificationJobs = telemetryWrapper(createNotificationJobs);
 @Injectable()
 export class DistributionConsumer extends MqConsumer {
   private readonly logger = new Logger(DistributionConsumer.name);
-  private DISTRIBUTION_QUEUE: string;
 
   constructor(
     @InjectQueue(process.env.BULLMQ_NOTIFICATION_QUEUE)
     private readonly notificationQueue: Queue,
     private readonly distributionEventService: DistributionEventService,
     private readonly subscriberService: SubscriberService,
-    private readonly configService: ConfigService,
   ) {
     super();
-    this.DISTRIBUTION_QUEUE = this.configService.get(
-      'RABBITMQ_DISTRIBUTION_QUEUE',
-    );
   }
 
   @RabbitSubscribe({
@@ -65,7 +59,6 @@ export class DistributionConsumer extends MqConsumer {
     try {
       const messageDto = await this.createMessageDto(message);
       const distributionEvent = await this.distributionEventService.findOne(
-        this.DISTRIBUTION_QUEUE,
         messageDto.type,
         true,
         true,
@@ -73,7 +66,7 @@ export class DistributionConsumer extends MqConsumer {
 
       if (!distributionEvent) {
         throw new MqUnrecoverableError(
-          `Distribution Event for queue=${this.DISTRIBUTION_QUEUE} eventType=${messageDto.type} not found!`,
+          `Distribution Event for eventType=${messageDto.type} not found!`,
         );
       }
 
@@ -173,7 +166,7 @@ export class DistributionConsumer extends MqConsumer {
 
       if (!rule) {
         throw new MqUnrecoverableError(
-          `Distribution Event queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} does not have a default distribution rule defined!`,
+          `Distribution Event eventType=${distributionEvent.eventType} does not have a default distribution rule defined!`,
         );
       }
     }

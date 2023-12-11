@@ -38,7 +38,7 @@ export function setupSwaggerDocument(app: INestApplication) {
       'Health',
       'Monitor the overall health, status, and availability of the application.',
     )
-    .addTag('Distribution Event', 'View and configure the events for a queue.')
+    .addTag('Distribution Event', 'View and configure the events.')
     .addTag(
       'Distribution Log',
       'View the history of distribution job outcomes.',

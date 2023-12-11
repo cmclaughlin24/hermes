@@ -21,8 +21,6 @@ describe('DistributionEventController', () => {
   let service: MockDistributionEventService;
 
   const distributionEvent = {
-    id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
-    queue: 'unit-test',
     eventType: 'unit-test',
     metadataLabels: ['unit-test'],
   } as DistributionEvent;
@@ -104,30 +102,20 @@ describe('DistributionEventController', () => {
 
       // Act/Assert.
       await expect(
-        controller.findOne(
-          distributionEvent.queue,
-          distributionEvent.eventType,
-          false,
-          false,
-        ),
+        controller.findOne(distributionEvent.eventType, false, false),
       ).resolves.toEqual(distributionEvent);
     });
 
     it('should throw a "NotFoundException" if the service return null/undefined', async () => {
       // Arrange.
       const expectedResult = new NotFoundException(
-        `Distribution Event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} not found!`,
+        `Distribution Event for eventType=${distributionEvent.eventType} not found!`,
       );
       service.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        controller.findOne(
-          distributionEvent.queue,
-          distributionEvent.eventType,
-          false,
-          false,
-        ),
+        controller.findOne(distributionEvent.eventType, false, false),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -140,7 +128,7 @@ describe('DistributionEventController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully created distribution rule for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
+        `Successfully created distribution rule for eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
       service.create.mockResolvedValue(distributionEvent);
@@ -153,30 +141,28 @@ describe('DistributionEventController', () => {
 
     it('should throw a "BadRequestExcepction" if an distribution event already exists', async () => {
       // Arrange.
-      const errorMessage = `Distribution Event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} already exists!`;
+      const errorMessage = `Distribution Event for eventType=${distributionEvent.eventType} already exists!`;
       const expectedResult = new BadRequestException(errorMessage);
       service.create.mockRejectedValue(new ExistsException(errorMessage));
 
       // Act/Assert.
       await expect(
         controller.create({
-          queue: distributionEvent.queue,
-          eventType: distributionEvent.queue,
+          eventType: distributionEvent.eventType,
         } as CreateDistributionEventDto),
       ).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "BadRequestExcepction" if a default distribution rule is not defined', async () => {
       // Arrange.
-      const errorMessage = `Distribution Event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType} must have a default distribution rule (metadata=null)`;
+      const errorMessage = `Distribution Event for eventType=${distributionEvent.eventType} must have a default distribution rule (metadata=null)`;
       const expectedResult = new BadRequestException(errorMessage);
       service.create.mockRejectedValue(new DefaultRuleException(errorMessage));
 
       // Act/Assert.
       await expect(
         controller.create({
-          queue: distributionEvent.queue,
-          eventType: distributionEvent.queue,
+          eventType: distributionEvent.eventType,
         } as CreateDistributionEventDto),
       ).rejects.toEqual(expectedResult);
     });
@@ -190,7 +176,7 @@ describe('DistributionEventController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully updated distribution event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
+        `Successfully updated distribution event for eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
       service.update.mockResolvedValue(distributionEvent);
@@ -198,7 +184,6 @@ describe('DistributionEventController', () => {
       // Act/Assert.
       await expect(
         controller.update(
-          distributionEvent.queue,
           distributionEvent.eventType,
           {} as UpdateDistributionEventDto,
         ),
@@ -207,14 +192,13 @@ describe('DistributionEventController', () => {
 
     it('should throw a "NotFoundException" if a distribution event does not exist', async () => {
       // Arrange.
-      const errorMessage = `Successfully deleted distribution event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`;
+      const errorMessage = `Successfully deleted distribution event for eventType=${distributionEvent.eventType}!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.update.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(
         controller.update(
-          distributionEvent.queue,
           distributionEvent.eventType,
           {} as UpdateDistributionEventDto,
         ),
@@ -230,25 +214,25 @@ describe('DistributionEventController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionEvent>(
-        `Successfully deleted distribution event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`,
+        `Successfully deleted distribution event for eventType=${distributionEvent.eventType}!`,
       );
       service.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
-        controller.remove(distributionEvent.queue, distributionEvent.eventType),
+        controller.remove(distributionEvent.eventType),
       ).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if a distribution event does not exist', async () => {
       // Arrange.
-      const errorMessage = `Successfully deleted distribution event for queue=${distributionEvent.queue} eventType=${distributionEvent.eventType}!`;
+      const errorMessage = `Successfully deleted distribution event for eventType=${distributionEvent.eventType}!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.remove.mockRejectedValue(new MissingException(errorMessage));
 
       // Act/Assert.
       await expect(
-        controller.remove(distributionEvent.queue, distributionEvent.eventType),
+        controller.remove(distributionEvent.eventType),
       ).rejects.toEqual(expectedResult);
     });
   });

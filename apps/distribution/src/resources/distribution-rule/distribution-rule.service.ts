@@ -1,7 +1,5 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import {
-  Injectable
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { Op } from 'sequelize';
@@ -22,13 +20,12 @@ export class DistributionRuleService {
 
   /**
    * Yields a list of DistributionRules.
-   * @param {string[]} queues
    * @param {string[]} eventTypes
    * @returns {Promise<DistributionRule[]>}
    */
-  async findAll(queues: string[], eventTypes: string[]) {
+  async findAll(eventTypes: string[]) {
     return this.distributionRuleModel.findAll({
-      where: this._buildWhereClause(queues, eventTypes),
+      where: this._buildWhereClause(eventTypes),
       include: [{ model: DistributionEvent }],
       attributes: { exclude: ['event'] },
     });
@@ -53,19 +50,21 @@ export class DistributionRuleService {
    */
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
     const distributionEvent = await this.distributionEventService.findOne(
-      createDistributionRuleDto.queue,
       createDistributionRuleDto.eventType,
     );
 
     if (!distributionEvent) {
       throw new MissingException(
-        `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`,
+        `Distribution Event for eventType=${createDistributionRuleDto.eventType} not found!`,
       );
     }
 
     if (!createDistributionRuleDto.metadata) {
       const existingRule = await this.distributionRuleModel.findOne({
-        where: { distributionEventId: distributionEvent.id, metadata: null },
+        where: {
+          distributionEventType: distributionEvent.eventType,
+          metadata: null,
+        },
       });
 
       // Note: Because of the way constraints are handled, manually check if a default
@@ -79,7 +78,7 @@ export class DistributionRuleService {
     }
 
     const distributionRule = await this.distributionRuleModel.create({
-      distributionEventId: distributionEvent.id,
+      distributionEventType: distributionEvent.eventType,
       ...createDistributionRuleDto,
     });
 
@@ -144,20 +143,13 @@ export class DistributionRuleService {
   }
 
   /**
-   * Yields an object containing key-value pairs with the filter(s) (queues and/or
-   * messsageTypes) that should be applied on a DistributionRule repository query.
-   * @param {string[]} queues
+   * Yields an object containing key-value pairs with the filter(s) (eventTypes)
+   * that should be applied on a DistributionRule repository query.
    * @param {string[]} eventTypes
    * @returns
    */
-  private _buildWhereClause(queues: string[], eventTypes: string[]) {
+  private _buildWhereClause(eventTypes: string[]) {
     const where: any = {};
-
-    if (!_.isEmpty(queues)) {
-      where['$event.queue$'] = {
-        [Op.or]: queues,
-      };
-    }
 
     if (!_.isEmpty(eventTypes)) {
       where['$event.eventType$'] = {

@@ -1,16 +1,26 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IAM_ENTITY_KEY } from '../constants/iam.constants';
 import { PERMISSION_KEY } from '../decorators/iam-permission.decorator';
+import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
 import { ActiveEntityData } from '../types/active-entity-data.type';
+import { IamModuleOptions } from '../types/iam-module-options.type';
 import { IamPermissionOptions } from '../types/iam-permission-options.type';
 import { getRequest, unpackPermissions } from '../utils/iam.utils';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    @Inject(IAM_MODULE_OPTIONS_TOKEN)
+    private readonly options: IamModuleOptions,
+    private readonly reflector: Reflector,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+    if (this.options.useContext && !this.options.useContext(context)) {
+      return true;
+    }
+
     const permission = this.reflector.getAllAndOverride<IamPermissionOptions>(
       PERMISSION_KEY,
       [context.getHandler(), context.getClass()],

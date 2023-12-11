@@ -21,8 +21,8 @@ export interface IamModuleOptions {
   disableAuthorization?: boolean;
 
   /**
-   * Optional parameter for a function that checks if `AuthenticationGuard` should be
-   * exectued against the current execution context.
+   * Optional parameter for a function that checks if `AuthenticationGuard`/`AuthorizationGuard`
+   *  should be exectued against the current execution context.
    * @param {ExecutionContext} context
    * @returns {boolean}
    */

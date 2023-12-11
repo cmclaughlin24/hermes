@@ -34,15 +34,8 @@ export class DistributionRuleController {
   @Get()
   @Auth(AuthType.NONE)
   @ApiOperation({
-    summary: 'Find distribution rules(s) by queue and/or message type.',
+    summary: 'Find distribution rules(s) by event type(s).',
     security: [],
-  })
-  @ApiQuery({
-    name: 'queue',
-    required: false,
-    type: String,
-    isArray: true,
-    description: 'A list of Rabbitmq queues.',
   })
   @ApiQuery({
     name: 'eventType',
@@ -55,20 +48,13 @@ export class DistributionRuleController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
   async findAll(
     @Query(
-      'queue',
-      new ParseArrayPipe({ items: String, separator: ',', optional: true }),
-    )
-    queues: string[],
-    @Query(
       'eventType',
       new ParseArrayPipe({ items: String, separator: ',', optional: true }),
     )
     eventTypes: string[],
   ) {
-    const distributionRules = await this.distributionRuleService.findAll(
-      queues,
-      eventTypes,
-    );
+    const distributionRules =
+      await this.distributionRuleService.findAll(eventTypes);
 
     if (_.isEmpty(distributionRules)) {
       throw new NotFoundException('Distribution rules not found!');
@@ -124,7 +110,7 @@ export class DistributionRuleController {
       );
 
       return new ApiResponseDto(
-        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType}!`,
+        `Successfully created distribution rule for eventType=${createDistributionRuleDto.eventType}!`,
         distributionRule,
       );
     } catch (error) {

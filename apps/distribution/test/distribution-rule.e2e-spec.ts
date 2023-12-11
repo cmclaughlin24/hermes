@@ -21,7 +21,6 @@ describe('[Feature] Distribution Rule', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
 
-  const queueName = 'e2e-test';
   const eventType = 'e2e-test__distribution-rule';
   let distributionRuleId: string;
   let defaultDistributionRule;
@@ -71,7 +70,6 @@ describe('[Feature] Distribution Rule', () => {
   beforeAll(async () => {
     // Note: Create Distribution Event to be used during test run.
     const createDistributionEventDto: CreateDistributionEventDto = {
-      queue: queueName,
       eventType: eventType,
       metadataLabels: ['videoGame'],
       rules: [
@@ -114,7 +112,7 @@ describe('[Feature] Distribution Rule', () => {
   afterAll(async () => {
     // Note: Remove Distribution Event used during test run.
     await request(httpServer)
-      .delete(`/distribution-event/${queueName}/${eventType}`)
+      .delete(`/distribution-event/${eventType}`)
       .set(process.env.API_KEY_HEADER, process.env.API_KEY);
 
     await app.close();
@@ -124,7 +122,6 @@ describe('[Feature] Distribution Rule', () => {
     it('should respond with a CREATED status if the resource was created', () => {
       // Arrange.
       const createDistributionRuleDto: CreateDistributionRuleDto = {
-        queue: queueName,
         eventType: eventType,
         metadata: JSON.stringify({
           videoGame: "Tony Hawk's Pro Skater",
@@ -147,7 +144,6 @@ describe('[Feature] Distribution Rule', () => {
     it('should respond with a BAD_REQUEST status if the payload is invalid', () => {
       // Arrange.
       const createDistributionRuleDto = {
-        queue: queueName,
         metadata: JSON.stringify({
           videoGame: 'Lego Star Wars',
         }),
@@ -165,7 +161,6 @@ describe('[Feature] Distribution Rule', () => {
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createDistributionRuleDto: CreateDistributionRuleDto = {
-        queue: queueName,
         eventType: eventType,
         metadata: JSON.stringify({
           videoGame: 'Jak and Daxter',
@@ -184,7 +179,6 @@ describe('[Feature] Distribution Rule', () => {
     it('should respond with a NOT_FOUND status if the distribution event does not exist', () => {
       // Arrange.
       const createDistributionRuleDto: CreateDistributionRuleDto = {
-        queue: queueName,
         eventType: `${eventType}-2`,
         metadata: JSON.stringify({
           videoGame: "Tony Hawk's Pro Skater",
@@ -204,7 +198,6 @@ describe('[Feature] Distribution Rule', () => {
     it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
       // Arrange.
       const createDistributionRuleDto: CreateDistributionRuleDto = {
-        queue: queueName,
         eventType: eventType,
         metadata: JSON.stringify({
           videoGame: 'Duck Hunt',
@@ -238,7 +231,7 @@ describe('[Feature] Distribution Rule', () => {
       // Act/Assert.
       return request(httpServer)
         .get('/distribution-rule')
-        .query({ queue: `${queueName}-2` })
+        .query({ eventType: `${eventType}-2` })
         .expect(HttpStatus.NOT_FOUND);
     });
   });

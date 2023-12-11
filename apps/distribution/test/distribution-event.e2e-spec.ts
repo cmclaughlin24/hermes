@@ -20,7 +20,6 @@ describe('[Feature] Distribution Event', () => {
   let app: INestApplication;
   let httpServer: HttpServer;
 
-  const queueName = 'e2e-test';
   const eventType = 'e2e-test';
 
   beforeAll(async () => {
@@ -84,7 +83,6 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a CREATED status if the resource was created', () => {
       // Arrange.
       const createDistributionEventDto: CreateDistributionEventDto = {
-        queue: queueName,
         eventType: eventType,
         metadataLabels: ['languageCode'],
         rules: [
@@ -107,7 +105,6 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a BAD_REQUEST status if the payload is invalid (missing fields)', () => {
       // Arrange.
       const createDistributionEventDto = {
-        queue: queueName,
         rules: [
           {
             metadata: null,
@@ -128,7 +125,6 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a BAD_REQUEST status if the payload is invalid (no default rule)', () => {
       // Arrange.
       const createDistributionEventDto: CreateDistributionEventDto = {
-        queue: queueName,
         eventType: `${eventType}-2`,
         metadataLabels: ['languageCode'],
         rules: [
@@ -141,7 +137,7 @@ describe('[Feature] Distribution Event', () => {
       };
       const expectedResponse = {
         statusCode: 400,
-        message: `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
+        message: `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
         error: 'Bad Request',
       };
 
@@ -157,7 +153,6 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Arrange.
       const createDistributionEventDto: CreateDistributionEventDto = {
-        queue: queueName,
         eventType: eventType,
         metadataLabels: ['languageCode'],
         rules: [
@@ -179,7 +174,6 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a FORBIDDEN status if the requester does not have sufficient permissions', () => {
       // Arrange.
       const createDistributionEventDto: CreateDistributionEventDto = {
-        queue: queueName,
         eventType: eventType,
         metadataLabels: ['languageCode'],
         rules: [
@@ -217,23 +211,23 @@ describe('[Feature] Distribution Event', () => {
     );
   });
 
-  describe('Get Distribution Event [GET /:queue/:eventType', () => {
+  describe('Get Distribution Event [GET /:eventType]', () => {
     it('should respond with an OK status if the resource exists', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(`/distribution-event/${queueName}/${eventType}`)
+        .get(`/distribution-event/${eventType}`)
         .expect(HttpStatus.OK);
     });
 
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .get(`/distribution-event/${queueName}/${eventType}-2`)
+        .get(`/distribution-event/${eventType}-2`)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Update Distribution Event [PATCH /:queue/:eventType]', () => {
+  describe('Update Distribution Event [PATCH /:eventType]', () => {
     it('should respond with an OK status if the resource was updated', () => {
       // Arrange.
       const updateDistributionEventDto: UpdateDistributionEventDto = {
@@ -242,7 +236,7 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-event/${queueName}/${eventType}`)
+        .patch(`/distribution-event/${eventType}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateDistributionEventDto)
         .expect(HttpStatus.OK);
@@ -256,7 +250,7 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-event/${queueName}/${eventType}`)
+        .patch(`/distribution-event/${eventType}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateDistributionEventDto)
         .expect(HttpStatus.BAD_REQUEST);
@@ -270,7 +264,7 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-event/${queueName}/${eventType}`)
+        .patch(`/distribution-event/${eventType}`)
         .send(updateDistributionEventDto)
         .expect(HttpStatus.UNAUTHORIZED);
     });
@@ -287,7 +281,7 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-event/${queueName}/${eventType}`)
+        .patch(`/distribution-event/${eventType}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateDistributionEventDto)
         .expect(HttpStatus.FORBIDDEN);
@@ -301,18 +295,18 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .patch(`/distribution-event/${queueName}/${eventType}-2`)
+        .patch(`/distribution-event/${eventType}-2`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .send(updateDistributionEventDto)
         .expect(HttpStatus.NOT_FOUND);
     });
   });
 
-  describe('Remove Distribution Event [DELETE /:queue/:eventType]', () => {
+  describe('Remove Distribution Event [DELETE /:eventType]', () => {
     it('should respond with an OK status if the resource was deleted', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-event/${queueName}/${eventType}`)
+        .delete(`/distribution-event/${eventType}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.OK);
     });
@@ -320,7 +314,7 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a UNAUTHORIZED status if the request is not authorized', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-event/${queueName}/${eventType}`)
+        .delete(`/distribution-event/${eventType}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
@@ -333,7 +327,7 @@ describe('[Feature] Distribution Event', () => {
 
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-event/${queueName}/${eventType}`)
+        .delete(`/distribution-event/${eventType}`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.FORBIDDEN);
     });
@@ -341,7 +335,7 @@ describe('[Feature] Distribution Event', () => {
     it('should respond with a NOT_FOUND status if the resource does not exist', () => {
       // Act/Assert.
       return request(httpServer)
-        .delete(`/distribution-event/${queueName}/${eventType}-2`)
+        .delete(`/distribution-event/${eventType}-2`)
         .set(process.env.API_KEY_HEADER, process.env.API_KEY)
         .expect(HttpStatus.NOT_FOUND);
     });

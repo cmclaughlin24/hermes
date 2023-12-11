@@ -1,15 +1,13 @@
 import { DeliveryMethods } from '@hermes/common';
 import { getQueueToken } from '@nestjs/bullmq';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockDistributionEventService,
-    createConfigServiceMock,
-    createDistributionEventServiceMock,
+  MockDistributionEventService,
+  createDistributionEventServiceMock
 } from '../../../../test/helpers/provider.helper';
 import {
-    MockQueue,
-    createQueueMock,
+  MockQueue,
+  createQueueMock,
 } from '../../../../test/helpers/queue.helper';
 import { DistributionMessageDto } from '../../../common/dto/distribution-message.dto';
 import { SubscriberService } from '../../../common/services/subscriber/subscriber.service';
@@ -54,10 +52,6 @@ describe('DistributionConsumer', () => {
         {
           provide: SubscriberService,
           useValue: createSubcriberServiceMock(),
-        },
-        {
-          provide: ConfigService,
-          useValue: createConfigServiceMock(),
         },
       ],
     })
@@ -225,13 +219,12 @@ describe('DistributionConsumer', () => {
     it('should throw a "MqUnrecoverableError" if a distribution event does not have a default distribution rule', async () => {
       // Arrange.
       const invalidDistributionEvent = {
-        queue: 'distribution',
         eventType: 'console-release',
         metadataLabels: [],
         rules: [],
       };
       const expectedResult = new MqUnrecoverableError(
-        `Distribution Event queue=${invalidDistributionEvent.queue} eventType=${invalidDistributionEvent.eventType} does not have a default distribution rule defined!`,
+        `Distribution Event eventType=${invalidDistributionEvent.eventType} does not have a default distribution rule defined!`,
       );
       distributionEventService.findOne.mockResolvedValue(
         invalidDistributionEvent,

@@ -20,17 +20,15 @@ export class DistributionEventExistsRule
 
   async validate(
     eventType: string,
-    validationArguments?: ValidationArguments,
+    _validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     try {
-      const distributionEvent = await this.distributionEventService.findOne(
-        validationArguments.object['queue'],
-        eventType,
-      );
+      const distributionEvent =
+        await this.distributionEventService.findOne(eventType);
 
       if (!distributionEvent) {
         throw new MissingException(
-          `Distribution Event for queue=${validationArguments.object['queue']} eventType=${eventType} not found!`,
+          `Distribution Event for eventType=${eventType} not found!`,
         );
       }
     } catch (error) {
@@ -41,7 +39,7 @@ export class DistributionEventExistsRule
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `Distribution Event for queue=${validationArguments.object['queue']} eventType=${validationArguments.value} doesn't exist`;
+    return `Distribution Event for eventType=${validationArguments.value} doesn't exist`;
   }
 }
 

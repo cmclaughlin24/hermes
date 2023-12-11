@@ -1,7 +1,9 @@
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
+import { IAM_MODULE_OPTIONS_TOKEN } from '../iam.module-definition';
 import { ActiveEntityData } from '../types/active-entity-data.type';
+import { IamModuleOptions } from '../types/iam-module-options.type';
 import { IamPermissionOptions } from '../types/iam-permission-options.type';
 import { AuthorizationGuard } from './authorization.guard';
 
@@ -13,6 +15,7 @@ const createReflectorMock = (): MockReflector => ({
 
 describe('AuthorizationGuard', () => {
   let reflector: MockReflector;
+  let iamModuleOptions: IamModuleOptions;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,14 +24,21 @@ describe('AuthorizationGuard', () => {
           provide: Reflector,
           useValue: createReflectorMock(),
         },
+        {
+          provide: IAM_MODULE_OPTIONS_TOKEN,
+          useValue: {},
+        },
       ],
     }).compile();
 
     reflector = module.get<MockReflector>(Reflector);
+    iamModuleOptions = module.get<IamModuleOptions>(IAM_MODULE_OPTIONS_TOKEN);
   });
 
   it('should be defined', () => {
-    expect(new AuthorizationGuard(reflector as Reflector)).toBeDefined();
+    expect(
+      new AuthorizationGuard(iamModuleOptions, reflector as Reflector),
+    ).toBeDefined();
   });
 
   describe('canActivate()', () => {
@@ -51,7 +61,10 @@ describe('AuthorizationGuard', () => {
 
     it('should yield true if the requesting entity is authorized to complete the action', () => {
       // Arrange.
-      const guard = new AuthorizationGuard(reflector as Reflector);
+      const guard = new AuthorizationGuard(
+        iamModuleOptions,
+        reflector as Reflector,
+      );
       const resource = 'FinalFantasyVII';
       const action = 'FightSephiroth';
       request.entity = {
@@ -72,7 +85,10 @@ describe('AuthorizationGuard', () => {
 
     it('should yield true if a permission is not specified', async () => {
       // Arrange.
-      const guard = new AuthorizationGuard(reflector as Reflector);
+      const guard = new AuthorizationGuard(
+        iamModuleOptions,
+        reflector as Reflector,
+      );
       reflector.getAllAndOverride.mockReturnValue(null);
 
       // Act.
@@ -84,7 +100,10 @@ describe('AuthorizationGuard', () => {
 
     it('should yield false otherwise', () => {
       // Arrange.
-      const guard = new AuthorizationGuard(reflector as Reflector);
+      const guard = new AuthorizationGuard(
+        iamModuleOptions,
+        reflector as Reflector,
+      );
       const resource = 'FinalFantasyVII';
       const action = 'PlayMiniGame';
       request.entity = {

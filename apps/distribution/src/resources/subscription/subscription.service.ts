@@ -1,7 +1,5 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import {
-  Injectable
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
@@ -35,21 +33,17 @@ export class SubscriptionService {
 
   /**
    * Yields a Subscription.
-   * @param {string} queue
    * @param {string} eventType
    * @param {string} subscriberId
    * @returns {Promise<Subscription>}
    */
-  async findOne(queue: string, eventType: string, subscriberId: string) {
-    const distributionEvent = await this._getDistributionEvent(
-      queue,
-      eventType,
-    );
+  async findOne(eventType: string, subscriberId: string) {
+    const distributionEvent = await this._getDistributionEvent(eventType);
 
     return this.subscriptionModel.findOne({
       where: {
         subscriberId: subscriberId,
-        distributionEventId: distributionEvent.id,
+        distributionEventType: distributionEvent.eventType,
       },
       include: [SubscriptionFilter],
     });
@@ -57,20 +51,19 @@ export class SubscriptionService {
 
   /**
    * Creates a Subscription. Throws a MissingException if a DistributionEvent does
-   * not exist in the repository for the queue and eventType or ExistsException
+   * not exist in the repository for the eventType or ExistsException
    * if a subscription id exists in the repository.
    * @param {CreateSubscriptionDto} createSubscriptionDto
    * @returns {Promise<Subscription>}
    */
   async create(createSubscriptionDto: CreateSubscriptionDto) {
     const distributionEvent = await this._getDistributionEvent(
-      createSubscriptionDto.queue,
       createSubscriptionDto.eventType,
     );
     const existingSubscription = await this.subscriptionModel.findOne({
       where: {
         subscriberId: createSubscriptionDto.subscriberId,
-        distributionEventId: distributionEvent.id,
+        distributionEventType: distributionEvent.eventType,
       },
     });
 
@@ -82,7 +75,7 @@ export class SubscriptionService {
 
     const subscription = await this.subscriptionModel.create(
       {
-        distributionEventId: distributionEvent.id,
+        distributionEventType: distributionEvent.eventType,
         subscriberId: createSubscriptionDto.subscriberId,
         subscriptionType: createSubscriptionDto.subscriptionType,
         data: createSubscriptionDto.data,
@@ -98,27 +91,22 @@ export class SubscriptionService {
   /**
    * Updates a Subscription or throws a MissingException if the repository
    * returns null or undefined.
-   * @param {string} queue
    * @param {string} eventType
    * @param {string} subscriberId
    * @param {UpdateSubscriptionDto} updateSubscriptionDto
    * @returns {Promise<Subscription>}
    */
   async update(
-    queue: string,
     eventType: string,
     subscriberId: string,
     updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.sequelize.transaction(async (transaction) => {
-      const distributionEvent = await this._getDistributionEvent(
-        queue,
-        eventType,
-      );
+      const distributionEvent = await this._getDistributionEvent(eventType);
       let subscription = await this.subscriptionModel.findOne({
         where: {
           subscriberId: subscriberId,
-          distributionEventId: distributionEvent.id,
+          distributionEventType: distributionEvent.eventType,
         },
         include: [SubscriptionFilter],
         transaction,
@@ -126,7 +114,7 @@ export class SubscriptionService {
 
       if (!subscription) {
         throw new MissingException(
-          `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+          `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
         );
       }
 
@@ -179,26 +167,22 @@ export class SubscriptionService {
   /**
    * Removes a Subscription or throws a MissingException if the repository
    * returns null or undefined.
-   * @param {string} queue
    * @param {string} eventType
    * @param {string} subscriberId
    * @returns {Promise<void>}
    */
-  async remove(queue: string, eventType: string, subscriberId: string) {
-    const distributionEvent = await this._getDistributionEvent(
-      queue,
-      eventType,
-    );
+  async remove(eventType: string, subscriberId: string) {
+    const distributionEvent = await this._getDistributionEvent(eventType);
     const subscription = await this.subscriptionModel.findOne({
       where: {
         subscriberId: subscriberId,
-        distributionEventId: distributionEvent.id,
+        distributionEventType: distributionEvent.eventType,
       },
     });
 
     if (!subscription) {
       throw new MissingException(
-        `Subscription with queue=${queue} eventType=${eventType} subscriberId=${subscriberId} not found!`,
+        `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
     }
 
@@ -209,19 +193,16 @@ export class SubscriptionService {
   /**
    * Yields a DistributionEvent or throws a MissingException if it does
    * not exist.
-   * @param {string} queue
    * @param {string} eventType
    * @returns {Promise<DistributionEvent>}
    */
-  private async _getDistributionEvent(queue: string, eventType: string) {
-    const distributionEvent = await this.distributionEventService.findOne(
-      queue,
-      eventType,
-    );
+  private async _getDistributionEvent(eventType: string) {
+    const distributionEvent =
+      await this.distributionEventService.findOne(eventType);
 
     if (!distributionEvent) {
       throw new MissingException(
-        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Event for eventType=${eventType} not found!`,
       );
     }
 

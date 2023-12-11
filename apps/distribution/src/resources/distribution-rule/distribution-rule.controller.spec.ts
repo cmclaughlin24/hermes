@@ -23,7 +23,7 @@ describe('DistributionRuleController', () => {
 
   const distributionRule: DistributionRule = {
     id: '',
-    distributionEventId: '',
+    distributionEventType: '',
     emailTemplate: 'unit-test',
     deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
     checkDeliveryWindow: false,
@@ -61,7 +61,7 @@ describe('DistributionRuleController', () => {
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(controller.findAll([], [])).resolves.toEqual(expectedResult);
+      await expect(controller.findAll([])).resolves.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the service returns null/undefined', async () => {
@@ -72,7 +72,7 @@ describe('DistributionRuleController', () => {
       service.findAll.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(controller.findAll([], [])).rejects.toEqual(expectedResult);
+      await expect(controller.findAll([])).rejects.toEqual(expectedResult);
     });
 
     it('should throw a "NotFoundException" if the service returns an empty list', async () => {
@@ -83,7 +83,7 @@ describe('DistributionRuleController', () => {
       service.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(controller.findAll([], [])).rejects.toEqual(expectedResult);
+      await expect(controller.findAll([])).rejects.toEqual(expectedResult);
     });
   });
 
@@ -116,7 +116,6 @@ describe('DistributionRuleController', () => {
 
   describe('create()', () => {
     const createDistributionRuleDto = {
-      queue: 'unit-test',
       eventType: 'unit-test',
     } as CreateDistributionRuleDto;
 
@@ -127,7 +126,7 @@ describe('DistributionRuleController', () => {
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
       const expectedResult = new ApiResponseDto<DistributionRule>(
-        `Successfully created distribution rule for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType}!`,
+        `Successfully created distribution rule for eventType=${createDistributionRuleDto.eventType}!`,
         distributionRule,
       );
       service.create.mockResolvedValue(distributionRule);
@@ -140,7 +139,7 @@ describe('DistributionRuleController', () => {
 
     it('should throw a "NotFoundException" if a distribution event does not exist', async () => {
       // Arrange.
-      const errorMessage = `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`;
+      const errorMessage = `Distribution Event for eventType=${createDistributionRuleDto.eventType} not found!`;
       const expectedResult = new NotFoundException(errorMessage);
       service.create.mockRejectedValue(new MissingException(errorMessage));
 

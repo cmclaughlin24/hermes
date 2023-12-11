@@ -1,7 +1,4 @@
-import {
-  ExistsException,
-  MissingException
-} from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
@@ -33,20 +30,17 @@ export class DistributionEventService {
 
   /**
    * Yields a DistributionEvent.
-   * @param {string} queue
    * @param {string} eventType
    * @param {boolean} includeRules
    * @param {boolean} includeSubscriptions
    * @returns {Promise<DistributionEvent>}
    */
   async findOne(
-    queue: string,
     eventType: string,
     includeRules: boolean = false,
     includeSubscriptions: boolean = false,
   ) {
-    return this.distributionEventModel.findOne({
-      where: { queue, eventType },
+    return this.distributionEventModel.findByPk(eventType, {
       include: this._buildIncludes(includeRules, includeSubscriptions),
     });
   }
@@ -59,16 +53,13 @@ export class DistributionEventService {
    * @returns {Promise<DistributionEvent>}
    */
   async create(createDistributionEventDto: CreateDistributionEventDto) {
-    const existingEvent = await this.distributionEventModel.findOne({
-      where: {
-        queue: createDistributionEventDto.queue,
-        eventType: createDistributionEventDto.eventType,
-      },
-    });
+    const existingEvent = await this.distributionEventModel.findByPk(
+      createDistributionEventDto.eventType,
+    );
 
     if (existingEvent) {
       throw new ExistsException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} already exists!`,
+        `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
       );
     }
 
@@ -78,7 +69,7 @@ export class DistributionEventService {
 
     if (!hasDefaultRule) {
       throw new DefaultRuleException(
-        `Distribution Event for queue=${createDistributionEventDto.queue} eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
+        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
     }
 
@@ -95,23 +86,19 @@ export class DistributionEventService {
   /**
    * Updates a DistributionEvent or throws a MissingException if the repository
    * returns null or undefined.
-   * @param {string} queue
    * @param {string} eventType
    * @param {UpdateDistributionEventDto} updateDistributionEventDto
    * @returns {Promise<DistributionEvent>}
    */
   async update(
-    queue: string,
     eventType: string,
     updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
-    let distributionEvent = await this.distributionEventModel.findOne({
-      where: { queue, eventType },
-    });
+    let distributionEvent = await this.distributionEventModel.findByPk(eventType);
 
     if (!distributionEvent) {
       throw new MissingException(
-        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Event for eventType=${eventType} not found!`,
       );
     }
 
@@ -127,18 +114,15 @@ export class DistributionEventService {
   /**
    * Removes a DistributionEvent or throws a MissingException if the repository
    * returns null or undefined.
-   * @param {string} queue
    * @param {string} eventType
    * @returns {Promise<void>}
    */
-  async remove(queue: string, eventType: string) {
-    const distributionEvent = await this.distributionEventModel.findOne({
-      where: { queue, eventType },
-    });
+  async remove(eventType: string) {
+    const distributionEvent = await this.distributionEventModel.findByPk(eventType);
 
     if (!distributionEvent) {
       throw new MissingException(
-        `Distribution Event for queue=${queue} eventType=${eventType} not found!`,
+        `Distribution Event for eventType=${eventType} not found!`,
       );
     }
 

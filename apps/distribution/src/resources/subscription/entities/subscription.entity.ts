@@ -19,7 +19,7 @@ import { SubscriptionFilter } from './subscription-filter.entity';
   indexes: [
     {
       unique: true,
-      fields: ['subscriberId', 'distributionEventId'],
+      fields: ['subscriberId', 'distributionEventType'],
     },
   ],
 })
@@ -35,7 +35,7 @@ export class Subscription extends Model {
   subscriberId: string;
 
   @ForeignKey(() => DistributionEvent)
-  distributionEventId: string;
+  distributionEventType: string;
 
   @Column({
     type: DataType.ENUM(

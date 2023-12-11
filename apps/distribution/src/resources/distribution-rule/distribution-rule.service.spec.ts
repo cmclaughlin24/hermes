@@ -68,7 +68,7 @@ describe('DistributionRuleService', () => {
       distributionRuleModel.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll(null, null)).resolves.toEqual(
+      await expect(service.findAll(null)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -80,7 +80,7 @@ describe('DistributionRuleService', () => {
 
       // Act/Assert.
       await expect(
-        service.findAll(['unit-test'], ['unit-test']),
+        service.findAll(['unit-test']),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -89,7 +89,7 @@ describe('DistributionRuleService', () => {
       distributionRuleModel.findAll.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll(null, null)).resolves.toHaveLength(0);
+      await expect(service.findAll(null)).resolves.toHaveLength(0);
     });
   });
 
@@ -128,7 +128,6 @@ describe('DistributionRuleService', () => {
 
   describe('create()', () => {
     const createDistributionRuleDto: CreateDistributionRuleDto = {
-      queue: 'unit-test',
       eventType: 'unit-test',
       metadata: null,
       deliveryMethods: [DeliveryMethods.EMAIL],
@@ -139,8 +138,6 @@ describe('DistributionRuleService', () => {
 
     beforeEach(() => {
       distributionEventService.findOne.mockResolvedValue({
-        id: '',
-        queue: createDistributionRuleDto.queue,
         eventType: createDistributionRuleDto.eventType,
       });
       distributionRuleModel.create.mockResolvedValue(distributionRule);
@@ -174,7 +171,7 @@ describe('DistributionRuleService', () => {
     it('should throw a "MissingException" if the distribution event does not exist', async () => {
       // Arrange.
       const expectedResult = new MissingException(
-        `Distribution Event for queue=${createDistributionRuleDto.queue} eventType=${createDistributionRuleDto.eventType} not found!`,
+        `Distribution Event for eventType=${createDistributionRuleDto.eventType} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue(null);
 
