@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class VerifyTokenService extends TokenService {
+export class VerifyTokenService implements TokenService {
   private readonly jwtSecret = this.configService.get('JWT_SECRET');
   private readonly jwtAudience = this.configService.get('JWT_TOKEN_AUDIENCE');
   private readonly jwtIssuer = this.configService.get('JWT_TOKEN_ISSUER');
@@ -12,9 +12,7 @@ export class VerifyTokenService extends TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {
-    super();
-  }
+  ) {}
 
   verifyAccessToken(token: string): Promise<ActiveEntityData> {
     return this.jwtService.verifyAsync<ActiveEntityData>(token, {

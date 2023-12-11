@@ -3,7 +3,7 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { HashingService } from './hashing.service';
 
 @Injectable()
-export class BcryptService extends HashingService {
+export class BcryptService implements HashingService {
   async hash(data: string | Buffer): Promise<string> {
     const salt = await genSalt();
     return hash(data, salt);
