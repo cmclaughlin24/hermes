@@ -5,7 +5,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { HashingService } from '../../common/services/hashing.service';
-import { VerifyTokenService } from '../../common/services/verify-token.service';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
@@ -29,7 +28,6 @@ export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
-    private readonly verifyTokenService: VerifyTokenService,
     private readonly refreshTokenStorage: RefreshTokenStorage,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -81,7 +79,14 @@ export class AuthenticationService {
    */
   async verifyToken(token: string) {
     try {
-      const payload = await this.verifyTokenService.verifyAccessToken(token);
+      const payload = await this.jwtService.verifyAsync<ActiveEntityData>(
+        token,
+        {
+          secret: this.jwtSecret,
+          audience: this.jwtAudience,
+          issuer: this.jwtIssuer,
+        },
+      );
 
       return payload;
     } catch (error) {

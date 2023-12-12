@@ -1,14 +1,21 @@
 import { AuthType, IamModuleOptions } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
-import { VerifyTokenService } from '../common/services/verify-token.service';
+import { ApiKeyService } from '../resources/api-key/api-key.service';
+import { AuthenticationService } from '../resources/authentication/authentication.service';
 
 export function iamFactory(
   configService: ConfigService,
-  verifyTokenService: VerifyTokenService,
+  authenticationService: AuthenticationService,
+  apiKeyService: ApiKeyService,
 ): IamModuleOptions {
   return {
     defaultAuthTypes: [AuthType.API_KEY, AuthType.BEARER],
     apiKeyHeader: configService.get('API_KEY_HEADER'),
-    tokenService: verifyTokenService,
+    tokenService: {
+      verifyAccessToken: authenticationService.verifyToken.bind(
+        authenticationService,
+      ),
+      verifyApiKey: apiKeyService.verifyApiKey.bind(apiKeyService),
+    },
   };
 }

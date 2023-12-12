@@ -21,5 +21,6 @@ import { ApiKey } from './entities/api-key.entity';
     PermissionModule,
   ],
   providers: [ApiKeyResolver, ApiKeyService],
+  exports: [ApiKeyService],
 })
 export class ApiKeyModule {}

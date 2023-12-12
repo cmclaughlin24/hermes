@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { BcryptService } from './services/bcrypt.service';
 import { HashingService } from './services/hashing.service';
-import { VerifyTokenService } from './services/verify-token.service';
 
 @Module({
   imports: [JwtModule],
@@ -11,8 +10,7 @@ import { VerifyTokenService } from './services/verify-token.service';
       provide: HashingService,
       useClass: BcryptService,
     },
-    VerifyTokenService,
   ],
-  exports: [HashingService, VerifyTokenService],
+  exports: [HashingService],
 })
 export class CommonModule {}

@@ -14,7 +14,6 @@ import {
   createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
-import { VerifyTokenService } from '../../common/services/verify-token.service';
 import { UserService } from '../user/user.service';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
@@ -22,14 +21,6 @@ import { SignUpInput } from './dto/sign-up.input';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
 import { RefreshTokenStorage } from './refresh-token.storage';
-
-type MockVerifyTokenService = Partial<
-  Record<keyof VerifyTokenService, jest.Mock>
->;
-
-const createVerifyTokenService = (): MockVerifyTokenService => ({
-  verifyAccessToken: jest.fn(),
-});
 
 type MockRefreshTokenStorage = Partial<
   Record<keyof RefreshTokenStorage, jest.Mock>
@@ -45,7 +36,6 @@ describe('AuthenticationService', () => {
   let service: AuthenticationService;
   let userService: MockUserService;
   let hashingService: MockHashingService;
-  let verifyTokenSerivce: MockVerifyTokenService;
   let jwtService: MockJwtService;
   let refreshTokenStorage: MockRefreshTokenStorage;
 
@@ -60,10 +50,6 @@ describe('AuthenticationService', () => {
         {
           provide: HashingService,
           useValue: createHashingServiceMock(),
-        },
-        {
-          provide: VerifyTokenService,
-          useValue: createVerifyTokenService(),
         },
         {
           provide: RefreshTokenStorage,
@@ -83,7 +69,6 @@ describe('AuthenticationService', () => {
     service = module.get<AuthenticationService>(AuthenticationService);
     userService = module.get<MockUserService>(UserService);
     hashingService = module.get<MockHashingService>(HashingService);
-    verifyTokenSerivce = module.get<MockVerifyTokenService>(VerifyTokenService);
     jwtService = module.get<MockJwtService>(JwtService);
     refreshTokenStorage =
       module.get<MockRefreshTokenStorage>(RefreshTokenStorage);
@@ -191,7 +176,7 @@ describe('AuthenticationService', () => {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZDU2Yjg4MC1lODBjLTQzZDMtYjk5MC00MmVlMGMxMDQ0MDQiLCJpYXQiOjE3MDAwNzU5NzUsImV4cCI6MTcwMDA3OTU3NSwiYXVkIjoibG9jYWxob3N0OjMwMDIiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMiJ9.lDB66KMBkrDV8T4xu3kXVBlF0yvWUsYVTCG1rfWH-uU';
 
     afterEach(() => {
-      verifyTokenSerivce.verifyAccessToken.mockClear();
+      jwtService.verifyAsync.mockClear();
     });
 
     it('should yield an "ActiveEntityData" object if the token is valid', async () => {
@@ -201,7 +186,7 @@ describe('AuthenticationService', () => {
         sub: randomUUID(),
         authorization_details: [],
       };
-      verifyTokenSerivce.verifyAccessToken.mockResolvedValue(expectedResult);
+      jwtService.verifyAsync.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.verifyToken(token)).resolves.toEqual(expectedResult);
@@ -209,7 +194,7 @@ describe('AuthenticationService', () => {
 
     it('should throw an "InvalidTokenException" if the token is invalid', async () => {
       // Arrange.
-      verifyTokenSerivce.verifyAccessToken.mockRejectedValue(new Error());
+      jwtService.verifyAsync.mockRejectedValue(new Error());
 
       // Act/Assert.
       await expect(service.verifyToken(token)).rejects.toBeInstanceOf(
