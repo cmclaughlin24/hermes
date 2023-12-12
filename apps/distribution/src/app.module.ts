@@ -40,6 +40,8 @@ import { ResourcesModule } from './resources/resources.module';
         RETRY_ATTEMPTS: Joi.number().required(),
         RETRY_DELAY: Joi.number().required(),
         SUBSCRIBERS_REQUEST_URL: Joi.string().required(),
+        SUBSCRIBERS_API_KEY_HEADER: Joi.string(),
+        SUBSCRIBERS_API_KEY: Joi.string(),
         IAM_CLIENT_URL: Joi.string().required(),
       }),
     }),

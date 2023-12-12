@@ -3,13 +3,13 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { CommonModule } from '../common/common.module';
-import { VerifyTokenService } from '../common/services/verify-token.service';
 import { iamFactory } from '../config/iam.config';
-import { AuthenticationModule } from './authentication/authentication.module';
-import { UserModule } from './user/user.module';
-import { PermissionModule } from './permission/permission.module';
 import { ApiKeyModule } from './api-key/api-key.module';
+import { ApiKeyService } from './api-key/api-key.service';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { AuthenticationService } from './authentication/authentication.service';
+import { PermissionModule } from './permission/permission.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,8 +18,8 @@ import { ApiKeyModule } from './api-key/api-key.module';
       autoSchemaFile: true,
     }),
     IamModule.registerAsync({
-      imports: [ConfigModule, CommonModule],
-      inject: [ConfigService, VerifyTokenService],
+      imports: [ConfigModule, AuthenticationModule, ApiKeyModule],
+      inject: [ConfigService, AuthenticationService, ApiKeyService],
       useFactory: iamFactory,
     }),
     UserModule,

@@ -25,5 +25,6 @@ import { RefreshTokenStorage } from './refresh-token.storage';
     AuthenticationService,
     RefreshTokenStorage,
   ],
+  exports: [AuthenticationService],
 })
 export class AuthenticationModule {}

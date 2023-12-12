@@ -1,15 +1,18 @@
-import { InputType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
+  IsTimeZone,
   ValidateNested,
 } from 'class-validator';
 import { CreatePermissionInput } from '../../permission/dto/create-permission.input';
+import { DeliveryMethods } from '../enums/delivery-methods.enum';
 
 @InputType()
 export class CreateUserInput {
@@ -28,6 +31,15 @@ export class CreateUserInput {
     minLength: 6,
   })
   password: string;
+
+  @IsTimeZone()
+  @IsOptional()
+  timeZone?: string;
+
+  @IsEnum(DeliveryMethods, { each: true })
+  @IsOptional()
+  @Field(() => [DeliveryMethods], { nullable: true })
+  deliveryMethods?: DeliveryMethods[];
 
   @IsOptional()
   @ValidateNested({ each: true })

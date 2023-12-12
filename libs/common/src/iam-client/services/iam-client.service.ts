@@ -5,17 +5,13 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, map } from 'rxjs';
 
 @Injectable()
-export class IamClientService extends TokenService {
-  private readonly VERIFY_TOKEN_URL = this.configService.get(
-    'IAM_CLIENT_URL',
-  );
+export class IamClientService implements TokenService {
+  private readonly VERIFY_TOKEN_URL = this.configService.get('IAM_CLIENT_URL');
 
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-  ) {
-    super();
-  }
+  ) {}
 
   async verifyAccessToken(token: string): Promise<ActiveEntityData> {
     const request = this.httpService

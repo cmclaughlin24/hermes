@@ -6,6 +6,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
+import { In } from 'typeorm';
 import {
   MockRepository,
   createMockRepository,
@@ -35,6 +36,7 @@ describe('UserService', () => {
     email: 'amy.hedgehog@sega.com',
     phoneNumber: '+18888888888',
     password: 'sonic-the-hedgehog',
+    timeZone: 'Etc/UTC',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -78,7 +80,24 @@ describe('UserService', () => {
       repository.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toEqual(expectedResult);
+      await expect(service.findAll(null)).resolves.toEqual(expectedResult);
+    });
+
+    it('should yield a list of users filtered by id', async () => {
+      // Arrange.
+      const ids = [randomUUID()];
+      const expectedResult = {
+        where: {
+          id: In(ids),
+        },
+      };
+      repository.find.mockResolvedValue([]);
+
+      // Act.
+      await service.findAll(ids);
+
+      // Assert.
+      expect(repository.find).toHaveBeenCalledWith(expectedResult);
     });
 
     it('should yield an empty list if the repository returns an empty list', async () => {
@@ -86,7 +105,7 @@ describe('UserService', () => {
       repository.find.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toEqual([]);
+      await expect(service.findAll(null)).resolves.toEqual([]);
     });
   });
 
