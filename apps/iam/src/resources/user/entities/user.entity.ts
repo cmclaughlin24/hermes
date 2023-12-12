@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from '../../permission/entities/permission.entity';
+import { DeliveryMethods } from '../enums/delivery-methods.enum';
 
 @Entity()
 @ObjectType()
@@ -29,6 +30,10 @@ export class User {
   @Column()
   @HideField()
   password: string;
+
+  @Column({ type: 'simple-array', nullable: true })
+  @Field(() => [DeliveryMethods], { nullable: true })
+  deliveryMethods: DeliveryMethods[];
 
   @CreateDateColumn()
   createdAt: Date;
