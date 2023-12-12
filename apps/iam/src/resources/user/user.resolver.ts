@@ -19,8 +19,11 @@ export class UserResolver {
     resource: UserResolver.RESOURCE_IDENTIFIER,
     action: 'list',
   })
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(
+    @Args('userIds', { type: () => [String], nullable: true })
+    ids: string[],
+  ) {
+    return this.userService.findAll(ids);
   }
 
   @Query(() => User, { name: 'user' })

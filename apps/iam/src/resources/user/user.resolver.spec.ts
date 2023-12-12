@@ -53,7 +53,7 @@ describe('UserResolver', () => {
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(resolver.findAll()).resolves.toEqual(expectedResult);
+      await expect(resolver.findAll(null)).resolves.toEqual(expectedResult);
     });
   });
 

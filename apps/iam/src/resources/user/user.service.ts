@@ -6,7 +6,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { HashingService } from '../../common/services/hashing.service';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
 import { Permission } from '../permission/entities/permission.entity';
@@ -27,8 +27,14 @@ export class UserService {
    * Yields a list of users.
    * @returns {Promise<User[]>}
    */
-  async findAll() {
-    return this.userRepository.find();
+  async findAll(ids: string[]) {
+    const where = {};
+
+    if (!_.isEmpty(ids)) {
+      where['id'] = In(ids);
+    }
+
+    return this.userRepository.find({ where });
   }
 
   /**
