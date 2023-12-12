@@ -1,4 +1,8 @@
-import { PushSubscriptionDto, PushSubscriptionKeysDto } from '@hermes/common';
+import {
+  DeliveryMethods,
+  PushSubscriptionDto,
+  PushSubscriptionKeysDto,
+} from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -136,7 +140,9 @@ export class SubscriberService {
 
   private _createUserSubscriberDto(data: any): UserSubscriberDto {
     const dto = new UserSubscriberDto();
-    dto.deliveryMethods = data.deliveryMethods;
+    dto.deliveryMethods = data.deliveryMethods?.map(
+      (method) => DeliveryMethods[method.toUpperCase()],
+    ) ?? [];
     dto.email = data.email;
     dto.phoneNumber = data.phoneNumber;
     dto.timeZone = data.timeZone;
