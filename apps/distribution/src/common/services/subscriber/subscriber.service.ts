@@ -13,7 +13,6 @@ import {
   map,
   throwError,
 } from 'rxjs';
-import { URLSearchParams } from 'url';
 import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
 import { DeviceSubscriberDto } from '../../dto/device-subscriber.dto';
 import { RequestSubscriberDto } from '../../dto/request-subscriber.dto';
@@ -27,14 +26,20 @@ import {
 @Injectable()
 export class SubscriberService {
   private readonly logger = new Logger(SubscriberService.name);
-  private subscribersRequestUrl: string;
+  private readonly subscribersRequestUrl = this.configService.get(
+    'SUBSCRIBERS_REQUEST_URL',
+  );
+  private readonly subscriberApiKeyHeader = this.configService.get(
+    'SUBSCRIBERS_API_KEY_HEADER',
+  );
+  private readonly subscriberApiKey = this.configService.get(
+    'SUBSCRIBERS_API_KEY',
+  );
 
   constructor(
     private readonly httpService: HttpService,
-    configService: ConfigService,
-  ) {
-    this.subscribersRequestUrl = configService.get('SUBSCRIBERS_REQUEST_URL');
-  }
+    private readonly configService: ConfigService,
+  ) {}
 
   async get(subscriptions: Subscription[]): Promise<SubscriberDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
@@ -212,22 +217,42 @@ export class SubscriberService {
     url: string,
     ids: string[],
   ): Observable<UserSubscriberDto[]> {
-    const params = new URLSearchParams();
-    ids.forEach((id) => params.append('id', id));
+    const headers = {};
 
-    return this.httpService.get(`${url}?${params.toString()}`).pipe(
-      map((response) => this.mapToUserSubscriberDtos(response.data)),
-      // ? If supporting multiple request endpoints, should an error be thrown on attempts 1 to n-1
-      //   so the message will be retried? Then on attempt n, process successful requests so some
-      //   notifications are delivered?
-      catchError((error: AxiosError) => {
-        this.logger.error(
-          `Request for subscription data from ${url}?${params.toString()} failed: ${
-            error.message
-          }`,
-        );
-        return throwError(() => error);
-      }),
-    );
+    if (this.subscriberApiKeyHeader && this.subscriberApiKey) {
+      headers[this.subscriberApiKeyHeader] = this.subscriberApiKey;
+    }
+
+    return this.httpService
+      .post(
+        url,
+        {
+          query: `{
+          users(userIds: ${JSON.stringify(ids)}) {
+            email
+            phoneNumber
+            deliveryMethods
+          }
+        }`,
+        },
+        { headers },
+      )
+      .pipe(
+        map(({ data: payload }) => {
+          if (!_.isEmpty(payload.errors)) {
+            throw new Error(JSON.stringify(payload.errors));
+          }
+          return this.mapToUserSubscriberDtos(payload.data?.users);
+        }),
+        // ? If supporting multiple request endpoints, should an error be thrown on attempts 1 to n-1
+        //   so the message will be retried? Then on attempt n, process successful requests so some
+        //   notifications are delivered?
+        catchError((error: AxiosError | Error) => {
+          this.logger.error(
+            `Request for subscription data from ${url} failed: ${error.message}`,
+          );
+          return throwError(() => error);
+        }),
+      );
   }
 }
