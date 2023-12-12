@@ -33,7 +33,7 @@ export class User {
 
   @Column({ type: 'simple-array', nullable: true })
   @Field(() => [DeliveryMethods], { nullable: true })
-  deliveryMethods: DeliveryMethods[];
+  deliveryMethods?: DeliveryMethods[];
 
   @CreateDateColumn()
   createdAt: Date;
