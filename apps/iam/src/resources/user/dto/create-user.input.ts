@@ -8,6 +8,7 @@ import {
   IsPhoneNumber,
   IsString,
   IsStrongPassword,
+  IsTimeZone,
   ValidateNested,
 } from 'class-validator';
 import { CreatePermissionInput } from '../../permission/dto/create-permission.input';
@@ -30,6 +31,10 @@ export class CreateUserInput {
     minLength: 6,
   })
   password: string;
+
+  @IsTimeZone()
+  @IsOptional()
+  timeZone?: string;
 
   @IsEnum(DeliveryMethods, { each: true })
   @IsOptional()

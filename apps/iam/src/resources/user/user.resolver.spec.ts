@@ -23,6 +23,7 @@ describe('UserResolver', () => {
     email: 'knuckles.echidna@sega.com',
     phoneNumber: '+19999999999',
     password: 'super-secret-password',
+    timeZone: 'Etc/UTC',
     createdAt: new Date(),
     updatedAt: new Date(),
   };

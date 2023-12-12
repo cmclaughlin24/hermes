@@ -232,6 +232,7 @@ export class SubscriberService {
             email
             phoneNumber
             deliveryMethods
+            timeZone
           }
         }`,
         },

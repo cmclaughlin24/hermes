@@ -35,6 +35,9 @@ export class User {
   @Field(() => [DeliveryMethods], { nullable: true })
   deliveryMethods?: DeliveryMethods[];
 
+  @Column({ default: 'Etc/UTC' })
+  timeZone: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

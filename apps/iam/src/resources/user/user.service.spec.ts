@@ -36,6 +36,7 @@ describe('UserService', () => {
     email: 'amy.hedgehog@sega.com',
     phoneNumber: '+18888888888',
     password: 'sonic-the-hedgehog',
+    timeZone: 'Etc/UTC',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
