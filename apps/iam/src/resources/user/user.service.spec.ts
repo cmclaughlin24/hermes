@@ -16,6 +16,7 @@ import { HashingService } from '../../common/services/hashing.service';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { DeliveryWindow } from './entities/delivery-window.entity';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -48,6 +49,10 @@ describe('UserService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: createMockRepository<User>(),
+        },
+        {
+          provide: getRepositoryToken(DeliveryWindow),
+          useValue: createMockRepository<DeliveryWindow>(),
         },
         {
           provide: HashingService,
@@ -167,6 +172,14 @@ describe('UserService', () => {
     });
   });
 
+  describe('findUserDeliveryWindows()', () => {
+    it.todo('should yield a list of delivery windows for a user');
+
+    it.todo(
+      'should yield an empty list if the repository returns an empty list',
+    );
+  });
+
   describe('create()', () => {
     const createUserInput: CreateUserInput = {
       name: user.name,
@@ -208,6 +221,8 @@ describe('UserService', () => {
     });
 
     it.todo('should assign permission(s) to the user');
+
+    it.todo('should create delivery window(s) for the user');
 
     it('should yield the created user', async () => {
       // Arrange.
@@ -256,6 +271,8 @@ describe('UserService', () => {
     });
 
     it.todo('should update the assigned permission(s) of the user');
+
+    it.todo('should update the delivery window(s) for the user');
 
     it('should yield the updated user', async () => {
       // Arrange.

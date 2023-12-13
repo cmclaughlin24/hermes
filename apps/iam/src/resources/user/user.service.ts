@@ -12,13 +12,17 @@ import { CreatePermissionInput } from '../permission/dto/create-permission.input
 import { Permission } from '../permission/entities/permission.entity';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
+import { DeliveryWindowInput } from './dto/delivery-window.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { DeliveryWindow } from './entities/delivery-window.entity';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(DeliveryWindow)
+    private readonly windowRepository: Repository<DeliveryWindow>,
     private readonly hashingService: HashingService,
     private readonly permissionService: PermissionService,
   ) {}
@@ -60,6 +64,20 @@ export class UserService {
   }
 
   /**
+   * Yields a list of delivery windows assigned to a user.
+   * @param {string} userId
+   * @returns {Promise<DeliveryWindow[]>}
+   */
+  async findUserDeliveryWindows(userId: string) {
+    return this.windowRepository
+      .createQueryBuilder('deliveryWindow')
+      .innerJoin('deliveryWindow.user', 'user', 'user.id = :userId', {
+        userId,
+      })
+      .getMany();
+  }
+
+  /**
    * Creates a new user or throws an `ExistsException` if an email
    * or phone number already exists.
    * @param {CreateUserInput} createUserInput
@@ -70,9 +88,15 @@ export class UserService {
       createUserInput.password,
     );
     const permissions = await this._getPermissions(createUserInput.permissions);
+    const deliveryWindows =
+      createUserInput.deliveryWindows &&
+      createUserInput.deliveryWindows.map((window) =>
+        this.windowRepository.create({ ...window }),
+      );
     const user = this.userRepository.create({
       ...createUserInput,
       password: hashedPassword,
+      deliveryWindows,
       permissions,
     });
 
@@ -95,10 +119,18 @@ export class UserService {
    */
   async update(id: string, updateUserInput: UpdateUserInput) {
     const permissions = await this._getPermissions(updateUserInput.permissions);
+    const deliveryWindows =
+      updateUserInput.deliveryWindows &&
+      (await Promise.all(
+        updateUserInput.deliveryWindows.map((window) =>
+          this._preloadDeliveryWindow(window),
+        ),
+      ));
     const user = await this.userRepository.preload({
       id,
       ...updateUserInput,
       permissions,
+      deliveryWindows,
     });
 
     if (!user) {
@@ -159,5 +191,28 @@ export class UserService {
     }
 
     return permission;
+  }
+
+  /**
+   * Updates a delivery window or creates it doesn't exist.
+   * @param {DeliveryWindowInput} deliveryWindowInput
+   * @returns {Promise<DeliveryWindow>}
+   */
+  private async _preloadDeliveryWindow(
+    deliveryWindowInput: DeliveryWindowInput,
+  ) {
+    let deliveryWindow;
+
+    if (deliveryWindowInput.id) {
+      deliveryWindow = await this.windowRepository.preload({
+        ...deliveryWindowInput,
+      });
+    }
+
+    if (deliveryWindow) {
+      return deliveryWindow;
+    }
+
+    return this.windowRepository.create({ ...deliveryWindowInput });
   }
 }

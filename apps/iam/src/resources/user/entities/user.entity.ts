@@ -5,11 +5,13 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from '../../permission/entities/permission.entity';
 import { DeliveryMethods } from '../enums/delivery-methods.enum';
+import { DeliveryWindow } from './delivery-window.entity';
 
 @Entity()
 @ObjectType()
@@ -43,6 +45,9 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => DeliveryWindow, (window) => window.user, { cascade: true })
+  deliveryWindows?: DeliveryWindow[];
 
   @JoinTable()
   @ManyToMany(() => Permission, (permission) => permission.users)
