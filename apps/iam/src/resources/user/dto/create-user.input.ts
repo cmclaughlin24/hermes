@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { InputType } from '@nestjs/graphql';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   IsEmail,
@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { CreatePermissionInput } from '../../permission/dto/create-permission.input';
 import { DeliveryMethods } from '../enums/delivery-methods.enum';
+import { DeliveryWindowInput } from './delivery-window.input';
 
 @InputType()
 export class CreateUserInput {
@@ -38,8 +39,12 @@ export class CreateUserInput {
 
   @IsEnum(DeliveryMethods, { each: true })
   @IsOptional()
-  @Field(() => [DeliveryMethods], { nullable: true })
   deliveryMethods?: DeliveryMethods[];
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => DeliveryWindowInput)
+  deliveryWindows?: DeliveryWindowInput[];
 
   @IsOptional()
   @ValidateNested({ each: true })

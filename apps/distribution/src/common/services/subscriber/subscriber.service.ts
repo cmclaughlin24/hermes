@@ -140,9 +140,10 @@ export class SubscriberService {
 
   private _createUserSubscriberDto(data: any): UserSubscriberDto {
     const dto = new UserSubscriberDto();
-    dto.deliveryMethods = data.deliveryMethods?.map(
-      (method) => DeliveryMethods[method.toUpperCase()],
-    ) ?? [];
+    dto.deliveryMethods =
+      data.deliveryMethods?.map(
+        (method) => DeliveryMethods[method.toUpperCase()],
+      ) ?? [];
     dto.email = data.email;
     dto.phoneNumber = data.phoneNumber;
     dto.timeZone = data.timeZone;
@@ -239,6 +240,12 @@ export class SubscriberService {
             phoneNumber
             deliveryMethods
             timeZone
+            deliveryWindows {
+              dayOfWeek
+              atHour
+              atMinute
+              duration
+            }
           }
         }`,
         },
