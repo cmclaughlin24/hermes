@@ -99,7 +99,7 @@ export class AuthenticationService {
    * `InvalidTokenException` it the token is invalid.
    *
    * Note: A token is invalidated when it is redeemed for the first time
-   *       (replay attack) or if an attempt to redeem an previously used token
+   *       (replay attack) or if an attempt to redeem a previously used token
    *       is made (revoke token family). This is known as Refresh Token Rotation.
    *
    * @param {string} refreshToken
