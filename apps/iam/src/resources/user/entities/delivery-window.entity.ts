@@ -16,8 +16,8 @@ export class DeliveryWindow {
   @Field(() => ID, {
     description:
       'A universial unique identifier (UUID) that identifies a unique ' +
-      'delivery window. Utilized to allow a user to specify multiple delivery ' +
-      'windows on the same day of the week.',
+      'delivery window. Allows a user to specify multiple delivery windows ' +
+      'on the same day of the week.',
   })
   id: string;
 
