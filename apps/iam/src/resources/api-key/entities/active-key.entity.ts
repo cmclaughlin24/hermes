@@ -26,7 +26,7 @@ export class ActiveKeyData implements IamActiveEntityData {
   @Field({
     description:
       'The expiration time on or after which the api key will be considered ' +
-      'invalid. Default is expiration is 1 year after token was generated.',
+      'invalid. Default expiration is 1 year after token was generated.',
   })
   exp: number;
 }
