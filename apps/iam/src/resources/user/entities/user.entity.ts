@@ -73,19 +73,9 @@ export class User {
   updatedAt: Date;
 
   @OneToMany(() => DeliveryWindow, (window) => window.user, { cascade: true })
-  @Field({
-    description:
-      "An array of the user's preferred notification delivery windows. Used w/timeZone to " +
-      "calculate if the notification event is within the window's time range.",
-  })
   deliveryWindows?: DeliveryWindow[];
 
   @JoinTable()
   @ManyToMany(() => Permission, (permission) => permission.users)
-  @Field({
-    description:
-      "An array of the user's permissions that determine whether a request is " +
-      'allowed or denied.',
-  })
   permissions?: Permission[];
 }
