@@ -70,20 +70,22 @@ export class CreateUserInput {
   @IsOptional()
   deliveryMethods?: DeliveryMethods[];
 
-  @Field({
+  @Field(() => [DeliveryWindowInput], {
     description:
       "An array of the user's preferred notification delivery windows. Used w/timeZone to " +
       "calculate if the notification event is within the window's time range.",
+    nullable: true,
   })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => DeliveryWindowInput)
   deliveryWindows?: DeliveryWindowInput[];
 
-  @Field({
+  @Field(() => [CreatePermissionInput], {
     description:
       "An array of the user's permissions that determine whether a request is " +
       'allowed or denied.',
+    nullable: true,
   })
   @IsOptional()
   @ValidateNested({ each: true })
