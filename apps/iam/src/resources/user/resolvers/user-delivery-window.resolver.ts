@@ -7,7 +7,11 @@ import { UserService } from '../user.service';
 export class UserDeliveryWindowResolver {
   constructor(private readonly userService: UserService) {}
 
-  @ResolveField('deliveryWindows', () => [DeliveryWindow])
+  @ResolveField('deliveryWindows', () => [DeliveryWindow], {
+    description:
+      "An array of the user's preferred notification delivery windows. Used w/timeZone to " +
+      "calculate if the notification event is within the window's time range.",
+  })
   async getUserDeliveryWindows(@Parent() user: User) {
     // Todo: Implement batching to reduce traffic to the database.
     return this.userService.findUserDeliveryWindows(user.id);
