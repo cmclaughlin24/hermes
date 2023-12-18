@@ -158,6 +158,7 @@ describe('AuthenticationResolver', () => {
         name: 'Shriek',
         sub: randomUUID(),
         authorization_details: [],
+        jti: randomUUID(),
       };
       service.verifyToken.mockResolvedValue(expectedResult);
 
