@@ -9,9 +9,10 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
+import { ActiveUserData } from './entities/active-user.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
-import { RefreshTokenStorage } from './refresh-token.storage';
+import { TokenStorage } from './token.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -28,7 +29,7 @@ export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private readonly hashingService: HashingService,
-    private readonly refreshTokenStorage: RefreshTokenStorage,
+    private readonly tokenStorage: TokenStorage,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -79,14 +80,19 @@ export class AuthenticationService {
    */
   async verifyToken(token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync<ActiveEntityData>(
-        token,
-        {
-          secret: this.jwtSecret,
-          audience: this.jwtAudience,
-          issuer: this.jwtIssuer,
-        },
+      const payload = await this.jwtService.verifyAsync<ActiveUserData>(token, {
+        secret: this.jwtSecret,
+        audience: this.jwtAudience,
+        issuer: this.jwtIssuer,
+      });
+      const isValid = await this.tokenStorage.validateJwt(
+        payload.sub,
+        payload.jti,
       );
+
+      if (!isValid) {
+        throw new InvalidTokenException();
+      }
 
       return payload;
     } catch (error) {
@@ -115,10 +121,10 @@ export class AuthenticationService {
         issuer: this.jwtIssuer,
       });
       const user = await this.userService.findById(sub);
-      const isValid = await this.refreshTokenStorage
-        .validate(user.id, refreshTokenId)
+      const isValid = await this.tokenStorage
+        .validateRefresh(user.id, refreshTokenId)
         .finally(async () => {
-          await this.refreshTokenStorage.remove(user.id);
+          await this.tokenStorage.remove(user.id);
         });
 
       if (!isValid) {
@@ -137,14 +143,16 @@ export class AuthenticationService {
    * @returns {Promise<[string, string]>}
    */
   private async _generateTokens(user: User): Promise<[string, string]> {
+    const jwtId = randomUUID();
     const refreshTokenId = randomUUID();
     const permissions = packPermissions<string>(user.permissions);
 
-    // Fixme: Send additional user information to be used in payload.
+    // Todo: Send additional user information to be used in payload as needed.
     const [accessToken, refreshToken] = await Promise.all([
-      this._signToken<Partial<ActiveEntityData>>(user.id, this.accessTokenTtl, {
+      this._signToken<Partial<ActiveUserData>>(user.id, this.accessTokenTtl, {
         name: user.name,
         authorization_details: permissions,
+        jti: jwtId,
       }),
       this._signToken<{ refreshTokenId: string }>(
         user.id,
@@ -155,7 +163,9 @@ export class AuthenticationService {
 
     // Note: Insert refresh token into cache storage so it may be invalidated
     //       after one usage to prevent a replay attack. (Refresh Token Rotation)
-    await this.refreshTokenStorage.insert(user.id, refreshTokenId);
+    //       Insert json web token into cache storeage to ensure one and only one
+    //       token is issued at any given point.
+    await this.tokenStorage.insert(user.id, { jwtId, refreshTokenId });
 
     return [accessToken, refreshToken];
   }

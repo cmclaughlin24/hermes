@@ -22,4 +22,11 @@ export class ActiveUserData implements IamActiveEntityData {
       '(example: VideoGame=Play)',
   })
   authorization_details: string[];
+
+  @Field({
+    description:
+      'A unique identifer assigned to the token. Checked during verification ' +
+      'to prevent more than one token from being issued to the subject.',
+  })
+  jti: string;
 }

@@ -1,5 +1,4 @@
 import { MissingException } from '@hermes/common';
-import { ActiveEntityData } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,17 +17,17 @@ import { UserService } from '../user/user.service';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';
+import { ActiveUserData } from './entities/active-user.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
-import { RefreshTokenStorage } from './refresh-token.storage';
+import { TokenStorage } from './token.storage';
 
-type MockRefreshTokenStorage = Partial<
-  Record<keyof RefreshTokenStorage, jest.Mock>
->;
+type MockTokenStorage = Partial<Record<keyof TokenStorage, jest.Mock>>;
 
-const createRefreshTokenStorage = (): MockRefreshTokenStorage => ({
+const createTokenStorage = (): MockTokenStorage => ({
   insert: jest.fn(),
-  validate: jest.fn(),
+  validateRefresh: jest.fn(),
+  validateJwt: jest.fn(),
   remove: jest.fn(),
 });
 
@@ -37,7 +36,7 @@ describe('AuthenticationService', () => {
   let userService: MockUserService;
   let hashingService: MockHashingService;
   let jwtService: MockJwtService;
-  let refreshTokenStorage: MockRefreshTokenStorage;
+  let tokenStorage: MockTokenStorage;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,8 +51,8 @@ describe('AuthenticationService', () => {
           useValue: createHashingServiceMock(),
         },
         {
-          provide: RefreshTokenStorage,
-          useValue: createRefreshTokenStorage(),
+          provide: TokenStorage,
+          useValue: createTokenStorage(),
         },
         {
           provide: JwtService,
@@ -70,8 +69,7 @@ describe('AuthenticationService', () => {
     userService = module.get<MockUserService>(UserService);
     hashingService = module.get<MockHashingService>(HashingService);
     jwtService = module.get<MockJwtService>(JwtService);
-    refreshTokenStorage =
-      module.get<MockRefreshTokenStorage>(RefreshTokenStorage);
+    tokenStorage = module.get<MockTokenStorage>(TokenStorage);
   });
 
   it('should be defined', () => {
@@ -117,7 +115,7 @@ describe('AuthenticationService', () => {
       userService.findByEmail.mockClear();
       hashingService.compare.mockClear();
       jwtService.signAsync.mockClear();
-      refreshTokenStorage.insert.mockClear();
+      tokenStorage.insert.mockClear();
     });
 
     it('should yield a tuple with the access and refresh tokens', async () => {
@@ -145,7 +143,7 @@ describe('AuthenticationService', () => {
       await service.signIn(signInInput);
 
       // Assert.
-      expect(refreshTokenStorage.insert).toHaveBeenCalled();
+      expect(tokenStorage.insert).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the user does not exist', async () => {
@@ -177,24 +175,44 @@ describe('AuthenticationService', () => {
 
     afterEach(() => {
       jwtService.verifyAsync.mockClear();
+      tokenStorage.validateJwt.mockClear();
     });
 
-    it('should yield an "ActiveEntityData" object if the token is valid', async () => {
+    it('should yield an "ActiveUserData" object if the token is valid', async () => {
       // Arrange.
-      const expectedResult: ActiveEntityData = {
+      const expectedResult: ActiveUserData = {
         name: 'Slippy Toad',
         sub: randomUUID(),
         authorization_details: [],
+        jti: randomUUID(),
       };
       jwtService.verifyAsync.mockResolvedValue(expectedResult);
+      tokenStorage.validateJwt.mockResolvedValue(true);
 
       // Act/Assert.
       await expect(service.verifyToken(token)).resolves.toEqual(expectedResult);
     });
 
-    it('should throw an "InvalidTokenException" if the token is invalid', async () => {
+    it('should throw an "InvalidTokenException" if the token is invalid (token)', async () => {
       // Arrange.
       jwtService.verifyAsync.mockRejectedValue(new Error());
+
+      // Act/Assert.
+      await expect(service.verifyToken(token)).rejects.toBeInstanceOf(
+        InvalidTokenException,
+      );
+    });
+
+    it('should throw an "InvalidTokenException" if the token is invalid (jti)', async () => {
+      // Arrange.
+      const expectedResult: ActiveUserData = {
+        name: 'Peppy Hare',
+        sub: randomUUID(),
+        authorization_details: [],
+        jti: randomUUID(),
+      };
+      jwtService.verifyAsync.mockResolvedValue(expectedResult);
+      tokenStorage.validateJwt.mockResolvedValue(false);
 
       // Act/Assert.
       await expect(service.verifyToken(token)).rejects.toBeInstanceOf(
@@ -212,8 +230,8 @@ describe('AuthenticationService', () => {
     afterEach(() => {
       jwtService.verifyAsync.mockClear();
       userService.findById.mockClear();
-      refreshTokenStorage.validate.mockClear();
-      refreshTokenStorage.remove.mockClear();
+      tokenStorage.validateRefresh.mockClear();
+      tokenStorage.remove.mockClear();
     });
 
     it('should yield a tuple with the access and refresh tokens if the token is valid', async () => {
@@ -225,7 +243,7 @@ describe('AuthenticationService', () => {
         refreshTokenId,
       });
       userService.findById.mockResolvedValue({ id: userId });
-      refreshTokenStorage.validate.mockResolvedValue(true);
+      tokenStorage.validateRefresh.mockResolvedValue(true);
       jwtService.signAsync.mockResolvedValue(token);
 
       // Act/Assert.
@@ -242,14 +260,14 @@ describe('AuthenticationService', () => {
         refreshTokenId,
       });
       userService.findById.mockResolvedValue({ id: userId });
-      refreshTokenStorage.validate.mockResolvedValue(true);
+      tokenStorage.validateRefresh.mockResolvedValue(true);
       jwtService.signAsync.mockResolvedValue('');
 
       // Act.
       await service.refreshToken(refreshToken);
 
       // Assert.
-      expect(refreshTokenStorage.remove).toHaveBeenCalledWith(userId);
+      expect(tokenStorage.remove).toHaveBeenCalledWith(userId);
     });
 
     it('should invalidate the refresh token from storage if an attempt to redeem an old token is made', async () => {
@@ -259,13 +277,13 @@ describe('AuthenticationService', () => {
         refreshTokenId,
       });
       userService.findById.mockResolvedValue({ id: userId });
-      refreshTokenStorage.validate.mockResolvedValue(false);
+      tokenStorage.validateRefresh.mockResolvedValue(false);
 
       // Act.
       await service.refreshToken(refreshToken).catch(() => {});
 
       // Assert.
-      expect(refreshTokenStorage.remove).toHaveBeenCalledWith(userId);
+      expect(tokenStorage.remove).toHaveBeenCalledWith(userId);
     });
 
     it('should throw an "InvalidTokenException" if the token is invalid', async () => {
@@ -285,7 +303,7 @@ describe('AuthenticationService', () => {
         refreshTokenId,
       });
       userService.findById.mockResolvedValue({ id: userId });
-      refreshTokenStorage.validate.mockResolvedValue(false);
+      tokenStorage.validateRefresh.mockResolvedValue(false);
 
       // Act/Assert.
       await expect(service.refreshToken(refreshToken)).rejects.toBeInstanceOf(

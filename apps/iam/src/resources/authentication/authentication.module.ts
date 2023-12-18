@@ -7,7 +7,7 @@ import { cacheFactory } from '../../config/cache.config';
 import { UserModule } from '../user/user.module';
 import { AuthenticationResolver } from './authentication.resolver';
 import { AuthenticationService } from './authentication.service';
-import { RefreshTokenStorage } from './refresh-token.storage';
+import { TokenStorage } from './token.storage';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { RefreshTokenStorage } from './refresh-token.storage';
   providers: [
     AuthenticationResolver,
     AuthenticationService,
-    RefreshTokenStorage,
+    TokenStorage,
   ],
   exports: [AuthenticationService],
 })
