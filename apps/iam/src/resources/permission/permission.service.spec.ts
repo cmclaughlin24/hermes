@@ -69,50 +69,6 @@ describe('PermissionService', () => {
     });
   });
 
-  describe('findUserPermissions()', () => {
-    const getMany = jest.fn();
-    const query = {
-      innerJoin: jest.fn(() => ({ getMany })),
-    };
-
-    beforeEach(() => {
-      repository.createQueryBuilder.mockReturnValue(query);
-    });
-
-    afterEach(() => {
-      repository.createQueryBuilder.mockClear();
-      query.innerJoin.mockClear();
-      getMany.mockClear();
-    });
-
-    it('should yield a list of permissions assigned to the user', async () => {
-      // Arrange.
-      const expectedResult: Permission[] = [
-        {
-          id: randomUUID(),
-          resource: 'VideoGame',
-          action: 'create',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-      getMany.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(service.findUserPermissions('')).resolves.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should yield an empty list of permissions if the repository returns an empty list', async () => {
-      // Arrange.
-      getMany.mockResolvedValue([]);
-
-      // Act/Assert.
-      await expect(service.findUserPermissions('')).resolves.toEqual([]);
-    });
-  });
-
   describe('findById()', () => {
     const permissionId = randomUUID();
 

@@ -1,25 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import {
-  MockUserService,
-  createUserServiceMock,
-} from '../../../../test/helpers/provider.helper';
+import { UserDeliveryWindowLoader } from '../data-loaders/user-delivery-window.loader';
 import { DeliveryWindow } from '../entities/delivery-window.entity';
 import { User } from '../entities/user.entity';
-import { UserService } from '../user.service';
 import { UserDeliveryWindowResolver } from './user-delivery-window.resolver';
+
+type MockUserDeliveryWindowLoader = Partial<
+  Record<keyof UserDeliveryWindowLoader, jest.Mock>
+>;
+
+const createUserDeliveryWindowLoaderMock =
+  (): MockUserDeliveryWindowLoader => ({
+    load: jest.fn(),
+  });
 
 describe('DeliveryWindowResolver', () => {
   let resolver: UserDeliveryWindowResolver;
-  let userService: MockUserService;
+  let loader: MockUserDeliveryWindowLoader;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserDeliveryWindowResolver,
         {
-          provide: UserService,
-          useValue: createUserServiceMock(),
+          provide: UserDeliveryWindowLoader,
+          useValue: createUserDeliveryWindowLoaderMock(),
         },
       ],
     }).compile();
@@ -27,7 +32,7 @@ describe('DeliveryWindowResolver', () => {
     resolver = module.get<UserDeliveryWindowResolver>(
       UserDeliveryWindowResolver,
     );
-    userService = module.get<MockUserService>(UserService);
+    loader = await module.resolve<MockUserDeliveryWindowLoader>(UserDeliveryWindowLoader);
   });
 
   it('should be defined', () => {
@@ -36,7 +41,7 @@ describe('DeliveryWindowResolver', () => {
 
   describe('getUserDeliveryWindows()', () => {
     afterEach(() => {
-      userService.findUserDeliveryWindows.mockClear();
+      loader.load.mockClear();
     });
 
     it('should yield a list of delivery windows assigned to the user', async () => {
@@ -50,7 +55,7 @@ describe('DeliveryWindowResolver', () => {
           duration: 60,
         },
       ];
-      userService.findUserDeliveryWindows.mockResolvedValue(expectedResult);
+      loader.load.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(

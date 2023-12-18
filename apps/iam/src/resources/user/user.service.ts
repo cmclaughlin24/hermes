@@ -64,17 +64,37 @@ export class UserService {
   }
 
   /**
-   * Yields a list of delivery windows assigned to a user.
-   * @param {string} userId
-   * @returns {Promise<DeliveryWindow[]>}
+   * Yields a list of users with their delivery windows.
+   * @param {string} userIds
+   * @returns {Promise<Pick<User, 'id' | 'deliveryWindows'>[]>}
    */
-  async findUserDeliveryWindows(userId: string) {
-    return this.windowRepository
-      .createQueryBuilder('deliveryWindow')
-      .innerJoin('deliveryWindow.user', 'user', 'user.id = :userId', {
-        userId,
-      })
-      .getMany();
+  async findDeliveryWindows(
+    userIds: string[],
+  ): Promise<Pick<User, 'id' | 'deliveryWindows'>[]> {
+    return this.userRepository.find({
+      select: ['id'],
+      relations: ['deliveryWindows'],
+      where: {
+        id: In(userIds),
+      },
+    });
+  }
+
+  /**
+   * Yields a list of users with their permissions.
+   * @param {string} userIds
+   * @returns {Promise<Pick<User, 'id' | 'deliveryWindows'>[]>}
+   */
+  async findPermissions(
+    userIds: string[],
+  ): Promise<Pick<User, 'id' | 'permissions'>[]> {
+    return this.userRepository.find({
+      select: ['id'],
+      relations: ['permissions'],
+      where: {
+        id: In(userIds),
+      },
+    });
   }
 
   /**
