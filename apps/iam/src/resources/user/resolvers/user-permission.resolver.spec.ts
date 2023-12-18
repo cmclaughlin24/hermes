@@ -1,31 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import {
-  MockPermissionService,
-  createPermissionServiceMock,
-} from '../../../../test/helpers/provider.helper';
 import { Permission } from '../../permission/entities/permission.entity';
-import { PermissionService } from '../../permission/permission.service';
+import { UserPermissionLoader } from '../data-loaders/user-permission.loader';
 import { User } from '../entities/user.entity';
 import { UserPermissionResolver } from './user-permission.resolver';
 
+type MockUserPermissionLoader = Partial<
+  Record<keyof UserPermissionLoader, jest.Mock>
+>;
+
+const createUserPermissionLoaderMock = (): MockUserPermissionLoader => ({
+  load: jest.fn(),
+});
+
 describe('UserPermissionResolver', () => {
   let resolver: UserPermissionResolver;
-  let service: MockPermissionService;
+  let loader: MockUserPermissionLoader;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserPermissionResolver,
         {
-          provide: PermissionService,
-          useValue: createPermissionServiceMock(),
+          provide: UserPermissionLoader,
+          useValue: createUserPermissionLoaderMock(),
         },
       ],
     }).compile();
 
     resolver = module.get<UserPermissionResolver>(UserPermissionResolver);
-    service = module.get<MockPermissionService>(PermissionService);
+    loader = await module.resolve<MockUserPermissionLoader>(UserPermissionLoader);
   });
 
   it('should be defined', () => {
@@ -36,7 +40,7 @@ describe('UserPermissionResolver', () => {
     const userId = randomUUID();
 
     afterEach(() => {
-      service.findUserPermissions.mockClear();
+      loader.load.mockClear();
     });
 
     it('should yield a list of permissions assigned to the user', async () => {
@@ -50,7 +54,7 @@ describe('UserPermissionResolver', () => {
           updatedAt: new Date(),
         },
       ];
-      service.findUserPermissions.mockResolvedValue(expectedResult);
+      loader.load.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(

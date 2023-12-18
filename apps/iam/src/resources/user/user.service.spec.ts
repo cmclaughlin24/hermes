@@ -172,8 +172,16 @@ describe('UserService', () => {
     });
   });
 
-  describe('findUserDeliveryWindows()', () => {
-    it.todo('should yield a list of delivery windows for a user');
+  describe('findDeliveryWindows()', () => {
+    it.todo('should yield a list of users with their delivery windows');
+
+    it.todo(
+      'should yield an empty list if the repository returns an empty list',
+    );
+  });
+
+  describe('findPermissions()', () => {
+    it.todo('should yield a list of users with their permissions');
 
     it.todo(
       'should yield an empty list if the repository returns an empty list',

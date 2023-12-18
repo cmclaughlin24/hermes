@@ -1,11 +1,11 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '../../permission/entities/permission.entity';
-import { PermissionService } from '../../permission/permission.service';
+import { UserPermissionLoader } from '../data-loaders/user-permission.loader';
 import { User } from '../entities/user.entity';
 
 @Resolver(() => User)
 export class UserPermissionResolver {
-  constructor(private readonly permissionService: PermissionService) {}
+  constructor(private readonly permissionLoader: UserPermissionLoader) {}
 
   @ResolveField('permissions', () => [Permission], {
     description:
@@ -13,7 +13,6 @@ export class UserPermissionResolver {
       'allowed or denied.',
   })
   async getUserPermissions(@Parent() user: User) {
-    // Todo: Implement batching to reduce traffic to the database.
-    return this.permissionService.findUserPermissions(user.id);
+    return this.permissionLoader.load(user.id);
   }
 }

@@ -42,7 +42,6 @@ export type MockPermissionService = Partial<
 
 export const createPermissionServiceMock = (): MockPermissionService => ({
   findAll: jest.fn(),
-  findUserPermissions: jest.fn(),
   findById: jest.fn(),
   findByResourceAction: jest.fn(),
   create: jest.fn(),
@@ -56,7 +55,8 @@ export const createUserServiceMock = (): MockUserService => ({
   findAll: jest.fn(),
   findById: jest.fn(),
   findByEmail: jest.fn(),
-  findUserDeliveryWindows: jest.fn(),
+  findDeliveryWindows: jest.fn(),
+  findPermissions: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),

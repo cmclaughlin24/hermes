@@ -26,20 +26,6 @@ export class PermissionService {
   }
 
   /**
-   * Yields a list of permissions assigned to a user.
-   * @param {string} userId
-   * @returns {Promise<Permission[]>}
-   */
-  async findUserPermissions(userId: string) {
-    return this.permissionRepository
-      .createQueryBuilder('permission')
-      .innerJoin('permission.users', 'user', 'user.id = :userId', {
-        userId,
-      })
-      .getMany();
-  }
-
-  /**
    * Yields a permission by id.
    * @param {string} id
    * @returns {Promise<Permission>}
