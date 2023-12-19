@@ -1,4 +1,4 @@
-{{ with .Values.redisClusterInit }}
+{{- with .Values.redisClusterInit }}
 {{- if .enable }}
 apiVersion: batch/v1
 kind: Job
@@ -49,4 +49,4 @@ spec:
 # 2) Initialize Cluster: kubectl exec -it redis-cluster-0 -n [CLUSTER NAMESPACE] -- redis-cli --cluster create --cluster-replicas 1 --cluster-yes [POD IP_ADDRESS:PORT]
 # 3) View Cluster Nodes: for x in $(seq 0 5); do echo "redis-cluster-$x"; kubectl exec redis-cluster-$x -n [CLUSTER NAMESPACE] -- redis-cli role; echo; done
 {{- end }}
-{{ end }}
+{{- end }}

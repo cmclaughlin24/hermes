@@ -34,8 +34,8 @@ spec:
     - metadata:
         name: {{ .Release.Name }}-data
       spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: standard
-        resources:
-          requests:
-            storage: 500M
+        {{- with .Values.redisClaimTemplate }}
+        accessModes: {{ .accessModes }}
+        storageClassName: {{ .storageClassName }}
+        resources: {{ toYaml .resources | nindent 10 }}
+        {{- end }}
