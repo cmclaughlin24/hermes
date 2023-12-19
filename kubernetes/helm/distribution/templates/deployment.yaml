@@ -12,7 +12,7 @@ spec:
       labels: {{ toYaml .Values.selectorLabels | nindent 8 }}
     spec:
       containers:
-        {{ with .Values.distribution }}
+        {{- with .Values.distribution }}
         - name: distribution
           image: cmclaughlin24/distribution:{{ .tag | default "latest" }}
           ports:
@@ -27,7 +27,7 @@ spec:
           {{- if .resources }}
           resources: {{ toYaml .resources | nindent 12 }}
           {{- end }}
-        {{ end }}
+        {{- end }}
       {{- if .Values.openTelemetry.enable }}
         - name: open-telemetry
           image: otel/opentelemetry-collector-contrib:{{ .Values.openTelemetry.tag | default "latest" }}

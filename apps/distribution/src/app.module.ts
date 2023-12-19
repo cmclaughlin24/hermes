@@ -28,6 +28,7 @@ import { ResourcesModule } from './resources/resources.module';
         DB_PASSWORD: Joi.required(),
         DB_NAME: Joi.required(),
         DB_SYNC: Joi.boolean().default(false),
+        DB_SSL: Joi.boolean().default(false),
         ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
         RABBITMQ_URI: Joi.required(),
         RABBITMQ_DISTRIBUTION_EXCHANGE: Joi.required(),

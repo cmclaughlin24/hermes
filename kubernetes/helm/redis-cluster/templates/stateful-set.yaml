@@ -33,9 +33,4 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: {{ .Release.Name }}-data
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: standard
-        resources:
-          requests:
-            storage: 500M
+      spec: {{ toYaml .Values.redisClaimTemplates | nindent 8 }}

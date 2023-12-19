@@ -14,5 +14,8 @@ export async function databaseFactory(
     autoLoadModels: true,
     synchronize: configService.get('DB_SYNC'),
     logging: false,
+    dialectOptions: {
+      ssl: configService.get('DB_SSL'),
+    },
   };
 }
