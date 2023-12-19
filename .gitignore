@@ -41,3 +41,4 @@ notification.env
 
 # Kubernetes
 /kubernetes/**/*-local.yaml
+/kubernetes/**/*-prod.yaml
