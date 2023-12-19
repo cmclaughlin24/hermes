@@ -19,7 +19,7 @@ redisConfig: |
   cluster-node-timeout 5000
   appendonly yes
 
-redisClaimTemplate:
+redisClaimTemplates:
   accessModes: ['ReadWriteOnce']
   storageClassName: standard
   resources:
