@@ -4,7 +4,7 @@ metadata:
   name: redis-store
   namespace: hermes
 data:
-  redisHost: 'redis-cluster-service.hermes'
+  redisHost: 'redis-cluster.hermes'
   redisPort: '6379'
   enableRedisCluster: 'true'
   notificationQueue: 'notification'
