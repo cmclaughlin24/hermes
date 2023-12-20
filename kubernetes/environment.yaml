@@ -4,7 +4,6 @@ metadata:
   name: env-store
   namespace: hermes
 data:
-  dbHost: ${DB_HOST}
   dbPort: ${DB_PORT}
   dbName: ${DB_NAME}
   rabbitmqUri: 'amqp://guest:guest@rabbitmq-service.hermes'
