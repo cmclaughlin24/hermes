@@ -13,8 +13,6 @@ export async function databaseFactory(
     database: configService.get('DB_NAME'),
     autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: configService.get('DB_SSL'),
   };
 }
