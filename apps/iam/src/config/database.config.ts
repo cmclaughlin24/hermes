@@ -14,6 +14,5 @@ export async function databaseFactory(
     autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
-    connectTimeoutMS: 30000,
   };
 }
