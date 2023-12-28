@@ -1,0 +1,15 @@
+name: 'NPM Package Version'
+description: 'A GitHub Action that outputs the package version for the application(s) from the package.json file.'
+
+inputs:
+  filePath:
+    description: 'Path to the package.json file.'
+    required: true
+
+outputs:
+  version:
+    description: 'Package version for the application(s) from the package.json file.'
+
+runs:
+  using: node20
+  main: main.js
