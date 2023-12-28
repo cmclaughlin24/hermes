@@ -27,18 +27,16 @@ jobs:
         uses: ./.github/actions/npm-package-version
         with:
           filePath: ${{ github.workspace }}/package.json
-      - name: Output Package Version
-        run: echo ${{ steps.npm-package.outputs.version }}
-      # - name: Build and Push
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ./docker/Dockerfile.prod
-      #     push: true
-      #     platforms: linux/arm64,linux/amd64
-      #     tags: |
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/iam:latest
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/iam:${{ steps.npm-package.outputs.version }}
-      #     build-args: |
-      #       APPLICATION=iam
-      #       DEFAULT_PORT=3002
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.prod
+          push: true
+          platforms: linux/arm64,linux/amd64
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/iam:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/iam:${{ steps.npm-package.outputs.version }}
+          build-args: |
+            APPLICATION=iam
+            DEFAULT_PORT=3002

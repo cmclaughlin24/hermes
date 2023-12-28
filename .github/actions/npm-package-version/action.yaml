@@ -3,7 +3,7 @@ description: 'A Github Action that outputs the package version for the applicati
 
 inputs:
   filePath:
-    description: ''
+    description: 'Path to the package.json file.'
     required: true
 
 outputs:
