@@ -11,6 +11,7 @@ import {
 import { DistributionEvent } from '../../distribution-event/entities/distribution-event.entity';
 
 @Table({
+  tableName: 'distribution_rule',
   indexes: [
     {
       unique: true,

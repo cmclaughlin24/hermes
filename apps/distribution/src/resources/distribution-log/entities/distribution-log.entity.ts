@@ -10,7 +10,7 @@ import {
 import { MessageState } from '../../../common/types/message-state.type';
 import { DistributionAttempt } from './distribution-attempt.entity';
 
-@Table
+@Table({ tableName: 'distribution_log' })
 export class DistributionLog extends Model {
   @Column({
     primaryKey: true,
