@@ -4,6 +4,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 export async function databaseFactory(
   configService: ConfigService,
 ): Promise<TypeOrmModuleOptions> {
+  console.log(configService.get('DB_HOST'));
+  console.log(configService.get('DB_USERNAME'));
+  console.log(configService.get('DB_PASSWORD'));
   return {
     type: 'postgres',
     host: configService.get('DB_HOST'),
