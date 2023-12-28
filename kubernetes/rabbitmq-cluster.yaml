@@ -11,7 +11,7 @@ spec:
     additionalConfig: |
             log.console.level = info
             channel_max = 1700
-            default_user= guest 
+            default_user = guest 
             default_pass = guest
             default_user_tags.administrator = true
   service:
