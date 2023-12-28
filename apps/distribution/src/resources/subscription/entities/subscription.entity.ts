@@ -16,6 +16,7 @@ import { DistributionEvent } from '../../distribution-event/entities/distributio
 import { SubscriptionFilter } from './subscription-filter.entity';
 
 @Table({
+  tableName: 'subscription',
   indexes: [
     {
       unique: true,

@@ -4,12 +4,12 @@ import {
   DataType,
   ForeignKey,
   Model,
-  Table
+  Table,
 } from 'sequelize-typescript';
 import { FilterOps } from '../../../common/types/filter.type';
 import { Subscription } from './subscription.entity';
 
-@Table
+@Table({ tableName: 'subscription_filter' })
 export class SubscriptionFilter extends Model {
   @Column({
     primaryKey: true,

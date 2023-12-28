@@ -4,11 +4,15 @@ import {
   DataType,
   ForeignKey,
   Model,
-  Table
+  Table,
 } from 'sequelize-typescript';
 import { DistributionLog } from './distribution-log.entity';
 
-@Table({ updatedAt: false, createdAt: false })
+@Table({
+  tableName: 'distribution_attempt',
+  updatedAt: false,
+  createdAt: false,
+})
 export class DistributionAttempt extends Model {
   @Column({
     primaryKey: true,
