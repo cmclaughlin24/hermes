@@ -1,5 +1,5 @@
 name: 'NPM Package Version'
-description: 'A Github Action that outputs the package version for the application(s) from the package.json file.'
+description: 'A GitHub Action that outputs the package version for the application(s) from the package.json file.'
 
 inputs:
   filePath:
