@@ -1,3 +1,4 @@
+# Script creates the api key required by the Distribution Service to request user contact information.
 curl 'IAM_URL' \
   -H 'Accept-Encoding: gzip, deflate, br' \
   -H 'Content-Type: application/json' \

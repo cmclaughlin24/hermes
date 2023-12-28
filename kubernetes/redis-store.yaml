@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-store
+  namespace: hermes
+data:
+  redisHost: 'redis-cluster.hermes'
+  redisPort: '6379'
+  enableRedisCluster: 'true'
+  notificationQueue: 'notification'
+  notificationPrefix: '{notification}'

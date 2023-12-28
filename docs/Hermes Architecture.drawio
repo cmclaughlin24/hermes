@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" pages="4">
     <diagram id="2Gkv6FE4vdmPyi1bAJmb" name="Technical Architecture Diagram">
-        <mxGraphModel dx="2936" dy="2200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3893" dy="2450" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -24,13 +24,16 @@
                 <mxCell id="R06KgHXmFekiZf-aI9Lz-7" value="" style="swimlane;startSize=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="1" vertex="1">
                     <mxGeometry x="480" y="-360" width="260" height="260" as="geometry"/>
                 </mxCell>
+                <mxCell id="5" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://seeklogo.com/images/A/azure-storage-table-logo-A474F6AD9A-seeklogo.com.png;" vertex="1" parent="R06KgHXmFekiZf-aI9Lz-7">
+                    <mxGeometry x="100.62" y="-28.299999999999997" width="58.76" height="52.3" as="geometry"/>
+                </mxCell>
                 <mxCell id="i1giE4otN1AqNgv2IZVR-5" value="rabbitmq-data" style="swimlane;whiteSpace=wrap;html=1;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="R06KgHXmFekiZf-aI9Lz-7" vertex="1">
                     <mxGeometry x="30" y="40" width="200" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="i1giE4otN1AqNgv2IZVR-6" value="" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];verticalLabelPosition=bottom;align=center;verticalAlign=top;shape=mxgraph.kubernetes.icon;prIcon=pv;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="i1giE4otN1AqNgv2IZVR-5" vertex="1">
                     <mxGeometry x="-20" y="30" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="gy6aoMb-qPWMpW-TZDe2-5" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: &amp;quot;Fredericka the Great&amp;quot;; font-size: 10px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(42, 37, 47); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&lt;b&gt;Size Limit:&lt;/b&gt;&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=10;fontFamily=Fredericka the Great;" parent="i1giE4otN1AqNgv2IZVR-5" vertex="1">
+                <mxCell id="gy6aoMb-qPWMpW-TZDe2-5" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: &amp;quot;Fredericka the Great&amp;quot;; font-size: 10px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(42, 37, 47); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&lt;b&gt;Class:&amp;nbsp;&lt;br&gt;Capacity:&lt;/b&gt;&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=10;fontFamily=Fredericka the Great;" parent="i1giE4otN1AqNgv2IZVR-5" vertex="1">
                     <mxGeometry x="20" y="28" width="170" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="i1giE4otN1AqNgv2IZVR-3" value="redis-data" style="swimlane;whiteSpace=wrap;html=1;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="R06KgHXmFekiZf-aI9Lz-7" vertex="1">
@@ -39,17 +42,11 @@
                 <mxCell id="R06KgHXmFekiZf-aI9Lz-5" value="" style="sketch=0;html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];verticalLabelPosition=bottom;align=center;verticalAlign=top;shape=mxgraph.kubernetes.icon;prIcon=pv;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="i1giE4otN1AqNgv2IZVR-3" vertex="1">
                     <mxGeometry x="-20" y="30" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="gy6aoMb-qPWMpW-TZDe2-6" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: &amp;quot;Fredericka the Great&amp;quot;; font-size: 10px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(42, 37, 47); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&lt;b&gt;Size Limit:&lt;/b&gt;&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=10;fontFamily=Fredericka the Great;" parent="i1giE4otN1AqNgv2IZVR-3" vertex="1">
+                <mxCell id="gy6aoMb-qPWMpW-TZDe2-6" value="&lt;span style=&quot;color: rgb(240, 240, 240); font-family: &amp;quot;Fredericka the Great&amp;quot;; font-size: 10px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(42, 37, 47); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;&lt;b&gt;Class: &lt;/b&gt;managed-csi&lt;br&gt;&lt;b&gt;Capacity: &lt;/b&gt;1Gi&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;fontSize=10;fontFamily=Fredericka the Great;" parent="i1giE4otN1AqNgv2IZVR-3" vertex="1">
                     <mxGeometry x="20" y="30" width="170" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="kqC29MBsC0Qf9OlTLv6X-1" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;gradientColor=#60A337;gradientDirection=north;fillColor=#277116;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.elastic_block_store;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="R06KgHXmFekiZf-aI9Lz-7" vertex="1">
-                    <mxGeometry x="100" y="-30" width="60" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="suA8VNGEdasBDE2If8Ii-1" value="" style="swimlane;startSize=0;sketch=1;hachureGap=4;jiggle=2;fillStyle=solid;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=10;fillColor=#1e1924;" parent="1" vertex="1">
                     <mxGeometry x="-520" y="-890" width="840" height="790" as="geometry"/>
-                </mxCell>
-                <mxCell id="cm-b-n5NSvO3BK_Ajimm-1" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.eks;hachureGap=4;jiggle=2;fillStyle=solid;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="suA8VNGEdasBDE2If8Ii-1" vertex="1">
-                    <mxGeometry x="390" y="-30" width="60" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="rXFEVGxpBX3mrXWGQERh-1" value="" style="swimlane;startSize=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Fredericka the Great;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DFredericka%2Bthe%2BGreat;fontSize=12;" parent="suA8VNGEdasBDE2If8Ii-1" vertex="1">
                     <mxGeometry x="40" y="110" width="200" height="310" as="geometry">
@@ -177,11 +174,11 @@
                 <mxCell id="pq9LGL7NwERep_rb1M0k-5" value="&lt;b&gt;Min. Quantity: &lt;/b&gt;3&lt;br&gt;&lt;b&gt;Port(s):&amp;nbsp;&lt;/b&gt;&lt;br&gt;&lt;b&gt;Notes: &lt;/b&gt;1 Master w/2 Replicas" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="qSy9Eax574gts2crhAB1-7" vertex="1">
                     <mxGeometry x="10" y="30" width="180" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="0QUQUSxnzIPQxBeECktE-4" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Amazon EKS&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="0QUQUSxnzIPQxBeECktE-4" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Azure AKS&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="-130" y="-960" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="0QUQUSxnzIPQxBeECktE-6" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Heroku Postgres&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="536.25" y="-960" width="147.5" height="30" as="geometry"/>
+                <mxCell id="0QUQUSxnzIPQxBeECktE-6" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Azure Database for Postgres (Flexibile Server)&amp;nbsp;&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="485" y="-960" width="250" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="0QUQUSxnzIPQxBeECktE-9" value="" style="swimlane;startSize=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;" parent="1" vertex="1">
                     <mxGeometry x="480" y="-890" width="260" height="400" as="geometry"/>
@@ -264,14 +261,17 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="gy6aoMb-qPWMpW-TZDe2-4" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Amazon EBS&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="gy6aoMb-qPWMpW-TZDe2-4" value="&lt;font style=&quot;font-size: 16px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Architects+Daughter&quot; face=&quot;Fredericka the Great&quot;&gt;Azure Storage&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="552.5" y="-420" width="115" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://www.ibm.com/content/dam/adobe-cms/instana/media_logo/AKS.png/_jcr_content/renditions/cq5dam.web.1280.1280.png;" vertex="1" parent="1">
+                    <mxGeometry x="-166.32999999999998" y="-940" width="132.66" height="100" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
     <diagram name="Distribution/Notification Flow" id="Bv8wNoRmV69SUSG4sx8j">
-        <mxGraphModel dx="4948" dy="2000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="4123" dy="1667" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -697,7 +697,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="v8Afmk6V52mIwWcdqcZy" name="Authentication/Authorization Flow">
-        <mxGraphModel dx="3299" dy="1333" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3534" dy="1429" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -919,7 +919,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="H9d5o7X7hhCbtxrztRoX" name="OpenTelemetry Flow">
-        <mxGraphModel dx="2888" dy="2200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3274" dy="2200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>

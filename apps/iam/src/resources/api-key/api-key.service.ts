@@ -6,7 +6,7 @@ import {
   UseCache,
   defaultHashFn,
 } from '@hermes/common';
-import { ActiveEntityData, packPermissions } from '@hermes/iam';
+import { packPermissions } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
@@ -103,10 +103,10 @@ export class ApiKeyService {
   }
 
   /**
-   * Yields an `ActiveEntityData` or throws an `InvalidApiKeyException` if the token
+   * Yields an `ActiveKeyData` or throws an `InvalidApiKeyException` if the token
    * is invalid.
    * @param {string} apiKey
-   * @returns {Promise<ActiveEntityData>}
+   * @returns {Promise<ActiveKeyData>}
    */
   async verifyApiKey(apiKey: string) {
     const entity = this._extractDataFromApiKey(apiKey);
