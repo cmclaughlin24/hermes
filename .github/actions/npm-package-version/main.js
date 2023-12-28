@@ -1,7 +1,10 @@
 const core = require('@actions/core');
 
 function main() {
-  console.log('Custom action!')
+  const filePath = core.getInput('filePath');
+  console.log(filePath);
+  const packageJson = require(filePath);
+  console.log(packageJson);
 }
 
 main();

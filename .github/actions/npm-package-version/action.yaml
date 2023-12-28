@@ -1,10 +1,10 @@
 name: 'NPM Package Version'
 description: 'A Github Action that outputs the package version for the application(s) from the package.json file.'
 
-# inputs:
-#   filePath:
-#     description: ''
-#     required: true
+inputs:
+  filePath:
+    description: ''
+    required: true
 
 outputs:
   version:
