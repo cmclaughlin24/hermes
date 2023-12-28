@@ -25,6 +25,7 @@ jobs:
       - name: NPM Package Version
         id: npm-package
         uses: ./.github/actions/npm-package-version
+        working-directory: './'
         with:
           filePath: './package.json'
       # - name: Build and Push
