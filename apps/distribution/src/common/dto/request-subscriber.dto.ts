@@ -11,6 +11,8 @@ export class RequestSubscriberDto {
   })
   url: string;
 
+  // Note: The id property is set when a Subscription is reduced to the RequestSubscriberDto class, hence it is hidden
+  //       from the OpenAPI Documentation.
   @ApiHideProperty()
   @IsString()
   id?: string;

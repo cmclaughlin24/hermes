@@ -84,7 +84,7 @@ export class SubscriberService {
 
     return _.chain(map)
       .toPairs()
-      .map(([key, values]) => values)
+      .map(([_key, values]) => values)
       .flatten()
       .value();
   }
@@ -118,7 +118,7 @@ export class SubscriberService {
 
   mapToUserSubscriberDtos(data: any[]): UserSubscriberDto[] {
     if (_.isEmpty(data)) {
-      return null;
+      return [];
     }
 
     return data
