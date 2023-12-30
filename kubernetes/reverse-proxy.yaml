@@ -1,0 +1,80 @@
+# Note: Nginx Reverse Proxy is used to forward traffic to the appropriate service
+#       due to limited IP Address assignment for load balanced services. Can eventually
+#       be replaced with UI's Nginx Server.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reverse-proxy-config
+  namespace: hermes
+data:
+  default.conf.template: |
+    server {
+      listen       80;
+      listen  [::]:80;
+      server_name  localhost;
+
+      #access_log  /var/log/nginx/host.access.log  main;
+
+      location /notification-api/ {
+          proxy_pass http://notification.hermes:3000/;
+      }
+
+      location /distribution-api/ {
+          proxy_pass http://distribution.hermes:3001/;
+      }
+
+      location /iam-api/ {
+          proxy_pass http://iam.hermes:3002/;
+      }
+
+      #error_page  404              /404.html;
+
+      # redirect server error pages to the static page /50x.html
+      #
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   /usr/share/nginx/html;
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reverse-proxy
+  namespace: hermes
+spec:
+  selector:
+    app: reverse-proxy
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverse-proxy
+  namespace: hermes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: reverse-proxy
+  template:
+    metadata:
+      labels:
+        app: reverse-proxy
+    spec:
+      containers:
+        - name: reverse-proxy
+          image: nginx:1.24-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: reverse-proxy-config
+              mountPath: /etc/nginx/templates
+      volumes:
+        - name: reverse-proxy-config
+          configMap:
+            name: reverse-proxy-config
