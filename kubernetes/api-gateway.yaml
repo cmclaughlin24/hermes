@@ -1,10 +1,10 @@
-# Note: Nginx Reverse Proxy is used to forward traffic to the appropriate service
-#       due to limited IP Address assignment for load balanced services. Can eventually
+# Note: Nginx as an api gateway is used to forward traffic to the appropriate service
+#       due to limited IP Address assignment for load balanced services. May eventually
 #       be replaced with UI's Nginx Server.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: reverse-proxy-config
+  name: api-gateway-config
   namespace: hermes
 data:
   default.conf.template: |
@@ -40,11 +40,11 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reverse-proxy
+  name: api-gateway
   namespace: hermes
 spec:
   selector:
-    app: reverse-proxy
+    app: api-gateway
   type: LoadBalancer
   ports:
     - protocol: TCP
@@ -54,27 +54,27 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reverse-proxy
+  name: api-gateway
   namespace: hermes
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: reverse-proxy
+      app: api-gateway
   template:
     metadata:
       labels:
-        app: reverse-proxy
+        app: api-gateway
     spec:
       containers:
-        - name: reverse-proxy
+        - name: api-gateway
           image: nginx:1.24-alpine
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: reverse-proxy-config
+            - name: api-gateway-config
               mountPath: /etc/nginx/templates
       volumes:
-        - name: reverse-proxy-config
+        - name: api-gateway-config
           configMap:
-            name: reverse-proxy-config
+            name: api-gateway-config
