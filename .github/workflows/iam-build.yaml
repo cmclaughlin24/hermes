@@ -10,33 +10,48 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     - name: Set-up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+  #     - name: NPM Package Version
+  #       id: npm-package
+  #       uses: ./.github/actions/npm-package-version
+  #       with:
+  #         filePath: ${{ github.workspace }}/package.json
+  #     - name: Build and Push
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: .
+  #         file: ./docker/Dockerfile.prod
+  #         push: true
+  #         platforms: linux/arm64,linux/amd64
+  #         tags: |
+  #           ${{ secrets.DOCKERHUB_USERNAME }}/iam:latest
+  #           ${{ secrets.DOCKERHUB_USERNAME }}/iam:${{ steps.npm-package.outputs.version }}
+  #         build-args: |
+  #           APPLICATION=iam
+  #           DEFAULT_PORT=3002
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Login to Azure
+        uses: azure/login@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Set-up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: NPM Package Version
-        id: npm-package
-        uses: ./.github/actions/npm-package-version
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure CLI script
+        uses: azure/CLI@v1
         with:
-          filePath: ${{ github.workspace }}/package.json
-      - name: Build and Push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile.prod
-          push: true
-          platforms: linux/arm64,linux/amd64
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/iam:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/iam:${{ steps.npm-package.outputs.version }}
-          build-args: |
-            APPLICATION=iam
-            DEFAULT_PORT=3002
+          azcliversion: latest
+          inlineScript: |
+            az account show
