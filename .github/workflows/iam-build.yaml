@@ -66,6 +66,6 @@ jobs:
           with:
             resource-group: cmclaughlin24-dev
             cluster-name: cmclaughlin24-dev
-        - name: Helm Deploy
+        - name: Helm Upgrade
           run: |
-            helm upgrade --reuse-values -n ${{ env.aks-namespace }} iam ${{ env.chart }} --dry-run
+            helm upgrade --reuse-values -n ${{ env.aks-namespace }} iam ${{ env.chart }}
