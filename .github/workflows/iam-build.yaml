@@ -13,6 +13,11 @@ permissions:
     id-token: write
     contents: read
 
+env:
+  app: iam
+  aks-namespace: hermes
+  chart: ${{ github.workspace }}/kubernetes/helm/iam
+
 jobs:
   # build:
   #   runs-on: ubuntu-latest
@@ -45,6 +50,7 @@ jobs:
   #           APPLICATION=iam
   #           DEFAULT_PORT=3002
     deploy:
+      # needs: build
       runs-on: ubuntu-latest
       steps:
         - name: Checkout
@@ -61,4 +67,5 @@ jobs:
             resource-group: cmclaughlin24-dev
             cluster-name: cmclaughlin24-dev
         - name: Helm Deploy
-          run: helm version
+          run: |
+            helm upgrade --reuse-values -n ${{ env.aks-namespace }} ${{ env.chart }} iam --dry-run
