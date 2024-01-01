@@ -1,4 +1,4 @@
-name: Build Notfication Service
+name: Build & Deploy Notfication Service
 
 on:
   push:
@@ -8,6 +8,14 @@ on:
       - 'apps/distribution/*'
       - 'apps/iam/*'
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  aks-namespace: hermes
+  chart: ${{ github.workspace }}/kubernetes/helm/notification
 
 jobs:
   build:
@@ -20,7 +28,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Set-up Docker Buildx 
+      - name: Set-up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: NPM Package Version
         id: npm-package
@@ -40,3 +48,23 @@ jobs:
           build-args: |
             APPLICATION=notification
             DEFAULT_PORT=3000
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: cmclaughlin24-dev
+          cluster-name: cmclaughlin24-dev
+      - name: Helm Upgrade
+        run: |
+          helm upgrade --reuse-values -n ${{ vars.AKS_NAMESPACE }} notification ${{ env.chart }}

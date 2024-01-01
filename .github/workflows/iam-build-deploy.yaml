@@ -67,4 +67,4 @@ jobs:
           cluster-name: cmclaughlin24-dev
       - name: Helm Upgrade
         run: |
-          helm upgrade --reuse-values -n ${{ env.aks-namespace }} iam ${{ env.chart }}
+          helm upgrade --reuse-values -n ${{ vars.AKS_NAMESPACE }} iam ${{ env.chart }}

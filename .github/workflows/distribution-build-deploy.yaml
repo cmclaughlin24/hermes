@@ -1,4 +1,4 @@
-name: Build Distribution Service
+name: Build & Deploy Distribution Service
 
 on:
   push:
@@ -8,6 +8,13 @@ on:
       - 'apps/iam/*'
       - 'apps/notification/*'
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  chart: ${{ github.workspace }}/kubernetes/helm/distribution
 
 jobs:
   build:
@@ -40,3 +47,23 @@ jobs:
           build-args: |
             APPLICATION=distribution
             DEFAULT_PORT=3001
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: cmclaughlin24-dev
+          cluster-name: cmclaughlin24-dev
+      - name: Helm Upgrade
+        run: |
+          helm upgrade --reuse-values -n ${{ vars.AKS_NAMESPACE }} distribution ${{ env.chart }}
