@@ -61,4 +61,4 @@ jobs:
             resource-group: cmclaughlin24-dev
             cluster-name: cmclaughlin24-dev
         - name: Print Kubectl Config
-          runs: kubectl config view
+          run: kubectl config view
