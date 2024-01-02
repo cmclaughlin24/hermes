@@ -76,7 +76,7 @@ export class SubscriptionController {
   })
   @ApiOperation({
     summary: 'Create a subscription.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -114,7 +114,7 @@ export class SubscriptionController {
   })
   @ApiOperation({
     summary: 'Update a subscription.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -157,7 +157,7 @@ export class SubscriptionController {
   })
   @ApiOperation({
     summary: 'Remove a subscription from all distribution event(s).',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -188,7 +188,7 @@ export class SubscriptionController {
   })
   @ApiOperation({
     summary: 'Remove a subscription to a distribution event.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

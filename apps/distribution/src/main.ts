@@ -3,6 +3,7 @@ if (process.env.ENABLE_OPEN_TELEMETRY === 'true') {
 }
 
 import { useOpenTelemetry } from '@hermes/open-telemetry';
+import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
@@ -16,6 +17,7 @@ async function bootstrap() {
   });
   const port = process.env.PORT || 3001;
 
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   setupSwaggerDocument(app);
   useGlobalPipes(app);
   // Note: Allows class-validator to use NestJS dependency injection

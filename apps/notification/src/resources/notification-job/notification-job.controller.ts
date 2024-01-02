@@ -91,7 +91,7 @@ export class NotificationJobController {
   })
   @ApiOperation({
     summary: 'Schedule a notification "email" job.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -127,7 +127,7 @@ export class NotificationJobController {
   })
   @ApiOperation({
     summary: 'Schedule a notification "sms" job.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -163,7 +163,7 @@ export class NotificationJobController {
   })
   @ApiOperation({
     summary: 'Schedule a notification "call" job.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -199,7 +199,7 @@ export class NotificationJobController {
   })
   @ApiOperation({
     summary: 'Schedule a notification "push-notification" job.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

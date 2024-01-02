@@ -19,7 +19,7 @@ export class MessageController {
   })
   @ApiOperation({
     summary: 'Publish a message to an exchange.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
