@@ -88,7 +88,7 @@ export class DistributionRuleController {
   })
   @ApiOperation({
     summary: 'Create a distribution rule.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -128,7 +128,7 @@ export class DistributionRuleController {
   })
   @ApiOperation({
     summary: 'Update a distribution rule.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -172,7 +172,7 @@ export class DistributionRuleController {
   })
   @ApiOperation({
     summary: 'Remove a distribution rule.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

@@ -21,7 +21,7 @@ export class NotificationController {
   })
   @ApiOperation({
     summary: 'Send an email notification.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -60,7 +60,7 @@ export class NotificationController {
   })
   @ApiOperation({
     summary: 'Send a SMS notification.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -99,7 +99,7 @@ export class NotificationController {
   })
   @ApiOperation({
     summary: 'Send a call notification.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -138,7 +138,7 @@ export class NotificationController {
   })
   @ApiOperation({
     summary: 'Send a push notification.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,

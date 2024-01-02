@@ -70,7 +70,7 @@ export class PushTemplateController {
   })
   @ApiOperation({
     summary: 'Create a new push notification template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -107,7 +107,7 @@ export class PushTemplateController {
   })
   @ApiOperation({
     summary: 'Update a push notification template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -149,7 +149,7 @@ export class PushTemplateController {
   })
   @ApiOperation({
     summary: 'Remove a push notification template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

@@ -68,7 +68,7 @@ export class EmailTemplateController {
   })
   @ApiOperation({
     summary: 'Create a new email template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -105,7 +105,7 @@ export class EmailTemplateController {
   })
   @ApiOperation({
     summary: 'Update an email template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -147,7 +147,7 @@ export class EmailTemplateController {
   })
   @ApiOperation({
     summary: 'Remove an email template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

@@ -80,7 +80,7 @@ export class PhoneTemplateController {
   })
   @ApiOperation({
     summary: 'Create a new phone template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -117,7 +117,7 @@ export class PhoneTemplateController {
   })
   @ApiOperation({
     summary: 'Update a phone template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -161,7 +161,7 @@ export class PhoneTemplateController {
   })
   @ApiOperation({
     summary: 'Remove an email template.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,

@@ -113,7 +113,7 @@ export class DistributionEventController {
   })
   @ApiOperation({
     summary: 'Create a distribution event.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -154,7 +154,7 @@ export class DistributionEventController {
   })
   @ApiOperation({
     summary: 'Update a distribution event.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -196,7 +196,7 @@ export class DistributionEventController {
   })
   @ApiOperation({
     summary: 'Remove a distribution event.',
-    security: [{ ApiKeyAuth: [] }],
+    security: [{ ApiKeyAuth: [] }, { Authorization: [] }],
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -208,9 +208,7 @@ export class DistributionEventController {
     description: 'Forbidden Resource',
   })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not Found' })
-  async remove(
-    @Param('eventType') eventType: string,
-  ) {
+  async remove(@Param('eventType') eventType: string) {
     try {
       await this.distributionEventService.remove(eventType);
 
