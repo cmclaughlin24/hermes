@@ -73,10 +73,10 @@ export class AuthenticationService {
   }
 
   /**
-   * Yields an `ActiveEntityData` or throws an `InvalidTokenException` if the token
+   * Yields an `ActiveUserData` or throws an `InvalidTokenException` if the token
    * is invalid.
    * @param {string} token
-   * @returns {Promise<ActiveEntityData>}
+   * @returns {Promise<ActiveUserData>}
    */
   async verifyToken(token: string) {
     try {
