@@ -212,11 +212,11 @@ jobs:
                   otlp:
                     endpoint: 'api.honeycomb.io:443'
                     headers:
-                      'x-honeycomb-team': 'w24qhmfZVjmitywz3jXumD'
+                      'x-honeycomb-team': '${{ secrets.HONEYCOMB_API_KEY }}'
                   otlp/metrics:
                     endpoint: 'api.honeycomb.io:443'
                     headers:
-                      'x-honeycomb-team': 'w24qhmfZVjmitywz3jXumD'
+                      'x-honeycomb-team': '${{ secrets.HONEYCOMB_API_KEY }}'
                       'x-honeycomb-dataset': 'Hermes'
 
                 service:
