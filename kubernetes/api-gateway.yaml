@@ -1,11 +1,14 @@
 # Note: Nginx as an api gateway is used to forward traffic to the appropriate service
 #       due to limited IP Address assignment for load balanced services. May eventually
 #       be replaced with UI's Nginx Server.
+# Note: See https://learn.microsoft.com/en-us/azure/aks/static-ip for configuring a DNS
+#       label with AKS load balancer.
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: api-gateway-config
   namespace: hermes
+  annotations:
 data:
   default.conf.template: |
     server {
@@ -42,6 +45,10 @@ kind: Service
 metadata:
   name: api-gateway
   namespace: hermes
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: ${aksResourceGroup}
+    service.beta.kubernetes.io/azure-pip-name: ${publicIPName}
+    service.beta.kubernetes.io/azure-dns-label-name: ${uniqueServiceLabel}
 spec:
   selector:
     app: api-gateway
