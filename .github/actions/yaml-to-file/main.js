@@ -16,7 +16,7 @@ async function createFileName(content, extension = 'yaml') {
         reject('Failed to generate file hash, null was read from buffer');
       }
 
-      resolve(`${data.toString('hex')}.${extension}`);
+      resolve(data.toString('hex'));
     });
 
     hash.write(content);
