@@ -1,14 +1,12 @@
 const core = require('@actions/core');
 const { createHash } = require('crypto');
+const { extname } = require('path');
+const fs = require('fs');
 
-// function toAlphaNumeric(str) {
-//   return str.replace(/[^0-9a-zA-Z]+/, '');
-// }
-
-function createFileName(content, extension = 'yaml') {
+function createFileName(content) {
   const hash = createHash('sha256');
   hash.update(content);
-  return hash.digest('hex') + `.${extension}`;
+  return hash.digest('hex');
 }
 
 async function main() {
@@ -21,11 +19,24 @@ async function main() {
 
   if (!fileName || fileName.trim() === '') {
     core.info('fileName is not present, generating file name hash');
-
     fileName = createFileName(content);
-
-    core.info(`fileName: ${fileName}`);
   }
+
+  const extension = extname(fileName);
+
+  if (extension !== '.yaml' && extension !== '') {
+    throw new Error('Invalid input: fileName must have an extension of .yaml');
+  }
+
+  if (extension === '') {
+    core.info('.yaml is not present, appending extension');
+    fileName += '.yaml';
+  }
+
+  core.info(`fileName: ${fileName}`);
+
+  fs.writeFileSync(fileName, content);
+  console.log(process.cwd())
 }
 
 main();
