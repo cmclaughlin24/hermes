@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const { createHash } = require('crypto');
-const { extname } = require('path');
+const { extname, join } = require('path');
 const fs = require('fs');
 
 function createFileName(content) {
@@ -36,6 +36,8 @@ async function main() {
   core.info(`fileName: ${fileName}`);
 
   fs.writeFileSync(fileName, content);
+
+  core.setOutput('filePath', join(process.cwd(), fileName));
 }
 
 main();
