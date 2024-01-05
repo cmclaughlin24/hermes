@@ -1,0 +1,14 @@
+{
+  "name": "write-to-yaml",
+  "version": "1.0.0",
+  "description": "A GitHub Action that writes a YAML formatted string into a file.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wm. Curtis McLaughlin",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.1"
+  }
+}

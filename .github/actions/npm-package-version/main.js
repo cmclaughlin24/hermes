@@ -11,7 +11,7 @@ function isJsonFile(filePath) {
 }
 
 function main() {
-  const filePath = core.getInput('filePath');
+  const filePath = core.getInput('filePath', { required: true });
 
   if (!isJsonFile(filePath)) {
     throw new Error(

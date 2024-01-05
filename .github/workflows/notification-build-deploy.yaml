@@ -65,6 +65,170 @@ jobs:
         with:
           resource-group: cmclaughlin24-dev
           cluster-name: cmclaughlin24-dev
+      - name: Create Helm values.yaml
+        id: helm-values
+        uses: ./.github/actions/yaml-to-file
+        with:
+          content: |
+            selectorLabels:
+              app: notification
+
+            service:
+              type: ClusterIP
+              port: 3000
+              targetPort: 3000
+
+            replicaCount: 2
+
+            notification:
+              tag: null
+              environment:
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: host
+                - name: DB_PORT
+                  value: '5432'
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: password
+                - name: DB_NAME
+                  value: notification
+                - name: DB_SSL
+                  value: 'true'
+                - name: MAILER_HOST
+                  value: smtp.sendgrid.net
+                - name: MAILER_PORT
+                  value: '587'
+                - name: MAILER_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sendgrid-credentials
+                      key: username
+                - name: MAILER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: sendgrid-credentials
+                      key: password
+                - name: MAILER_SENDER
+                  valueFrom:
+                    secretKeyRef:
+                      name: sendgrid-credentials
+                      key: sender
+                - name: REDIS_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: redis-store
+                      key: redisHost
+                - name: REDIS_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: redis-store
+                      key: redisPort
+                - name: ENABLE_REDIS_CLUSTER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: redis-store
+                      key: enableRedisCluster
+                - name: BULLMQ_NOTIFICATION_QUEUE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: redis-store
+                      key: notificationQueue
+                - name: BULLMQ_NOTIFICATION_QUEUE_PREFIX
+                  valueFrom:
+                    configMapKeyRef:
+                      name: redis-store
+                      key: notificationPrefix
+                - name: BULLMQ_NOTIFICATION_JOB_AGE
+                  value: '86400'
+                - name: BULLMQ_CONCURRENCY
+                  value: '100'
+                - name: REMOVE_SUBSCRIBER_URL
+                  value: 'http://distribution.hermes:3001/subscription'
+                - name: SUBSCRIBER_API_KEY_HEADER
+                  value: Api-Key
+                - name: SUBSCRIBER_API_KEY
+                  value: ${{ secrets.NOTIFICATION_API_KEY }}
+                - name: TWILIO_SID
+                  valueFrom:
+                    secretKeyRef:
+                      name: twilio-credentials
+                      key: sid
+                - name: TWILIO_AUTH_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: twilio-credentials
+                      key: authToken
+                - name: TWILIO_PHONE_NUMBER
+                  value: '+18883117422'
+                - name: VAPID_SUBJECT
+                  value: 'mailto:curtismclauglhin24@gmail.com'
+                - name: VAPID_PUBLIC_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: vapid-keys
+                      key: publicKey
+                - name: VAPID_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: vapid-keys
+                      key: privateKey
+                - name: ENABLE_OPEN_TELEMETRY
+                  value: 'true'
+                - name: OTEL_EXPORTER_OTLP_ENDPOINT
+                  value: 'http://localhost:4318'
+                - name: OTEL_SERVICE_NAME
+                  value: 'Hermes-Notification'
+                - name: IAM_CLIENT_URL
+                  value: 'http://iam.hermes:3002/graphql'
+              readinessProbe: null
+              livenessProbe: {}
+              resources: {}
+
+            openTelemetry:
+              enable: true
+              tag: null
+              resources: {}
+              config: |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc: # port 4317
+                      http: # port 4318
+
+                processors:
+                  batch:
+
+                exporters:
+                  otlp:
+                    endpoint: 'api.honeycomb.io:443'
+                    headers:
+                      'x-honeycomb-team': '${{ secrets.HONEYCOMB_API_KEY }}'
+                  otlp/metrics:
+                    endpoint: 'api.honeycomb.io:443'
+                    headers:
+                      'x-honeycomb-team': '${{ secrets.HONEYCOMB_API_KEY }}'
+                      'x-honeycomb-dataset': 'Hermes'
+
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [batch]
+                      exporters: [otlp]
+                    metrics:
+                      receivers: [otlp]
+                      processors: [batch]
+                      exporters: [otlp/metrics]
       - name: Helm Upgrade
         run: |
-          helm upgrade --reuse-values -n ${{ vars.AKS_NAMESPACE }} notification ${{ env.chart }}
+          helm upgrade -f ${{ steps.helm-values.outputs.filePath }} -i -n ${{ vars.AKS_NAMESPACE }} notification ${{ env.chart }}
