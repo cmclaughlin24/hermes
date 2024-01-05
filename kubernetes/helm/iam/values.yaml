@@ -1,12 +1,14 @@
 selectorLabels:
   app: iam
 
-replicaCount: 2
-
 service:
   type: LoadBalancer
   port: 3002
   targetPort: 3002
+
+deployment:
+  replicaCount: 1
+  annotations: null
 
 iam:
   tag: null

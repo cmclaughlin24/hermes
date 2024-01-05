@@ -3,8 +3,11 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  {{- if .Values.deployment.annotations }}
+  annotations: {{ toYaml .Values.deployment.annotations | nindent 4 }}
+  {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicaCount }}
   selector:
     matchLabels: {{ toYaml .Values.selectorLabels | nindent 6 }}
   template:
