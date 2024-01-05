@@ -1,0 +1,17 @@
+name: 'YAML to File'
+description: 'A GitHub Action that writes a YAML formatted string into a file.'
+
+inputs:
+  content:
+    description: 'YAML formatted string.'
+    required: true
+  fileName:
+    description: 'Name of the file. (defaults to a hash generated from the content)'
+
+outputs:
+  filePath:
+    description: 'Path to the .yaml file.'
+
+runs:
+  using: node20
+  main: main.js
