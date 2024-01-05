@@ -5,23 +5,10 @@ const { createHash } = require('crypto');
 //   return str.replace(/[^0-9a-zA-Z]+/, '');
 // }
 
-async function createFileName(content, extension = 'yaml') {
-  return new Promise((resolve, reject) => {
-    const hash = createHash('sha256');
-
-    hash.on('readable', () => {
-      const data = hash.read();
-
-      if (!data) {
-        reject('Failed to generate file hash, null was read from buffer');
-      }
-
-      resolve(data.toString('hex'));
-    });
-
-    hash.write(content);
-    hash.end();
-  });
+function createFileName(content, extension = 'yaml') {
+  const hash = createHash('sha256');
+  hash.update(content);
+  return hash.digest('hex');
 }
 
 async function main() {
@@ -35,7 +22,7 @@ async function main() {
   if (!fileName || fileName.trim() === '') {
     core.info('fileName is not present, generating file name hash');
 
-    fileName = await createFileName(content);
+    fileName = createFileName(content);
 
     core.info(`fileName: ${fileName}`);
   }
