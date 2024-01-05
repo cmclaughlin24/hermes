@@ -1,6 +1,10 @@
 const core = require('@actions/core');
 const { createHash } = require('crypto');
 
+function toAlphaNumeric(str) {
+  return /[^0-9a-zA-Z]+/.replace(str, '');
+}
+
 async function createFileName(content, extension = 'yaml') {
   return new Promise((resolve, reject) => {
     const hash = createHash('sha256');
@@ -12,7 +16,7 @@ async function createFileName(content, extension = 'yaml') {
         reject('Failed to generate file hash, null was read from buffer');
       }
 
-      resolve(`${data}.${extension}`);
+      resolve(`${toAlphaNumeric(data)}.${extension}`);
     });
 
     hash.write(content);
@@ -36,7 +40,7 @@ async function main() {
     core.info(`fileName: ${fileName}`);
   }
 
-  console.log(content)
+  console.log(content);
 }
 
 main();
