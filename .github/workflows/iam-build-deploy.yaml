@@ -179,4 +179,4 @@ jobs:
                       exporters: [otlp/metrics]
       - name: Helm Upgrade
         run: |
-          helm upgrade -f ${{ steps.helm-values.outputs.filePath }} -n ${{ vars.AKS_NAMESPACE }} iam ${{ env.chart }}
+          helm upgrade -f ${{ steps.helm-values.outputs.filePath }} -i -n ${{ vars.AKS_NAMESPACE }} iam ${{ env.chart }}
