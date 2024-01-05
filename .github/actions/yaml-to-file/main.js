@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const { createHash } = require('crypto');
 
 function toAlphaNumeric(str) {
-  return /[^0-9a-zA-Z]+/.replace(str, '');
+  return str.replace(/[^0-9a-zA-Z]+/, '');
 }
 
 async function createFileName(content, extension = 'yaml') {
