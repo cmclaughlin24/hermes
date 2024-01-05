@@ -36,7 +36,6 @@ async function main() {
   core.info(`fileName: ${fileName}`);
 
   fs.writeFileSync(fileName, content);
-  console.log(process.cwd())
 }
 
 main();
