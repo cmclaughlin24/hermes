@@ -39,4 +39,4 @@ async function main() {
   console.log(content)
 }
 
-await main();
+main();
