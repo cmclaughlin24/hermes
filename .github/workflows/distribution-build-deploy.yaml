@@ -29,8 +29,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Set-up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: NPM Package Version
-        id: npm-package
+      - name: Application Version
+        id: application
         uses: ./.github/actions/npm-package-version
         with:
           filePath: ${{ github.workspace }}/package.json
@@ -43,7 +43,7 @@ jobs:
           platforms: linux/arm64,linux/amd64
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/distribution:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/distribution:${{ steps.npm-package.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/distribution:${{ steps.application.outputs.version }}
           build-args: |
             APPLICATION=distribution
             DEFAULT_PORT=3001
@@ -64,6 +64,11 @@ jobs:
         with:
           resource-group: cmclaughlin24-dev
           cluster-name: cmclaughlin24-dev
+      - name: Application Version
+        id: application
+        uses: ./.github/actions/npm-package-version
+        with:
+          filePath: ${{ github.workspace }}/package.json
       - name: Create Helm values.yaml
         id: helm-values
         uses: ./.github/actions/yaml-to-file
@@ -77,10 +82,12 @@ jobs:
               port: 3001
               targetPort: 3001
 
-            replicaCount: 2
+            deployment:
+              replicaCount: 2
+              annotations: null
 
             distribution:
-              tag: null
+              tag: '${{ steps.application.outputs.version }}'
               environment:
                 - name: DB_HOST
                   valueFrom:

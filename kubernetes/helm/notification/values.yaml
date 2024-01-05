@@ -6,7 +6,9 @@ service:
   port: 3000
   targetPort: 3000
 
-replicaCount: 2
+deployment:
+  replicaCount: 1
+  annotations: null
 
 notification:
   tag: null
