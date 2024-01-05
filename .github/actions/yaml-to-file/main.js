@@ -33,7 +33,7 @@ async function main() {
 
     fileName = await createFileName(content);
 
-    core.info(`fileName: ${content}`);
+    core.info(`fileName: ${fileName}`);
   }
 
   console.log(content)
