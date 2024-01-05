@@ -8,7 +8,7 @@ const { createHash } = require('crypto');
 function createFileName(content, extension = 'yaml') {
   const hash = createHash('sha256');
   hash.update(content);
-  return hash.digest('hex');
+  return hash.digest('hex') + `.${extension}`;
 }
 
 async function main() {
@@ -26,8 +26,6 @@ async function main() {
 
     core.info(`fileName: ${fileName}`);
   }
-
-  console.log(content);
 }
 
 main();
