@@ -176,7 +176,10 @@ jobs:
                       name: twilio-credentials
                       key: authToken
                 - name: TWILIO_PHONE_NUMBER
-                  value: '+18883117422'
+                  valueFrom:
+                    secretKeyRef:
+                      name: twilio-credentials
+                      key: phoneNumber
                 - name: VAPID_SUBJECT
                   value: 'mailto:curtismclauglhin24@gmail.com'
                 - name: VAPID_PUBLIC_KEY
