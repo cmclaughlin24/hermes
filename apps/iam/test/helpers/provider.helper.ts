@@ -3,6 +3,7 @@ import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { HashingService } from '../../src/common/services/hashing.service';
+import { TokenStorage } from '../../src/common/storage/token.storage';
 import { PermissionService } from '../../src/resources/permission/permission.service';
 import { UserService } from '../../src/resources/user/user.service';
 
@@ -34,6 +35,15 @@ export type MockJwtService = Partial<Record<keyof JwtService, jest.Mock>>;
 export const createJwtServiceMock = (): MockJwtService => ({
   signAsync: jest.fn(),
   verifyAsync: jest.fn(),
+});
+
+export type MockTokenStorage = Partial<Record<keyof TokenStorage, jest.Mock>>;
+
+export const createTokenStorage = (): MockTokenStorage => ({
+  insert: jest.fn(),
+  validateRefresh: jest.fn(),
+  validateJwt: jest.fn(),
+  remove: jest.fn(),
 });
 
 export type MockPermissionService = Partial<
