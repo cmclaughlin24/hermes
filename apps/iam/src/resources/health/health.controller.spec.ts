@@ -1,12 +1,6 @@
-import { RedisHealthIndicator, TwilioHealthIndicator } from '@hermes/health';
-import { ConfigService } from '@nestjs/config';
-import {
-  HealthCheckService,
-  HttpHealthIndicator,
-  TypeOrmHealthIndicator,
-} from '@nestjs/terminus';
+import { RedisHealthIndicator } from '@hermes/health';
+import { HealthCheckService, TypeOrmHealthIndicator } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigServiceMock } from '../../../test/helpers/provider.helper';
 import { HealthController } from './health.controller';
 
 export type MockHealthCheckService = Partial<
@@ -15,14 +9,6 @@ export type MockHealthCheckService = Partial<
 
 export const createHealthCheckServiceMock = (): MockHealthCheckService => ({
   check: jest.fn(),
-});
-
-export type MockHttpHealthIndicator = Partial<
-  Record<keyof HttpHealthIndicator, jest.Mock>
->;
-
-export const createHttpHealthIndicatorMock = (): MockHttpHealthIndicator => ({
-  pingCheck: jest.fn(),
 });
 
 export type MockTypeOrmHealthIndicator = Partial<
@@ -42,15 +28,6 @@ export const createRedisHealthIndicatorMock = (): MockRedisHealthIndicator => ({
   pingCheck: jest.fn(),
 });
 
-export type MockTwilioHealthIndicator = Partial<
-  Record<keyof TwilioHealthIndicator, jest.Mock>
->;
-
-export const createTwilioHealthIndicatorMock =
-  (): MockTwilioHealthIndicator => ({
-    pingCheck: jest.fn(),
-  });
-
 describe('HealthController', () => {
   let controller: HealthController;
   let health: MockHealthCheckService;
@@ -60,16 +37,8 @@ describe('HealthController', () => {
       controllers: [HealthController],
       providers: [
         {
-          provide: ConfigService,
-          useValue: createConfigServiceMock(),
-        },
-        {
           provide: HealthCheckService,
           useValue: createHealthCheckServiceMock(),
-        },
-        {
-          provide: HttpHealthIndicator,
-          useValue: createHttpHealthIndicatorMock(),
         },
         {
           provide: TypeOrmHealthIndicator,
@@ -78,10 +47,6 @@ describe('HealthController', () => {
         {
           provide: RedisHealthIndicator,
           useValue: createRedisHealthIndicatorMock(),
-        },
-        {
-          provide: TwilioHealthIndicator,
-          useValue: createTwilioHealthIndicatorMock(),
         },
       ],
     }).compile();
@@ -125,8 +90,6 @@ describe('HealthController', () => {
         status: 'down',
         info: {
           database: { status: 'up' },
-          twilio: { status: 'up' },
-          'send-grid': { status: 'up' },
         },
         error: {
           redis: {
@@ -136,8 +99,6 @@ describe('HealthController', () => {
         },
         details: {
           database: { status: 'up' },
-          twilio: { status: 'up' },
-          'send-grid': { status: 'up' },
         },
       };
       health.check.mockRejectedValue(expectedResult);
