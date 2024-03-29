@@ -32,6 +32,7 @@ import { ResourcesModule } from './resources/resources.module';
         JWT_REFRESH_TOKEN_TTL: Joi.number().default(86400),
         REDIS_HOST: Joi.required(),
         REDIS_PORT: Joi.number().required(),
+        ENABLE_REDIS_CLUSTER: Joi.boolean().default(false),
         ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
       }),
     }),
