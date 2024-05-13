@@ -104,7 +104,7 @@ describe('HealthController', () => {
     it('should yield the result of the health indicators (failure)', async () => {
       // Arrange.
       const expectedResult = {
-        status: 'ok',
+        status: 'down',
         info: {
           database: { status: 'up' },
           rabbitmq: { status: 'up' },

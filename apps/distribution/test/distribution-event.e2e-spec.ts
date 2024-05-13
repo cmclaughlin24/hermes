@@ -1,11 +1,12 @@
 import { DeliveryMethods } from '@hermes/common';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
-import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import * as request from 'supertest';
+import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { DistributionEventModule } from '../src/resources/distribution-event/distribution-event.module';
 import { CreateDistributionEventDto } from '../src/resources/distribution-event/dto/create-distribution-event.dto';
@@ -18,7 +19,7 @@ const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Distribution Event', () => {
   let app: INestApplication;
-  let httpServer: HttpServer;
+  let httpServer: App;
 
   const eventType = 'e2e-test';
 

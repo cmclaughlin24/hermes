@@ -6,13 +6,16 @@ import { randomUUID } from 'crypto';
 import {
   MockHashingService,
   MockJwtService,
+  MockTokenStorage,
   MockUserService,
   createConfigServiceMock,
   createHashingServiceMock,
   createJwtServiceMock,
+  createTokenStorage,
   createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
+import { TokenStorage } from '../../common/storage/token.storage';
 import { UserService } from '../user/user.service';
 import { AuthenticationService } from './authentication.service';
 import { SignInInput } from './dto/sign-in.input';
@@ -20,16 +23,6 @@ import { SignUpInput } from './dto/sign-up.input';
 import { ActiveUserData } from './entities/active-user.entity';
 import { InvalidPasswordException } from './errors/invalid-password.exception';
 import { InvalidTokenException } from './errors/invalid-token.exception';
-import { TokenStorage } from './token.storage';
-
-type MockTokenStorage = Partial<Record<keyof TokenStorage, jest.Mock>>;
-
-const createTokenStorage = (): MockTokenStorage => ({
-  insert: jest.fn(),
-  validateRefresh: jest.fn(),
-  validateJwt: jest.fn(),
-  remove: jest.fn(),
-});
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;

@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
 import { In, Repository } from 'typeorm';
 import { HashingService } from '../../common/services/hashing.service';
+import { TokenStorage } from '../../common/storage/token.storage';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
 import { Permission } from '../permission/entities/permission.entity';
 import { PermissionService } from '../permission/permission.service';
@@ -24,6 +25,7 @@ export class UserService {
     @InjectRepository(DeliveryWindow)
     private readonly windowRepository: Repository<DeliveryWindow>,
     private readonly hashingService: HashingService,
+    private readonly tokenStorage: TokenStorage,
     private readonly permissionService: PermissionService,
   ) {}
 
@@ -146,7 +148,7 @@ export class UserService {
           this._preloadDeliveryWindow(window),
         ),
       ));
-    const user = await this.userRepository.preload({
+    let user = await this.userRepository.preload({
       id,
       ...updateUserInput,
       permissions,
@@ -157,7 +159,11 @@ export class UserService {
       throw new MissingException(`User userId=${id} not found!`);
     }
 
-    return this.userRepository.save(user);
+    user = await this.userRepository.save(user);
+    // Note: Invalidate the user's active access token (if issued).
+    await this.tokenStorage.remove(user.id);
+
+    return user;
   }
 
   /**
@@ -167,13 +173,17 @@ export class UserService {
    * @returns {Promise<User>}
    */
   async remove(id: string) {
-    const user = await this.findById(id);
+    let user = await this.findById(id);
 
     if (!user) {
       throw new MissingException(`User userId=${id} not found!`);
     }
 
-    return this.userRepository.remove(user);
+    user = await this.userRepository.remove(user);
+    // Note: Invalidate the user's active access token (if issued).
+    await this.tokenStorage.remove(user.id);
+
+    return user;
   }
 
   /**

@@ -1,11 +1,12 @@
 import { DeliveryMethods } from '@hermes/common';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
-import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import * as request from 'supertest';
+import { App } from 'supertest/types';
 import { FilterJoinOps, FilterOps } from '../src/common/types/filter.type';
 import { SubscriptionType } from '../src/common/types/subscription-type.type';
 import { useGlobalPipes } from '../src/config/use-global.config';
@@ -21,7 +22,7 @@ const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Subscription', () => {
   let app: INestApplication;
-  let httpServer: HttpServer;
+  let httpServer: App;
 
   const eventType = 'e2e-test__subscription';
   const subscriberId = 'e2e-test';

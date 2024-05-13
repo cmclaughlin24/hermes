@@ -10,6 +10,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthenticationService } from './authentication/authentication.service';
 import { PermissionModule } from './permission/permission.module';
 import { UserModule } from './user/user.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserModule } from './user/user.module';
     AuthenticationModule,
     PermissionModule,
     ApiKeyModule,
+    HealthModule,
   ],
 })
 export class ResourcesModule {}

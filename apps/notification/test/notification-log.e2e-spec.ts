@@ -1,15 +1,16 @@
-import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import * as request from 'supertest';
+import { App } from 'supertest/types';
 import { NotificationLogModule } from '../src/resources/notification-log/notification-log.module';
 import { NotificationLogService } from '../src/resources/notification-log/notification-log.service';
 
 describe('[Feature] Notification Log', () => {
   let app: INestApplication;
-  let httpServer: HttpServer;
+  let httpServer: App;
   let notificationLogService: NotificationLogService;
 
   const jobName = 'e2e-test__notification-log';

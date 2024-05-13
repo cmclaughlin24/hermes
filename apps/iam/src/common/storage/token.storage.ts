@@ -2,7 +2,7 @@ import { defaultHashFn } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { TokenStore } from './interfaces/token-store.interface';
+import { TokenStore } from '../interfaces/token-store.interface';
 
 @Injectable()
 export class TokenStorage {

@@ -6,7 +6,7 @@ import {
   MockCacheStore,
   createCacheStoreMock,
 } from '../../../test/helpers/provider.helper';
-import { TokenStore } from './interfaces/token-store.interface';
+import { TokenStore } from '../interfaces/token-store.interface';
 import { TokenStorage } from './token.storage';
 
 describe('RefreshTokenStorage', () => {

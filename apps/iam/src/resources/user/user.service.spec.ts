@@ -11,8 +11,13 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../test/helpers/database.helper';
-import { createPermissionServiceMock } from '../../../test/helpers/provider.helper';
+import {
+  MockTokenStorage,
+  createPermissionServiceMock,
+  createTokenStorage,
+} from '../../../test/helpers/provider.helper';
 import { HashingService } from '../../common/services/hashing.service';
+import { TokenStorage } from '../../common/storage/token.storage';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -30,6 +35,7 @@ describe('UserService', () => {
   let service: UserService;
   let repository: MockRepository;
   let hashingService: MockHashingService;
+  let tokenStorage: MockTokenStorage;
 
   const user: User = {
     id: randomUUID(),
@@ -59,6 +65,10 @@ describe('UserService', () => {
           useValue: createHashingServiceMock(),
         },
         {
+          provide: TokenStorage,
+          useValue: createTokenStorage(),
+        },
+        {
           provide: PermissionService,
           useValue: createPermissionServiceMock(),
         },
@@ -68,6 +78,7 @@ describe('UserService', () => {
     service = module.get<UserService>(UserService);
     repository = module.get<MockRepository>(getRepositoryToken(User));
     hashingService = module.get<MockHashingService>(HashingService);
+    tokenStorage = module.get<MockTokenStorage>(TokenStorage);
   });
 
   it('should be defined', () => {
@@ -264,12 +275,13 @@ describe('UserService', () => {
     afterEach(() => {
       repository.preload.mockClear();
       repository.save.mockClear();
+      tokenStorage.remove.mockClear();
     });
 
     it('should update a user', async () => {
       // Arrange.
       repository.preload.mockResolvedValue({});
-      repository.save.mockResolvedValue(null);
+      repository.save.mockResolvedValue(user);
 
       // Act.
       await service.update(user.id, updateUserInput);
@@ -281,6 +293,18 @@ describe('UserService', () => {
     it.todo('should update the assigned permission(s) of the user');
 
     it.todo('should update the delivery window(s) for the user');
+
+    it("should invalidate the user's access token (if issued)", async () => {
+      // Arrange.
+      repository.preload.mockResolvedValue({});
+      repository.save.mockResolvedValue(user);
+
+      // Act.
+      await service.update(user.id, updateUserInput);
+
+      // Assert.
+      expect(tokenStorage.remove).toHaveBeenCalledWith(user.id);
+    });
 
     it('should yield the updated user', async () => {
       // Arrange.
@@ -309,9 +333,14 @@ describe('UserService', () => {
   });
 
   describe('remove()', () => {
+    beforeEach(() => {
+      repository.remove.mockResolvedValue(user);
+    });
+
     afterEach(() => {
       repository.findOneBy.mockClear();
       repository.remove.mockClear();
+      tokenStorage.remove.mockClear();
     });
 
     it('should remove a user', async () => {
@@ -325,10 +354,20 @@ describe('UserService', () => {
       expect(repository.remove).toHaveBeenCalledWith(user);
     });
 
+    it("should invalidate the user's access token (if issued)", async () => {
+      // Arrange.
+      repository.findOneBy.mockResolvedValue(user);
+
+      // Act.
+      await service.remove(user.id);
+
+      // Assert.
+      expect(tokenStorage.remove).toHaveBeenCalledWith(user.id);
+    });
+
     it('should yield the removed user', async () => {
       // Arrange.
       repository.findOneBy.mockResolvedValue(user);
-      repository.remove.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.remove(user.id)).resolves.toEqual(user);
