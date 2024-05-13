@@ -1,10 +1,11 @@
 import { IamModule, IamModuleOptions } from '@hermes/iam';
-import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import * as request from 'supertest';
+import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
@@ -13,7 +14,7 @@ const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
 describe('[Feature] Push Template', () => {
   let app: INestApplication;
-  let httpServer: HttpServer;
+  let httpServer: App;
 
   const templateName = 'e2e-testing';
 

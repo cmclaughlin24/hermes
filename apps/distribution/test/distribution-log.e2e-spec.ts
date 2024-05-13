@@ -1,8 +1,9 @@
-import { HttpServer, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { App } from 'supertest/types';
 import { DistributionJob } from '../src/common/types/distribution-job.type';
 import { MessageState } from '../src/common/types/message-state.type';
 import { DistributionLogModule } from '../src/resources/distribution-log/distribution-log.module';
@@ -10,7 +11,7 @@ import { DistributionLogService } from '../src/resources/distribution-log/distri
 
 describe('[Feature] Distribution Log', () => {
   let app: INestApplication;
-  let httpServer: HttpServer;
+  let httpServer: App;
   let distributionLogService: DistributionLogService;
 
   const eventType = 'e2e-test__distribution-log';
