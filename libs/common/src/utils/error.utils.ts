@@ -80,10 +80,10 @@ export function errorToGraphQLException(error: Error): GraphQLError {
   return exception;
 }
 
-function isExistsException(error: Error) {
+function isExistsException(error: Error): boolean {
   return error instanceof ExistsException;
 }
 
-function isMissingException(error: Error) {
+function isMissingException(error: Error): boolean {
   return error instanceof MissingException;
 }
