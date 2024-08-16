@@ -1,7 +1,7 @@
 import { DeliveryMethods } from '@hermes/common';
 import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
-import { DateTime } from 'luxon';
+import { DateTime, WeekdayNumbers } from 'luxon';
 import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
@@ -98,6 +98,7 @@ export function hasDeliveryWindow(
 
   return deliveryWindows.some((window) => {
     const startTime = zonedNow.set({
+      weekday: zeroToOneDayIndex(window.dayOfWeek),
       hour: window.atHour,
       minute: window.atMinute,
     });
@@ -126,6 +127,16 @@ export function isBetweenTimes(
     time.diff(startTime).toObject().milliseconds >= 0 &&
     time.diff(endTime).toObject().milliseconds <= 0
   );
+}
+
+/**
+ * Converts a zero-indexed day of the week (1 is Sunday, 6 is Saturday) to a one-indexed
+ * day of the week (1 is Monday, 7 is Sunday).
+ * @param {number} dayOfWeek
+ * @returns {WeekdayNumbers}
+ */
+export function zeroToOneDayIndex(dayOfWeek: number): WeekdayNumbers {
+  return (dayOfWeek === 0 ? 7 : dayOfWeek) as WeekdayNumbers;
 }
 
 /**
