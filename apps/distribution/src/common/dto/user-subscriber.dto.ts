@@ -53,7 +53,7 @@ export class UserSubscriberDto extends SubscriberDto {
 
   getDeliveryWindows(dayOfWeek: number): DeliveryWindow[] {
     return this.deliveryWindows?.filter(
-      (window) => window.dayOfWeek === dayOfWeek,
+      (window) => window.dayOfWeek <= dayOfWeek,
     );
   }
 }

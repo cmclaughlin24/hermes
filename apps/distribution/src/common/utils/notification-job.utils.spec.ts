@@ -12,6 +12,7 @@ import {
   hasDeliveryWindow,
   isBetweenTimes,
   mapToNotificationJobs,
+  zeroToOneDayIndex,
 } from './notification-job.utils';
 
 describe('notification-job.utils.ts', () => {
@@ -290,6 +291,43 @@ describe('notification-job.utils.ts', () => {
 
       // Assert.
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('zeroToOneDayIndex', () => {
+    it('should yield 1 for Monday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(1)).toBe(1);
+    });
+
+    it('should yield 2 for Tuesday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(2)).toBe(2);
+    });
+
+    it('should yield 3 for Wednesday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(3)).toBe(3);
+    });
+
+    it('should yield 4 for Thursday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(4)).toBe(4);
+    });
+
+    it('should yield 5 for Friday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(5)).toBe(5);
+    });
+
+    it('should yield 6 for Saturday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(6)).toBe(6);
+    });
+
+    it('should yield 7 for Sunday', () => {
+      // Assert.
+      expect(zeroToOneDayIndex(0)).toBe(7);
     });
   });
 
