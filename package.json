@@ -22,9 +22,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "docker-compose -f ./docker/docker-compose.e2e.yaml up -d",
+    "pretest:e2e": "docker compose -f ./docker/docker-compose.e2e.yaml up -d",
     "test:e2e": "jest --config ./apps/notification/test/jest-e2e.json --detectOpenHandles --forceExit",
-    "posttest:e2e": "docker-compose -f ./docker/docker-compose.e2e.yaml down && docker-compose -f ./docker/docker-compose.e2e.yaml rm -f database"
+    "posttest:e2e": "docker compose -f ./docker/docker-compose.e2e.yaml down && docker compose -f ./docker/docker-compose.e2e.yaml rm -f database"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
