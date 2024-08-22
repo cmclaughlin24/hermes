@@ -6,7 +6,7 @@
 - [ ] Documentation
 - [ ] Other
 
-### What are the chnages being made? 🛠️
+### What are the changes being made? 🛠️
 
 _Provide a description of the changes you've made in this pull request._
 
