@@ -1,4 +1,4 @@
-FROM node:20-alpine as BUILD
+FROM node:22-alpine as BUILD
 
 ARG APPLICATION
 
@@ -13,7 +13,7 @@ COPY /libs ./libs
 
 RUN npm run build:${APPLICATION}
 
-FROM node:20-alpine as IMAGE
+FROM node:22-alpine as IMAGE
 
 ARG APPLICATION
 ARG DEFAULT_API_KEY_HEADER='Api-Key'

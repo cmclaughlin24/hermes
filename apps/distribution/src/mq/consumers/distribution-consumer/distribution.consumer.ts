@@ -49,7 +49,7 @@ export class DistributionConsumer extends MqConsumer {
     },
   })
   @OTelSpan({ kind: SpanKind.CONSUMER })
-  async subscribe(message: any, amqpMsg: ConsumeMessage) {
+  async subscribe(message: any, _amqpMsg: ConsumeMessage) {
     const logPrefix = this.createLogPrefix(this.subscribe.name, message.id);
 
     this.logger.log(
