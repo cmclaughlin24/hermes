@@ -19,8 +19,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from './entities/phone-template.entity';
 import { PhoneTemplateService } from './phone-template.service';
+import { PhoneTemplate } from '../../infrastructure/persistance/postgres/entities/phone-template.entity';
 
 @ApiTags('Phone Template')
 @Controller('phone-template')

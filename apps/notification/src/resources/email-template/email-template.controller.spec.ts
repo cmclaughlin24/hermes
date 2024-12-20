@@ -9,11 +9,11 @@ import {
   MockEmailTemplateService,
   createEmailTemplateServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { EmailTemplate } from '../../infrastructure/persistance/postgres/entities/email-template.entity';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from './entities/email-template.entity';
 
 describe('EmailTemplateController', () => {
   let controller: EmailTemplateController;

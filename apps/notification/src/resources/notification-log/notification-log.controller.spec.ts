@@ -4,9 +4,9 @@ import {
   MockNotificationLogService,
   createNotificationLogServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { NotificationLog } from './entities/notification-log.entity';
 import { NotificationLogController } from './notification-log.controller';
 import { NotificationLogService } from './notification-log.service';
+import { NotificationLog } from '../../infrastructure/persistance/postgres/entities/notification-log.entity';
 
 describe('NotificationLogController', () => {
   let controller: NotificationLogController;

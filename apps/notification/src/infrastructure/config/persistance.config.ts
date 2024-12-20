@@ -1,7 +1,22 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-export async function databaseFactory(
+export async function persistanceFactory(
+  configService: ConfigService,
+): Promise<TypeOrmModuleOptions> {
+  const driver = configService.get('DB_DRIVER');
+
+  switch (driver) {
+    case 'postgres':
+      return postgresFactory(configService);
+    default:
+      throw Error(
+        `Unknown Persistance Driver: ${driver} cannot be used with the Notification Service`,
+      );
+  }
+}
+
+export async function postgresFactory(
   configService: ConfigService,
 ): Promise<TypeOrmModuleOptions> {
   return {

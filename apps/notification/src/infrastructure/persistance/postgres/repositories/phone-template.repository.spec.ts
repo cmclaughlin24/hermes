@@ -6,37 +6,27 @@ import {
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockRepository } from '../../../test/helpers/database.helper';
-import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
-import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
-import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from '../../infrastructure/persistance/postgres/entities/phone-template.entity';
-import { PhoneTemplateService } from './phone-template.service';
-import { PhoneTemplateRepository } from './repository/phone-template.repository';
+import {
+  MockRepository,
+  createMockRepository,
+} from '../../../../../test/helpers/database.helper';
+import { createCacheStoreMock } from '../../../../../test/helpers/provider.helper';
+import { CreatePhoneTemplateDto } from '../../../../resources/phone-template/dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from '../../../../resources/phone-template/dto/update-phone-template.dto';
+import { PhoneTemplate } from '../entities/phone-template.entity';
+import { PostgresPhoneTemplateRepository } from './phone-template.repository';
 
-type MockPhoneTemplateRepository = Partial<
-  Record<keyof PhoneTemplateRepository, jest.Mock>
->;
-
-const createPhoneTemplateRepositoryMock = (): MockPhoneTemplateRepository => ({
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  create: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-});
-
-describe('PhoneTemplateService', () => {
-  let service: PhoneTemplateService;
-  let phoneTemplateRepository: MockPhoneTemplateRepository;
+describe('PostgresPhoneTemplateRepository', () => {
+  let repository: PostgresPhoneTemplateRepository;
+  let phoneTemplateModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PhoneTemplateService,
+        PostgresPhoneTemplateRepository,
         {
-          provide: PhoneTemplateRepository,
-          useValue: createPhoneTemplateRepositoryMock(),
+          provide: getModelToken(PhoneTemplate),
+          useValue: createMockRepository(),
         },
         {
           provide: CACHE_MANAGER,
@@ -45,14 +35,16 @@ describe('PhoneTemplateService', () => {
       ],
     }).compile();
 
-    service = module.get<PhoneTemplateService>(PhoneTemplateService);
-    phoneTemplateRepository = module.get<MockPhoneTemplateRepository>(
-      PhoneTemplateRepository,
+    repository = module.get<PostgresPhoneTemplateRepository>(
+      PostgresPhoneTemplateRepository,
+    );
+    phoneTemplateModel = module.get<MockRepository>(
+      getModelToken(PhoneTemplate),
     );
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(repository).toBeDefined();
   });
 
   describe('findAll()', () => {
@@ -63,24 +55,24 @@ describe('PhoneTemplateService', () => {
     } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateRepository.findAll.mockClear();
+      phoneTemplateModel.find.mockClear();
     });
 
     it('should yield a list of phone templates', async () => {
       // Arrange.
       const expectedResult = [phoneTemplate];
-      phoneTemplateRepository.findAll.mockResolvedValue(expectedResult);
+      phoneTemplateModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toEqual(expectedResult);
+      await expect(repository.findAll()).resolves.toEqual(expectedResult);
     });
 
     it('should yield an empty list if the repository yields an empty list', async () => {
       // Arrange.
-      phoneTemplateRepository.findAll.mockResolvedValue([]);
+      phoneTemplateModel.find.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toHaveLength(0);
+      await expect(repository.findAll()).resolves.toHaveLength(0);
     });
   });
 
@@ -92,26 +84,26 @@ describe('PhoneTemplateService', () => {
     } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateRepository.findOne.mockClear();
+      phoneTemplateModel.findOneBy.mockClear();
     });
 
     it('should yield a phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOneBy.mockResolvedValue(phoneTemplate);
 
       // Act/Assert.
       await expect(
-        service.findOne(phoneTemplate.deliveryMethod, phoneTemplate.name),
+        repository.findOne(phoneTemplate.deliveryMethod, phoneTemplate.name),
       ).resolves.toEqual(phoneTemplate);
     });
 
     it('should yield null if the repository yields null/undefined', async () => {
       // Arrange.
-      phoneTemplateRepository.findOne.mockResolvedValue(null);
+      phoneTemplateModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.findOne(phoneTemplate.deliveryMethod, phoneTemplate.name),
+        repository.findOne(phoneTemplate.deliveryMethod, phoneTemplate.name),
       ).resolves.toBeNull();
     });
   });
@@ -126,26 +118,31 @@ describe('PhoneTemplateService', () => {
     const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplate;
 
     afterEach(() => {
-      phoneTemplateRepository.create.mockClear();
+      phoneTemplateModel.findOneBy.mockClear();
+      phoneTemplateModel.create.mockClear();
+      phoneTemplateModel.save.mockClear();
     });
 
     it('should create a phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOneBy.mockResolvedValue(null);
+      phoneTemplateModel.create.mockResolvedValue(phoneTemplate);
 
       // Act.
-      await service.create(createPhoneTemplateDto);
+      await repository.create(createPhoneTemplateDto);
 
       // Assert.
-      expect(phoneTemplateRepository.create).toHaveBeenCalled();
+      expect(phoneTemplateModel.create).toHaveBeenCalled();
     });
 
     it('should yield the created phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOneBy.mockResolvedValue(null);
+      phoneTemplateModel.create.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.save.mockResolvedValue(phoneTemplate);
 
       // Assert.
-      await expect(service.create(createPhoneTemplateDto)).resolves.toEqual(
+      await expect(repository.create(createPhoneTemplateDto)).resolves.toEqual(
         phoneTemplate,
       );
     });
@@ -155,10 +152,12 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new ExistsException(
         `Phone template name=${createPhoneTemplateDto.name} for deliveryMethod=${createPhoneTemplateDto.deliveryMethod} already exists!`,
       );
-      phoneTemplateRepository.create.mockRejectedValue(expectedResult);
+      phoneTemplateModel.findOneBy.mockResolvedValue({
+        name: 'test',
+      } as PhoneTemplate);
 
       // Act/Assert.
-      await expect(service.create(createPhoneTemplateDto)).rejects.toEqual(
+      await expect(repository.create(createPhoneTemplateDto)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -172,33 +171,35 @@ describe('PhoneTemplateService', () => {
     const phoneTemplate = { name: 'unit-test' };
 
     afterEach(() => {
-      phoneTemplateRepository.update.mockClear();
+      phoneTemplateModel.preload.mockClear();
+      phoneTemplateModel.save.mockClear();
     });
 
     it('should update a phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.update.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.preload.mockResolvedValue(phoneTemplate);
 
       // Act.
-      await service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto);
+      await repository.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto);
 
       // Assert.
-      expect(phoneTemplateRepository.update).toHaveBeenCalledWith(
-        DeliveryMethods.CALL,
-        '',
-        {
-          ...updatePhoneTemplateDto,
-        },
-      );
+      expect(phoneTemplateModel.preload).toHaveBeenCalledWith({
+        name: '',
+        deliveryMethod: DeliveryMethods.CALL,
+        ...updatePhoneTemplateDto,
+      });
     });
 
     it('should yield the updated phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.update.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOne.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.preload.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.save.mockResolvedValue(phoneTemplate);
 
       // Act/Assert.
       await expect(
-        service.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto),
+        repository.update(DeliveryMethods.CALL, '', updatePhoneTemplateDto),
       ).resolves.toEqual(phoneTemplate);
     });
 
@@ -207,11 +208,11 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.CALL} not found!`,
       );
-      phoneTemplateRepository.update.mockRejectedValue(expectedResult);
+      phoneTemplateModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.update(
+        repository.update(
           DeliveryMethods.CALL,
           phoneTemplate.name,
           updatePhoneTemplateDto,
@@ -224,18 +225,19 @@ describe('PhoneTemplateService', () => {
     const phoneTemplate = { name: 'unit-test' };
 
     afterEach(() => {
-      phoneTemplateRepository.remove.mockClear();
+      phoneTemplateModel.findOneBy.mockClear();
+      phoneTemplateModel.remove.mockClear();
     });
 
     it('should remove a phone template', async () => {
       // Arrange.
-      phoneTemplateRepository.remove.mockResolvedValue(phoneTemplate);
+      phoneTemplateModel.findOneBy.mockResolvedValue(phoneTemplate);
 
       // Act.
-      await service.remove(DeliveryMethods.SMS, '');
+      await repository.remove(DeliveryMethods.SMS, '');
 
       // Assert.
-      expect(phoneTemplateRepository.remove).toHaveBeenCalled();
+      expect(phoneTemplateModel.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the phone template does not exist', async () => {
@@ -243,11 +245,11 @@ describe('PhoneTemplateService', () => {
       const expectedResult = new MissingException(
         `Phone template name=${phoneTemplate.name} for deliveryMethod=${DeliveryMethods.SMS} not found!`,
       );
-      phoneTemplateRepository.remove.mockRejectedValue(expectedResult);
+      phoneTemplateModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.remove(DeliveryMethods.SMS, phoneTemplate.name),
+        repository.remove(DeliveryMethods.SMS, phoneTemplate.name),
       ).rejects.toEqual(expectedResult);
     });
   });
