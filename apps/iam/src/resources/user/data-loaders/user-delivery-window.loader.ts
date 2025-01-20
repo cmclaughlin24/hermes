@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 import * as _ from 'lodash';
-import { DeliveryWindow } from '../entities/delivery-window.entity';
+import { DeliveryWindow } from '../repository/entities/delivery-window.entity';
 import { UserService } from '../user.service';
 
 @Injectable({ scope: Scope.REQUEST })

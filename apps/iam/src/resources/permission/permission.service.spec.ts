@@ -12,7 +12,7 @@ import {
 } from '../../../test/helpers/database.helper';
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
-import { Permission } from './entities/permission.entity';
+import { Permission } from './repository/entities/permission.entity';
 import { PermissionService } from './permission.service';
 
 describe('PermissionService', () => {

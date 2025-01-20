@@ -21,8 +21,8 @@ import { TokenStorage } from '../../common/storage/token.storage';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { DeliveryWindow } from './entities/delivery-window.entity';
-import { User } from './entities/user.entity';
+import { DeliveryWindow } from './repository/entities/delivery-window.entity';
+import { User } from './repository/entities/user.entity';
 import { UserService } from './user.service';
 
 type MockHashingService = Partial<Record<keyof HashingService, jest.Mock>>;

@@ -10,13 +10,12 @@ import { In, Repository } from 'typeorm';
 import { HashingService } from '../../common/services/hashing.service';
 import { TokenStorage } from '../../common/storage/token.storage';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
-import { Permission } from '../permission/entities/permission.entity';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { DeliveryWindowInput } from './dto/delivery-window.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { DeliveryWindow } from './entities/delivery-window.entity';
-import { User } from './entities/user.entity';
+import { DeliveryWindow } from './repository/entities/delivery-window.entity';
+import { User } from './repository/entities/user.entity';
 
 @Injectable()
 export class UserService {

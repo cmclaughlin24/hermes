@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Permission } from './entities/permission.entity';
+import { Permission } from './repository/entities/permission.entity';
 import { PermissionResolver } from './permission.resolver';
 import { PermissionService } from './permission.service';
 

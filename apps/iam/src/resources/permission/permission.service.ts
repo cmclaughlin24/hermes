@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
-import { Permission } from './entities/permission.entity';
+import { Permission } from './repository/entities/permission.entity';
 
 @Injectable()
 export class PermissionService {
@@ -69,7 +69,7 @@ export class PermissionService {
    * Update a permission. Throws a `MissingException` if the repository returns null/undefined
    * or an `ExistsException` if the resource and action combination already exists.
    * @param {string} id
-   * @param {UpdatePermissionInput} updatePermissionInput 
+   * @param {UpdatePermissionInput} updatePermissionInput
    * @returns {Promise<Permission>}
    */
   async update(id: string, updatePermissionInput: UpdatePermissionInput) {
@@ -95,7 +95,7 @@ export class PermissionService {
   /**
    * Removes a permission or throws a `MissingException` if the repository returns
    * null/undefined.
-   * @param {string} id 
+   * @param {string} id
    * @returns {Promise<Permission>}
    */
   async remove(id: string) {

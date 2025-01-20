@@ -1,7 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { UserDeliveryWindowLoader } from '../data-loaders/user-delivery-window.loader';
-import { DeliveryWindow } from '../entities/delivery-window.entity';
-import { User } from '../entities/user.entity';
+import { DeliveryWindow } from '../repository/entities/delivery-window.entity';
+import { User } from '../repository/entities/user.entity';
 
 @Resolver(() => User)
 export class UserDeliveryWindowResolver {
