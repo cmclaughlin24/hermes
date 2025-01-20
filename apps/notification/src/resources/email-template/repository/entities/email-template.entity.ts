@@ -26,3 +26,4 @@ export class EmailTemplate {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+

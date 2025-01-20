@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
 import { DataSource, In, Repository } from 'typeorm';
-import { NotificationLog } from '../entities/notification-log.entity';
-import { NotificationAttempt } from '../entities/notification-attempt.entity';
+import { NotificationLog } from './entities/notification-log.entity';
+import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { Job, JobState } from 'bullmq';
-import { NotificationLogRepository } from '../../../../resources/notification-log/repository/notification-log.repository';
+import { NotificationLogRepository } from './notification-log.repository';
 
 @Injectable()
 export class PostgresNotificationLogRepository

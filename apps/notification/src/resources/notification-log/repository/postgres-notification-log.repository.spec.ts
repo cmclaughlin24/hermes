@@ -1,16 +1,16 @@
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Job, JobState } from 'bullmq';
+import { JobState } from 'bullmq';
 import { DataSource, In } from 'typeorm';
 import {
   MockDataSource,
   MockRepository,
   createMockDataSource,
   createMockRepository,
-} from '../../../../../test/helpers/database.helper';
-import { NotificationAttempt } from '../entities/notification-attempt.entity';
-import { NotificationLog } from '../entities/notification-log.entity';
-import { PostgresNotificationLogRepository } from './notification-log.repository';
+} from '../../../../test/helpers/database.helper';
+import { NotificationAttempt } from './entities/notification-attempt.entity';
+import { NotificationLog } from './entities/notification-log.entity';
+import { PostgresNotificationLogRepository } from './postgres-notification-log.repository';
 
 describe('PostgresNotificationLogRepository', () => {
   let repository: PostgresNotificationLogRepository;

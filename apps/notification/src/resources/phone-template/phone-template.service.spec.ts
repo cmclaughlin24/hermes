@@ -4,13 +4,11 @@ import {
   MissingException,
 } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockRepository } from '../../../test/helpers/database.helper';
 import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from '../../infrastructure/persistance/postgres/entities/phone-template.entity';
+import { PhoneTemplate } from './repository/entities/phone-template.entity';
 import { PhoneTemplateService } from './phone-template.service';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
 

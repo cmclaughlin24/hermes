@@ -7,7 +7,6 @@ import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { NotificationLogModule } from '../src/resources/notification-log/notification-log.module';
 import { NotificationLogService } from '../src/resources/notification-log/notification-log.service';
-import { NotificationInfrastructureModule } from '../src/infrastructure/notification-infrastructure.module';
 
 describe('[Feature] Notification Log', () => {
   let app: INestApplication;
@@ -38,7 +37,6 @@ describe('[Feature] Notification Log', () => {
             synchronize: true,
           }),
         }),
-        NotificationInfrastructureModule.use({ persistanceDriver: 'postgres' }),
         NotificationLogModule,
       ],
     }).compile();

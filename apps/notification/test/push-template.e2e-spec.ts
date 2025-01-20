@@ -9,7 +9,6 @@ import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
 import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
-import { NotificationInfrastructureModule } from '../src/infrastructure/notification-infrastructure.module';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
@@ -48,7 +47,6 @@ describe('[Feature] Push Template', () => {
             tokenService,
           }),
         }),
-        NotificationInfrastructureModule.use({ persistanceDriver: 'postgres' }),
         PushTemplateModule,
       ],
     }).compile();

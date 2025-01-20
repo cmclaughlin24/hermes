@@ -10,7 +10,6 @@ import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreateEmailTemplateDto } from '../src/resources/email-template/dto/create-email-template.dto';
 import { EmailTemplateModule } from '../src/resources/email-template/email-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
-import { NotificationInfrastructureModule } from '../src/infrastructure/notification-infrastructure.module';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
@@ -49,7 +48,6 @@ describe('[Feature] Email Template', () => {
             tokenService,
           }),
         }),
-        NotificationInfrastructureModule.use({ persistanceDriver: 'postgres' }),
         EmailTemplateModule,
       ],
     }).compile();

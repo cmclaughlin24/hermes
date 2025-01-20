@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExistsException, MissingException } from '@hermes/common';
 import { Repository } from 'typeorm';
-import { EmailTemplate } from '../entities/email-template.entity';
-import { CreateEmailTemplateDto } from '../../../../resources/email-template/dto/create-email-template.dto';
-import { UpdateEmailTemplateDto } from '../../../../resources/email-template/dto/update-email-template.dto';
-import { EmailTemplateRepository } from '../../../../resources/email-template/repository/email-template.repository';
+import { EmailTemplateRepository } from './email-template.repository';
+import { EmailTemplate } from './entities/email-template.entity';
+import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
+import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
 @Injectable()
 export class PostgresEmailTemplateRepository
@@ -67,3 +67,4 @@ export class PostgresEmailTemplateRepository
     await this.emailTemplateModel.remove(emailTemplate);
   }
 }
+

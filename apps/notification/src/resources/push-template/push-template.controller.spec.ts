@@ -13,7 +13,7 @@ import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplateController } from './push-template.controller';
 import { PushTemplateService } from './push-template.service';
-import { PushTemplate } from '../../infrastructure/persistance/postgres/entities/push-template.entity';
+import { PushTemplate } from './repository/entities/push-template.entity';
 
 describe('PushTemplateController', () => {
   let controller: PushTemplateController;

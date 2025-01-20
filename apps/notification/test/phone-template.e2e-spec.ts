@@ -11,7 +11,6 @@ import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreatePhoneTemplateDto } from '../src/resources/phone-template/dto/create-phone-template.dto';
 import { PhoneTemplateModule } from '../src/resources/phone-template/phone-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
-import { NotificationInfrastructureModule } from '../src/infrastructure/notification-infrastructure.module';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
@@ -50,7 +49,6 @@ describe('[Feature] Phone Template', () => {
             tokenService,
           }),
         }),
-        NotificationInfrastructureModule.use({ persistanceDriver: 'postgres' }),
         PhoneTemplateModule,
       ],
     }).compile();

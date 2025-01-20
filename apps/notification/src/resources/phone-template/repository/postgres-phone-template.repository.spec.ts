@@ -3,18 +3,16 @@ import {
   ExistsException,
   MissingException,
 } from '@hermes/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../../../test/helpers/database.helper';
-import { createCacheStoreMock } from '../../../../../test/helpers/provider.helper';
-import { CreatePhoneTemplateDto } from '../../../../resources/phone-template/dto/create-phone-template.dto';
-import { UpdatePhoneTemplateDto } from '../../../../resources/phone-template/dto/update-phone-template.dto';
-import { PhoneTemplate } from '../entities/phone-template.entity';
-import { PostgresPhoneTemplateRepository } from './phone-template.repository';
+} from '../../../../test/helpers/database.helper';
+import { CreatePhoneTemplateDto } from '../../../resources/phone-template/dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from '../../../resources/phone-template/dto/update-phone-template.dto';
+import { PhoneTemplate } from './entities/phone-template.entity';
+import { PostgresPhoneTemplateRepository } from './postgres-phone-template.repository';
 
 describe('PostgresPhoneTemplateRepository', () => {
   let repository: PostgresPhoneTemplateRepository;
@@ -27,10 +25,6 @@ describe('PostgresPhoneTemplateRepository', () => {
         {
           provide: getModelToken(PhoneTemplate),
           useValue: createMockRepository(),
-        },
-        {
-          provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock(),
         },
       ],
     }).compile();

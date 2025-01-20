@@ -4,9 +4,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { cacheFactory } from '../../config/cache.config';
 import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
+import { EmailTemplateRepository } from './repository/email-template.repository';
+import { PostgresEmailTemplateRepository } from './repository/postgres-email-template.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EmailTemplate } from './repository/entities/email-template.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([EmailTemplate]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -14,7 +19,13 @@ import { EmailTemplateService } from './email-template.service';
     }),
   ],
   controllers: [EmailTemplateController],
-  providers: [EmailTemplateService],
+  providers: [
+    EmailTemplateService,
+    {
+      provide: EmailTemplateRepository,
+      useClass: PostgresEmailTemplateRepository,
+    },
+  ],
   exports: [EmailTemplateService],
 })
 export class EmailTemplateModule {}

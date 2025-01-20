@@ -1,17 +1,15 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostgresEmailTemplateRepository } from './email-template.repository';
+import { PostgresEmailTemplateRepository } from './postgres-email-template.repository';
 import {
   createMockRepository,
   MockRepository,
-} from '../../../../../test/helpers/database.helper';
-import { EmailTemplate } from '../entities/email-template.entity';
-import { createCacheStoreMock } from '../../../../../test/helpers/provider.helper';
-import { CreateEmailTemplateDto } from '../../../../resources/email-template/dto/create-email-template.dto';
-import { UpdateEmailTemplateDto } from '../../../../resources/email-template/dto/update-email-template.dto';
+} from '../../../../test/helpers/database.helper';
+import { EmailTemplate } from './entities/email-template.entity';
+import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
+import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
 describe('PostgresEmailTemplateRepository', () => {
   let repository: PostgresEmailTemplateRepository;
@@ -24,10 +22,6 @@ describe('PostgresEmailTemplateRepository', () => {
         {
           provide: getModelToken(EmailTemplate),
           useValue: createMockRepository<EmailTemplate>(),
-        },
-        {
-          provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock(),
         },
       ],
     }).compile();

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PhoneMethods } from '@hermes/common';
 import { CreatePhoneTemplateDto } from '../dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
-import { PhoneTemplate } from '../../../infrastructure/persistance/postgres/entities/phone-template.entity';
+import { PhoneTemplate } from './entities/phone-template.entity';
 
 @Injectable()
 export abstract class PhoneTemplateRepository {

@@ -5,11 +5,11 @@ import {
   MissingException,
   PhoneMethods,
 } from '@hermes/common';
-import { PhoneTemplate } from '../entities/phone-template.entity';
+import { PhoneTemplate } from './entities/phone-template.entity';
 import { Repository } from 'typeorm';
-import { CreatePhoneTemplateDto } from '../../../../resources/phone-template/dto/create-phone-template.dto';
-import { UpdatePhoneTemplateDto } from '../../../../resources/phone-template/dto/update-phone-template.dto';
-import { PhoneTemplateRepository } from '../../../../resources/phone-template/repository/phone-template.repository';
+import { CreatePhoneTemplateDto } from '../dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
+import { PhoneTemplateRepository } from './phone-template.repository';
 
 @Injectable()
 export class PostgresPhoneTemplateRepository
@@ -85,3 +85,4 @@ export class PostgresPhoneTemplateRepository
     await this.phoneTemplateModel.remove(phoneTemplate);
   }
 }
+

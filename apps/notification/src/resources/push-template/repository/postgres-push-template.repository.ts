@@ -5,12 +5,12 @@ import {
   MissingException,
   PushNotificationActionDto,
 } from '@hermes/common';
-import { PushTemplate } from '../entities/push-template.entity';
 import { Repository } from 'typeorm';
-import { PushAction } from '../entities/push-action.entity';
-import { CreatePushTemplateDto } from '../../../../resources/push-template/dto/create-push-template.dto';
-import { UpdatePushTemplateDto } from '../../../../resources/push-template/dto/update-push-template.dto';
-import { PushTemplateRepository } from '../../../../resources/push-template/repository/push-template.repository';
+import { PushTemplate } from './entities/push-template.entity';
+import { PushAction } from './entities/push-action.entity';
+import { PushTemplateRepository } from './push-template.repository';
+import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
+import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
 
 @Injectable()
 export class PostgresPushTemplateRepository implements PushTemplateRepository {
@@ -109,3 +109,4 @@ export class PostgresPushTemplateRepository implements PushTemplateRepository {
     return this.pushActionModel.create(action);
   }
 }
+

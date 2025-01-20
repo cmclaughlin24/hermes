@@ -1,16 +1,14 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../../../test/helpers/database.helper';
-import { createCacheStoreMock } from '../../../../../test/helpers/provider.helper';
-import { CreatePushTemplateDto } from '../../../../resources/push-template/dto/create-push-template.dto';
-import { PostgresPushTemplateRepository } from './push-template.repository';
-import { PushTemplate } from '../entities/push-template.entity';
-import { PushAction } from '../entities/push-action.entity';
+} from '../../../../test/helpers/database.helper';
+import { PostgresPushTemplateRepository } from './postgres-push-template.repository';
+import { PushTemplate } from './entities/push-template.entity';
+import { PushAction } from './entities/push-action.entity';
+import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 
 describe('PostgresPushTemplateRepository', () => {
   let repository: PostgresPushTemplateRepository;
@@ -27,10 +25,6 @@ describe('PostgresPushTemplateRepository', () => {
         {
           provide: getModelToken(PushAction),
           useValue: createMockRepository(),
-        },
-        {
-          provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock(),
         },
       ],
     }).compile();
@@ -202,3 +196,4 @@ describe('PostgresPushTemplateRepository', () => {
     });
   });
 });
+

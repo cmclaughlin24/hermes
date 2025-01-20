@@ -12,8 +12,7 @@ import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
 import { ConsumerModule } from './consumers/consumer.module';
 import { ResourcesModule } from './resources/resources.module';
-import { NotificationInfrastructureModule } from './infrastructure/notification-infrastructure.module';
-import { persistanceFactory } from './infrastructure/config/persistance.config';
+import { databaseFactory } from './config/database.config';
 
 @Module({
   imports: [
@@ -64,7 +63,7 @@ import { persistanceFactory } from './infrastructure/config/persistance.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: persistanceFactory,
+      useFactory: databaseFactory,
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
@@ -89,9 +88,6 @@ import { persistanceFactory } from './infrastructure/config/persistance.config';
         http: configService.get('ENABLE_DEVTOOLS'),
         port: configService.get('DEVTOOLS_PORT'),
       }),
-    }),
-    NotificationInfrastructureModule.use({
-      persistanceDriver: process.env.DB_DRIVER || 'postgres',
     }),
     ConsumerModule,
     ResourcesModule,

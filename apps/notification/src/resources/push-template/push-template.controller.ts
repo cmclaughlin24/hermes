@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplateService } from './push-template.service';
-import { PushTemplate } from '../../infrastructure/persistance/postgres/entities/push-template.entity';
+import { PushTemplate } from './repository/entities/push-template.entity';
 
 @ApiTags('Push Template')
 @Controller('push-template')

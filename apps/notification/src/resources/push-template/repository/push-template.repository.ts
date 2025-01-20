@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PushTemplate } from '../../../infrastructure/persistance/postgres/entities/push-template.entity';
+import { PushTemplate } from './entities/push-template.entity';
 import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
 

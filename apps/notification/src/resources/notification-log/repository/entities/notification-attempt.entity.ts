@@ -22,4 +22,3 @@ export class NotificationAttempt {
   @JoinColumn({ name: 'logId' })
   log: NotificationLog;
 }
-

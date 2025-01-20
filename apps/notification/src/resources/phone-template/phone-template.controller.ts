@@ -20,7 +20,7 @@ import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplateService } from './phone-template.service';
-import { PhoneTemplate } from '../../infrastructure/persistance/postgres/entities/phone-template.entity';
+import { PhoneTemplate } from './repository/entities/phone-template.entity';
 
 @ApiTags('Phone Template')
 @Controller('phone-template')

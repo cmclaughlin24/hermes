@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EmailTemplate } from '../../../infrastructure/persistance/postgres/entities/email-template.entity';
+import { EmailTemplate } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 

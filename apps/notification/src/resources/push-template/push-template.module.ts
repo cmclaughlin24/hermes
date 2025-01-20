@@ -4,9 +4,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { cacheFactory } from '../../config/cache.config';
 import { PushTemplateController } from './push-template.controller';
 import { PushTemplateService } from './push-template.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PushTemplate } from './repository/entities/push-template.entity';
+import { PushAction } from './repository/entities/push-action.entity';
+import { PushTemplateRepository } from './repository/push-template.repository';
+import { PostgresPushTemplateRepository } from './repository/postgres-push-template.repository';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([PushTemplate, PushAction]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -14,7 +20,13 @@ import { PushTemplateService } from './push-template.service';
     }),
   ],
   controllers: [PushTemplateController],
-  providers: [PushTemplateService],
+  providers: [
+    PushTemplateService,
+    {
+      provide: PushTemplateRepository,
+      useClass: PostgresPushTemplateRepository,
+    },
+  ],
   exports: [PushTemplateService],
 })
 export class PushTemplateModule {}

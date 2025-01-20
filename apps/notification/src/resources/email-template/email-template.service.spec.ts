@@ -6,7 +6,7 @@ import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from '../../infrastructure/persistance/postgres/entities/email-template.entity';
+import { EmailTemplate } from './repository/entities/email-template.entity';
 import { EmailTemplateRepository } from './repository/email-template.repository';
 
 type MockEmailTemplateRepository = Partial<

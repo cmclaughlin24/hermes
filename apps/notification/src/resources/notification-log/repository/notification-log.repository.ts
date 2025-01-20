@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Job, JobState } from 'bullmq';
-import { NotificationLog } from '../../../infrastructure/persistance/postgres/entities/notification-log.entity';
+import { NotificationLog } from './entities/notification-log.entity';
 
 @Injectable()
 export abstract class NotificationLogRepository {

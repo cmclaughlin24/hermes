@@ -6,7 +6,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { NotificationLogController } from './notification-log.controller';
 import { NotificationLogService } from './notification-log.service';
-import { NotificationLog } from '../../infrastructure/persistance/postgres/entities/notification-log.entity';
+import { NotificationLog } from './repository/entities/notification-log.entity';
 
 describe('NotificationLogController', () => {
   let controller: NotificationLogController;

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bullmq';
 import { NotificationLogService } from './notification-log.service';
-import { NotificationLog } from '../../infrastructure/persistance/postgres/entities/notification-log.entity';
+import { NotificationLog } from './repository/entities/notification-log.entity';
 import { NotificationLogRepository } from './repository/notification-log.repository';
 
 type MockNotificationLogRepository = Partial<

@@ -5,7 +5,7 @@ import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { PushTemplateService } from './push-template.service';
 import { PushTemplateRepository } from './repository/push-template.repository';
-import { PushTemplate } from '../../infrastructure/persistance/postgres/entities/push-template.entity';
+import { PushTemplate } from './repository/entities/push-template.entity';
 
 type MockPushTemplateRepository = Partial<
   Record<keyof PushTemplateRepository, jest.Mock>
