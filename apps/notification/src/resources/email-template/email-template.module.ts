@@ -1,11 +1,13 @@
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheFactory } from '../../config/cache.config';
 import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from './entities/email-template.entity';
+import { EmailTemplateRepository } from './repository/email-template.repository';
+import { PostgresEmailTemplateRepository } from './repository/postgres-email-template.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EmailTemplate } from './repository/entities/email-template.entity';
 
 @Module({
   imports: [
@@ -17,7 +19,13 @@ import { EmailTemplate } from './entities/email-template.entity';
     }),
   ],
   controllers: [EmailTemplateController],
-  providers: [EmailTemplateService],
+  providers: [
+    EmailTemplateService,
+    {
+      provide: EmailTemplateRepository,
+      useClass: PostgresEmailTemplateRepository,
+    },
+  ],
   exports: [EmailTemplateService],
 })
 export class EmailTemplateModule {}

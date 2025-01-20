@@ -1,58 +1,46 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { NotFoundException } from '@nestjs/common';
+import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
-import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
-import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
-import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from './repository/entities/email-template.entity';
-import { EmailTemplateRepository } from './repository/email-template.repository';
+import { PostgresEmailTemplateRepository } from './postgres-email-template.repository';
+import {
+  createMockRepository,
+  MockRepository,
+} from '../../../../test/helpers/database.helper';
+import { EmailTemplate } from './entities/email-template.entity';
+import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
+import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
-type MockEmailTemplateRepository = Partial<
-  Record<keyof EmailTemplateRepository, jest.Mock>
->;
-
-const createMockEmailTemplateRepository = (): MockEmailTemplateRepository => ({
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  create: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-});
-
-describe('EmailTemplateService', () => {
-  let service: EmailTemplateService;
-  let emailTemplateRepository: MockEmailTemplateRepository;
+describe('PostgresEmailTemplateRepository', () => {
+  let repository: PostgresEmailTemplateRepository;
+  let emailTemplateModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        EmailTemplateService,
+        PostgresEmailTemplateRepository,
         {
-          provide: EmailTemplateRepository,
-          useValue: createMockEmailTemplateRepository(),
-        },
-        {
-          provide: CACHE_MANAGER,
-          useValue: createCacheStoreMock(),
+          provide: getModelToken(EmailTemplate),
+          useValue: createMockRepository<EmailTemplate>(),
         },
       ],
     }).compile();
 
-    service = module.get<EmailTemplateService>(EmailTemplateService);
-    emailTemplateRepository = module.get<MockEmailTemplateRepository>(
-      EmailTemplateRepository,
+    repository = module.get<PostgresEmailTemplateRepository>(
+      PostgresEmailTemplateRepository,
+    );
+    emailTemplateModel = module.get<MockRepository>(
+      getModelToken(EmailTemplate),
     );
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(repository).toBeDefined();
   });
 
   describe('findAll()', () => {
     afterEach(() => {
-      emailTemplateRepository.findAll.mockClear();
+      emailTemplateModel.find.mockClear();
     });
 
     it('should yield a list of email templates', async () => {
@@ -64,24 +52,24 @@ describe('EmailTemplateService', () => {
           context: null,
         } as EmailTemplate,
       ];
-      emailTemplateRepository.findAll.mockResolvedValue(expectedResult);
+      emailTemplateModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toEqual(expectedResult);
+      await expect(repository.findAll()).resolves.toEqual(expectedResult);
     });
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      emailTemplateRepository.findAll.mockResolvedValue([]);
+      emailTemplateModel.find.mockResolvedValue([]);
 
       // Act/Assert.
-      await expect(service.findAll()).resolves.toHaveLength(0);
+      await expect(repository.findAll()).resolves.toHaveLength(0);
     });
   });
 
   describe('findOne()', () => {
     afterEach(() => {
-      emailTemplateRepository.findOne.mockClear();
+      emailTemplateModel.findOneBy.mockClear();
     });
 
     it('should yield an email template', async () => {
@@ -91,10 +79,10 @@ describe('EmailTemplateService', () => {
         template: '<h1>Unit Testing</h1>',
         context: null,
       } as EmailTemplate;
-      emailTemplateRepository.findOne.mockResolvedValue(expectedResult);
+      emailTemplateModel.findOneBy.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.findOne(expectedResult.name)).resolves.toEqual(
+      await expect(repository.findOne(expectedResult.name)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -102,10 +90,10 @@ describe('EmailTemplateService', () => {
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const name = 'test';
-      emailTemplateRepository.findOne.mockResolvedValue(null);
+      emailTemplateModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.findOne(name)).resolves.toBeNull();
+      await expect(repository.findOne(name)).resolves.toBeNull();
     });
   });
 
@@ -121,26 +109,30 @@ describe('EmailTemplateService', () => {
     const emailTemplate = { ...createEmailTemplateDto } as EmailTemplate;
 
     afterEach(() => {
-      emailTemplateRepository.create.mockClear();
+      emailTemplateModel.create.mockClear();
+      emailTemplateModel.save.mockClear();
     });
 
     it('should create an email template', async () => {
       // Arrange.
-      emailTemplateRepository.create.mockResolvedValue(emailTemplate);
+      emailTemplateModel.findOneBy.mockResolvedValue(null);
+      emailTemplateModel.create.mockResolvedValue(emailTemplate);
 
       // Act.
-      await service.create(createEmailTemplateDto);
+      await repository.create(createEmailTemplateDto);
 
       // Assert.
-      expect(emailTemplateRepository.create).toHaveBeenCalled();
+      expect(emailTemplateModel.create).toHaveBeenCalled();
     });
 
     it('should yield the created email template', async () => {
       // Arrange.
-      emailTemplateRepository.create.mockResolvedValue(emailTemplate);
+      emailTemplateModel.findOneBy.mockResolvedValue(null);
+      emailTemplateModel.create.mockResolvedValue(emailTemplate);
+      emailTemplateModel.save.mockResolvedValue(emailTemplate);
 
       // Act.
-      const func = service.create.bind(service, createEmailTemplateDto);
+      const func = repository.create.bind(repository, createEmailTemplateDto);
 
       // Assert.
       await expect(func()).resolves.toEqual(emailTemplate);
@@ -151,10 +143,12 @@ describe('EmailTemplateService', () => {
       const expectedResult = new ExistsException(
         `Email Template ${createEmailTemplateDto.name} already exists!`,
       );
-      emailTemplateRepository.create.mockRejectedValue(expectedResult);
+      emailTemplateModel.findOneBy.mockResolvedValue({
+        name: 'test',
+      } as EmailTemplate);
 
       // Act.
-      const func = service.create.bind(service, createEmailTemplateDto);
+      const func = repository.create.bind(repository, createEmailTemplateDto);
 
       // Assert.
       await expect(func()).rejects.toEqual(expectedResult);
@@ -173,23 +167,33 @@ describe('EmailTemplateService', () => {
       ...updateEmailTemplateDto,
     };
 
+    afterEach(() => {
+      emailTemplateModel.preload.mockClear();
+      emailTemplateModel.save.mockClear();
+    });
+
     it('should update an email template', async () => {
       // Arrange.
-      emailTemplateRepository.update.mockResolvedValue(emailTemplate);
+      emailTemplateModel.preload.mockResolvedValue(emailTemplate);
 
       // Act.
-      await service.update(name, updateEmailTemplateDto);
+      await repository.update(name, updateEmailTemplateDto);
 
       // Assert.
-      expect(emailTemplateRepository.update).toHaveBeenCalled();
+      expect(emailTemplateModel.preload).toHaveBeenCalled();
     });
 
     it('should yield the updated email template', async () => {
       // Arrange.
-      emailTemplateRepository.update.mockResolvedValue(emailTemplate);
+      emailTemplateModel.preload.mockResolvedValue(emailTemplate);
+      emailTemplateModel.save.mockResolvedValue(emailTemplate);
 
       // Act.
-      const func = service.update.bind(service, name, updateEmailTemplateDto);
+      const func = repository.update.bind(
+        repository,
+        name,
+        updateEmailTemplateDto,
+      );
 
       // Assert.
       await expect(func()).resolves.toEqual(emailTemplate);
@@ -201,31 +205,33 @@ describe('EmailTemplateService', () => {
       const expectedResult = new NotFoundException(
         `Email Template ${name} not found!`,
       );
-      emailTemplateRepository.update.mockRejectedValue(expectedResult);
+      emailTemplateModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
-        service.update(name, updateEmailTemplateDto),
+        repository.update(name, updateEmailTemplateDto),
       ).rejects.toEqual(expectedResult);
     });
   });
 
   describe('remove()', () => {
     const name = 'test';
+    const emailTemplate = {};
 
     afterEach(() => {
-      emailTemplateRepository.remove.mockClear();
+      emailTemplateModel.remove.mockClear();
     });
 
     it('should remove an email template', async () => {
       // Arrange.
-      emailTemplateRepository.remove.mockResolvedValue(null);
+      emailTemplateModel.findOneBy.mockResolvedValue(emailTemplate);
+      emailTemplateModel.remove.mockResolvedValue(null);
 
       // Act.
-      await service.remove(name);
+      await repository.remove(name);
 
       // Assert.
-      expect(emailTemplateRepository.remove).toHaveBeenCalled();
+      expect(emailTemplateModel.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the repository return null/undefined', async () => {
@@ -233,10 +239,10 @@ describe('EmailTemplateService', () => {
       const expectedResult = new MissingException(
         `Email Template ${name} not found!`,
       );
-      emailTemplateRepository.remove.mockRejectedValue(expectedResult);
+      emailTemplateModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(service.remove(name)).rejects.toEqual(expectedResult);
+      await expect(repository.remove(name)).rejects.toEqual(expectedResult);
     });
   });
 });

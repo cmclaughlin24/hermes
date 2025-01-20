@@ -1,12 +1,14 @@
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheFactory } from '../../config/cache.config';
-import { PushAction } from './entities/push-action.entity';
-import { PushTemplate } from './entities/push-template.entity';
 import { PushTemplateController } from './push-template.controller';
 import { PushTemplateService } from './push-template.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PushTemplate } from './repository/entities/push-template.entity';
+import { PushAction } from './repository/entities/push-action.entity';
+import { PushTemplateRepository } from './repository/push-template.repository';
+import { PostgresPushTemplateRepository } from './repository/postgres-push-template.repository';
 
 @Module({
   imports: [
@@ -18,7 +20,13 @@ import { PushTemplateService } from './push-template.service';
     }),
   ],
   controllers: [PushTemplateController],
-  providers: [PushTemplateService],
+  providers: [
+    PushTemplateService,
+    {
+      provide: PushTemplateRepository,
+      useClass: PostgresPushTemplateRepository,
+    },
+  ],
   exports: [PushTemplateService],
 })
 export class PushTemplateModule {}

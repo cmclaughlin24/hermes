@@ -10,9 +10,9 @@ import * as Joi from 'joi';
 import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
-import { databaseFactory } from './config/database.config';
 import { ConsumerModule } from './consumers/consumer.module';
 import { ResourcesModule } from './resources/resources.module';
+import { databaseFactory } from './config/database.config';
 
 @Module({
   imports: [
@@ -22,6 +22,7 @@ import { ResourcesModule } from './resources/resources.module';
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
+        DB_DRIVER: Joi.string().default('postgres'),
         DB_HOST: Joi.required(),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),

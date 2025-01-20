@@ -1,11 +1,13 @@
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheFactory } from '../../config/cache.config';
-import { PhoneTemplate } from './entities/phone-template.entity';
 import { PhoneTemplateController } from './phone-template.controller';
 import { PhoneTemplateService } from './phone-template.service';
+import { PhoneTemplateRepository } from './repository/phone-template.repository';
+import { PostgresPhoneTemplateRepository } from './repository/postgres-phone-template.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PhoneTemplate } from './repository/entities/phone-template.entity';
 
 @Module({
   imports: [
@@ -17,7 +19,13 @@ import { PhoneTemplateService } from './phone-template.service';
     }),
   ],
   controllers: [PhoneTemplateController],
-  providers: [PhoneTemplateService],
+  providers: [
+    PhoneTemplateService,
+    {
+      provide: PhoneTemplateRepository,
+      useClass: PostgresPhoneTemplateRepository,
+    },
+  ],
   exports: [PhoneTemplateService],
 })
 export class PhoneTemplateModule {}
