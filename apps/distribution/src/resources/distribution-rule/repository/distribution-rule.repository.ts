@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../dto/update-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
 
+@Injectable()
 export abstract class DistributionRuleRepository {
   abstract findAll(eventTypes: string[]): Promise<DistributionRule[]>;
   abstract findOne(

@@ -4,7 +4,6 @@ import { DistributionEvent } from './entities/distribution-event.entity';
 import { DistributionEventRepository } from './distribution-event.repository';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
 import { ExistsException, MissingException } from '@hermes/common';
-import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
 import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { SubscriptionFilter } from '../../subscription/repository/entities/subscription-filter.entity';
@@ -43,16 +42,6 @@ export class PostgresDistributionEventRepository
     if (existingEvent) {
       throw new ExistsException(
         `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
-      );
-    }
-
-    const hasDefaultRule = createDistributionEventDto.rules?.some(
-      (rule) => rule.metadata == null,
-    );
-
-    if (!hasDefaultRule) {
-      throw new DefaultRuleException(
-        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
       );
     }
 

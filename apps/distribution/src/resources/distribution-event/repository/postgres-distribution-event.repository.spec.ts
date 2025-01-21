@@ -5,7 +5,6 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
 import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { SubscriptionFilter } from '../../subscription/repository/entities/subscription-filter.entity';
 import { Subscription } from '../../subscription/repository/entities/subscription.entity';
@@ -199,7 +198,9 @@ describe('PostgresDistributionEventRepository', () => {
       distributionEventModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      expect(repository.findOne(distributionEvent.eventType)).resolves.toBeNull();
+      expect(
+        repository.findOne(distributionEvent.eventType),
+      ).resolves.toBeNull();
     });
   });
 
@@ -248,41 +249,9 @@ describe('PostgresDistributionEventRepository', () => {
       distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
-      await expect(repository.create(createDistributionEventDto)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to empty list)', async () => {
-      // Arrange.
-      const createDistributionEventDto = {
-        eventType: 'unit-test',
-        rules: [],
-      } as CreateDistributionEventDto;
-      const expectedResult = new DefaultRuleException(
-        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
-      );
-
-      // Act/Assert.
-      await expect(repository.create(createDistributionEventDto)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "DefaultRuleException" if a default distribution rule is not defined (w/rules equal to null)', async () => {
-      // Arrange.
-      const createDistributionEventDto = {
-        eventType: 'unit-test',
-        rules: null,
-      } as CreateDistributionEventDto;
-      const expectedResult = new DefaultRuleException(
-        `Distribution Event for eventType=${createDistributionEventDto.eventType} must have a default distribution rule (metadata=null)`,
-      );
-
-      // Act/Assert.
-      await expect(repository.create(createDistributionEventDto)).rejects.toEqual(
-        expectedResult,
-      );
+      await expect(
+        repository.create(createDistributionEventDto),
+      ).rejects.toEqual(expectedResult);
     });
   });
 
@@ -358,7 +327,9 @@ describe('PostgresDistributionEventRepository', () => {
       distributionEventModel.findByPk.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(repository.remove(eventType)).rejects.toEqual(expectedResult);
+      await expect(repository.remove(eventType)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 });

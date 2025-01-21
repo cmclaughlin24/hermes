@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 import { User } from './entities/user.entity';
 
+@Injectable()
 export abstract class UserRepository {
   abstract findAll(ids: string[]): Promise<User[]>;
   abstract findById(id: string): Promise<User>;

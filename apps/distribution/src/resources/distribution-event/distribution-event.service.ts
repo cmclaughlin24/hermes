@@ -1,31 +1,20 @@
-import { ExistsException, MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
-import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
-import { SubscriptionFilter } from '../subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../subscription/repository/entities/subscription.entity';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
-import { DistributionEvent } from './repository/entities/distribution-event.entity';
+import { DistributionEventRepository } from './repository/distribution-event.repository';
 
 @Injectable()
 export class DistributionEventService {
-  constructor(
-    @InjectModel(DistributionEvent)
-    private readonly distributionEventModel: typeof DistributionEvent,
-  ) {}
+  constructor(private readonly repository: DistributionEventRepository) {}
 
   /**
    * Yields a list of DistributionEvents.
    * @param {boolean} includeRules
    * @param {boolean} includeSubscriptions
-   * @returns {Promise<DistributionEvent[]>}
    */
   async findAll(includeRules: boolean, includeSubscriptions: boolean) {
-    return this.distributionEventModel.findAll({
-      include: this._buildIncludes(includeRules, includeSubscriptions),
-    });
+    return this.repository.findAll(includeRules, includeSubscriptions);
   }
 
   /**
@@ -33,16 +22,17 @@ export class DistributionEventService {
    * @param {string} eventType
    * @param {boolean} includeRules
    * @param {boolean} includeSubscriptions
-   * @returns {Promise<DistributionEvent>}
    */
   async findOne(
     eventType: string,
     includeRules: boolean = false,
     includeSubscriptions: boolean = false,
   ) {
-    return this.distributionEventModel.findByPk(eventType, {
-      include: this._buildIncludes(includeRules, includeSubscriptions),
-    });
+    return this.repository.findOne(
+      eventType,
+      includeRules,
+      includeSubscriptions,
+    );
   }
 
   /**
@@ -50,19 +40,8 @@ export class DistributionEventService {
    * for a queue and eventType exists in the repository or a DefaultRuleExcpetion if
    * an event does not have a default distribution rule.
    * @param {CreateDistributionEventDto} createDistributionEventDto
-   * @returns {Promise<DistributionEvent>}
    */
   async create(createDistributionEventDto: CreateDistributionEventDto) {
-    const existingEvent = await this.distributionEventModel.findByPk(
-      createDistributionEventDto.eventType,
-    );
-
-    if (existingEvent) {
-      throw new ExistsException(
-        `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
-      );
-    }
-
     const hasDefaultRule = createDistributionEventDto.rules?.some(
       (rule) => rule.metadata == null,
     );
@@ -73,14 +52,7 @@ export class DistributionEventService {
       );
     }
 
-    const distributionEvent = await this.distributionEventModel.create(
-      {
-        ...createDistributionEventDto,
-      },
-      { include: [DistributionRule] },
-    );
-
-    return distributionEvent;
+    return this.repository.create(createDistributionEventDto);
   }
 
   /**
@@ -88,65 +60,20 @@ export class DistributionEventService {
    * returns null or undefined.
    * @param {string} eventType
    * @param {UpdateDistributionEventDto} updateDistributionEventDto
-   * @returns {Promise<DistributionEvent>}
    */
   async update(
     eventType: string,
     updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
-    let distributionEvent = await this.distributionEventModel.findByPk(eventType);
-
-    if (!distributionEvent) {
-      throw new MissingException(
-        `Distribution Event for eventType=${eventType} not found!`,
-      );
-    }
-
-    distributionEvent = await distributionEvent.update({
-      metadataLabels:
-        updateDistributionEventDto.metadataLabels ??
-        distributionEvent.metadataLabels,
-    });
-
-    return distributionEvent;
+    return this.repository.update(eventType, updateDistributionEventDto);
   }
 
   /**
    * Removes a DistributionEvent or throws a MissingException if the repository
    * returns null or undefined.
    * @param {string} eventType
-   * @returns {Promise<void>}
    */
   async remove(eventType: string) {
-    const distributionEvent = await this.distributionEventModel.findByPk(eventType);
-
-    if (!distributionEvent) {
-      throw new MissingException(
-        `Distribution Event for eventType=${eventType} not found!`,
-      );
-    }
-
-    await distributionEvent.destroy();
-  }
-
-  /**
-   * Yields a list of objects containing the related models (DistributionRules and/or Subscriptions)
-   * to be included on a DistributionEvent repository query.
-   * @param {boolean} includeRules
-   * @param {boolean} includeSubscriptions
-   * @returns
-   */
-  private _buildIncludes(includeRules: boolean, includeSubscriptions: boolean) {
-    const includes = [];
-
-    if (includeRules) {
-      includes.push({ model: DistributionRule });
-    }
-
-    if (includeSubscriptions) {
-      includes.push({ model: Subscription, include: [SubscriptionFilter] });
-    }
-
-    return includes;
+    await this.repository.remove(eventType);
   }
 }
