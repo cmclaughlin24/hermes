@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
 import * as _ from 'lodash';
-import { Permission } from '../../permission/entities/permission.entity';
+import { Permission } from '../../permission/repository///entities/permission.entity';
 import { UserService } from '../user.service';
 
 @Injectable({ scope: Scope.REQUEST })

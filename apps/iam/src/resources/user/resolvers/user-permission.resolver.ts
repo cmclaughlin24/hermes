@@ -1,7 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Permission } from '../../permission/entities/permission.entity';
+import { Permission } from '../../permission/repository/entities/permission.entity';
 import { UserPermissionLoader } from '../data-loaders/user-permission.loader';
-import { User } from '../entities/user.entity';
+import { User } from '../repository/entities/user.entity';
 
 @Resolver(() => User)
 export class UserPermissionResolver {

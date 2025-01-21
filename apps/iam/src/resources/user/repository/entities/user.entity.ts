@@ -9,8 +9,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Permission } from '../../permission/entities/permission.entity';
-import { DeliveryMethods } from '../enums/delivery-methods.enum';
+import { Permission } from '../../../permission/repository/entities/permission.entity';
+import { DeliveryMethods } from '../../enums/delivery-methods.enum';
 import { DeliveryWindow } from './delivery-window.entity';
 
 @Entity()
