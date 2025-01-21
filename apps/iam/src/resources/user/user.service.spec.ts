@@ -1,16 +1,7 @@
-import {
-  ExistsException,
-  MissingException,
-  PostgresError,
-} from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { In } from 'typeorm';
-import {
-  MockRepository,
-  createMockRepository,
-} from '../../../test/helpers/database.helper';
 import {
   MockTokenStorage,
   createPermissionServiceMock,
@@ -21,9 +12,9 @@ import { TokenStorage } from '../../common/storage/token.storage';
 import { PermissionService } from '../permission/permission.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { DeliveryWindow } from './repository/entities/delivery-window.entity';
 import { User } from './repository/entities/user.entity';
 import { UserService } from './user.service';
+import { UserRepository } from './repository/user.repository';
 
 type MockHashingService = Partial<Record<keyof HashingService, jest.Mock>>;
 
@@ -31,9 +22,22 @@ const createHashingServiceMock = (): MockHashingService => ({
   hash: jest.fn(),
 });
 
+type MockUserRepository = Partial<Record<keyof UserRepository, jest.Mock>>;
+
+const createUserRepositoryMock = (): MockUserRepository => ({
+  findAll: jest.fn(),
+  findById: jest.fn(),
+  findByEmail: jest.fn(),
+  findDeliveryWindows: jest.fn(),
+  findPermissions: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  remove: jest.fn(),
+});
+
 describe('UserService', () => {
   let service: UserService;
-  let repository: MockRepository;
+  let repository: MockUserRepository;
   let hashingService: MockHashingService;
   let tokenStorage: MockTokenStorage;
 
@@ -53,12 +57,8 @@ describe('UserService', () => {
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(User),
-          useValue: createMockRepository<User>(),
-        },
-        {
-          provide: getRepositoryToken(DeliveryWindow),
-          useValue: createMockRepository<DeliveryWindow>(),
+          provide: UserRepository,
+          useValue: createUserRepositoryMock(),
         },
         {
           provide: HashingService,
@@ -76,7 +76,7 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    repository = module.get<MockRepository>(getRepositoryToken(User));
+    repository = module.get<MockUserRepository>(UserRepository);
     hashingService = module.get<MockHashingService>(HashingService);
     tokenStorage = module.get<MockTokenStorage>(TokenStorage);
   });
@@ -87,13 +87,13 @@ describe('UserService', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      repository.find.mockClear();
+      repository.findAll.mockClear();
     });
 
     it('should yield a list of user', async () => {
       // Arrange.
       const expectedResult = [user];
-      repository.find.mockResolvedValue(expectedResult);
+      repository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll(null)).resolves.toEqual(expectedResult);
@@ -102,23 +102,18 @@ describe('UserService', () => {
     it('should yield a list of users filtered by id', async () => {
       // Arrange.
       const ids = [randomUUID()];
-      const expectedResult = {
-        where: {
-          id: In(ids),
-        },
-      };
-      repository.find.mockResolvedValue([]);
+      repository.findAll.mockResolvedValue([]);
 
       // Act.
       await service.findAll(ids);
 
       // Assert.
-      expect(repository.find).toHaveBeenCalledWith(expectedResult);
+      expect(repository.findAll).toHaveBeenCalledWith(ids);
     });
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      repository.find.mockResolvedValue([]);
+      repository.findAll.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll(null)).resolves.toEqual([]);
@@ -127,12 +122,12 @@ describe('UserService', () => {
 
   describe('findById()', () => {
     afterEach(() => {
-      repository.findOneBy.mockClear();
+      repository.findById.mockClear();
     });
 
     it('should yield a user', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(user);
+      repository.findById.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.findById(user.id)).resolves.toEqual(user);
@@ -140,7 +135,7 @@ describe('UserService', () => {
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(null);
+      repository.findById.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findById(user.id)).resolves.toBeNull();
@@ -149,12 +144,12 @@ describe('UserService', () => {
 
   describe('findByEmail()', () => {
     afterEach(() => {
-      repository.findOne.mockClear();
+      repository.findByEmail.mockClear();
     });
 
     it('should yield a user', async () => {
       // Arrange.
-      repository.findOne.mockResolvedValue(user);
+      repository.findByEmail.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.findByEmail(user.email)).resolves.toEqual(user);
@@ -162,21 +157,18 @@ describe('UserService', () => {
 
     it("should include the user's permissions if requested", async () => {
       // Arrange.
-      repository.findOne.mockResolvedValue(user);
+      repository.findByEmail.mockResolvedValue(user);
 
       // Act.
       await service.findByEmail(user.email, true);
 
       // Assert.
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { email: user.email },
-        relations: ['permissions'],
-      });
+      expect(repository.findByEmail).toHaveBeenCalledWith(user.email, true);
     });
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      repository.findOne.mockResolvedValue(null);
+      repository.findByEmail.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findByEmail(user.email)).resolves.toBeNull();
@@ -213,13 +205,12 @@ describe('UserService', () => {
 
     afterEach(() => {
       repository.create.mockClear();
-      repository.save.mockClear();
       hashingService.hash.mockClear();
     });
 
     it('should create a user', async () => {
       // Arrange.
-      repository.save.mockResolvedValue(null);
+      repository.create.mockResolvedValue(null);
 
       // Act.
       await service.create(createUserInput);
@@ -230,7 +221,7 @@ describe('UserService', () => {
 
     it("should hash the user's password", async () => {
       // Arrange.
-      repository.save.mockResolvedValue(null);
+      repository.create.mockResolvedValue(null);
 
       // Act.
       await service.create(createUserInput);
@@ -241,11 +232,9 @@ describe('UserService', () => {
 
     it.todo('should assign permission(s) to the user');
 
-    it.todo('should create delivery window(s) for the user');
-
     it('should yield the created user', async () => {
       // Arrange.
-      repository.save.mockResolvedValue(user);
+      repository.create.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.create(createUserInput)).resolves.toEqual(user);
@@ -256,9 +245,7 @@ describe('UserService', () => {
       const expectedResult = new ExistsException(
         `User with email=${createUserInput.email} or phoneNumber=${createUserInput.phoneNumber} already exists!`,
       );
-      repository.save.mockRejectedValue({
-        code: PostgresError.UNIQUE_VIOLATION,
-      });
+      repository.create.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createUserInput)).rejects.toEqual(
@@ -273,21 +260,19 @@ describe('UserService', () => {
     };
 
     afterEach(() => {
-      repository.preload.mockClear();
-      repository.save.mockClear();
+      repository.update.mockClear();
       tokenStorage.remove.mockClear();
     });
 
     it('should update a user', async () => {
       // Arrange.
-      repository.preload.mockResolvedValue({});
-      repository.save.mockResolvedValue(user);
+      repository.update.mockResolvedValue(user);
 
       // Act.
       await service.update(user.id, updateUserInput);
 
       // Assert.
-      expect(repository.preload).toHaveBeenCalled();
+      expect(repository.update).toHaveBeenCalled();
     });
 
     it.todo('should update the assigned permission(s) of the user');
@@ -296,8 +281,7 @@ describe('UserService', () => {
 
     it("should invalidate the user's access token (if issued)", async () => {
       // Arrange.
-      repository.preload.mockResolvedValue({});
-      repository.save.mockResolvedValue(user);
+      repository.update.mockResolvedValue(user);
 
       // Act.
       await service.update(user.id, updateUserInput);
@@ -309,8 +293,7 @@ describe('UserService', () => {
     it('should yield the updated user', async () => {
       // Arrange.
       const expectedResult = { ...user, ...updateUserInput };
-      repository.preload.mockResolvedValue(expectedResult);
-      repository.save.mockResolvedValue(expectedResult);
+      repository.update.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.update(user.id, updateUserInput)).resolves.toEqual(
@@ -323,7 +306,7 @@ describe('UserService', () => {
       const expectedResult = new MissingException(
         `User userId=${user.id} not found!`,
       );
-      repository.preload.mockResolvedValue(null);
+      repository.update.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.update(user.id, updateUserInput)).rejects.toEqual(
@@ -338,25 +321,24 @@ describe('UserService', () => {
     });
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
       repository.remove.mockClear();
       tokenStorage.remove.mockClear();
     });
 
     it('should remove a user', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(user);
+      repository.remove.mockResolvedValue(user);
 
       // Act.
       await service.remove(user.id);
 
       // Assert.
-      expect(repository.remove).toHaveBeenCalledWith(user);
+      expect(repository.remove).toHaveBeenCalledWith(user.id);
     });
 
     it("should invalidate the user's access token (if issued)", async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(user);
+      repository.remove.mockResolvedValue(user);
 
       // Act.
       await service.remove(user.id);
@@ -367,7 +349,7 @@ describe('UserService', () => {
 
     it('should yield the removed user', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(user);
+      repository.remove.mockResolvedValue(user);
 
       // Act/Assert.
       await expect(service.remove(user.id)).resolves.toEqual(user);
@@ -378,7 +360,7 @@ describe('UserService', () => {
       const expectedResult = new MissingException(
         `User userId=${user.id} not found!`,
       );
-      repository.findOneBy.mockResolvedValue(null);
+      repository.remove.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(user.id)).rejects.toEqual(expectedResult);

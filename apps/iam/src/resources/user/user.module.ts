@@ -10,6 +10,8 @@ import { UserDeliveryWindowResolver } from './resolvers/user-delivery-window.res
 import { UserPermissionResolver } from './resolvers/user-permission.resolver';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
+import { UserRepository } from './repository/user.repository';
+import { PostgresUserRepository } from './repository/postgres-user.repository';
 
 @Module({
   imports: [
@@ -24,6 +26,10 @@ import { UserService } from './user.service';
     UserDeliveryWindowResolver,
     UserDeliveryWindowLoader,
     UserPermissionLoader,
+    {
+      provide: UserRepository,
+      useClass: PostgresUserRepository,
+    },
   ],
   exports: [UserService],
 })

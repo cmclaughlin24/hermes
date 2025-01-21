@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionRepository } from './permission.repository';
 import { Permission } from './entities/permission.entity';
@@ -10,6 +11,7 @@ import {
 } from '@hermes/common';
 import { UpdatePermissionInput } from '../dto/update-permission.input';
 
+@Injectable()
 export class PostgresPermissionRepository implements PermissionRepository {
   constructor(
     @InjectRepository(Permission)
