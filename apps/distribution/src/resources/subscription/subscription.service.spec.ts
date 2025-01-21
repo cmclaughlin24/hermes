@@ -15,13 +15,13 @@ import {
 import { FilterJoinOps, FilterOps } from '../../common/types/filter.type';
 import { SubscriptionType } from '../../common/types/subscription-type.type';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
-import { DistributionEvent } from '../distribution-event/entities/distribution-event.entity';
-import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
+import { DistributionEvent } from '../distribution-event/repository/entities/distribution-event.entity';
+import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { SubscriptionFilter } from './entities/subscription-filter.entity';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionFilter } from './repository/entities/subscription-filter.entity';
+import { Subscription } from './repository/entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
 
 describe('SubscriptionService', () => {

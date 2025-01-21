@@ -12,8 +12,8 @@ import {
 import { DistributionJob } from '../../common/types/distribution-job.type';
 import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogService } from './distribution-log.service';
-import { DistributionAttempt } from './entities/distribution-attempt.entity';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionAttempt } from './repository/entities/distribution-attempt.entity';
+import { DistributionLog } from './repository/entities/distribution-log.entity';
 
 describe('DistributionLogService', () => {
   let service: DistributionLogService;

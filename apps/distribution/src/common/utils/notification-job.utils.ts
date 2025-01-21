@@ -2,7 +2,7 @@ import { DeliveryMethods } from '@hermes/common';
 import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime, WeekdayNumbers } from 'luxon';
-import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
+import { DistributionRule } from '../../resources/distribution-rule/repository/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';

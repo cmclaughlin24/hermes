@@ -8,7 +8,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { DistributionEvent } from '../../distribution-event/entities/distribution-event.entity';
+import { DistributionEvent } from '../../../distribution-event/repository/entities/distribution-event.entity';
 
 @Table({
   tableName: 'distribution_rule',
@@ -23,7 +23,7 @@ export class DistributionRule extends Model {
   @Column({
     primaryKey: true,
     type: DataType.UUID,
-    defaultValue: DataType.UUIDV4
+    defaultValue: DataType.UUIDV4,
   })
   id: string;
 

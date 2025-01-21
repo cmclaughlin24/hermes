@@ -5,10 +5,10 @@ import * as _ from 'lodash';
 import { Op } from 'sequelize';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
-import { DistributionEvent } from '../distribution-event/entities/distribution-event.entity';
+import { DistributionEvent } from '../distribution-event/repository/entities/distribution-event.entity';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
-import { DistributionRule } from './entities/distribution-rule.entity';
+import { DistributionRule } from './repository/entities/distribution-rule.entity';
 
 @Injectable()
 export class DistributionRuleService {

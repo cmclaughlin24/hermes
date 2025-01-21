@@ -2,12 +2,12 @@ import { ExistsException, MissingException } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
-import { DistributionRule } from '../distribution-rule/entities/distribution-rule.entity';
-import { SubscriptionFilter } from '../subscription/entities/subscription-filter.entity';
-import { Subscription } from '../subscription/entities/subscription.entity';
+import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
+import { SubscriptionFilter } from '../subscription/repository/entities/subscription-filter.entity';
+import { Subscription } from '../subscription/repository/entities/subscription.entity';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
-import { DistributionEvent } from './entities/distribution-event.entity';
+import { DistributionEvent } from './repository/entities/distribution-event.entity';
 
 @Injectable()
 export class DistributionEventService {

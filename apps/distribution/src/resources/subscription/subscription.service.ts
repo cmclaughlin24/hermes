@@ -7,8 +7,8 @@ import { DistributionEventService } from '../distribution-event/distribution-eve
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { SubscriptionFilter } from './entities/subscription-filter.entity';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionFilter } from './repository/entities/subscription-filter.entity';
+import { Subscription } from './repository/entities/subscription.entity';
 
 @Injectable()
 export class SubscriptionService {

@@ -6,7 +6,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { FilterOps } from '../../../common/types/filter.type';
+import { FilterOps } from '../../../../common/types/filter.type';
 import { Subscription } from './subscription.entity';
 
 @Table({ tableName: 'subscription_filter' })

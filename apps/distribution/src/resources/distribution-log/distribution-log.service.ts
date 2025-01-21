@@ -6,8 +6,8 @@ import { Op } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { DistributionJob } from '../../common/types/distribution-job.type';
 import { MessageState } from '../../common/types/message-state.type';
-import { DistributionAttempt } from './entities/distribution-attempt.entity';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionAttempt } from './repository/entities/distribution-attempt.entity';
+import { DistributionLog } from './repository/entities/distribution-log.entity';
 
 @Injectable()
 export class DistributionLogService {

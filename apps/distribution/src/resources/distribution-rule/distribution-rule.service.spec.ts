@@ -1,22 +1,22 @@
 import {
-  DeliveryMethods,
-  MissingException
+    DeliveryMethods,
+    MissingException
 } from '@hermes/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockRepository,
-  createMockRepository,
+    MockRepository,
+    createMockRepository,
 } from '../../../test/helpers/database.helper';
 import {
-  MockDistributionEventService,
-  createDistributionEventServiceMock,
+    MockDistributionEventService,
+    createDistributionEventServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
-import { DistributionRule } from './entities/distribution-rule.entity';
+import { DistributionRule } from './repository/entities/distribution-rule.entity';
 
 describe('DistributionRuleService', () => {
   let service: DistributionRuleService;
