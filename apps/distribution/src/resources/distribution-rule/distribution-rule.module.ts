@@ -4,6 +4,8 @@ import { DistributionEventModule } from '../distribution-event/distribution-even
 import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
 import { DistributionRule } from './repository/entities/distribution-rule.entity';
+import { DistributionRuleRepository } from './repository/distribution-rule.repository';
+import { PostgresDistributionRuleRepository } from './repository/postgres-distribution-rule.repository';
 
 @Module({
   imports: [
@@ -11,7 +13,13 @@ import { DistributionRule } from './repository/entities/distribution-rule.entity
     DistributionEventModule,
   ],
   controllers: [DistributionRuleController],
-  providers: [DistributionRuleService],
+  providers: [
+    DistributionRuleService,
+    {
+      provide: DistributionRuleRepository,
+      useClass: PostgresDistributionRuleRepository,
+    },
+  ],
   exports: [DistributionRuleService],
 })
 export class DistributionRuleModule {}
