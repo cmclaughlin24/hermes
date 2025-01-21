@@ -1,8 +1,4 @@
-import {
-  RemoveCache,
-  UseCache,
-  defaultHashFn,
-} from '@hermes/common';
+import { RemoveCache, UseCache, defaultHashFn } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
@@ -12,15 +8,13 @@ import { PushTemplateRepository } from './repository/push-template.repository';
 export class PushTemplateService {
   private static readonly CACHE_KEY = 'push-notification';
 
-  constructor(
-    private readonly pushTemplateRepository: PushTemplateRepository,
-  ) {}
+  constructor(private readonly repository: PushTemplateRepository) {}
 
   /**
    * Yields a list of PushTemplates.
    */
   async findAll() {
-    return this.pushTemplateRepository.findAll();
+    return this.repository.findAll();
   }
 
   /**
@@ -30,7 +24,7 @@ export class PushTemplateService {
    */
   @UseCache({ key: PushTemplateService.CACHE_KEY })
   async findOne(name: string) {
-    return this.pushTemplateRepository.findOne(name);
+    return this.repository.findOne(name);
   }
 
   /**
@@ -39,7 +33,7 @@ export class PushTemplateService {
    * @param {CreatePushTemplateDto} createPushTemplateDto
    */
   async create(createPushTemplateDto: CreatePushTemplateDto) {
-    return this.pushTemplateRepository.create(createPushTemplateDto);
+    return this.repository.create(createPushTemplateDto);
   }
 
   /**
@@ -53,7 +47,7 @@ export class PushTemplateService {
     hashFn: (key, args) => defaultHashFn(key, [args[0]]),
   })
   async update(name: string, updatePushTemplateDto: UpdatePushTemplateDto) {
-    return this.pushTemplateRepository.update(name, updatePushTemplateDto);
+    return this.repository.update(name, updatePushTemplateDto);
   }
 
   /**
@@ -63,6 +57,6 @@ export class PushTemplateService {
    */
   @RemoveCache({ key: PushTemplateService.CACHE_KEY })
   async remove(name: string) {
-    await this.pushTemplateRepository.remove(name);
+    await this.repository.remove(name);
   }
 }

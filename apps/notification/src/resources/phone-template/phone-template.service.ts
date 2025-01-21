@@ -13,15 +13,13 @@ import { PhoneTemplateRepository } from './repository/phone-template.repository'
 export class PhoneTemplateService {
   private static readonly CACHE_KEY = 'phone-template';
 
-  constructor(
-    private readonly phoneTemplateRepository: PhoneTemplateRepository,
-  ) {}
+  constructor(private readonly repository: PhoneTemplateRepository) {}
 
   /**
    * Yields a list of PhoneTemplates.
    */
   findAll() {
-    return this.phoneTemplateRepository.findAll();
+    return this.repository.findAll();
   }
 
   /**
@@ -31,7 +29,7 @@ export class PhoneTemplateService {
    */
   @UseCache({ key: PhoneTemplateService.CACHE_KEY })
   findOne(deliveryMethod: PhoneMethods, name: string) {
-    return this.phoneTemplateRepository.findOne(deliveryMethod, name);
+    return this.repository.findOne(deliveryMethod, name);
   }
 
   /**
@@ -40,7 +38,7 @@ export class PhoneTemplateService {
    * @param {CreatePhoneTemplateDto} createPhoneTemplateDto
    */
   async create(createPhoneTemplateDto: CreatePhoneTemplateDto) {
-    return this.phoneTemplateRepository.create(createPhoneTemplateDto);
+    return this.repository.create(createPhoneTemplateDto);
   }
 
   /**
@@ -59,11 +57,7 @@ export class PhoneTemplateService {
     name: string,
     updatePhoneTemplateDto: UpdatePhoneTemplateDto,
   ) {
-    return this.phoneTemplateRepository.update(
-      deliveryMethod,
-      name,
-      updatePhoneTemplateDto,
-    );
+    return this.repository.update(deliveryMethod, name, updatePhoneTemplateDto);
   }
 
   /**
@@ -74,6 +68,6 @@ export class PhoneTemplateService {
    */
   @RemoveCache({ key: PhoneTemplateService.CACHE_KEY })
   async remove(deliveryMethod: PhoneMethods, name: string) {
-    await this.phoneTemplateRepository.remove(deliveryMethod, name);
+    await this.repository.remove(deliveryMethod, name);
   }
 }

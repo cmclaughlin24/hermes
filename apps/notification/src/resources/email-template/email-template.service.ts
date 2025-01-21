@@ -8,15 +8,13 @@ import { EmailTemplateRepository } from './repository/email-template.repository'
 export class EmailTemplateService {
   private static readonly CACHE_KEY = 'email-template';
 
-  constructor(
-    private readonly emailTemplateRepository: EmailTemplateRepository,
-  ) {}
+  constructor(private readonly repository: EmailTemplateRepository) {}
 
   /**
    * Yields a list of EmailTemplates.
    */
   async findAll() {
-    return this.emailTemplateRepository.findAll();
+    return this.repository.findAll();
   }
 
   /**
@@ -25,7 +23,7 @@ export class EmailTemplateService {
    */
   @UseCache({ key: EmailTemplateService.CACHE_KEY })
   async findOne(name: string) {
-    return this.emailTemplateRepository.findOne(name);
+    return this.repository.findOne(name);
   }
 
   /**
@@ -34,7 +32,7 @@ export class EmailTemplateService {
    * @param {CreateEmailTemplateDto} createEmailTemplateDto
    */
   async create(createEmailTemplateDto: CreateEmailTemplateDto) {
-    return this.emailTemplateRepository.create(createEmailTemplateDto);
+    return this.repository.create(createEmailTemplateDto);
   }
 
   /**
@@ -48,7 +46,7 @@ export class EmailTemplateService {
     hashFn: (key: string, args: any[]) => defaultHashFn(key, [args[0]]),
   })
   async update(name: string, updateEmailTemplateDto: UpdateEmailTemplateDto) {
-    return this.emailTemplateRepository.update(name, updateEmailTemplateDto);
+    return this.repository.update(name, updateEmailTemplateDto);
   }
 
   /**
@@ -58,6 +56,6 @@ export class EmailTemplateService {
    */
   @RemoveCache({ key: EmailTemplateService.CACHE_KEY })
   async remove(name: string) {
-    await this.emailTemplateRepository.remove(name);
+    await this.repository.remove(name);
   }
 }

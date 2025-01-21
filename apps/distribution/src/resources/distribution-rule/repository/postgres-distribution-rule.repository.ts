@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import { ExistsException, MissingException } from '@hermes/common';
 import { DistributionRuleRepository } from './distribution-rule.repository';
 import { DistributionRule } from './entities/distribution-rule.entity';
-import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 import { DistributionEvent } from '../../distribution-event/repository/entities/distribution-event.entity';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../dto/update-distribution-rule.dto';
@@ -18,7 +17,6 @@ export class PostgresDistributionRuleRepository
   constructor(
     @InjectModel(DistributionRule)
     private readonly distributionRuleModel: typeof DistributionRule,
-    private readonly distributionEventService: DistributionEventService,
   ) {}
 
   async findAll(eventTypes: string[]) {
@@ -36,20 +34,10 @@ export class PostgresDistributionRuleRepository
   }
 
   async create(createDistributionRuleDto: CreateDistributionRuleDto) {
-    const distributionEvent = await this.distributionEventService.findOne(
-      createDistributionRuleDto.eventType,
-    );
-
-    if (!distributionEvent) {
-      throw new MissingException(
-        `Distribution Event for eventType=${createDistributionRuleDto.eventType} not found!`,
-      );
-    }
-
     if (!createDistributionRuleDto.metadata) {
       const existingRule = await this.distributionRuleModel.findOne({
         where: {
-          distributionEventType: distributionEvent.eventType,
+          distributionEventType: createDistributionRuleDto.eventType,
           metadata: null,
         },
       });
@@ -65,7 +53,6 @@ export class PostgresDistributionRuleRepository
     }
 
     const distributionRule = await this.distributionRuleModel.create({
-      distributionEventType: distributionEvent.eventType,
       ...createDistributionRuleDto,
     });
 

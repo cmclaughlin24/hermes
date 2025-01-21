@@ -5,10 +5,6 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import {
-  MockDistributionEventService,
-  createDistributionEventServiceMock,
-} from '../../../../test/helpers/provider.helper';
 import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
 import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
@@ -18,7 +14,6 @@ import { PostgresDistributionRuleRepository } from './postgres-distribution-rule
 describe('PostgresDistributionRuleRepository', () => {
   let repository: PostgresDistributionRuleRepository;
   let distributionRuleModel: MockRepository;
-  let distributionEventService: MockDistributionEventService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,10 +23,6 @@ describe('PostgresDistributionRuleRepository', () => {
           provide: getModelToken(DistributionRule),
           useValue: createMockRepository(),
         },
-        {
-          provide: DistributionEventService,
-          useValue: createDistributionEventServiceMock(),
-        },
       ],
     }).compile();
 
@@ -40,9 +31,6 @@ describe('PostgresDistributionRuleRepository', () => {
     );
     distributionRuleModel = module.get<MockRepository>(
       getModelToken(DistributionRule),
-    );
-    distributionEventService = module.get<MockDistributionEventService>(
-      DistributionEventService,
     );
   });
 
@@ -134,9 +122,6 @@ describe('PostgresDistributionRuleRepository', () => {
     const distributionRule = { ...createDistributionRuleDto };
 
     beforeEach(() => {
-      distributionEventService.findOne.mockResolvedValue({
-        eventType: createDistributionRuleDto.eventType,
-      });
       distributionRuleModel.create.mockResolvedValue(distributionRule);
     });
 
@@ -165,18 +150,9 @@ describe('PostgresDistributionRuleRepository', () => {
       ).resolves.toEqual(distributionRule);
     });
 
-    it('should throw a "MissingException" if the distribution event does not exist', async () => {
-      // Arrange.
-      const expectedResult = new MissingException(
-        `Distribution Event for eventType=${createDistributionRuleDto.eventType} not found!`,
-      );
-      distributionEventService.findOne.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(
-        repository.create(createDistributionRuleDto),
-      ).rejects.toEqual(expectedResult);
-    });
+    it.todo(
+      'should thorow an "ExistsException" if a default distribution rule exists',
+    );
   });
 
   describe('update()', () => {

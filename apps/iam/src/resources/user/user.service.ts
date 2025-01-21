@@ -13,7 +13,7 @@ import { UserRepository } from './repository/user.repository';
 @Injectable()
 export class UserService {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly repository: UserRepository,
     private readonly hashingService: HashingService,
     private readonly tokenStorage: TokenStorage,
     private readonly permissionService: PermissionService,
@@ -23,7 +23,7 @@ export class UserService {
    * Yields a list of users.
    */
   async findAll(ids: string[]) {
-    return this.userRepository.findAll(ids);
+    return this.repository.findAll(ids);
   }
 
   /**
@@ -31,7 +31,7 @@ export class UserService {
    * @param {string} id
    */
   async findById(id: string) {
-    return this.userRepository.findById(id);
+    return this.repository.findById(id);
   }
 
   /**
@@ -40,7 +40,7 @@ export class UserService {
    * @param {boolean} includePermissions
    */
   async findByEmail(email: string, includePermissions: boolean = false) {
-    return this.userRepository.findByEmail(email, includePermissions);
+    return this.repository.findByEmail(email, includePermissions);
   }
 
   /**
@@ -51,7 +51,7 @@ export class UserService {
   async findDeliveryWindows(
     userIds: string[],
   ): Promise<Pick<User, 'id' | 'deliveryWindows'>[]> {
-    return this.userRepository.findDeliveryWindows(userIds);
+    return this.repository.findDeliveryWindows(userIds);
   }
 
   /**
@@ -62,7 +62,7 @@ export class UserService {
   async findPermissions(
     userIds: string[],
   ): Promise<Pick<User, 'id' | 'permissions'>[]> {
-    return this.userRepository.findPermissions(userIds);
+    return this.repository.findPermissions(userIds);
   }
 
   /**
@@ -76,7 +76,7 @@ export class UserService {
     );
     const permissions = await this._getPermissions(createUserInput.permissions);
 
-    return this.userRepository.create({
+    return this.repository.create({
       ...createUserInput,
       password: hashedPassword,
       permissions,
@@ -91,7 +91,7 @@ export class UserService {
    */
   async update(id: string, updateUserInput: UpdateUserInput) {
     const permissions = await this._getPermissions(updateUserInput.permissions);
-    const user = await this.userRepository.update(id, {
+    const user = await this.repository.update(id, {
       ...updateUserInput,
       permissions,
     });
@@ -112,7 +112,7 @@ export class UserService {
    * @param {string} id
    */
   async remove(id: string) {
-    const user = await this.userRepository.remove(id);
+    const user = await this.repository.remove(id);
 
     // Note: Invalidate the user's active access token (if issued).
     await this.tokenStorage.remove(user.id);

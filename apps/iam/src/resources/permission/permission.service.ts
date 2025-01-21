@@ -5,13 +5,13 @@ import { PermissionRepository } from './repository/permission.repository';
 
 @Injectable()
 export class PermissionService {
-  constructor(private readonly permissionRepository: PermissionRepository) {}
+  constructor(private readonly repository: PermissionRepository) {}
 
   /**
    * Yields a list of permissions.
    */
   async findAll() {
-    return this.permissionRepository.findAll();
+    return this.repository.findAll();
   }
 
   /**
@@ -19,7 +19,7 @@ export class PermissionService {
    * @param {string} id
    */
   async findById(id: string) {
-    return this.permissionRepository.findById(id);
+    return this.repository.findById(id);
   }
 
   /**
@@ -28,7 +28,7 @@ export class PermissionService {
    * @param {string} action
    */
   async findByResourceAction(resource: string, action: string) {
-    return this.permissionRepository.findByResourceAction(resource, action);
+    return this.repository.findByResourceAction(resource, action);
   }
 
   /**
@@ -37,7 +37,7 @@ export class PermissionService {
    * @param {CreatePermissionInput} createPermissionInput
    */
   async create(createPermissionInput: CreatePermissionInput) {
-    return this.permissionRepository.create(createPermissionInput);
+    return this.repository.create(createPermissionInput);
   }
 
   /**
@@ -47,7 +47,7 @@ export class PermissionService {
    * @param {UpdatePermissionInput} updatePermissionInput
    */
   async update(id: string, updatePermissionInput: UpdatePermissionInput) {
-    return this.permissionRepository.update(id, updatePermissionInput);
+    return this.repository.update(id, updatePermissionInput);
   }
 
   /**
@@ -56,6 +56,6 @@ export class PermissionService {
    * @param {string} id
    */
   async remove(id: string) {
-    return this.permissionRepository.remove(id);
+    return this.repository.remove(id);
   }
 }
