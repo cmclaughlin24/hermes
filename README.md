@@ -89,6 +89,28 @@ Responsible for compiling the notification template with the data and sending th
 
 ### How is a notification sent?
 
+<div align="center">
+    <img src="./docs/images/architecture.png" alt="Hermes Architecture">
+</div>
+
+1.  The first step in the journey to create a notification, is the _client microservice_. The client microservice defines one or more conditions in which it would like to trigger a notification. Once it identifies, the microservice will publish an event to [RabbitMQ](https://www.rabbitmq.com/). For the distribution service to correctly process a message, it must take the following format:
+
+    ```javascript
+        {
+            "id": "",
+            "type": "",
+            "payload": {},
+            "metadata": {},
+            "timeZone": "",
+            "recipients": [],
+            "addedAt": ""
+        }
+    ```
+
+2.  RabbitMQ is a reliable and mature messaging and streaming broker. It has support for powerful routing features, which is why is was selected for this project. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. RabbitMQ recieves that message from the client microservice and routes it the queue for the _Distribution Service_.
+
+3.
+
 ### Performance Estimation
 
 ## Getting Started
@@ -142,3 +164,7 @@ _Note: The end-to-end test automation **requires** [Docker](https://www.docker.c
 #### Tips
 
 1. When runing the unit tests, [watch mode](https://jestjs.io/docs/cli#--watch) enables Jest to monitor changes to file(s) and re-run tests related to changed files.
+
+## References
+
+- [RabbitMQ Exchange Types](https://www.cloudamqp.com/blog/part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html)
