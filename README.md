@@ -14,6 +14,11 @@
 ![Static Badge](https://img.shields.io/badge/TypeScript-grey?style=for-the-badge&logo=typescript)
 ![Static Badge](https://img.shields.io/badge/Docker-grey?style=for-the-badge&logo=docker)
 ![Static Badge](https://img.shields.io/badge/Kubernetes-grey?style=for-the-badge&logo=kubernetes)
+![Static Badge](https://img.shields.io/badge/Helm-grey?style=for-the-badge&logo=Helm)
+![Static Badge](https://img.shields.io/badge/Redis-grey?style=for-the-badge&logo=Redis)
+![Static Badge](https://img.shields.io/badge/RabbitMQ-grey?style=for-the-badge&logo=RabbitMQ)
+![Static Badge](https://img.shields.io/badge/PostgresSQL-grey?style=for-the-badge&logo=PostgresSQL)
+![Static Badge](https://img.shields.io/badge/OpenTelemetry-grey?style=for-the-badge&logo=OpenTelemetry)
 
 </div>
 
@@ -27,7 +32,16 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 
 ### Requirements
 
+1. Deliver notifications through a variety of methods (email, phone, text message, and web push notifications) and should support the addition of new types of notifications.
+2. Ability to deliver multiple notifications based on subscriptions to a distribution event.
+3. Application should be reliable (alarm notification's are critical 🚨) and try to deliver notification'sat least once.
+4. Distributed telemetry is collected for improved insights into failure points.
+
 ### Architecture
+
+<div align="center">
+    <img src="./docs/images/architecture.png" alt="Hermes Architecture">
+</div>
 
 ### Performance Estimation
 
