@@ -93,12 +93,12 @@ Responsible for compiling the notification template with the data and sending th
     <img src="./docs/images/architecture.png" alt="Hermes Architecture">
 </div>
 
-1.  The first step in the journey to create a notification, is the _client microservice_. The client microservice defines one or more conditions in which it would like to trigger a notification. Once it identifies, the microservice will publish an event to [RabbitMQ](https://www.rabbitmq.com/). For the distribution service to correctly process a message, it must take the following format:
+1.  The first step in the journey to create a notification, is the _client microservice_. This service defines one or more conditions for triggering a notification. Once the service identifies these conditions, it publishes a message to [RabbitMQ](https://www.rabbitmq.com/). For the distribution service to process this message successfully, it must adhere to the following format:
 
     ```javascript
         {
-            "id": "",
-            "type": "",
+            "id": "",           // Universal Unique Identifier (UUID4) identifying the individual message
+            "type": "",         // name of the distribution event that should be triggered
             "payload": {},
             "metadata": {},
             "timeZone": "",
@@ -107,11 +107,13 @@ Responsible for compiling the notification template with the data and sending th
         }
     ```
 
-2.  RabbitMQ is a reliable and mature messaging and streaming broker. It has support for powerful routing features, which is why is was selected for this project. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. RabbitMQ recieves that message from the client microservice and routes it the queue for the distribution service.
+2.  RabbitMQ, a reliable and feature-rich message and streaming broker, was selected for this project due to it's powerful routing capabilities. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. Upon receiving the messsage from the client microservice, RabbitMQ routes it to the appropriate queue for the distribution service.
 
-3.  Once a message has been pushed to the distribution service, it will rehydrate the message and run a validation check. If the message passes validation, processing will continue. Otherwise the message will be marked as corrupted, the attempt will be logged to the _DistributionLog_ table in the database, and the message will **not** be retried.
+3.  The _distribution service_ acts as a rules engine that identifies if there are any registered listeners interested in the message. Once the message enters the service, it first undergoes rehydrate and validation. If the message passes validation, processing continues; otherwise it will be marked as corrupted. Corrupted messages are logged to the _DistributionLog_ table of the database, and the message will **not** be retried.
 
-4.
+4.  After validating the message, the distribution proceeds to identify and retreive the relevant distribution event. A _distribution event_ is predefined trigger with a set of _distribution rules_ that dictate how and when notifications should be sent to recipients. It is responsible for ensuring the right information is delivered to the correct recipients in the appropriate manner.
+
+5. 
 
 ### Performance Estimation
 
