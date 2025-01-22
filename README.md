@@ -43,6 +43,15 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
     <img src="./docs/images/architecture.png" alt="Hermes Architecture">
 </div>
 
+<br/>
+<br/>
+
+Hermes implements a microservices architecture to achieve it's requirements for reliablility and scalability. While this introduces maintains similar challenges to the original notification implementation, such as communication and tracebiility, it focuses the business domain into three services:
+
+- Identity Access Management (IAM): Manages the creation of users and api keys, assignment of permissons, and validates generated access tokens and api keys before Hermes resources may be accessed.
+- Distribution: A rules engine that accepts a distribution event, evaluates the associated data to see if there are any registered subscriptions interested in that event, and generates notification jobs.
+- Notification: Responsible for compiling the notification template with the data and sending the notification.
+
 ### Performance Estimation
 
 ## Getting Started
