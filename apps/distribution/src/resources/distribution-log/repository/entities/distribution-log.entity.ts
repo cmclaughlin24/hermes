@@ -7,7 +7,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { MessageState } from '../../../common/types/message-state.type';
+import { MessageState } from '../../../../common/types/message-state.type';
 import { DistributionAttempt } from './distribution-attempt.entity';
 
 @Table({ tableName: 'distribution_log' })

@@ -11,7 +11,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { Subscription } from './entities/subscription.entity';
+import { Subscription } from './repository/entities/subscription.entity';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 

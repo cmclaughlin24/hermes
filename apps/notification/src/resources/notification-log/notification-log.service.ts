@@ -8,9 +8,7 @@ import { NotificationLogRepository } from './repository/notification-log.reposit
 export class NotificationLogService {
   private readonly logger = new Logger(NotificationLogService.name);
 
-  constructor(
-    private readonly notificationLogRepository: NotificationLogRepository,
-  ) {}
+  constructor(private readonly repository: NotificationLogRepository) {}
 
   /**
    * Yields a list of NotificationLogs filtered by the job name and/or
@@ -19,7 +17,7 @@ export class NotificationLogService {
    * @param {JobState[]} states
    */
   async findAll(jobs: string[], states: JobState[]) {
-    return this.notificationLogRepository.findAll(jobs, states);
+    return this.repository.findAll(jobs, states);
   }
 
   /**
@@ -27,7 +25,7 @@ export class NotificationLogService {
    * @param {string} id
    */
   async findOne(id: string) {
-    return this.notificationLogRepository.findOne(id);
+    return this.repository.findOne(id);
   }
 
   /**
@@ -45,14 +43,9 @@ export class NotificationLogService {
     this.logger.log(`Storing ${job.id} job's result in the database`);
 
     if (!job.data.notification_database_id) {
-      return this.notificationLogRepository.create(
-        job,
-        state,
-        result,
-        errorJson,
-      );
+      return this.repository.create(job, state, result, errorJson);
     }
 
-    return this.notificationLogRepository.update(job, state, result, errorJson);
+    return this.repository.update(job, state, result, errorJson);
   }
 }

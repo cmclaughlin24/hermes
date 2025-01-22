@@ -14,9 +14,9 @@ import { SubscriberService } from '../../../common/services/subscriber/subscribe
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
-import { DistributionEvent } from '../../../resources/distribution-event/entities/distribution-event.entity';
-import { DistributionRule } from '../../../resources/distribution-rule/entities/distribution-rule.entity';
-import { Subscription } from '../../../resources/subscription/entities/subscription.entity';
+import { DistributionEvent } from '../../../resources/distribution-event/repository/entities/distribution-event.entity';
+import { DistributionRule } from '../../../resources/distribution-rule/repository/entities/distribution-rule.entity';
+import { Subscription } from '../../../resources/subscription/repository/entities/subscription.entity';
 import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';

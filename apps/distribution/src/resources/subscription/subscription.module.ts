@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { DistributionEventModule } from '../distribution-event/distribution-event.module';
-import { SubscriptionFilter } from './entities/subscription-filter.entity';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionFilter } from './repository/entities/subscription-filter.entity';
+import { Subscription } from './repository/entities/subscription.entity';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
+import { SubscriptionRepository } from './repository/subscription.repository';
+import { PostgresSubscriptionRepository } from './repository/postgres-subscription.repository';
 
 @Module({
   imports: [
@@ -12,7 +14,13 @@ import { SubscriptionService } from './subscription.service';
     DistributionEventModule,
   ],
   controllers: [SubscriptionController],
-  providers: [SubscriptionService],
+  providers: [
+    SubscriptionService,
+    {
+      provide: SubscriptionRepository,
+      useClass: PostgresSubscriptionRepository,
+    },
+  ],
   exports: [SubscriptionService],
 })
 export class SubscriptionModule {}

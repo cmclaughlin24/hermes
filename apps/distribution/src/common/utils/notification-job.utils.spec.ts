@@ -1,18 +1,18 @@
 import { DeliveryMethods, Platform, PushSubscriptionDto } from '@hermes/common';
 import { DateTime } from 'luxon';
-import { DistributionRule } from '../../resources/distribution-rule/entities/distribution-rule.entity';
+import { DistributionRule } from '../../resources/distribution-rule/repository/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
 import { SubscriberDto } from '../dto/subscriber.dto';
 import { UserSubscriberDto } from '../dto/user-subscriber.dto';
 import {
-  createNotificationJobs,
-  hasDeliveryMethods,
-  hasDeliveryWindow,
-  isBetweenTimes,
-  mapToNotificationJobs,
-  zeroToOneDayIndex,
+    createNotificationJobs,
+    hasDeliveryMethods,
+    hasDeliveryWindow,
+    isBetweenTimes,
+    mapToNotificationJobs,
+    zeroToOneDayIndex,
 } from './notification-job.utils';
 
 describe('notification-job.utils.ts', () => {

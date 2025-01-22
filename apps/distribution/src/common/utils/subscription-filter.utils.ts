@@ -1,7 +1,7 @@
 import * as flatten from 'flat';
 import * as _ from 'lodash';
-import { SubscriptionFilter } from '../../resources/subscription/entities/subscription-filter.entity';
-import { Subscription } from '../../resources/subscription/entities/subscription.entity';
+import { SubscriptionFilter } from '../../resources/subscription/repository/entities/subscription-filter.entity';
+import { Subscription } from '../../resources/subscription/repository/entities/subscription.entity';
 import { SubscriptionQuery } from '../classes/subscription-query.class';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 

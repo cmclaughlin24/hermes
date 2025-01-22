@@ -1,21 +1,21 @@
 import {
-  ApiResponseDto,
-  DeliveryMethods,
-  ExistsException,
-  MissingException,
+    ApiResponseDto,
+    DeliveryMethods,
+    ExistsException,
+    MissingException,
 } from '@hermes/common';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-  MockDistributionRuleService,
-  createDistributionRuleServiceMock,
+    MockDistributionRuleService,
+    createDistributionRuleServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
-import { DistributionRule } from './entities/distribution-rule.entity';
+import { DistributionRule } from './repository/entities/distribution-rule.entity';
 
 describe('DistributionRuleController', () => {
   let controller: DistributionRuleController;

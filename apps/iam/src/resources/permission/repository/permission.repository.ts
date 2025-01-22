@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { CreatePermissionInput } from '../dto/create-permission.input';
 import { UpdatePermissionInput } from '../dto/update-permission.input';
 import { Permission } from './entities/permission.entity';
 
+@Injectable()
 export abstract class PermissionRepository {
   abstract findAll(): Promise<Permission[]>;
   abstract findById(id: string): Promise<Permission>;

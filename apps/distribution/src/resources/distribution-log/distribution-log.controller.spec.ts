@@ -7,7 +7,7 @@ import {
 import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionLog } from './repository/entities/distribution-log.entity';
 
 describe('DistributionLogController', () => {
   let controller: DistributionLogController;
