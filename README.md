@@ -35,7 +35,8 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 1. Deliver notifications through a variety of methods (email, phone, text message, and web push notifications) and should support the addition of new types of notifications.
 2. Ability to deliver multiple notifications based on subscriptions to a distribution event.
 3. Application should be reliable (alarm notification's are critical 🚨) and try to deliver notification'sat least once.
-4. Distributed telemetry is collected for improved insights into failure points.
+4. Clearly defined responsibilities and communication between services without becoming overly granular.
+5. Distributed telemetry is collected for improved insights into failure points.
 
 ### Architecture
 
@@ -46,7 +47,7 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 <br/>
 <br/>
 
-Hermes implements a microservices architecture to achieve it's requirements for reliablility and scalability. While this introduces maintains similar challenges to the original notification implementation, such as communication and tracebiility, it focuses the business domain into three services: _Identity Access Management (IAM), Distribution,_ and _Notification_.
+Hermes implements a microservices architecture to achieve it's requirements for reliablility and scalability. While this introduces similar challenges to the original notification implementation, such as communication and tracebiility, it focuses the business domain into three services: _Identity Access Management (IAM), Distribution,_ and _Notification_.
 
 #### Identity Access Management (IAM)
 
@@ -83,6 +84,10 @@ Responsible for compiling the notification template with the data and sending th
 <img src="./docs/images/notification-entity-relationshiop.png" alt="Notication Entity Relationship">
 
 </div>
+
+### Authentication & Authorization
+
+### How is a notification sent?
 
 ### Performance Estimation
 
