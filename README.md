@@ -4,8 +4,6 @@
 
 ##### Another application that claims to be... blazingly fast 🔥🔥
 
-<br/>
-
 <img src="./docs/images/logo.png" alt="Logo" style="width:250px;">
 
 <br/>
