@@ -3,7 +3,6 @@ import { SubscriptionRepository } from './subscription.repository';
 import { InjectModel } from '@nestjs/sequelize';
 import { Subscription } from './entities/subscription.entity';
 import { SubscriptionFilter } from './entities/subscription-filter.entity';
-import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 import { Sequelize } from 'sequelize-typescript';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { ExistsException, MissingException } from '@hermes/common';
@@ -18,7 +17,6 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
     private readonly subscriptionModel: typeof Subscription,
     @InjectModel(SubscriptionFilter)
     private readonly subscriptionFilterModel: typeof SubscriptionFilter,
-    private readonly distributionEventService: DistributionEventService,
     private readonly sequelize: Sequelize,
   ) {}
 
@@ -29,25 +27,20 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
   }
 
   async findOne(eventType: string, subscriberId: string) {
-    const distributionEvent = await this._getDistributionEvent(eventType);
-
     return this.subscriptionModel.findOne({
       where: {
         subscriberId: subscriberId,
-        distributionEventType: distributionEvent.eventType,
+        distributionEventType: eventType,
       },
       include: [SubscriptionFilter],
     });
   }
 
   async create(createSubscriptionDto: CreateSubscriptionDto) {
-    const distributionEvent = await this._getDistributionEvent(
-      createSubscriptionDto.eventType,
-    );
     const existingSubscription = await this.subscriptionModel.findOne({
       where: {
         subscriberId: createSubscriptionDto.subscriberId,
-        distributionEventType: distributionEvent.eventType,
+        distributionEventType: createSubscriptionDto.eventType,
       },
     });
 
@@ -59,7 +52,7 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
 
     const subscription = await this.subscriptionModel.create(
       {
-        distributionEventType: distributionEvent.eventType,
+        distributionEventType: createSubscriptionDto.eventType,
         subscriberId: createSubscriptionDto.subscriberId,
         subscriptionType: createSubscriptionDto.subscriptionType,
         data: createSubscriptionDto.data,
@@ -78,11 +71,10 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
     updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
     return this.sequelize.transaction(async (transaction) => {
-      const distributionEvent = await this._getDistributionEvent(eventType);
       let subscription = await this.subscriptionModel.findOne({
         where: {
           subscriberId: subscriberId,
-          distributionEventType: distributionEvent.eventType,
+          distributionEventType: eventType,
         },
         include: [SubscriptionFilter],
         transaction,
@@ -103,7 +95,7 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
         { transaction },
       );
 
-      // Note: All existing SubscriptionFilters should be removed on an empty array.
+      // NOTE: All existing SubscriptionFilters should be removed on an empty array.
       if (updateSubscriptionDto.filters) {
         await this._updateSubscriptionFilters(
           subscription,
@@ -135,11 +127,10 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
   }
 
   async remove(eventType: string, subscriberId: string) {
-    const distributionEvent = await this._getDistributionEvent(eventType);
     const subscription = await this.subscriptionModel.findOne({
       where: {
         subscriberId: subscriberId,
-        distributionEventType: distributionEvent.eventType,
+        distributionEventType: eventType,
       },
     });
 
@@ -149,21 +140,8 @@ export class PostgresSubscriptionRepository implements SubscriptionRepository {
       );
     }
 
-    // Note: The delete is cascaded to the SubscriptionFilters table.
+    // NOTE: The delete is cascaded to the SubscriptionFilters table.
     await subscription.destroy();
-  }
-
-  private async _getDistributionEvent(eventType: string) {
-    const distributionEvent =
-      await this.distributionEventService.findOne(eventType);
-
-    if (!distributionEvent) {
-      throw new MissingException(
-        `Distribution Event for eventType=${eventType} not found!`,
-      );
-    }
-
-    return distributionEvent;
   }
 
   private async _updateSubscriptionFilters(

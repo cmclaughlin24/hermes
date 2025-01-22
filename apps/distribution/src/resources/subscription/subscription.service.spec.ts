@@ -1,13 +1,5 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Sequelize } from 'sequelize-typescript';
-import {
-  MockRepository,
-  MockSequelize,
-  createMockRepository,
-  createMockSequelize,
-} from '../../../test/helpers/database.helper';
 import {
   MockDistributionEventService,
   createDistributionEventServiceMock,
@@ -18,18 +10,28 @@ import { DistributionEventService } from '../distribution-event/distribution-eve
 import { DistributionEvent } from '../distribution-event/repository/entities/distribution-event.entity';
 import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
-import { SubscriptionFilterDto } from './dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { SubscriptionFilter } from './repository/entities/subscription-filter.entity';
 import { Subscription } from './repository/entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
+import { SubscriptionRepository } from './repository/subscription.repository';
+
+type MockSubscriptionRepository = Partial<
+  Record<keyof SubscriptionRepository, jest.Mock>
+>;
+
+const createSubscriptionRepositoryMock = (): MockSubscriptionRepository => ({
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  removeAll: jest.fn(),
+  remove: jest.fn(),
+});
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
-  let subscriptionModel: MockRepository;
-  let subscriptionFilterModel: MockRepository;
+  let repository: MockSubscriptionRepository;
   let distributionEventService: MockDistributionEventService;
-  let sequelize: MockSequelize;
 
   const eventType = 'unit-test';
 
@@ -38,33 +40,21 @@ describe('SubscriptionService', () => {
       providers: [
         SubscriptionService,
         {
-          provide: getModelToken(Subscription),
-          useValue: createMockRepository<Subscription>(),
-        },
-        {
-          provide: getModelToken(SubscriptionFilter),
-          useValue: createMockRepository<SubscriptionFilter>(),
+          provide: SubscriptionRepository,
+          useValue: createSubscriptionRepositoryMock(),
         },
         {
           provide: DistributionEventService,
           useValue: createDistributionEventServiceMock(),
         },
-        {
-          provide: Sequelize,
-          useValue: createMockSequelize(),
-        },
       ],
     }).compile();
 
     service = module.get<SubscriptionService>(SubscriptionService);
-    subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
-    subscriptionFilterModel = module.get<MockRepository>(
-      getModelToken(SubscriptionFilter),
-    );
+    repository = module.get<MockSubscriptionRepository>(SubscriptionRepository);
     distributionEventService = module.get<MockDistributionEventService>(
       DistributionEventService,
     );
-    sequelize = module.get<MockSequelize>(Sequelize);
   });
 
   it('should be defined', () => {
@@ -73,7 +63,7 @@ describe('SubscriptionService', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      subscriptionModel.findAll.mockClear();
+      repository.findAll.mockClear();
     });
 
     it('should yield a list of subscriptions', async () => {
@@ -85,7 +75,7 @@ describe('SubscriptionService', () => {
           data: { url: 'http://localhost:9999/subscriptions' },
         } as Subscription,
       ];
-      subscriptionModel.findAll.mockResolvedValue(expectedResult);
+      repository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toEqual(expectedResult);
@@ -93,7 +83,7 @@ describe('SubscriptionService', () => {
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      subscriptionModel.findAll.mockResolvedValue([]);
+      repository.findAll.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toHaveLength(0);
@@ -102,7 +92,7 @@ describe('SubscriptionService', () => {
 
   describe('findOne()', () => {
     afterEach(() => {
-      subscriptionModel.findByPk.mockClear();
+      repository.findOne.mockClear();
       distributionEventService.findOne.mockClear();
     });
 
@@ -116,7 +106,7 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
-      subscriptionModel.findOne.mockResolvedValue(expectedResult);
+      repository.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findOne(eventType, '')).resolves.toEqual(
@@ -131,7 +121,7 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
-      subscriptionModel.findOne.mockResolvedValue(null);
+      repository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -169,7 +159,7 @@ describe('SubscriptionService', () => {
     } as Subscription;
 
     afterEach(() => {
-      subscriptionModel.create.mockClear();
+      repository.create.mockClear();
       distributionEventService.findOne.mockClear();
     });
 
@@ -178,13 +168,12 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionEvent);
-      subscriptionModel.findByPk.mockResolvedValue(null);
 
       // Act.
       await service.create(createSubscriptionDto);
 
       // Assert.
-      expect(subscriptionModel.create).toHaveBeenCalled();
+      expect(repository.create).toHaveBeenCalled();
     });
 
     it('should yield the created subscription', async () => {
@@ -192,8 +181,7 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionEvent);
-      subscriptionModel.findByPk.mockResolvedValue(null);
-      subscriptionModel.create.mockResolvedValue(subscription);
+      repository.create.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(service.create(createSubscriptionDto)).resolves.toEqual(
@@ -222,7 +210,7 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
-      subscriptionModel.findOne.mockResolvedValue({} as Subscription);
+      repository.create.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createSubscriptionDto)).rejects.toEqual(
@@ -232,57 +220,23 @@ describe('SubscriptionService', () => {
   });
 
   describe('update()', () => {
-    const subscription = { update: jest.fn() };
-
-    beforeEach(() => {
-      sequelize.transaction.mockImplementation((callback) => callback());
-    });
+    const subscription = {};
 
     afterEach(() => {
       distributionEventService.findOne.mockClear();
-      subscriptionModel.findOne.mockClear();
-      subscription.update.mockClear();
+      repository.update.mockClear();
     });
 
-    it('should update a subscription (w/o filters)', async () => {
+    it('should update a subscription', async () => {
       // Arrange.
-      const subscription = { update: jest.fn() };
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
-      subscriptionModel.findOne.mockResolvedValue(subscription);
+      repository.findOne.mockResolvedValue(subscription);
 
       // Act.
       await service.update(eventType, '', {} as UpdateSubscriptionDto);
 
       // Assert.
-      expect(subscription.update).toHaveBeenCalled();
-    });
-
-    it('should update the subscription (w/filters)', async () => {
-      // Arrange.
-      const subscription = {
-        filters: [],
-        update: jest.fn(() => subscription),
-        reload: jest.fn(),
-      };
-      const filters: SubscriptionFilterDto[] = [
-        {
-          field: 'unit-test',
-          operator: FilterOps.EQUALS,
-          value: 'Legend of Zelda: Tears of the Kingdom',
-          dataType: 'string',
-        },
-      ];
-      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
-      subscriptionModel.findOne.mockResolvedValue(subscription);
-
-      // Act.
-      await service.update(eventType, '', {
-        filters,
-      } as UpdateSubscriptionDto);
-
-      // Assert.
-      expect(subscription.update).toHaveBeenCalled();
-      expect(subscriptionFilterModel.create).toHaveBeenCalled();
+      expect(repository.update).toHaveBeenCalled();
     });
 
     it('should yield the updated subscription', async () => {
@@ -294,14 +248,11 @@ describe('SubscriptionService', () => {
             operator: FilterOps.EQUALS,
             value: 'Legend of Zelda: Tears of the Kingdom',
             dataType: 'string',
-            destroy: jest.fn(),
           },
         ],
-        update: jest.fn(() => subscription),
-        reload: jest.fn(() => subscription),
       };
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
-      subscriptionModel.findOne.mockResolvedValue(subscription);
+      repository.update.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(
@@ -318,7 +269,7 @@ describe('SubscriptionService', () => {
         `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
       distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
-      subscriptionModel.findOne.mockResolvedValue(null);
+      repository.update.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -345,15 +296,13 @@ describe('SubscriptionService', () => {
 
     it('should remove a subscription from all distribution event(s)', async () => {
       // Arrange.
-      subscriptionModel.findOne.mockResolvedValue({});
+      repository.findOne.mockResolvedValue({});
 
       // Act.
       await service.removeAll(subscriberId);
 
       // Assert.
-      expect(subscriptionModel.destroy).toHaveBeenCalledWith({
-        where: { subscriberId },
-      });
+      expect(repository.removeAll).toHaveBeenCalledWith(subscriberId);
     });
 
     it('should throw a "MissingException" if the repository does have at least one subscription', async () => {
@@ -361,7 +310,7 @@ describe('SubscriptionService', () => {
       const expectedResult = new MissingException(
         `Subscription(s) with subscriberId=${subscriberId} not found!`,
       );
-      subscriptionModel.findOne.mockResolvedValue(null);
+      repository.removeAll.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.removeAll(subscriberId)).rejects.toEqual(
@@ -372,16 +321,15 @@ describe('SubscriptionService', () => {
 
   describe('remove()', () => {
     const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
-    const subscription = { destroy: jest.fn() };
+    const subscription = {};
 
     afterEach(() => {
-      subscription.destroy.mockClear();
       distributionEventService.findOne.mockClear();
     });
 
     it('should remove a subscription', async () => {
       // Arrange.
-      subscriptionModel.findOne.mockResolvedValue(subscription);
+      repository.findOne.mockResolvedValue(subscription);
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
@@ -390,7 +338,7 @@ describe('SubscriptionService', () => {
       await service.remove(eventType, subscriberId);
 
       // Assert.
-      expect(subscription.destroy).toHaveBeenCalled();
+      expect(repository.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the repository returns null/undefined', async () => {
@@ -401,7 +349,7 @@ describe('SubscriptionService', () => {
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
       } as DistributionRule);
-      subscriptionModel.findByPk.mockResolvedValue(null);
+      repository.remove.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(eventType, subscriberId)).rejects.toEqual(

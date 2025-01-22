@@ -8,13 +8,8 @@ import {
   createMockRepository,
   createMockSequelize,
 } from '../../../../test/helpers/database.helper';
-import {
-  MockDistributionEventService,
-  createDistributionEventServiceMock,
-} from '../../../../test/helpers/provider.helper';
 import { FilterJoinOps, FilterOps } from '../../../common/types/filter.type';
 import { SubscriptionType } from '../../../common/types/subscription-type.type';
-import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 import { DistributionEvent } from '../../distribution-event/repository/entities/distribution-event.entity';
 import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
@@ -28,7 +23,6 @@ describe('PostgresSubscriptionRepository', () => {
   let repository: PostgresSubscriptionRepository;
   let subscriptionModel: MockRepository;
   let subscriptionFilterModel: MockRepository;
-  let distributionEventService: MockDistributionEventService;
   let sequelize: MockSequelize;
 
   const eventType = 'unit-test';
@@ -46,10 +40,6 @@ describe('PostgresSubscriptionRepository', () => {
           useValue: createMockRepository<SubscriptionFilter>(),
         },
         {
-          provide: DistributionEventService,
-          useValue: createDistributionEventServiceMock(),
-        },
-        {
           provide: Sequelize,
           useValue: createMockSequelize(),
         },
@@ -62,9 +52,6 @@ describe('PostgresSubscriptionRepository', () => {
     subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
     subscriptionFilterModel = module.get<MockRepository>(
       getModelToken(SubscriptionFilter),
-    );
-    distributionEventService = module.get<MockDistributionEventService>(
-      DistributionEventService,
     );
     sequelize = module.get<MockSequelize>(Sequelize);
   });
@@ -105,7 +92,6 @@ describe('PostgresSubscriptionRepository', () => {
   describe('findOne()', () => {
     afterEach(() => {
       subscriptionModel.findByPk.mockClear();
-      distributionEventService.findOne.mockClear();
     });
 
     it('should yield a subscription', async () => {
@@ -115,9 +101,6 @@ describe('PostgresSubscriptionRepository', () => {
         filterJoin: FilterJoinOps.AND,
         data: { url: 'http://localhost:9999/subscriptions' },
       } as Subscription;
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
       subscriptionModel.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -130,28 +113,12 @@ describe('PostgresSubscriptionRepository', () => {
       // Arrange.
       const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
 
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
       subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
         repository.findOne(eventType, subscriberId),
       ).resolves.toBeNull();
-    });
-
-    it('should throw a "MissingException" if the distribution event does not exist', async () => {
-      // Arrange.
-      const expectedResult = new MissingException(
-        `Distribution Rule for eventType=${eventType} not found!`,
-      );
-      distributionEventService.findOne.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(repository.findOne(eventType, '')).rejects.toEqual(
-        expectedResult,
-      );
     });
   });
 
@@ -172,14 +139,10 @@ describe('PostgresSubscriptionRepository', () => {
 
     afterEach(() => {
       subscriptionModel.create.mockClear();
-      distributionEventService.findOne.mockClear();
     });
 
     it('should create a subscription', async () => {
       // Arrange.
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionEvent);
       subscriptionModel.findByPk.mockResolvedValue(null);
 
       // Act.
@@ -191,9 +154,6 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should yield the created subscription', async () => {
       // Arrange.
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionEvent);
       subscriptionModel.findByPk.mockResolvedValue(null);
       subscriptionModel.create.mockResolvedValue(subscription);
 
@@ -203,27 +163,11 @@ describe('PostgresSubscriptionRepository', () => {
       );
     });
 
-    it('should throw a "MissingException" if the distribution event does not exist', async () => {
-      // Arrange.
-      const expectedResult = new MissingException(
-        `Distribution Rule for eventType=${createSubscriptionDto.eventType} not found!`,
-      );
-      distributionEventService.findOne.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(repository.create(createSubscriptionDto)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
     it('should throw a "ExistsException" if a subscription already exists', async () => {
       // Arrange.
       const expectedResult = new ExistsException(
         `Subscription ${createSubscriptionDto.subscriberId} already exists!`,
       );
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
       subscriptionModel.findOne.mockResolvedValue({} as Subscription);
 
       // Act/Assert.
@@ -241,7 +185,6 @@ describe('PostgresSubscriptionRepository', () => {
     });
 
     afterEach(() => {
-      distributionEventService.findOne.mockClear();
       subscriptionModel.findOne.mockClear();
       subscription.update.mockClear();
     });
@@ -249,7 +192,6 @@ describe('PostgresSubscriptionRepository', () => {
     it('should update a subscription (w/o filters)', async () => {
       // Arrange.
       const subscription = { update: jest.fn() };
-      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act.
@@ -274,7 +216,6 @@ describe('PostgresSubscriptionRepository', () => {
           dataType: 'string',
         },
       ];
-      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act.
@@ -302,7 +243,6 @@ describe('PostgresSubscriptionRepository', () => {
         update: jest.fn(() => subscription),
         reload: jest.fn(() => subscription),
       };
-      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act/Assert.
@@ -319,25 +259,11 @@ describe('PostgresSubscriptionRepository', () => {
       const expectedResult = new MissingException(
         `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
-      distributionEventService.findOne.mockResolvedValue({ id: 'unit-test' });
       subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
         repository.update(eventType, subscriberId, {} as UpdateSubscriptionDto),
-      ).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw a "MissingException" if the distribution event does not exist', async () => {
-      // Arrange.
-      const expectedResult = new MissingException(
-        `Distribution Rule for eventType=${eventType} not found!`,
-      );
-      distributionEventService.findOne.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(
-        repository.update(eventType, '', {} as UpdateSubscriptionDto),
       ).rejects.toEqual(expectedResult);
     });
   });
@@ -378,15 +304,11 @@ describe('PostgresSubscriptionRepository', () => {
 
     afterEach(() => {
       subscription.destroy.mockClear();
-      distributionEventService.findOne.mockClear();
     });
 
     it('should remove a subscription', async () => {
       // Arrange.
       subscriptionModel.findOne.mockResolvedValue(subscription);
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
 
       // Act.
       await repository.remove(eventType, subscriberId);
@@ -400,23 +322,7 @@ describe('PostgresSubscriptionRepository', () => {
       const expectedResult = new MissingException(
         `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
-      distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
-      } as DistributionRule);
       subscriptionModel.findByPk.mockResolvedValue(null);
-
-      // Act/Assert.
-      await expect(repository.remove(eventType, subscriberId)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw a "MissingException" if the distribution event does not exist', async () => {
-      // Arrange.
-      const expectedResult = new MissingException(
-        `Distribution Rule for eventType=${eventType} not found!`,
-      );
-      distributionEventService.findOne.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.remove(eventType, subscriberId)).rejects.toEqual(
