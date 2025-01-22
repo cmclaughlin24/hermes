@@ -24,7 +24,7 @@
 
 ## The Problem
 
-Imagine you are an entry-level software engineer supporting the development of a new web client for an alarm system in your second year. It's only you and the lead developer. The lead developer decides to pursue another opportunity, and suddenly you find yourself promoted to the lead despite your inexperience. As you're exploring the solutoin, you start getting incident ticket after incident ticket reporting that alarm notifications aren't working, so you begin to investigate. Your realize that, with your focus on the frontend, you never noticed that the applicaiton had about 20 microservices in the backend, all communicating through RESTful APIs. (it has more microservices than frontend screens - deep breath 😰) You then begin to investigate how the microservices communicate, only to find nested calls within nested calls. Your nightmare truly begins.
+Imagine you are an entry-level software engineer supporting the development of a new web client for an alarm system in your second year. It's only you and the lead developer. The lead developer decides to pursue another opportunity, and suddenly you find yourself promoted to the lead despite your inexperience. As you're exploring the solution, you start getting incident ticket after incident ticket reporting that alarm notifications aren't working, so you begin to investigate. Your realize that, with your focus on the frontend, you never noticed that the application had about 20 microservices in the backend, all communicating through RESTful APIs. (it has more microservices than frontend screens - deep breath 😰) You then begin to investigate how the microservices communicate, only to find nested calls within nested calls. Your nightmare truly begins.
 
 ## The Solution
 
@@ -41,7 +41,7 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 ### Architecture
 
 <div align="center">
-    <img src="./docs/images/architecture.png" alt="Hermes Architecture">
+    <img src="./docs/images/technical-architecture-diagram.png" alt="Hermes Technical Architecture Diagram">
 </div>
 
 <br/>
@@ -107,9 +107,11 @@ Responsible for compiling the notification template with the data and sending th
         }
     ```
 
-2.  RabbitMQ is a reliable and mature messaging and streaming broker. It has support for powerful routing features, which is why is was selected for this project. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. RabbitMQ recieves that message from the client microservice and routes it the queue for the _Distribution Service_.
+2.  RabbitMQ is a reliable and mature messaging and streaming broker. It has support for powerful routing features, which is why is was selected for this project. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. RabbitMQ recieves that message from the client microservice and routes it the queue for the distribution service.
 
-3.
+3.  Once a message has been pushed to the distribution service, it will rehydrate the message and run a validation check. If the message passes validation, processing will continue. Otherwise the message will be marked as corrupted, the attempt will be logged to the _DistributionLog_ table in the database, and the message will **not** be retried.
+
+4.
 
 ### Performance Estimation
 
