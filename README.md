@@ -52,6 +52,10 @@ Hermes implements a microservices architecture to achieve it's requirements for 
 
 Manages the creation of users and api keys, assignment of permissons, and validates generated access tokens and api keys before Hermes resources may be accessed.
 
+<div align="center">
+    <img src="./docs/images/iam-entity-relationship.png" alt="IAM Entity Relationship" style="width:500px">
+</div>
+
 #### Distribution
 
 A rules engine that accepts a distribution event, evaluates the associated data to see if there are any registered subscriptions interested in that event, and generates notification jobs.
@@ -59,6 +63,10 @@ A rules engine that accepts a distribution event, evaluates the associated data 
 #### Notification
 
 Responsible for compiling the notification template with the data and sending the notification.
+
+<div align="center">
+    <img src="./docs/images/notification-entity-relationshiop.png" alt="Notication Entity Relationship" style="width:500px">
+</div>
 
 ### Performance Estimation
 
