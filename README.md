@@ -88,6 +88,8 @@ Responsible for compiling the notification template with the data and sending th
 
 ### Authentication & Authorization
 
+Coming Soon 🔜
+
 ### How is a notification sent?
 
 <div align="center">
@@ -162,11 +164,23 @@ Responsible for compiling the notification template with the data and sending th
 
     After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error emsage is logged to the console.
 
-7.  Creating notification jobs - Coming soon
+    _Designer's Note: A distribution rule can set the `bypassSubscriptions` flag to `true`. This indicate the subscriptions for a distribution event should not be retreived and instead the message's `recipients` property contains a list of user's who should be notified instead._
 
-8.  Notifications Service - Coming soon
+7.  With the subscriber list prepared, the next step is to transform these subscribers into notification jobs that can be published to [BullMQ](https://docs.bullmq.io/). BullMQ provides a robust queuing system built on [Redis](https://redis.io/) streams making it an excellent choice for one-to-one communication between services, such as from the distribution service to the notification service.
+
+    The conversion process can be broken down into 3 steps:
+
+    1. **Match Delivery Methods**: The initial task is to check whether any of the delivery methods specified in the distribution rule align with the subscriber's preferred notification methods - `EMAIL`, `SMS`, `CALL`, `PUSH_NOTIFICATION`. If there is a matching delivery method, the subcriber's ntofication windows are checked to ensure that the current date and time fall within any of these specified windows. This is achieved by calculating the start time in the subscriber's time zone and adding the duration to determine the end time.
+    2. **Recipient Generation**: Subscribers who meet the delivery criteria are then converted into recipients for each applicable notification method. Recipients are grouped by delivery method and filtered for uniqueness, ensuring that each subscriber receives only one notification per event.
+    3. **Job Creation**: A notification job is created for each recipient, including the corresponding template, message data, and recipient contact information. These jobs are then added to the queue, where the notification service can begin processing them.
+
+    _Designer's Note: A distribution rule can set the `checkDeliveryWindows` flag to `false`. This indicate the subscribers' delivery windows should be ignored and all subscribers should receive a notification for enabled delivery methods._
+
+8.  Notifications Service - Coming Soon 🔜
 
 ### Performance Estimation
+
+Coming Soon 🔜
 
 ## Getting Started
 
