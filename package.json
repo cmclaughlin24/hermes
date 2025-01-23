@@ -63,6 +63,7 @@
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.34.3",
+    "bullmq-otel": "^1.0.1",
     "cache-manager": "^5.7.6",
     "cache-manager-ioredis-yet": "^2.1.1",
     "class-transformer": "^0.5.1",

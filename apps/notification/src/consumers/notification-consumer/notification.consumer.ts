@@ -4,6 +4,7 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { SpanKind } from '@opentelemetry/api';
 import { Job, KeepJobs, UnrecoverableError } from 'bullmq';
+import { BullMQOtel } from 'bullmq-otel';
 import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
@@ -21,6 +22,7 @@ const BULLMQ_CONCURRENCY = +process.env.BULLMQ_CONCURRENCY;
   removeOnComplete: KEEP_JOB_OPTIONS,
   removeOnFail: KEEP_JOB_OPTIONS,
   concurrency: BULLMQ_CONCURRENCY,
+  telemetry: new BullMQOtel(process.env.BULLMQ_NOTIFICATION_QUEUE),
 })
 @OpenTelemetry()
 export class NotificationConsumer extends WorkerHost {
@@ -312,7 +314,10 @@ export class NotificationConsumer extends WorkerHost {
         result,
         null,
       );
-      await job.updateData({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({
+        ...job.data,
+        notification_database_id: databaseId,
+      });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);
@@ -347,7 +352,10 @@ export class NotificationConsumer extends WorkerHost {
         null,
         error,
       );
-      await job.updateData({ ...job.data, notification_database_id: databaseId });
+      await job.updateData({
+        ...job.data,
+        notification_database_id: databaseId,
+      });
       job.log(`${logPrefix}: Result stored in database ${databaseId}`);
     } catch (error) {
       job.log(`${logPrefix}: Failed to store result in database`);

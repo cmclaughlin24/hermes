@@ -162,7 +162,7 @@ Responsible for compiling the notification template with the data and sending th
 
     After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error emsage is logged to the console.
 
-7.  Subscriptions Retreival and Evaluation - Coming soon
+7.  Creating notification jobs - Coming soon
 
 8.  Notifications Service - Coming soon
 
