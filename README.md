@@ -37,6 +37,7 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 3. Application should be reliable (alarm notification's are critical 🚨) and try to deliver notification'sat least once.
 4. Clearly defined responsibilities and communication between services without becoming overly granular.
 5. Distributed telemetry is collected for improved insights into failure points.
+6. The solution should be flexible and support a variety of uses causes (ambitious, I know 😬)
 
 ### Architecture
 
@@ -146,7 +147,20 @@ Responsible for compiling the notification template with the data and sending th
 
     _Designer's Note: The metadata labels are inspired by Kubernete's [Labels & Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) that are used by a deployment to identify which pods it should control._
 
-6.  Subscriptions Filtering- Coming soon
+6.  Once a distribution rule is selected, the distrubtion service filters and retreives subscriptions for the distribution event. A _subscription_ expresses interest in a specific event type and can filter individual message payloads to determine if it should be notified. There are three types of subscriber:
+
+    - **Request**: Registers a callback hook to request subscriber details from the _Identify Access Management (IAM) service_ using a subscriber ID.
+    - **Device**: Registers a device for receiving web push notifications.
+    - **User**: Directly stores a user's contact information and notification preferences in the distribution service's database. _This approach is primarily recommended for development and debugging purposes due to the concerns about separation of responsibilities._
+
+    A subscription's filters are composed by setting the `filterJoin` property to `AND`, `OR`, or `NOT`, which determines the logical combination of filter results. Each filter compromises:
+
+    - `field`: Object key in the message's payload against which the filter is applied. Nested keys are delimited by "." and array elements re delimited by "\*"
+    - `operator`: Defines how the field's value is evaluated, such as `EQUALS`, `NEQUALS`, `OR`, or `MATCHES`
+    - `dataType`: The data type of value being evaluated
+    - `value`: The value to be compared
+
+    After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error emsage is logged to the console.
 
 7.  Subscriptions Retreival and Evaluation - Coming soon
 
