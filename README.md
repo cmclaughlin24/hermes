@@ -113,7 +113,39 @@ Responsible for compiling the notification template with the data and sending th
 
 4.  After validating the message, the distribution proceeds to identify and retreive the relevant distribution event. A _distribution event_ is predefined trigger with a set of _distribution rules_ that dictate how and when notifications should be sent to recipients. It is responsible for ensuring the right information is delivered to the correct recipients in the appropriate manner.
 
-5. 
+5.  The next step in the process is selecting the appropriate _distribution rules_ from those defined for an event. This selection determines the methods and conditions for dispatching a notificcation. Consider the following distribution event and associated rules:
+
+    <div align="center">
+        <img src="./docs/images/distribution-rule-example.png" alt="Distribution Rule Example" style="width:500px;">
+    </div>
+
+    <br/>
+    <br/>
+
+    The `order-confirmation` distribution event specifies certain message labels for evaluation, in this example the `languageCode` label. Two rules are defined for this event:
+
+    - **Distribution Rule #1**: Does not contain any metadata - this is known as the **default distribution rule**. Each distribution event is required to have a default rule to ensure notification delivery when no specific rules match.
+    - **Distribution Rule #2**: Contains metadata specifying `"languageCode": "es-MX"`.
+
+    <br/>
+
+    ```javascript
+        {
+            "id": "34e37416-87ed-496c-b55e-6189b7a383ef",
+            "type": "order-confirmation",
+            "payload": {},
+            "metadata": {
+                "languageCode": "es-MX",
+            },
+            "timeZone": "America/Chicago",
+            "recipients": [],
+            "addedAt": "2025-01-23T00:30:45.914Z"
+        }
+    ```
+
+    A distribution rule is selected for a message if all evaluated labels match those in the message metadata. In the example above, Distribution Rule #2 would be selected because the `languageCode` label evaluates to `es-MX`, which matches the rule's condition. If a match was not found, the default distribution rule would've been applied.
+
+    _Designer's Note: The metadata labels are inspired by Kubernete's [Labels & Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) that are used by a deployment to identify which pods it should control._
 
 ### Performance Estimation
 
