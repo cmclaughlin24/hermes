@@ -116,10 +116,9 @@ Responsible for compiling the notification template with the data and sending th
 5.  The next step in the process is selecting the appropriate _distribution rules_ from those defined for an event. This selection determines the methods and conditions for dispatching a notificcation. Consider the following distribution event and associated rules:
 
     <div align="center">
-        <img src="./docs/images/distribution-rule-example.png" alt="Distribution Rule Example" style="width:500px;">
+        <img src="./docs/images/distribution-rule-example.png" alt="Distribution Rule Example" style="width:600px;">
     </div>
 
-    <br/>
     <br/>
 
     The `order-confirmation` distribution event specifies certain message labels for evaluation, in this example the `languageCode` label. Two rules are defined for this event:
@@ -146,6 +145,12 @@ Responsible for compiling the notification template with the data and sending th
     A distribution rule is selected for a message if all evaluated labels match those in the message metadata. In the example above, Distribution Rule #2 would be selected because the `languageCode` label evaluates to `es-MX`, which matches the rule's condition. If a match was not found, the default distribution rule would've been applied.
 
     _Designer's Note: The metadata labels are inspired by Kubernete's [Labels & Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) that are used by a deployment to identify which pods it should control._
+
+6.  Subscriptions Filtering- Coming soon
+
+7.  Subscriptions Retreival and Evaluation - Coming soon
+
+8.  Notifications Service - Coming soon
 
 ### Performance Estimation
 
