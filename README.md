@@ -34,7 +34,7 @@ Fast-foward 1.5 years, with a wealth of knowledge earned under the constant barr
 
 1. Deliver notifications through a variety of methods (email, phone, text message, and web push notifications) and should support the addition of new types of notifications.
 2. Ability to deliver multiple notifications based on subscriptions to a distribution event.
-3. Application should be reliable (alarm notification's are critical 🚨) and try to deliver notification'sat least once.
+3. Application should be reliable (alarm notification's are critical 🚨) and try to deliver notification's at least once.
 4. Clearly defined responsibilities and communication between services without becoming overly granular.
 5. Distributed telemetry is collected for improved insights into failure points.
 6. The solution should be flexible and support a variety of uses causes (ambitious, I know 😬)
@@ -112,7 +112,7 @@ Coming Soon 🔜
 
 2.  RabbitMQ, a reliable and feature-rich message and streaming broker, was selected for this project due to it's powerful routing capabilities. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. Upon receiving the messsage from the client microservice, RabbitMQ routes it to the appropriate queue for the distribution service.
 
-3.  The _distribution service_ acts as a rules engine that identifies if there are any registered listeners interested in the message. Once the message enters the service, it first undergoes rehydrate and validation. If the message passes validation, processing continues; otherwise it will be marked as corrupted. Corrupted messages are logged to the _DistributionLog_ table of the database, and the message will **not** be retried.
+3.  The _distribution service_ acts as a rules engine that identifies if there are any registered listeners interested in the message. Once the message enters the service, it first undergoes rehydrate and validation. If the message passes validation, processing continues; otherwise it will be marked as corrupted. Corrupted messages are logged to the `DistributionLog` table of the database, and the message will **not** be retried. (all processed messages are stored entered into the database!)
 
 4.  After validating the message, the distribution proceeds to identify and retreive the relevant distribution event. A _distribution event_ is predefined trigger with a set of _distribution rules_ that dictate how and when notifications should be sent to recipients. It is responsible for ensuring the right information is delivered to the correct recipients in the appropriate manner.
 
@@ -157,12 +157,12 @@ Coming Soon 🔜
 
     A subscription's filters are composed by setting the `filterJoin` property to `AND`, `OR`, or `NOT`, which determines the logical combination of filter results. Each filter compromises:
 
-    - `field`: Object key in the message's payload against which the filter is applied. Nested keys are delimited by "." and array elements re delimited by "\*"
+    - `field`: Object key in the message's payload against which the filter is applied. Nested keys are delimited by "." and array elements are delimited by "\*"
     - `operator`: Defines how the field's value is evaluated, such as `EQUALS`, `NEQUALS`, `OR`, or `MATCHES`
     - `dataType`: The data type of value being evaluated
     - `value`: The value to be compared
 
-    After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error emsage is logged to the console.
+    After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error message is logged to the console.
 
     _Designer's Note: A distribution rule can set the `bypassSubscriptions` flag to `true`. This indicate the subscriptions for a distribution event should not be retreived and instead the message's `recipients` property contains a list of user's who should be notified instead._
 
@@ -176,9 +176,15 @@ Coming Soon 🔜
 
     _Designer's Note: A distribution rule can set the `checkDeliveryWindows` flag to `false`. This indicate the subscribers' delivery windows should be ignored and all subscribers should receive a notification for enabled delivery methods._
 
-8.  Notifications Service - Coming Soon 🔜
+8.  We've reached the final step in the notification process! 😁 Once one or more notification jobs have been added to BullMQ, the _notification service_ steps in to handle the rest. This service's is tasked with compiling templates and dispatching notifications.
+
+    It begins by identifying the type of job it is processing. It rehydrates and validate the job to minimize the risk of failure (sound familiar? each service ensures the validatity of data regardless of source to ensure reliability 💪). If the job passes validation, the service proceeds to compile the [Handlebars](https://handlebarsjs.com/) template using the job's data and sends out the notification. Similar to the distribution service, the notification service maintains a log of all processed notification jobs in the `NotificationLog` database table.
 
 ### Performance Estimation
+
+Coming Soon 🔜
+
+### Observability - OpenTelemetry
 
 Coming Soon 🔜
 
