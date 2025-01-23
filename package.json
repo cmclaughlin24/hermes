@@ -27,7 +27,7 @@
     "posttest:e2e": "docker compose -f ./docker/docker-compose.e2e.yaml down && docker compose -f ./docker/docker-compose.e2e.yaml rm -f database"
   },
   "dependencies": {
-    "@apollo/server": "^4.11.2",
+    "@apollo/server": "^4.11.3",
     "@bull-board/api": "^6.7.1",
     "@bull-board/express": "^6.7.1",
     "@bull-board/nestjs": "^6.7.1",
@@ -47,7 +47,7 @@
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/sequelize": "^10.0.1",
     "@nestjs/swagger": "^8.1.0",
-    "@nestjs/terminus": "^10.2.3",
+    "@nestjs/terminus": "^10.3.0",
     "@nestjs/typeorm": "^10.0.2",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.55.0",
@@ -72,12 +72,12 @@
     "flat": "^5.0.2",
     "graphql": "^16.10.0",
     "handlebars": "^4.7.8",
-    "ioredis": "^5.4.1",
+    "ioredis": "^5.4.2",
     "joi": "^17.13.3",
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
     "nestjs-twilio": "^4.4.0",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^6.10.0",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
@@ -85,7 +85,7 @@
     "rxjs": "^7.8.1",
     "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6",
-    "twilio": "^5.4.0",
+    "twilio": "^5.4.2",
     "typeorm": "^0.3.20",
     "web-push": "^3.6.7"
   },
@@ -97,7 +97,7 @@
     "@types/express": "^4.17.21",
     "@types/jest": "29.5.14",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.10",
     "@types/nodemailer": "^6.4.17",
     "@types/sequelize": "^4.28.20",
     "@types/supertest": "^6.0.2",
@@ -111,10 +111,10 @@
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.1",
+    "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "overrides": {
     "twilio": {
