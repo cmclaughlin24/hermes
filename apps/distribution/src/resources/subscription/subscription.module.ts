@@ -6,7 +6,7 @@ import { Subscription } from './repository/entities/subscription.entity';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { SubscriptionRepository } from './repository/subscription.repository';
-import { PostgresSubscriptionRepository } from './repository/postgres-subscription.repository';
+import { OrmSubscriptionRepository } from './repository/orm-subscription.repository';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { PostgresSubscriptionRepository } from './repository/postgres-subscripti
     SubscriptionService,
     {
       provide: SubscriptionRepository,
-      useClass: PostgresSubscriptionRepository,
+      useClass: OrmSubscriptionRepository,
     },
   ],
   exports: [SubscriptionService],

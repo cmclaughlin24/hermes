@@ -10,17 +10,17 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { PostgresApiKeyRepository } from './postgres-api-key.repository';
+import { OrmApiKeyRepository } from './orm-api-key.repository';
 import { ApiKey } from '../entities/api-key.entity';
 
-describe('PostgresApiKeyRepository', () => {
-  let repository: PostgresApiKeyRepository;
+describe('OrmApiKeyRepository', () => {
+  let repository: OrmApiKeyRepository;
   let apiKeyModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresApiKeyRepository,
+        OrmApiKeyRepository,
         {
           provide: getRepositoryToken(ApiKey),
           useValue: createMockRepository<ApiKey>(),
@@ -28,7 +28,7 @@ describe('PostgresApiKeyRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresApiKeyRepository>(PostgresApiKeyRepository);
+    repository = module.get<OrmApiKeyRepository>(OrmApiKeyRepository);
     apiKeyModel = module.get<MockRepository>(getRepositoryToken(ApiKey));
   });
 

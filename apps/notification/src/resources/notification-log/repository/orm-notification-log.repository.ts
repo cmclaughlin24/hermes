@@ -8,7 +8,7 @@ import { Job, JobState } from 'bullmq';
 import { NotificationLogRepository } from './notification-log.repository';
 
 @Injectable()
-export class PostgresNotificationLogRepository
+export class OrmNotificationLogRepository
   implements NotificationLogRepository
 {
   constructor(

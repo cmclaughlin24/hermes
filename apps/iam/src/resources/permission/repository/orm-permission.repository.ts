@@ -12,7 +12,7 @@ import {
 import { UpdatePermissionInput } from '../dto/update-permission.input';
 
 @Injectable()
-export class PostgresPermissionRepository implements PermissionRepository {
+export class OrmPermissionRepository implements PermissionRepository {
   constructor(
     @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,

@@ -11,14 +11,14 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { PostgresUserRepository } from './postgres-user.repository';
+import { OrmUserRepository } from './orm-user.repository';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 import { DeliveryWindow } from './entities/delivery-window.entity';
 import { User } from './entities/user.entity';
 
-describe('PostgresUserRepository', () => {
-  let repository: PostgresUserRepository;
+describe('OrmUserRepository', () => {
+  let repository: OrmUserRepository;
   let userModel: MockRepository;
 
   const user: User = {
@@ -35,7 +35,7 @@ describe('PostgresUserRepository', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresUserRepository,
+        OrmUserRepository,
         {
           provide: getRepositoryToken(User),
           useValue: createMockRepository<User>(),
@@ -47,7 +47,7 @@ describe('PostgresUserRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresUserRepository>(PostgresUserRepository);
+    repository = module.get<OrmUserRepository>(OrmUserRepository);
     userModel = module.get<MockRepository>(getRepositoryToken(User));
   });
 

@@ -9,7 +9,7 @@ import { ApiKeyResolver } from './api-key.resolver';
 import { ApiKeyService } from './api-key.service';
 import { ApiKey } from './entities/api-key.entity';
 import { ApiKeyRepository } from './repository/api-key.repository';
-import { PostgresApiKeyRepository } from './repository/postgres-api-key.repository';
+import { OrmApiKeyRepository } from './repository/orm-api-key.repository';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { PostgresApiKeyRepository } from './repository/postgres-api-key.reposito
   providers: [
     ApiKeyResolver,
     ApiKeyService,
-    { provide: ApiKeyRepository, useClass: PostgresApiKeyRepository },
+    { provide: ApiKeyRepository, useClass: OrmApiKeyRepository },
   ],
   exports: [ApiKeyService],
 })

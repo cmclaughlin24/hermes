@@ -13,16 +13,16 @@ import {
 import { CreatePermissionInput } from '../dto/create-permission.input';
 import { UpdatePermissionInput } from '../dto/update-permission.input';
 import { Permission } from './entities/permission.entity';
-import { PostgresPermissionRepository } from './postgres-permission.repository';
+import { OrmPermissionRepository } from './orm-permission.repository';
 
-describe('PostgresPermissionRepository', () => {
-  let repository: PostgresPermissionRepository;
+describe('OrmPermissionRepository', () => {
+  let repository: OrmPermissionRepository;
   let permissionModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresPermissionRepository,
+        OrmPermissionRepository,
         {
           provide: getRepositoryToken(Permission),
           useValue: createMockRepository<Permission>(),
@@ -30,8 +30,8 @@ describe('PostgresPermissionRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresPermissionRepository>(
-      PostgresPermissionRepository,
+    repository = module.get<OrmPermissionRepository>(
+      OrmPermissionRepository,
     );
     permissionModel = module.get<MockRepository>(
       getRepositoryToken(Permission),

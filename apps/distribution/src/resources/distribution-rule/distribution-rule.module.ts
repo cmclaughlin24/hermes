@@ -5,7 +5,7 @@ import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
 import { DistributionRule } from './repository/entities/distribution-rule.entity';
 import { DistributionRuleRepository } from './repository/distribution-rule.repository';
-import { PostgresDistributionRuleRepository } from './repository/postgres-distribution-rule.repository';
+import { OrmDistributionRuleRepository } from './repository/orm-distribution-rule.repository';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { PostgresDistributionRuleRepository } from './repository/postgres-distri
     DistributionRuleService,
     {
       provide: DistributionRuleRepository,
-      useClass: PostgresDistributionRuleRepository,
+      useClass: OrmDistributionRuleRepository,
     },
   ],
   exports: [DistributionRuleService],

@@ -10,17 +10,17 @@ import { SubscriptionFilter } from '../../subscription/repository/entities/subsc
 import { Subscription } from '../../subscription/repository/entities/subscription.entity';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
-import { PostgresDistributionEventRepository } from './postgres-distribution-event.repository';
+import { OrmDistributionEventRepository } from './orm-distribution-event.repository';
 import { DistributionEvent } from './entities/distribution-event.entity';
 
-describe('PostgresDistributionEventRepository', () => {
-  let repository: PostgresDistributionEventRepository;
+describe('OrmDistributionEventRepository', () => {
+  let repository: OrmDistributionEventRepository;
   let distributionEventModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresDistributionEventRepository,
+        OrmDistributionEventRepository,
         {
           provide: getModelToken(DistributionEvent),
           useValue: createMockRepository(),
@@ -28,8 +28,8 @@ describe('PostgresDistributionEventRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresDistributionEventRepository>(
-      PostgresDistributionEventRepository,
+    repository = module.get<OrmDistributionEventRepository>(
+      OrmDistributionEventRepository,
     );
     distributionEventModel = module.get<MockRepository>(
       getModelToken(DistributionEvent),

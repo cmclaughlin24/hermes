@@ -10,7 +10,7 @@ import { SubscriptionFilter } from '../../subscription/repository/entities/subsc
 import { Subscription } from '../../subscription/repository/entities/subscription.entity';
 
 @Injectable()
-export class PostgresDistributionEventRepository
+export class OrmDistributionEventRepository
   implements DistributionEventRepository
 {
   constructor(

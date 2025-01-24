@@ -4,7 +4,7 @@ import { Permission } from './repository/entities/permission.entity';
 import { PermissionResolver } from './permission.resolver';
 import { PermissionService } from './permission.service';
 import { PermissionRepository } from './repository/permission.repository';
-import { PostgresPermissionRepository } from './repository/postgres-permission.repository';
+import { OrmPermissionRepository } from './repository/orm-permission.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Permission])],
@@ -13,7 +13,7 @@ import { PostgresPermissionRepository } from './repository/postgres-permission.r
     PermissionService,
     {
       provide: PermissionRepository,
-      useClass: PostgresPermissionRepository,
+      useClass: OrmPermissionRepository,
     },
   ],
   exports: [PermissionService],

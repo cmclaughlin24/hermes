@@ -11,7 +11,7 @@ import { SubscriptionFilterDto } from '../dto/subscription-filter.dto';
 import { Transaction } from 'sequelize';
 
 @Injectable()
-export class PostgresSubscriptionRepository implements SubscriptionRepository {
+export class OrmSubscriptionRepository implements SubscriptionRepository {
   constructor(
     @InjectModel(Subscription)
     private readonly subscriptionModel: typeof Subscription,

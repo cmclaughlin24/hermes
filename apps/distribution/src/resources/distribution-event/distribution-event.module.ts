@@ -4,7 +4,7 @@ import { DistributionEventController } from './distribution-event.controller';
 import { DistributionEventService } from './distribution-event.service';
 import { DistributionEvent } from './repository/entities/distribution-event.entity';
 import { DistributionEventRepository } from './repository/distribution-event.repository';
-import { PostgresDistributionEventRepository } from './repository/postgres-distribution-event.repository';
+import { OrmDistributionEventRepository } from './repository/orm-distribution-event.repository';
 
 @Module({
   imports: [SequelizeModule.forFeature([DistributionEvent])],
@@ -13,7 +13,7 @@ import { PostgresDistributionEventRepository } from './repository/postgres-distr
     DistributionEventService,
     {
       provide: DistributionEventRepository,
-      useClass: PostgresDistributionEventRepository,
+      useClass: OrmDistributionEventRepository,
     },
   ],
   exports: [DistributionEventService],

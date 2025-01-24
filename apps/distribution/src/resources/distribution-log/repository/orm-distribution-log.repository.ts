@@ -10,9 +10,7 @@ import { DistributionLog } from './entities/distribution-log.entity';
 import { DistributionLogRepository } from './distribution-log.repository';
 
 @Injectable()
-export class PostgresDistributionLogRepository
-  implements DistributionLogRepository
-{
+export class OrmDistributionLogRepository implements DistributionLogRepository {
   constructor(
     @InjectModel(DistributionLog)
     private readonly distributionLogModel: typeof DistributionLog,

@@ -2,7 +2,7 @@ import { ExistsException, MissingException } from '@hermes/common';
 import { NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostgresEmailTemplateRepository } from './postgres-email-template.repository';
+import { OrmEmailTemplateRepository } from './orm-email-template.repository';
 import {
   createMockRepository,
   MockRepository,
@@ -11,14 +11,14 @@ import { EmailTemplate } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
-describe('PostgresEmailTemplateRepository', () => {
-  let repository: PostgresEmailTemplateRepository;
+describe('OrmEmailTemplateRepository', () => {
+  let repository: OrmEmailTemplateRepository;
   let emailTemplateModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresEmailTemplateRepository,
+        OrmEmailTemplateRepository,
         {
           provide: getModelToken(EmailTemplate),
           useValue: createMockRepository<EmailTemplate>(),
@@ -26,8 +26,8 @@ describe('PostgresEmailTemplateRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresEmailTemplateRepository>(
-      PostgresEmailTemplateRepository,
+    repository = module.get<OrmEmailTemplateRepository>(
+      OrmEmailTemplateRepository,
     );
     emailTemplateModel = module.get<MockRepository>(
       getModelToken(EmailTemplate),

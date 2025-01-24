@@ -13,10 +13,10 @@ import { DistributionJob } from '../../../common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
-import { PostgresDistributionLogRepository } from './postgres-distribution-log.repository';
+import { OrmDistributionLogRepository } from './orm-distribution-log.repository';
 
 describe('PostgresDistributionLogRepository', () => {
-  let repository: PostgresDistributionLogRepository;
+  let repository: OrmDistributionLogRepository;
   let distributionLogModel: MockRepository;
   let distributionAttemptModel: MockRepository;
   let sequelize: MockSequelize;
@@ -41,7 +41,7 @@ describe('PostgresDistributionLogRepository', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresDistributionLogRepository,
+        OrmDistributionLogRepository,
         {
           provide: getModelToken(DistributionLog),
           useValue: createMockRepository(),
@@ -57,8 +57,8 @@ describe('PostgresDistributionLogRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresDistributionLogRepository>(
-      PostgresDistributionLogRepository,
+    repository = module.get<OrmDistributionLogRepository>(
+      OrmDistributionLogRepository,
     );
     distributionLogModel = module.get<MockRepository>(
       getModelToken(DistributionLog),
