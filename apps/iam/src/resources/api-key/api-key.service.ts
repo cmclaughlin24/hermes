@@ -1,32 +1,27 @@
 import {
-  ExistsException,
   MissingException,
-  PostgresError,
   RemoveCache,
   UseCache,
   defaultHashFn,
 } from '@hermes/common';
 import { packPermissions } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import * as _ from 'lodash';
-import { Repository } from 'typeorm';
 import { HashingService } from '../../common/services/hashing.service';
 import { CreatePermissionInput } from '../permission/dto/create-permission.input';
 import { PermissionService } from '../permission/permission.service';
 import { CreateApiKeyInput } from './dto/create-api-key.input';
 import { ActiveKeyData } from './entities/active-key.entity';
-import { ApiKey } from './entities/api-key.entity';
 import { InvalidApiKeyException } from './errors/invalid-api-key.exception';
+import { ApiKeyRepository } from './repository/api-key.repository';
 
 @Injectable()
 export class ApiKeyService {
   private static readonly CACHE_KEY = 'api-key';
 
   constructor(
-    @InjectRepository(ApiKey)
-    private readonly apiKeyRepository: Repository<ApiKey>,
+    private readonly repository: ApiKeyRepository,
     private readonly hashingService: HashingService,
     private readonly permissionService: PermissionService,
   ) {}
@@ -36,7 +31,6 @@ export class ApiKeyService {
    * name already exists.
    * @param {CreateApiKeyInput} createApiKeyInput
    * @param {string} userId
-   * @returns {Promise<string>}
    */
   async create(createApiKeyInput: CreateApiKeyInput, userId: string) {
     const apiKeyId = randomUUID();
@@ -52,24 +46,13 @@ export class ApiKeyService {
     });
     const hashedKey = await this.hashingService.hash(apiKey);
 
-    try {
-      const apiKeyEntity = this.apiKeyRepository.create({
-        id: apiKeyId,
-        name: createApiKeyInput.name,
-        apiKey: hashedKey,
-        expiresAt: expiresAt,
-        createdBy: userId,
-      });
-
-      await this.apiKeyRepository.save(apiKeyEntity);
-    } catch (error) {
-      if (error.code === PostgresError.UNIQUE_VIOLATION) {
-        throw new ExistsException(
-          `Api key with name=${createApiKeyInput.name} already exists!`,
-        );
-      }
-      throw error;
-    }
+    await this.repository.create({
+      id: apiKeyId,
+      name: createApiKeyInput.name,
+      apiKey: hashedKey,
+      expiresAt: expiresAt,
+      createdBy: userId,
+    });
 
     return apiKey;
   }
@@ -83,30 +66,19 @@ export class ApiKeyService {
    *
    * @param {string} id
    * @param {string} userId
-   * @returns {Promise<ApiKey>}
    */
   @RemoveCache({
     key: ApiKeyService.CACHE_KEY,
     hashFn: (key, args) => defaultHashFn(key, [args[0]]),
   })
   async remove(id: string, userId: string) {
-    const apiKey = await this.apiKeyRepository.findOneBy({ id });
-
-    if (!apiKey) {
-      throw new MissingException(`Api key id=${id} not found!`);
-    }
-
-    apiKey.deletedBy = userId;
-    apiKey.deletedAt = new Date();
-
-    return this.apiKeyRepository.save(apiKey);
+    return this.repository.remove(id, userId);
   }
 
   /**
    * Yields an `ActiveKeyData` or throws an `InvalidApiKeyException` if the token
    * is invalid.
    * @param {string} apiKey
-   * @returns {Promise<ActiveKeyData>}
    */
   async verifyApiKey(apiKey: string) {
     const entity = this._extractDataFromApiKey(apiKey);
@@ -125,13 +97,12 @@ export class ApiKeyService {
 
   @UseCache({ key: ApiKeyService.CACHE_KEY, ttl: 30000 })
   private async _getApiKey(id: string) {
-    return this.apiKeyRepository.findOneBy({ id });
+    return this.repository.findById(id);
   }
 
   /**
    * Yields an api key.
    * @param {ActiveKeyData} activeKeyData
-   * @returns {string}
    */
   private _generateApiKey(activeKeyData: ActiveKeyData) {
     return Buffer.from(JSON.stringify(activeKeyData)).toString('base64');
@@ -165,7 +136,6 @@ export class ApiKeyService {
   /**
    * Yields a list of permissions.
    * @param {CreatePermissionInput} permissions
-   * @returns {Promise<Permission[]>}
    */
   private async _getPermissions(permissions: CreatePermissionInput[]) {
     if (_.isEmpty(permissions)) {
@@ -182,7 +152,6 @@ export class ApiKeyService {
    * a permission does not exist.
    * @param {string} resource
    * @param {string} action
-   * @returns {Promise<Permission>}
    */
   private async _findPermission(resource: string, action: string) {
     const permission = await this.permissionService.findByResourceAction(
