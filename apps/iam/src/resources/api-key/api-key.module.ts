@@ -8,6 +8,8 @@ import { PermissionModule } from '../permission/permission.module';
 import { ApiKeyResolver } from './api-key.resolver';
 import { ApiKeyService } from './api-key.service';
 import { ApiKey } from './entities/api-key.entity';
+import { ApiKeyRepository } from './repository/api-key.repository';
+import { PostgresApiKeyRepository } from './repository/postgres-api-key.repository';
 
 @Module({
   imports: [
@@ -20,7 +22,11 @@ import { ApiKey } from './entities/api-key.entity';
     CommonModule,
     PermissionModule,
   ],
-  providers: [ApiKeyResolver, ApiKeyService],
+  providers: [
+    ApiKeyResolver,
+    ApiKeyService,
+    { provide: ApiKeyRepository, useClass: PostgresApiKeyRepository },
+  ],
   exports: [ApiKeyService],
 })
 export class ApiKeyModule {}
