@@ -5,19 +5,19 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { PostgresPushTemplateRepository } from './postgres-push-template.repository';
+import { OrmPushTemplateRepository } from './orm-push-template.repository';
 import { PushTemplate } from './entities/push-template.entity';
 import { PushAction } from './entities/push-action.entity';
 import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 
-describe('PostgresPushTemplateRepository', () => {
-  let repository: PostgresPushTemplateRepository;
+describe('OrmPushTemplateRepository', () => {
+  let repository: OrmPushTemplateRepository;
   let pushTemplateModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresPushTemplateRepository,
+        OrmPushTemplateRepository,
         {
           provide: getModelToken(PushTemplate),
           useValue: createMockRepository(),
@@ -29,8 +29,8 @@ describe('PostgresPushTemplateRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresPushTemplateRepository>(
-      PostgresPushTemplateRepository,
+    repository = module.get<OrmPushTemplateRepository>(
+      OrmPushTemplateRepository,
     );
     pushTemplateModel = module.get<MockRepository>(getModelToken(PushTemplate));
   });

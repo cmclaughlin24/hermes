@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { ApiKeyRepository } from './api-key.repository';
 import { ApiKey } from '../entities/api-key.entity';
 
-export class PostgresApiKeyRepository implements ApiKeyRepository {
+export class OrmApiKeyRepository implements ApiKeyRepository {
   constructor(
     @InjectRepository(ApiKey)
     private readonly apiKeyRepository: Repository<ApiKey>,

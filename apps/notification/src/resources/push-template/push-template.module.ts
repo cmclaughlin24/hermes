@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PushTemplate } from './repository/entities/push-template.entity';
 import { PushAction } from './repository/entities/push-action.entity';
 import { PushTemplateRepository } from './repository/push-template.repository';
-import { PostgresPushTemplateRepository } from './repository/postgres-push-template.repository';
+import { OrmPushTemplateRepository } from './repository/orm-push-template.repository';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { PostgresPushTemplateRepository } from './repository/postgres-push-templ
     PushTemplateService,
     {
       provide: PushTemplateRepository,
-      useClass: PostgresPushTemplateRepository,
+      useClass: OrmPushTemplateRepository,
     },
   ],
   exports: [PushTemplateService],

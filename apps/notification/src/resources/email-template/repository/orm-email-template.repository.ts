@@ -8,7 +8,7 @@ import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
 @Injectable()
-export class PostgresEmailTemplateRepository
+export class OrmEmailTemplateRepository
   implements EmailTemplateRepository
 {
   constructor(

@@ -10,10 +10,10 @@ import {
 } from '../../../../test/helpers/database.helper';
 import { NotificationAttempt } from './entities/notification-attempt.entity';
 import { NotificationLog } from './entities/notification-log.entity';
-import { PostgresNotificationLogRepository } from './postgres-notification-log.repository';
+import { OrmNotificationLogRepository } from './orm-notification-log.repository';
 
-describe('PostgresNotificationLogRepository', () => {
-  let repository: PostgresNotificationLogRepository;
+describe('OrmNotificationLogRepository', () => {
+  let repository: OrmNotificationLogRepository;
   let notificationLogRepository: MockRepository;
   let notificationAttemptRepository: MockRepository;
   let dataSource: MockDataSource;
@@ -31,7 +31,7 @@ describe('PostgresNotificationLogRepository', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresNotificationLogRepository,
+        OrmNotificationLogRepository,
         {
           provide: getModelToken(NotificationLog),
           useValue: createMockRepository<NotificationLog>(),
@@ -47,8 +47,8 @@ describe('PostgresNotificationLogRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresNotificationLogRepository>(
-      PostgresNotificationLogRepository,
+    repository = module.get<OrmNotificationLogRepository>(
+      OrmNotificationLogRepository,
     );
     notificationLogRepository = module.get<MockRepository>(
       getModelToken(NotificationLog),

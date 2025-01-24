@@ -11,7 +11,7 @@ import { UserPermissionResolver } from './resolvers/user-permission.resolver';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { UserRepository } from './repository/user.repository';
-import { PostgresUserRepository } from './repository/postgres-user.repository';
+import { OrmUserRepository } from './repository/orm-user.repository';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { PostgresUserRepository } from './repository/postgres-user.repository';
     UserPermissionLoader,
     {
       provide: UserRepository,
-      useClass: PostgresUserRepository,
+      useClass: OrmUserRepository,
     },
   ],
   exports: [UserService],

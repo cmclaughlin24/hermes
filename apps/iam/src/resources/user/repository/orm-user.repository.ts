@@ -16,7 +16,7 @@ import { UpdateUserInput } from '../dto/update-user.input';
 import { DeliveryWindowInput } from '../dto/delivery-window.input';
 
 @Injectable()
-export class PostgresUserRepository implements UserRepository {
+export class OrmUserRepository implements UserRepository {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(DeliveryWindow)

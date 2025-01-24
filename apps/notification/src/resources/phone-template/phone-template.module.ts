@@ -5,7 +5,7 @@ import { cacheFactory } from '../../config/cache.config';
 import { PhoneTemplateController } from './phone-template.controller';
 import { PhoneTemplateService } from './phone-template.service';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
-import { PostgresPhoneTemplateRepository } from './repository/postgres-phone-template.repository';
+import { OrmPhoneTemplateRepository } from './repository/orm-phone-template.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PhoneTemplate } from './repository/entities/phone-template.entity';
 
@@ -23,7 +23,7 @@ import { PhoneTemplate } from './repository/entities/phone-template.entity';
     PhoneTemplateService,
     {
       provide: PhoneTemplateRepository,
-      useClass: PostgresPhoneTemplateRepository,
+      useClass: OrmPhoneTemplateRepository,
     },
   ],
   exports: [PhoneTemplateService],

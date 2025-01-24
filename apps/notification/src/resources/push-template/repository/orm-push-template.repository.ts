@@ -13,7 +13,7 @@ import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
 
 @Injectable()
-export class PostgresPushTemplateRepository implements PushTemplateRepository {
+export class OrmPushTemplateRepository implements PushTemplateRepository {
   constructor(
     @InjectRepository(PushTemplate)
     private readonly pushTemplateModel: Repository<PushTemplate>,

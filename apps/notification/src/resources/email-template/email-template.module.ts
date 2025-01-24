@@ -5,7 +5,7 @@ import { cacheFactory } from '../../config/cache.config';
 import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
 import { EmailTemplateRepository } from './repository/email-template.repository';
-import { PostgresEmailTemplateRepository } from './repository/postgres-email-template.repository';
+import { OrmEmailTemplateRepository } from './repository/orm-email-template.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailTemplate } from './repository/entities/email-template.entity';
 
@@ -23,7 +23,7 @@ import { EmailTemplate } from './repository/entities/email-template.entity';
     EmailTemplateService,
     {
       provide: EmailTemplateRepository,
-      useClass: PostgresEmailTemplateRepository,
+      useClass: OrmEmailTemplateRepository,
     },
   ],
   exports: [EmailTemplateService],

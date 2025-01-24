@@ -6,19 +6,18 @@ import {
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
 import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
-import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
 import { DistributionRule } from './entities/distribution-rule.entity';
-import { PostgresDistributionRuleRepository } from './postgres-distribution-rule.repository';
+import { OrmDistributionRuleRepository } from './orm-distribution-rule.repository';
 
 describe('PostgresDistributionRuleRepository', () => {
-  let repository: PostgresDistributionRuleRepository;
+  let repository: OrmDistributionRuleRepository;
   let distributionRuleModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresDistributionRuleRepository,
+        OrmDistributionRuleRepository,
         {
           provide: getModelToken(DistributionRule),
           useValue: createMockRepository(),
@@ -26,8 +25,8 @@ describe('PostgresDistributionRuleRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresDistributionRuleRepository>(
-      PostgresDistributionRuleRepository,
+    repository = module.get<OrmDistributionRuleRepository>(
+      OrmDistributionRuleRepository,
     );
     distributionRuleModel = module.get<MockRepository>(
       getModelToken(DistributionRule),

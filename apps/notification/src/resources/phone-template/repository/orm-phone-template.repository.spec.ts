@@ -12,16 +12,16 @@ import {
 import { CreatePhoneTemplateDto } from '../../../resources/phone-template/dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from '../../../resources/phone-template/dto/update-phone-template.dto';
 import { PhoneTemplate } from './entities/phone-template.entity';
-import { PostgresPhoneTemplateRepository } from './postgres-phone-template.repository';
+import { OrmPhoneTemplateRepository } from './orm-phone-template.repository';
 
-describe('PostgresPhoneTemplateRepository', () => {
-  let repository: PostgresPhoneTemplateRepository;
+describe('OrmPhoneTemplateRepository', () => {
+  let repository: OrmPhoneTemplateRepository;
   let phoneTemplateModel: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresPhoneTemplateRepository,
+        OrmPhoneTemplateRepository,
         {
           provide: getModelToken(PhoneTemplate),
           useValue: createMockRepository(),
@@ -29,8 +29,8 @@ describe('PostgresPhoneTemplateRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresPhoneTemplateRepository>(
-      PostgresPhoneTemplateRepository,
+    repository = module.get<OrmPhoneTemplateRepository>(
+      OrmPhoneTemplateRepository,
     );
     phoneTemplateModel = module.get<MockRepository>(
       getModelToken(PhoneTemplate),

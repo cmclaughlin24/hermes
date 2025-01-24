@@ -10,17 +10,15 @@ import {
 } from '../../../../test/helpers/database.helper';
 import { FilterJoinOps, FilterOps } from '../../../common/types/filter.type';
 import { SubscriptionType } from '../../../common/types/subscription-type.type';
-import { DistributionEvent } from '../../distribution-event/repository/entities/distribution-event.entity';
-import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { SubscriptionFilterDto } from '../dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
 import { SubscriptionFilter } from './entities/subscription-filter.entity';
 import { Subscription } from './entities/subscription.entity';
-import { PostgresSubscriptionRepository } from './postgres-subscription.repository';
+import { OrmSubscriptionRepository } from './orm-subscription.repository';
 
 describe('PostgresSubscriptionRepository', () => {
-  let repository: PostgresSubscriptionRepository;
+  let repository: OrmSubscriptionRepository;
   let subscriptionModel: MockRepository;
   let subscriptionFilterModel: MockRepository;
   let sequelize: MockSequelize;
@@ -30,7 +28,7 @@ describe('PostgresSubscriptionRepository', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PostgresSubscriptionRepository,
+        OrmSubscriptionRepository,
         {
           provide: getModelToken(Subscription),
           useValue: createMockRepository<Subscription>(),
@@ -46,8 +44,8 @@ describe('PostgresSubscriptionRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PostgresSubscriptionRepository>(
-      PostgresSubscriptionRepository,
+    repository = module.get<OrmSubscriptionRepository>(
+      OrmSubscriptionRepository,
     );
     subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
     subscriptionFilterModel = module.get<MockRepository>(

@@ -12,7 +12,7 @@ import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
 import { PhoneTemplateRepository } from './phone-template.repository';
 
 @Injectable()
-export class PostgresPhoneTemplateRepository
+export class OrmPhoneTemplateRepository
   implements PhoneTemplateRepository
 {
   constructor(

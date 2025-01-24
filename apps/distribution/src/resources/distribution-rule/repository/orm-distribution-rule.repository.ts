@@ -11,7 +11,7 @@ import { DefaultRuleException } from '../../../common/errors/default-rule.except
 import { Op } from 'sequelize';
 
 @Injectable()
-export class PostgresDistributionRuleRepository
+export class OrmDistributionRuleRepository
   implements DistributionRuleRepository
 {
   constructor(
