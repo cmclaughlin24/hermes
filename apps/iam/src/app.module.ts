@@ -51,7 +51,7 @@ import { CoreModule } from './core/core.module';
       }),
     }),
     ResourcesModule,
-    CoreModule.forRoot({ driver: 'mariadb' }),
+    CoreModule.forRoot({ driver: 'postgres' }),
   ],
 })
 export class AppModule {}
