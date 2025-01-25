@@ -17,7 +17,8 @@
 ![Static Badge](https://img.shields.io/badge/Helm-grey?style=for-the-badge&logo=Helm)
 ![Static Badge](https://img.shields.io/badge/Redis-grey?style=for-the-badge&logo=Redis)
 ![Static Badge](https://img.shields.io/badge/RabbitMQ-grey?style=for-the-badge&logo=RabbitMQ)
-![Static Badge](https://img.shields.io/badge/PostgresSQL-grey?style=for-the-badge&logo=PostgresSQL)
+![Static Badge](https://img.shields.io/badge/PostgreSQL-grey?style=for-the-badge&logo=PostgreSQL)
+![Static Badge](https://img.shields.io/badge/MariaDB-grey?style=for-the-badge&logo=MariaDB)
 ![Static Badge](https://img.shields.io/badge/OpenTelemetry-grey?style=for-the-badge&logo=OpenTelemetry)
 
 </div>
