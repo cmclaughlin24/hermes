@@ -24,6 +24,7 @@ export class PushTemplate {
   data: string;
 
   @Column({
+    type: 'enum',
     enumName: 'TextDirection',
     enum: [TextDirection.AUTO, TextDirection.LTR, TextDirection.RTL],
     nullable: true,
@@ -74,5 +75,3 @@ export class PushTemplate {
   })
   actions: PushAction[];
 }
-
-

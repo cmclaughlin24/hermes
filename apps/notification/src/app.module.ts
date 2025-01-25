@@ -5,14 +5,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
 import { ConsumerModule } from './consumers/consumer.module';
 import { ResourcesModule } from './resources/resources.module';
-import { databaseFactory } from './config/database.config';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -60,11 +59,6 @@ import { databaseFactory } from './config/database.config';
         VAPID_PRIVATE_KEY: Joi.required(),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseFactory,
-    }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -89,6 +83,7 @@ import { databaseFactory } from './config/database.config';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
+    CoreModule.forRoot({ driver: 'mariadb' }),
     ConsumerModule,
     ResourcesModule,
   ],
