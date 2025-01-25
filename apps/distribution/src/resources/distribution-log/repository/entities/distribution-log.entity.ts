@@ -1,51 +1,52 @@
 import {
   Column,
-  CreatedAt,
-  DataType,
-  HasMany,
-  Model,
-  Table,
-  UpdatedAt,
-} from 'sequelize-typescript';
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { MessageState } from '../../../../common/types/message-state.type';
 import { DistributionAttempt } from './distribution-attempt.entity';
 
-@Table({ tableName: 'distribution_log' })
-export class DistributionLog extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
+@Entity()
+export class DistributionLog {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column
+  @Column()
   eventType: string;
 
-  @Column
+  @Column({
+    type: 'enum',
+    enumName: 'message-state',
+    enum: MessageState,
+  })
   state: MessageState;
 
-  @Column
+  @Column()
   attempts: number;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   metadata: string;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   data: string;
 
-  @Column
+  @Column()
   addedAt: Date;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   finishedAt: Date;
 
-  @CreatedAt
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdatedAt
+  @UpdateDateColumn()
   updatedAt: Date;
 
-  @HasMany(() => DistributionAttempt, { onDelete: 'CASCADE' })
+  @OneToMany(() => DistributionAttempt, (attempt) => attempt.log, {
+    cascade: true,
+  })
   attemptHistory: DistributionAttempt[];
 }

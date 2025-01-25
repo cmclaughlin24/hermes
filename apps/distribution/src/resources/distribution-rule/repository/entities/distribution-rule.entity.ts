@@ -1,79 +1,63 @@
 import { DeliveryMethods } from '@hermes/common';
 import {
-  BelongsTo,
   Column,
-  DataType,
-  Default,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { DistributionEvent } from '../../../distribution-event/repository/entities/distribution-event.entity';
 
-@Table({
-  tableName: 'distribution_rule',
-  indexes: [
-    {
-      unique: true,
-      fields: ['distributionEventType', 'metadata'],
-    },
-  ],
-})
-export class DistributionRule extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
+@Entity()
+@Unique(['distributionEventType', 'metadata'])
+export class DistributionRule {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ForeignKey(() => DistributionEvent)
+  @Column()
   distributionEventType: string;
 
-  @Column({ type: DataType.TEXT })
+  @Column({ type: 'simple-json', nullable: true })
   metadata: string;
 
   @Column({
-    type: DataType.ARRAY(
-      DataType.ENUM(
-        DeliveryMethods.EMAIL,
-        DeliveryMethods.SMS,
-        DeliveryMethods.CALL,
-        DeliveryMethods.PUSH,
-      ),
-    ),
+    type: 'enum',
+    enumName: 'deliveryMethods',
+    enum: DeliveryMethods,
   })
   deliveryMethods: DeliveryMethods[];
 
-  @Column
+  @Column({ nullable: true })
   emailSubject: string;
 
-  @Column({ type: DataType.STRING(2000), allowNull: true })
+  @Column({ length: 2000, nullable: true })
   emailTemplate: string;
 
-  @Column({ type: DataType.STRING(2000), allowNull: true })
+  @Column({ length: 2000, nullable: true })
   html: string;
 
-  @Column
+  @Column()
   text: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   smsTemplate: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   callTemplate: string;
 
-  @Column({ allowNull: true })
+  @Column({ nullable: true })
   pushTemplate: string;
 
-  @Default(false)
-  @Column
+  @Column({ default: false })
   checkDeliveryWindow: boolean;
 
-  @Default(false)
-  @Column
+  @Column({ default: false })
   bypassSubscriptions: boolean;
 
-  @BelongsTo(() => DistributionEvent)
+  @ManyToOne(() => DistributionEvent, (event) => event.rules, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'distributionEventType' })
   event: DistributionEvent;
 }

@@ -1,26 +1,31 @@
+import {
+  ExistsException,
+  MissingException,
+  PostgresError,
+} from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { DistributionEvent } from './entities/distribution-event.entity';
 import { DistributionEventRepository } from './distribution-event.repository';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
-import { ExistsException, MissingException } from '@hermes/common';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
 import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
-import { SubscriptionFilter } from '../../subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../../subscription/repository/entities/subscription.entity';
 
 @Injectable()
 export class OrmDistributionEventRepository
   implements DistributionEventRepository
 {
   constructor(
-    @InjectModel(DistributionEvent)
-    private readonly distributionEventModel: typeof DistributionEvent,
+    @InjectRepository(DistributionEvent)
+    private readonly distributionEventModel: Repository<DistributionEvent>,
+    @InjectRepository(DistributionRule)
+    private readonly distributionRuleModel: Repository<DistributionRule>,
   ) {}
 
   async findAll(includeRules: boolean, includeSubscriptions: boolean) {
-    return this.distributionEventModel.findAll({
-      include: this._buildIncludes(includeRules, includeSubscriptions),
+    return this.distributionEventModel.find({
+      relations: { rules: includeRules, subscriptions: includeSubscriptions },
     });
   }
 
@@ -29,78 +34,63 @@ export class OrmDistributionEventRepository
     includeRules: boolean = false,
     includeSubscriptions: boolean = false,
   ) {
-    return this.distributionEventModel.findByPk(eventType, {
-      include: this._buildIncludes(includeRules, includeSubscriptions),
+    return this.distributionEventModel.findOne({
+      where: { eventType },
+      relations: { rules: includeRules, subscriptions: includeSubscriptions },
     });
   }
 
   async create(createDistributionEventDto: CreateDistributionEventDto) {
-    const existingEvent = await this.distributionEventModel.findByPk(
-      createDistributionEventDto.eventType,
-    );
+    const rules =
+      createDistributionEventDto.rules?.map((rule) =>
+        this.distributionRuleModel.create(rule),
+      ) ?? [];
 
-    if (existingEvent) {
-      throw new ExistsException(
-        `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
-      );
-    }
+    const event = this.distributionEventModel.create({
+      ...createDistributionEventDto,
+      rules,
+    });
 
-    const distributionEvent = await this.distributionEventModel.create(
-      {
-        ...createDistributionEventDto,
-      },
-      { include: [DistributionRule] },
-    );
-
-    return distributionEvent;
+    return this.distributionEventModel.save(event).catch((error) => {
+      console.log(error);
+      if (error.code === PostgresError.UNIQUE_VIOLATION) {
+        throw new ExistsException(
+          `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
+        );
+      }
+      throw error;
+    });
   }
 
   async update(
     eventType: string,
     updateDistributionEventDto: UpdateDistributionEventDto,
   ) {
-    let distributionEvent =
-      await this.distributionEventModel.findByPk(eventType);
+    const event = await this.distributionEventModel.findOneBy({ eventType });
 
-    if (!distributionEvent) {
+    if (!event) {
       throw new MissingException(
         `Distribution Event for eventType=${eventType} not found!`,
       );
     }
 
-    distributionEvent = await distributionEvent.update({
-      metadataLabels:
-        updateDistributionEventDto.metadataLabels ??
-        distributionEvent.metadataLabels,
-    });
+    event.metadataLabels =
+      updateDistributionEventDto.metadataLabels ?? event.metadataLabels;
 
-    return distributionEvent;
+    return this.distributionEventModel.save(event);
   }
 
   async remove(eventType: string) {
-    const distributionEvent =
-      await this.distributionEventModel.findByPk(eventType);
+    const event = await this.distributionEventModel.findOneBy({
+      eventType,
+    });
 
-    if (!distributionEvent) {
+    if (!event) {
       throw new MissingException(
         `Distribution Event for eventType=${eventType} not found!`,
       );
     }
 
-    await distributionEvent.destroy();
-  }
-
-  private _buildIncludes(includeRules: boolean, includeSubscriptions: boolean) {
-    const includes = [];
-
-    if (includeRules) {
-      includes.push({ model: DistributionRule });
-    }
-
-    if (includeSubscriptions) {
-      includes.push({ model: Subscription, include: [SubscriptionFilter] });
-    }
-
-    return includes;
+    await this.distributionEventModel.remove(event);
   }
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
 import { DistributionAttempt } from './repository/entities/distribution-attempt.entity';
@@ -8,7 +8,7 @@ import { DistributionLogRepository } from './repository/distribution-log.reposit
 import { OrmDistributionLogRepository } from './repository/orm-distribution-log.repository';
 
 @Module({
-  imports: [SequelizeModule.forFeature([DistributionLog, DistributionAttempt])],
+  imports: [TypeOrmModule.forFeature([DistributionLog, DistributionAttempt])],
   controllers: [DistributionLogController],
   providers: [
     DistributionLogService,

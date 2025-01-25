@@ -5,6 +5,7 @@ import { DistributionEventService } from '../distribution-event/distribution-eve
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
 import { DistributionRuleRepository } from './repository/distribution-rule.repository';
+import { DefaultRuleException } from '../../common/errors/default-rule.exception';
 
 @Injectable()
 export class DistributionRuleService {
@@ -59,6 +60,21 @@ export class DistributionRuleService {
     id: string,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
+    const distributionRule = await this.repository.findOne(id, false);
+
+    if (!distributionRule) {
+      throw new MissingException(`Distribution rule for id=${id} not found!`);
+    }
+
+    if (
+      distributionRule.metadata === null &&
+      updateDistributionRuleDto.metadata !== null
+    ) {
+      throw new DefaultRuleException(
+        'The metadata for a default distribution rule must be set to null',
+      );
+    }
+
     return this.repository.update(id, updateDistributionRuleDto);
   }
 

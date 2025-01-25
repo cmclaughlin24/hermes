@@ -1,18 +1,22 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { DistributionRule } from '../../../distribution-rule/repository/entities/distribution-rule.entity';
 import { Subscription } from '../../../subscription/repository/entities/subscription.entity';
 
-@Table({ tableName: 'distribution_event' })
-export class DistributionEvent extends Model {
-  @Column({ primaryKey: true })
+@Entity()
+export class DistributionEvent {
+  @PrimaryColumn()
   eventType: string;
 
-  @Column(DataType.ARRAY(DataType.STRING))
+  @Column({ type: 'simple-array' })
   metadataLabels: string[];
 
-  @HasMany(() => DistributionRule, { onDelete: 'CASCADE' })
+  @OneToMany(() => DistributionRule, (rule) => rule.event, {
+    cascade: true,
+  })
   rules: DistributionRule[];
 
-  @HasMany(() => Subscription, { onDelete: 'CASCADE' })
+  @OneToMany(() => Subscription, (sub) => sub.distributionEvent, {
+    cascade: true,
+  })
   subscriptions: Subscription[];
 }

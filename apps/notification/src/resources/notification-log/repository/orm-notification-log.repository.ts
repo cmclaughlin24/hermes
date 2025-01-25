@@ -75,7 +75,7 @@ export class OrmNotificationLogRepository
     await queryRunner.startTransaction();
 
     try {
-      // Note: Remove the database id from the job's data before updating the record.
+      // NOTE: Remove the database id from the job's data before updating the record.
       const data = { ...job.data };
       delete data.notification_database_id;
 
@@ -87,7 +87,7 @@ export class OrmNotificationLogRepository
         finishedAt: job.finishedOn ? new Date(job.finishedOn) : null,
       });
 
-      // Note: A NotificationAttempt entry should only be created for completed/failed JobStates.
+      // NOTE: A NotificationAttempt entry should only be created for completed/failed JobStates.
       if (state === 'completed' || state === 'failed') {
         const attempt = this.notificationAttemptModel.create({
           attempt: job.attemptsMade,

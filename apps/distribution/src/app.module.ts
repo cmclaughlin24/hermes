@@ -3,14 +3,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { SequelizeModule } from '@nestjs/sequelize';
 import * as Joi from 'joi';
 import { join } from 'path';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
-import { databaseFactory } from './config/database.config';
 import { MqModule } from './mq/mq.module';
 import { ResourcesModule } from './resources/resources.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -46,11 +45,6 @@ import { ResourcesModule } from './resources/resources.module';
         IAM_CLIENT_URL: Joi.string().required(),
       }),
     }),
-    SequelizeModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseFactory,
-    }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -71,6 +65,7 @@ import { ResourcesModule } from './resources/resources.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
+    CoreModule.forRoot({ driver: 'postgres' }),
     ResourcesModule,
     CommonModule,
     MqModule,

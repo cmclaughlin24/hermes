@@ -1,38 +1,25 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { DistributionLog } from './distribution-log.entity';
 
-@Table({
-  tableName: 'distribution_attempt',
-  updatedAt: false,
-  createdAt: false,
-})
-export class DistributionAttempt extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-  })
-  @ForeignKey(() => DistributionLog)
+@Entity()
+export class DistributionAttempt {
+  @PrimaryColumn('uuid')
   logId: string;
 
-  @Column({ primaryKey: true })
+  @PrimaryColumn()
   attempt: number;
 
-  @Column
+  @Column()
   processedAt: Date;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   result: any;
 
-  @Column({ type: DataType.JSON, allowNull: true })
+  @Column({ type: 'simple-json', nullable: true })
   error: any;
 
-  @BelongsTo(() => DistributionLog)
+  @ManyToOne(() => DistributionLog, (log) => log.attemptHistory, {
+    onDelete: 'CASCADE',
+  })
   log: DistributionLog;
 }
