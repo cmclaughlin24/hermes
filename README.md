@@ -93,6 +93,8 @@ Responsible for compiling the notification template with the data and sending th
     <img src="./docs/images/authentication-authorization.png" alt="Hermes Architecture">
 </div>
 
+<br/>
+
 Coming Soon 🔜
 
 ### How is a notification sent?
@@ -115,7 +117,7 @@ Coming Soon 🔜
         }
     ```
 
-2.  RabbitMQ, a reliable and feature-rich message and streaming broker, was selected for this project due to it's powerful routing capabilities. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. Upon receiving the messsage from the client microservice, RabbitMQ routes it to the appropriate queue for the distribution service.
+2.  RabbitMQ, a reliable and feature-rich message and streaming broker, was selected for this project due to it's powerful routing capabilities that allow for additional exchanges and queues to be added without impacting the producing or consuming services. As an added bonus, it is easy to set-up and deploy on cloud environments or run locally. Upon receiving the messsage from the client microservice, RabbitMQ routes it to the appropriate queue for the distribution service.
 
 3.  The _distribution service_ acts as a rules engine that identifies if there are any registered listeners interested in the message. Once the message enters the service, it first undergoes rehydrate and validation. If the message passes validation, processing continues; otherwise it will be marked as corrupted. Corrupted messages are logged to the `DistributionLog` table of the database, and the message will **not** be retried. (all processed messages are stored entered into the database!)
 
@@ -152,7 +154,7 @@ Coming Soon 🔜
 
     A distribution rule is selected for a message if all evaluated labels match those in the message metadata. In the example above, Distribution Rule #2 would be selected because the `languageCode` label evaluates to `es-MX`, which matches the rule's condition. If a match was not found, the default distribution rule would've been applied.
 
-    _Designer's Note: The metadata labels are inspired by Kubernete's [Labels & Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) that are used by a deployment to identify which pods it should control._
+    _Designer's Note: The metadata labels are inspired by Kubernete's [Labels & Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) that are used by a deployment to identify which pods it should control. By specifying the labels to be evaluated, an event's behavior is guaranteed even if additional labels are added by the client microservice for other consumer._
 
 6.  Once a distribution rule is selected, the distrubtion service filters and retreives subscriptions for the distribution event. A _subscription_ expresses interest in a specific event type and can filter individual message payloads to determine if it should be notified. There are three types of subscriber:
 
