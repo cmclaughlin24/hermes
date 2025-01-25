@@ -1,12 +1,12 @@
 import {
-  BelongsTo,
   Column,
-  DataType,
-  ForeignKey,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { FilterJoinOps } from '../../../../common/types/filter.type';
 import {
   SubscriptionData,
@@ -15,47 +15,44 @@ import {
 import { DistributionEvent } from '../../../distribution-event/repository/entities/distribution-event.entity';
 import { SubscriptionFilter } from './subscription-filter.entity';
 
-@Table({
-  tableName: 'subscription',
-  indexes: [
-    {
-      unique: true,
-      fields: ['subscriberId', 'distributionEventType'],
-    },
-  ],
-})
-export class Subscription extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-    defaultValue: DataType.UUIDV4,
-  })
+@Entity()
+@Unique(['subscriberId', 'distributionEventType'])
+export class Subscription {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column
+  @Column()
   subscriberId: string;
 
-  @ForeignKey(() => DistributionEvent)
+  @Column()
   distributionEventType: string;
 
   @Column({
-    type: DataType.ENUM(
-      SubscriptionType.USER,
-      SubscriptionType.DEVICE,
-      SubscriptionType.REQUEST,
-    ),
+    type: 'enum',
+    enumName: 'subscription-type',
+    enum: SubscriptionType,
   })
   subscriptionType: SubscriptionType;
 
-  @Column({ type: DataType.JSON })
+  @Column({ type: 'simple-json' })
   data: SubscriptionData;
 
-  @Column
+  @Column({
+    type: 'enum',
+    enumName: 'filter-join-operators',
+    enum: FilterJoinOps,
+  })
   filterJoin: FilterJoinOps;
 
-  @BelongsTo(() => DistributionEvent)
+  @ManyToOne(() => DistributionEvent, (event) => event.subscriptions, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'distributionEventType' })
   distributionEvent: DistributionEvent;
 
-  @HasMany(() => SubscriptionFilter, { onDelete: 'CASCADE' })
+  @OneToMany(() => SubscriptionFilter, (filter) => filter.subscription, {
+    cascade: true,
+    eager: true,
+  })
   filters: SubscriptionFilter[];
 }

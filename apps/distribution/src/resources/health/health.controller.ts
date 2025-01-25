@@ -10,7 +10,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
-  SequelizeHealthIndicator,
+  TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 
 @ApiTags('Health')
@@ -19,7 +19,7 @@ export class HealthController {
   constructor(
     private readonly configService: ConfigService,
     private readonly health: HealthCheckService,
-    private readonly sequelizeIndicator: SequelizeHealthIndicator,
+    private readonly typeOrmIndicator: TypeOrmHealthIndicator,
     private readonly rabbitmqIndicator: RabbitMQHealthIndicator,
     private readonly redisIndicator: RedisHealthIndicator,
   ) {}
@@ -37,7 +37,7 @@ export class HealthController {
     };
 
     return this.health.check([
-      () => this.sequelizeIndicator.pingCheck('database'),
+      () => this.typeOrmIndicator.pingCheck('database'),
       () => this.rabbitmqIndicator.pingCheck('rabbitmq', rabbitmqOptions),
       () => this.redisIndicator.pingCheck('redis'),
     ]);

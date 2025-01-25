@@ -1,37 +1,30 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from 'sequelize-typescript';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { FilterOps } from '../../../../common/types/filter.type';
 import { Subscription } from './subscription.entity';
 
-@Table({ tableName: 'subscription_filter' })
-export class SubscriptionFilter extends Model {
-  @Column({
-    primaryKey: true,
-    type: DataType.UUID,
-  })
-  @ForeignKey(() => Subscription)
+@Entity()
+export class SubscriptionFilter {
+  @PrimaryColumn('uuid')
   subscriptionId: string;
 
-  @Column({
-    primaryKey: true,
-  })
+  @PrimaryColumn()
   field: string;
 
-  @Column
+  @Column({
+    type: 'enum',
+    enumName: 'filter-operator',
+    enum: FilterOps,
+  })
   operator: FilterOps;
 
-  @Column
+  @Column()
   dataType: string;
 
-  @Column({ type: DataType.JSON })
+  @Column({ type: 'simple-json' })
   value: any;
 
-  @BelongsTo(() => Subscription)
+  @ManyToOne(() => Subscription, (sub) => sub.filters, {
+    onDelete: 'CASCADE',
+  })
   subscription: Subscription;
 }

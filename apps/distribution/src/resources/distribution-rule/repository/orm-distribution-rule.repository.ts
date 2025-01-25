@@ -1,35 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import * as _ from 'lodash';
 import { ExistsException, MissingException } from '@hermes/common';
 import { DistributionRuleRepository } from './distribution-rule.repository';
 import { DistributionRule } from './entities/distribution-rule.entity';
-import { DistributionEvent } from '../../distribution-event/repository/entities/distribution-event.entity';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../dto/update-distribution-rule.dto';
 import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
-import { Op } from 'sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrmDistributionRuleRepository
   implements DistributionRuleRepository
 {
   constructor(
-    @InjectModel(DistributionRule)
-    private readonly distributionRuleModel: typeof DistributionRule,
+    @InjectRepository(DistributionRule)
+    private readonly distributionRuleModel: Repository<DistributionRule>,
   ) {}
 
   async findAll(eventTypes: string[]) {
-    return this.distributionRuleModel.findAll({
+    return this.distributionRuleModel.find({
       where: this._buildWhereClause(eventTypes),
-      include: [{ model: DistributionEvent }],
-      attributes: { exclude: ['event'] },
     });
   }
 
   async findOne(id: string, includeEvent: boolean = false) {
-    return this.distributionRuleModel.findByPk(id, {
-      include: includeEvent ? [DistributionEvent] : null,
+    return this.distributionRuleModel.findOne({
+      where: { id },
+      relations: { event: includeEvent },
     });
   }
 
@@ -42,7 +40,7 @@ export class OrmDistributionRuleRepository
         },
       });
 
-      // Note: Because of the way constraints are handled, manually check if a default
+      // NOTE: Because of the way constraints are handled, manually check if a default
       //       distribution rule already exists if the CreateDistributionRuleDto has a
       //       metadata of null.
       if (existingRule) {
@@ -52,53 +50,44 @@ export class OrmDistributionRuleRepository
       }
     }
 
-    const distributionRule = await this.distributionRuleModel.create({
+    const rule = this.distributionRuleModel.create({
       ...createDistributionRuleDto,
+      distributionEventType: createDistributionRuleDto.eventType,
     });
 
-    return distributionRule;
+    return this.distributionRuleModel.save(rule);
   }
 
   async update(
     id: string,
     updateDistributionRuleDto: UpdateDistributionRuleDto,
   ) {
-    let distributionRule = await this.distributionRuleModel.findByPk(id);
-
-    if (!distributionRule) {
-      throw new MissingException(`Distribution rule for id=${id} not found!`);
-    }
-
-    if (
-      distributionRule.metadata === null &&
-      updateDistributionRuleDto.metadata !== null
-    ) {
-      throw new DefaultRuleException(
-        'The metadata for a default distribution rule must be set to null',
-      );
-    }
-
-    distributionRule = await distributionRule.update({
+    const rule = await this.distributionRuleModel.preload({
+      id,
       ...updateDistributionRuleDto,
     });
 
-    return distributionRule;
-  }
-
-  async remove(id: string) {
-    const distributionRule = await this.distributionRuleModel.findByPk(id);
-
-    if (!distributionRule) {
+    if (!rule) {
       throw new MissingException(`Distribution rule for id=${id} not found!`);
     }
 
-    if (distributionRule.metadata === null) {
+    return this.distributionRuleModel.save(rule);
+  }
+
+  async remove(id: string) {
+    const rule = await this.distributionRuleModel.findOneBy({ id });
+
+    if (!rule) {
+      throw new MissingException(`Distribution rule for id=${id} not found!`);
+    }
+
+    if (rule.metadata === null) {
       throw new DefaultRuleException(
         `Distribution rule id=${id} is the default distribution rule and cannot be deleted!`,
       );
     }
 
-    await distributionRule.destroy();
+    await this.distributionRuleModel.remove(rule);
   }
 
   /**
@@ -111,9 +100,7 @@ export class OrmDistributionRuleRepository
     const where: any = {};
 
     if (!_.isEmpty(eventTypes)) {
-      where['$event.eventType$'] = {
-        [Op.or]: eventTypes,
-      };
+      where['distributionEventType'] = eventTypes;
     }
 
     return Object.keys(where).length > 0 ? where : null;

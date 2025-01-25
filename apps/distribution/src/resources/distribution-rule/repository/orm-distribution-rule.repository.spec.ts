@@ -1,6 +1,10 @@
-import { DeliveryMethods, MissingException } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
+import {
+  DeliveryMethods,
+  ExistsException,
+  MissingException,
+} from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   createMockRepository,
@@ -19,7 +23,7 @@ describe('PostgresDistributionRuleRepository', () => {
       providers: [
         OrmDistributionRuleRepository,
         {
-          provide: getModelToken(DistributionRule),
+          provide: getRepositoryToken(DistributionRule),
           useValue: createMockRepository(),
         },
       ],
@@ -29,7 +33,7 @@ describe('PostgresDistributionRuleRepository', () => {
       OrmDistributionRuleRepository,
     );
     distributionRuleModel = module.get<MockRepository>(
-      getModelToken(DistributionRule),
+      getRepositoryToken(DistributionRule),
     );
   });
 
@@ -45,13 +49,13 @@ describe('PostgresDistributionRuleRepository', () => {
     } as DistributionRule;
 
     afterEach(() => {
-      distributionRuleModel.findAll.mockClear();
+      distributionRuleModel.find.mockClear();
     });
 
     it('should yield a list of distribution rules (w/o query params)', async () => {
       // Arrange.
       const expectedResult: DistributionRule[] = [distributionRule];
-      distributionRuleModel.findAll.mockResolvedValue(expectedResult);
+      distributionRuleModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findAll(null)).resolves.toEqual(expectedResult);
@@ -60,7 +64,7 @@ describe('PostgresDistributionRuleRepository', () => {
     it('should yield a filtered list of distribution rules (w/query params)', async () => {
       // Arrange.
       const expectedResult: DistributionRule[] = [distributionRule];
-      distributionRuleModel.findAll.mockResolvedValue(expectedResult);
+      distributionRuleModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findAll(['unit-test'])).resolves.toEqual(
@@ -70,7 +74,7 @@ describe('PostgresDistributionRuleRepository', () => {
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      distributionRuleModel.findAll.mockResolvedValue([]);
+      distributionRuleModel.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(repository.findAll(null)).resolves.toHaveLength(0);
@@ -87,12 +91,12 @@ describe('PostgresDistributionRuleRepository', () => {
     } as DistributionRule;
 
     afterEach(() => {
-      distributionRuleModel.findByPk.mockClear();
+      distributionRuleModel.findOne.mockClear();
     });
 
     it('should yield a distribution rule', async () => {
       // Arrange.
-      distributionRuleModel.findByPk.mockResolvedValue(expectedResult);
+      distributionRuleModel.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findOne(expectedResult.id)).resolves.toEqual(
@@ -103,7 +107,7 @@ describe('PostgresDistributionRuleRepository', () => {
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const id = 'unit-test';
-      distributionRuleModel.findByPk.mockResolvedValue(null);
+      distributionRuleModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.findOne(id)).resolves.toBeNull();
@@ -142,6 +146,7 @@ describe('PostgresDistributionRuleRepository', () => {
     it('should yield the created distribution rule', async () => {
       // Arrange.
       distributionRuleModel.findOne.mockResolvedValue(null);
+      distributionRuleModel.save.mockResolvedValue(distributionRule);
 
       // Act/Assert.
       await expect(
@@ -149,32 +154,48 @@ describe('PostgresDistributionRuleRepository', () => {
       ).resolves.toEqual(distributionRule);
     });
 
-    it.todo(
-      'should thorow an "ExistsException" if a default distribution rule exists',
-    );
+    it('should thorow an "ExistsException" if a default distribution rule exists', async () => {
+      // Arrange.
+      const expectedResult = new ExistsException(
+        'A default distribution rule already exists (metadata=null)!',
+      );
+      distributionRuleModel.findOne.mockResolvedValue(distributionRule);
+
+      // Act/Assert.
+      await expect(
+        repository.create(createDistributionRuleDto),
+      ).rejects.toEqual(expectedResult);
+    });
   });
 
   describe('update()', () => {
-    const distributionRule = { update: jest.fn(() => distributionRule) };
+    const distributionRule = {
+      eventType: 'bingo-heeler',
+      metadata: null,
+      deliveryMethods: [DeliveryMethods.EMAIL],
+      text: 'Bingo is a red heeler mix from Bastrop, Texas.',
+      checkDeliveryWindow: false,
+    };
 
     afterEach(() => {
-      distributionRule.update.mockClear();
+      distributionRuleModel.preload.mockClear();
     });
 
     it('should update a distribution rule', async () => {
       // Arrange.
-      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+      distributionRuleModel.preload.mockResolvedValue(distributionRule);
 
       // Act.
       await repository.update('', {});
 
       // Assert.
-      expect(distributionRule.update).toHaveBeenCalled();
+      expect(distributionRuleModel.preload).toHaveBeenCalled();
     });
 
     it('should yield the updated distribution rule', async () => {
       // Arrange.
-      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+      distributionRuleModel.preload.mockResolvedValue(distributionRule);
+      distributionRuleModel.save.mockResolvedValue(distributionRule);
 
       // Act/Assert.
       await expect(repository.update('', {})).resolves.toEqual(
@@ -188,47 +209,32 @@ describe('PostgresDistributionRuleRepository', () => {
       const expectedResult = new MissingException(
         `Distribution rule for id=${id} not found!`,
       );
-      distributionRuleModel.findByPk.mockResolvedValue(null);
+      distributionRuleModel.preload.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.update(id, {})).rejects.toEqual(expectedResult);
     });
-
-    it('should throw a "DefaultRuleException" if attempting to modify the default rule\'s metadata property', async () => {
-      // Arrange.
-      const expectedResult = new DefaultRuleException(
-        'The metadata for a default distribution rule must be set to null',
-      );
-      distributionRuleModel.findByPk.mockResolvedValue({
-        ...distributionRule,
-        metadata: null,
-      });
-
-      // Act/Assert.
-      await expect(
-        repository.update('', { metadata: '{"name":"unit-test"}' }),
-      ).rejects.toEqual(expectedResult);
-    });
   });
 
   describe('remove()', () => {
-    const distributionRule = { destroy: jest.fn(), metadata: {} };
+    const distributionRule = { metadata: {} };
     const id = 'unit-test';
 
     afterEach(() => {
-      distributionRule.destroy.mockClear();
+      distributionRuleModel.findOneBy.mockClear();
+      distributionRuleModel.remove.mockClear();
       distributionRule.metadata = {};
     });
 
     it('should remove a distribution rule', async () => {
       // Arrange.
-      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+      distributionRuleModel.findOneBy.mockResolvedValue(distributionRule);
 
       // Act.
       await repository.remove(id);
 
       // Assert.
-      expect(distributionRule.destroy).toHaveBeenCalled();
+      expect(distributionRuleModel.remove).toHaveBeenCalled();
     });
 
     it('should throw a "DefaultRuleException" if the attempting to delete the default distribution rule', async () => {
@@ -237,7 +243,7 @@ describe('PostgresDistributionRuleRepository', () => {
         `Distribution rule id=${id} is the default distribution rule and cannot be deleted!`,
       );
       distributionRule.metadata = null;
-      distributionRuleModel.findByPk.mockResolvedValue(distributionRule);
+      distributionRuleModel.findOneBy.mockResolvedValue(distributionRule);
 
       // Act/Assert.
       await expect(repository.remove(id)).rejects.toEqual(expectedResult);
@@ -248,7 +254,7 @@ describe('PostgresDistributionRuleRepository', () => {
       const expectedResult = new MissingException(
         `Distribution rule for id=${id} not found!`,
       );
-      distributionRuleModel.findByPk.mockResolvedValue(null);
+      distributionRuleModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.remove(id)).rejects.toEqual(expectedResult);

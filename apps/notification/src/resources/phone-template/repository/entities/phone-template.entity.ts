@@ -14,6 +14,7 @@ export class PhoneTemplate {
 
   @Column({
     primary: true,
+    type: 'enum',
     enumName: 'phone-methods',
     enum: [DeliveryMethods.CALL, DeliveryMethods.SMS],
   })

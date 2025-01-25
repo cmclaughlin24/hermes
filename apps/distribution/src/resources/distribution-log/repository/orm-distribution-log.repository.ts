@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as _ from 'lodash';
-import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
 import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
@@ -12,23 +11,24 @@ import { DistributionLogRepository } from './distribution-log.repository';
 @Injectable()
 export class OrmDistributionLogRepository implements DistributionLogRepository {
   constructor(
-    @InjectModel(DistributionLog)
-    private readonly distributionLogModel: typeof DistributionLog,
-    @InjectModel(DistributionAttempt)
-    private readonly distributionAttemptModel: typeof DistributionAttempt,
-    private readonly sequelize: Sequelize,
+    @InjectRepository(DistributionLog)
+    private readonly distributionLogModel: Repository<DistributionLog>,
+    @InjectRepository(DistributionAttempt)
+    private readonly distributionAttemptModel: Repository<DistributionAttempt>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(eventTypes: string[], states: string[]) {
-    return this.distributionLogModel.findAll({
+    return this.distributionLogModel.find({
       where: this._buildWhereClause(eventTypes, states),
-      include: [DistributionAttempt],
+      relations: { attemptHistory: true },
     });
   }
 
   async findOne(id: string) {
-    return this.distributionLogModel.findByPk(id, {
-      include: [DistributionAttempt],
+    return this.distributionLogModel.findOne({
+      where: { id },
+      relations: { attemptHistory: true },
     });
   }
 
@@ -38,38 +38,30 @@ export class OrmDistributionLogRepository implements DistributionLogRepository {
     result: any,
     error: Record<string, any>,
   ) {
-    return this.sequelize.transaction(async (transaction) => {
-      const log = await this.distributionLogModel.create(
-        {
-          id: distributionJob.id,
-          eventType: distributionJob.type,
-          state,
-          attempts: distributionJob.attemptsMade,
-          data: distributionJob.payload,
-          metadata: distributionJob.metadata,
-          addedAt: distributionJob.addedAt,
-          finishedAt: distributionJob.finishedAt,
-        },
-        { transaction },
-      );
-
-      if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
-        await this.distributionAttemptModel.create(
-          {
-            logId: log.id,
-            result,
-            error,
-            attempt: distributionJob.attemptsMade,
-            processedOn: distributionJob.processedAt,
-          },
-          { transaction },
-        );
-
-        await log.reload({ transaction, include: [DistributionAttempt] });
-      }
-
-      return log;
+    const attempts =
+      state === MessageState.COMPLETED || state === MessageState.FAILED
+        ? [
+            this.distributionAttemptModel.create({
+              result,
+              error,
+              attempt: distributionJob.attemptsMade,
+              processedAt: distributionJob.processedAt,
+            }),
+          ]
+        : [];
+    const log = this.distributionLogModel.create({
+      id: distributionJob.id,
+      eventType: distributionJob.type,
+      state,
+      attempts: distributionJob.attemptsMade,
+      data: distributionJob.payload,
+      metadata: distributionJob.metadata,
+      addedAt: distributionJob.addedAt,
+      finishedAt: distributionJob.finishedAt,
+      attemptHistory: attempts,
     });
+
+    return this.distributionLogModel.save(log);
   }
 
   async update(
@@ -78,52 +70,52 @@ export class OrmDistributionLogRepository implements DistributionLogRepository {
     result: any,
     error: Record<string, any>,
   ) {
-    return this.sequelize.transaction(async (transaction) => {
-      let log = await this.distributionLogModel.findByPk(distributionJob.id, {
-        transaction,
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      let log = await this.distributionLogModel.preload({
+        id: distributionJob.id,
+        state,
+        attempts: distributionJob.attemptsMade,
+        finishedAt: distributionJob.finishedAt,
       });
 
-      await log.update(
-        {
-          state,
-          attempts: distributionJob.attemptsMade,
-          finishedAt: distributionJob.finishedAt,
-        },
-        { transaction },
-      );
-
+      // NOTE: A DistributionAttempt entry should only be created for completed/failed MessageState.
       if (state === MessageState.COMPLETED || state === MessageState.FAILED) {
-        await this.distributionAttemptModel.create(
-          {
-            logId: log.id,
-            result,
-            error,
-            attempt: distributionJob.attemptsMade,
-            processedOn: distributionJob.processedAt,
-          },
-          { transaction },
-        );
+        const attempt = this.distributionAttemptModel.create({
+          logId: log.id,
+          result,
+          error,
+          attempt: distributionJob.attemptsMade,
+          processedAt: distributionJob.processedAt,
+        });
 
-        await log.reload({ transaction, include: [DistributionAttempt] });
+        await this.distributionAttemptModel.save(attempt);
       }
 
+      log = await this.distributionLogModel.save(log);
+      await queryRunner.commitTransaction();
+
       return log;
-    });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   private _buildWhereClause(eventTypes: string[], states: string[]) {
     const where: any = {};
 
     if (!_.isEmpty(eventTypes)) {
-      where.eventType = {
-        [Op.or]: eventTypes,
-      };
+      where.eventType = eventTypes;
     }
 
     if (!_.isEmpty(states)) {
-      where.state = {
-        [Op.or]: states,
-      };
+      where.state = states;
     }
 
     return Object.keys(where).length > 0 ? where : null;

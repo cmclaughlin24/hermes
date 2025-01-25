@@ -1,17 +1,19 @@
-import { ExistsException, MissingException } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
+import {
+  ExistsException,
+  MissingException,
+  PostgresError,
+} from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
 import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
-import { SubscriptionFilter } from '../../subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../../subscription/repository/entities/subscription.entity';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
 import { OrmDistributionEventRepository } from './orm-distribution-event.repository';
 import { DistributionEvent } from './entities/distribution-event.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('OrmDistributionEventRepository', () => {
   let repository: OrmDistributionEventRepository;
@@ -22,7 +24,11 @@ describe('OrmDistributionEventRepository', () => {
       providers: [
         OrmDistributionEventRepository,
         {
-          provide: getModelToken(DistributionEvent),
+          provide: getRepositoryToken(DistributionEvent),
+          useValue: createMockRepository(),
+        },
+        {
+          provide: getRepositoryToken(DistributionRule),
           useValue: createMockRepository(),
         },
       ],
@@ -32,7 +38,7 @@ describe('OrmDistributionEventRepository', () => {
       OrmDistributionEventRepository,
     );
     distributionEventModel = module.get<MockRepository>(
-      getModelToken(DistributionEvent),
+      getRepositoryToken(DistributionEvent),
     );
   });
 
@@ -46,13 +52,13 @@ describe('OrmDistributionEventRepository', () => {
     } as DistributionEvent;
 
     afterEach(() => {
-      distributionEventModel.findAll.mockClear();
+      distributionEventModel.find.mockClear();
     });
 
     it('should yield a list of distribution events (w/o rules & subscriptions)', async () => {
       // Arrange.
       const expectedResult = [distributionEvent];
-      distributionEventModel.findAll.mockResolvedValue(expectedResult);
+      distributionEventModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findAll(false, false)).resolves.toEqual(
@@ -63,57 +69,48 @@ describe('OrmDistributionEventRepository', () => {
     it('should yield a list of distribution events (w/rules)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [{ model: DistributionRule }],
+        relations: { rules: true, subscriptions: false },
       };
-      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+      distributionEventModel.find.mockResolvedValue([distributionEvent]);
 
       // Act
       await repository.findAll(true, false);
 
       // Assert.
-      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
-        expectedResult,
-      );
+      expect(distributionEventModel.find).toHaveBeenCalledWith(expectedResult);
     });
 
     it('should yield a list of distribution events (w/subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [{ model: Subscription, include: [SubscriptionFilter] }],
+        relations: { rules: false, subscriptions: true },
       };
-      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+      distributionEventModel.find.mockResolvedValue([distributionEvent]);
 
       // Act
       await repository.findAll(false, true);
 
       // Assert.
-      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
-        expectedResult,
-      );
+      expect(distributionEventModel.find).toHaveBeenCalledWith(expectedResult);
     });
 
     it('should yield a list of distribution events (w/rules & subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [
-          { model: DistributionRule },
-          { model: Subscription, include: [SubscriptionFilter] },
-        ],
+        relations: { rules: true, subscriptions: true },
       };
-      distributionEventModel.findAll.mockResolvedValue([distributionEvent]);
+      distributionEventModel.find.mockResolvedValue([distributionEvent]);
 
       // Act
       await repository.findAll(true, true);
 
       // Assert.
-      expect(distributionEventModel.findAll).toHaveBeenCalledWith(
-        expectedResult,
-      );
+      expect(distributionEventModel.find).toHaveBeenCalledWith(expectedResult);
     });
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      distributionEventModel.findAll.mockResolvedValue([]);
+      distributionEventModel.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(repository.findAll(false, false)).resolves.toHaveLength(0);
@@ -126,12 +123,12 @@ describe('OrmDistributionEventRepository', () => {
     } as DistributionEvent;
 
     afterEach(() => {
-      distributionEventModel.findByPk.mockClear();
+      distributionEventModel.findOne.mockClear();
     });
 
     it('should yield a distribution event (w/o rules & subscriptions)', async () => {
       // Arrange.
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
@@ -142,16 +139,16 @@ describe('OrmDistributionEventRepository', () => {
     it('should yield a distribution event (w/rules)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [{ model: DistributionRule }],
+        where: { eventType: distributionEvent.eventType },
+        relations: { rules: true, subscriptions: false },
       };
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.findOne(distributionEvent.eventType, true);
 
       // Assert.
-      expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
-        distributionEvent.eventType,
+      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
         expectedResult,
       );
     });
@@ -159,16 +156,16 @@ describe('OrmDistributionEventRepository', () => {
     it('should yield a distribution event (w/subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [{ model: Subscription, include: [SubscriptionFilter] }],
+        where: { eventType: distributionEvent.eventType },
+        relations: { rules: false, subscriptions: true },
       };
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.findOne(distributionEvent.eventType, false, true);
 
       // Assert.
-      expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
-        distributionEvent.eventType,
+      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
         expectedResult,
       );
     });
@@ -176,26 +173,23 @@ describe('OrmDistributionEventRepository', () => {
     it('should yield a distribution event (w/rules & subscriptions)', async () => {
       // Arrange.
       const expectedResult = {
-        include: [
-          { model: DistributionRule },
-          { model: Subscription, include: [SubscriptionFilter] },
-        ],
+        where: { eventType: distributionEvent.eventType },
+        relations: { rules: true, subscriptions: true },
       };
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOne.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.findOne(distributionEvent.eventType, true, true);
 
       // Assert.
-      expect(distributionEventModel.findByPk).toHaveBeenCalledWith(
-        distributionEvent.eventType,
+      expect(distributionEventModel.findOne).toHaveBeenCalledWith(
         expectedResult,
       );
     });
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      distributionEventModel.findByPk.mockResolvedValue(null);
+      distributionEventModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       expect(
@@ -211,11 +205,13 @@ describe('OrmDistributionEventRepository', () => {
 
     afterEach(() => {
       distributionEventModel.create.mockClear();
+      distributionEventModel.save.mockClear();
     });
 
     it('should create a distribution event', async () => {
       // Arrange.
-      distributionEventModel.create.mockResolvedValue(distributionEvent);
+      distributionEventModel.create.mockReturnValue(distributionEvent);
+      distributionEventModel.save.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.create({
@@ -228,7 +224,8 @@ describe('OrmDistributionEventRepository', () => {
 
     it('should yield the created distribution event', async () => {
       // Arrange.
-      distributionEventModel.create.mockResolvedValue(distributionEvent);
+      distributionEventModel.create.mockReturnValue(distributionEvent);
+      distributionEventModel.save.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
@@ -246,7 +243,9 @@ describe('OrmDistributionEventRepository', () => {
       const expectedResult = new ExistsException(
         `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
       );
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.save.mockRejectedValue({
+        code: PostgresError.UNIQUE_VIOLATION,
+      });
 
       // Act/Assert.
       await expect(
@@ -256,29 +255,29 @@ describe('OrmDistributionEventRepository', () => {
   });
 
   describe('update()', () => {
-    const distributionEvent = { update: jest.fn() };
+    const distributionEvent = {};
     const eventType = 'unit-test';
 
     afterEach(() => {
-      distributionEvent.update.mockClear();
-      distributionEventModel.findByPk.mockClear();
+      distributionEventModel.findOneBy.mockClear();
+      distributionEventModel.save.mockClear();
     });
 
     it('should update a distribution event', async () => {
       // Arrange.
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOneBy.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.update(eventType, {} as UpdateDistributionEventDto);
 
       // Assert.
-      expect(distributionEvent.update).toHaveBeenCalled();
+      expect(distributionEventModel.save).toHaveBeenCalled();
     });
 
     it('should yield the updated distribution event', async () => {
       // Arrange.
-      distributionEvent.update.mockResolvedValue(distributionEvent);
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOneBy.mockResolvedValue(distributionEvent);
+      distributionEventModel.save.mockResolvedValue(distributionEvent);
 
       // Act/Assert.
       await expect(
@@ -291,7 +290,7 @@ describe('OrmDistributionEventRepository', () => {
       const expectedResult = new MissingException(
         `Distribution Event for eventType=${eventType} not found!`,
       );
-      distributionEventModel.findByPk.mockResolvedValue(null);
+      distributionEventModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -301,22 +300,22 @@ describe('OrmDistributionEventRepository', () => {
   });
 
   describe('remove()', () => {
-    const distributionEvent = { destroy: jest.fn() };
+    const distributionEvent = {};
     const eventType = 'unit-test';
 
     afterEach(() => {
-      distributionEvent.destroy.mockClear();
+      distributionEventModel.remove.mockClear();
     });
 
     it('should remove a distribution event', async () => {
       // Arrange.
-      distributionEventModel.findByPk.mockResolvedValue(distributionEvent);
+      distributionEventModel.findOneBy.mockResolvedValue(distributionEvent);
 
       // Act.
       await repository.remove(eventType);
 
       // Assert.
-      expect(distributionEvent.destroy).toHaveBeenCalled();
+      expect(distributionEventModel.remove).toHaveBeenCalled();
     });
 
     it('should yield a "MissingException" if the repository returns null/undefined', async () => {
@@ -324,7 +323,7 @@ describe('OrmDistributionEventRepository', () => {
       const expectedResult = new MissingException(
         `Distribution Event for eventType=${eventType} not found!`,
       );
-      distributionEventModel.findByPk.mockResolvedValue(null);
+      distributionEventModel.findOneBy.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.remove(eventType)).rejects.toEqual(

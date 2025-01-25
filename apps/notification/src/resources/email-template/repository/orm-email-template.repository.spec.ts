@@ -1,7 +1,7 @@
 import { ExistsException, MissingException } from '@hermes/common';
 import { NotFoundException } from '@nestjs/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { OrmEmailTemplateRepository } from './orm-email-template.repository';
 import {
   createMockRepository,
@@ -20,7 +20,7 @@ describe('OrmEmailTemplateRepository', () => {
       providers: [
         OrmEmailTemplateRepository,
         {
-          provide: getModelToken(EmailTemplate),
+          provide: getRepositoryToken(EmailTemplate),
           useValue: createMockRepository<EmailTemplate>(),
         },
       ],
@@ -30,7 +30,7 @@ describe('OrmEmailTemplateRepository', () => {
       OrmEmailTemplateRepository,
     );
     emailTemplateModel = module.get<MockRepository>(
-      getModelToken(EmailTemplate),
+      getRepositoryToken(EmailTemplate),
     );
   });
 

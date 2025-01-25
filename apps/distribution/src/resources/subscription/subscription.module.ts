@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistributionEventModule } from '../distribution-event/distribution-event.module';
 import { SubscriptionFilter } from './repository/entities/subscription-filter.entity';
 import { Subscription } from './repository/entities/subscription.entity';
@@ -10,7 +10,7 @@ import { OrmSubscriptionRepository } from './repository/orm-subscription.reposit
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Subscription, SubscriptionFilter]),
+    TypeOrmModule.forFeature([Subscription, SubscriptionFilter]),
     DistributionEventModule,
   ],
   controllers: [SubscriptionController],

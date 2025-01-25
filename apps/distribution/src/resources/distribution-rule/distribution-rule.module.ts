@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistributionEventModule } from '../distribution-event/distribution-event.module';
 import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
@@ -9,7 +9,7 @@ import { OrmDistributionRuleRepository } from './repository/orm-distribution-rul
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([DistributionRule]),
+    TypeOrmModule.forFeature([DistributionRule]),
     DistributionEventModule,
   ],
   controllers: [DistributionRuleController],
@@ -20,6 +20,6 @@ import { OrmDistributionRuleRepository } from './repository/orm-distribution-rul
       useClass: OrmDistributionRuleRepository,
     },
   ],
-  exports: [DistributionRuleService],
+  exports: [DistributionRuleService, TypeOrmModule],
 })
 export class DistributionRuleModule {}

@@ -97,7 +97,7 @@ export class OrmUserRepository implements UserRepository {
           this._preloadDeliveryWindow(window),
         ),
       ));
-    let user = await this.userRepository.preload({
+    const user = await this.userRepository.preload({
       id,
       ...updateUserInput,
       deliveryWindows,

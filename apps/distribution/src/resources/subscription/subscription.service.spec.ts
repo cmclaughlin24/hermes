@@ -166,7 +166,7 @@ describe('SubscriptionService', () => {
     it('should create a subscription', async () => {
       // Arrange.
       distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
+        eventType: 'test',
       } as DistributionEvent);
 
       // Act.
@@ -179,7 +179,7 @@ describe('SubscriptionService', () => {
     it('should yield the created subscription', async () => {
       // Arrange.
       distributionEventService.findOne.mockResolvedValue({
-        id: 'test',
+        eventType: 'test',
       } as DistributionEvent);
       repository.create.mockResolvedValue(subscription);
 

@@ -1,6 +1,6 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   createMockRepository,
@@ -19,11 +19,11 @@ describe('OrmPushTemplateRepository', () => {
       providers: [
         OrmPushTemplateRepository,
         {
-          provide: getModelToken(PushTemplate),
+          provide: getRepositoryToken(PushTemplate),
           useValue: createMockRepository(),
         },
         {
-          provide: getModelToken(PushAction),
+          provide: getRepositoryToken(PushAction),
           useValue: createMockRepository(),
         },
       ],
@@ -32,7 +32,9 @@ describe('OrmPushTemplateRepository', () => {
     repository = module.get<OrmPushTemplateRepository>(
       OrmPushTemplateRepository,
     );
-    pushTemplateModel = module.get<MockRepository>(getModelToken(PushTemplate));
+    pushTemplateModel = module.get<MockRepository>(
+      getRepositoryToken(PushTemplate),
+    );
   });
 
   it('should be defined', () => {
@@ -196,4 +198,3 @@ describe('OrmPushTemplateRepository', () => {
     });
   });
 });
-
