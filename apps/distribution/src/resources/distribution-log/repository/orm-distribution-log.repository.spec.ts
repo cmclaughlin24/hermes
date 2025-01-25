@@ -1,25 +1,22 @@
 import { errorToJson } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Op } from 'sequelize';
-import { Sequelize } from 'sequelize-typescript';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
-  MockSequelize,
+  createMockDataSource,
   createMockRepository,
-  createMockSequelize,
 } from '../../../../test/helpers/database.helper';
 import { DistributionJob } from '../../../common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
 import { DistributionAttempt } from './entities/distribution-attempt.entity';
 import { DistributionLog } from './entities/distribution-log.entity';
 import { OrmDistributionLogRepository } from './orm-distribution-log.repository';
+import { DataSource } from 'typeorm';
 
-describe('PostgresDistributionLogRepository', () => {
+describe('OrmDistributionLogRepository', () => {
   let repository: OrmDistributionLogRepository;
   let distributionLogModel: MockRepository;
   let distributionAttemptModel: MockRepository;
-  let sequelize: MockSequelize;
 
   const log = {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
@@ -43,16 +40,16 @@ describe('PostgresDistributionLogRepository', () => {
       providers: [
         OrmDistributionLogRepository,
         {
-          provide: getModelToken(DistributionLog),
+          provide: getRepositoryToken(DistributionLog),
           useValue: createMockRepository(),
         },
         {
-          provide: getModelToken(DistributionAttempt),
+          provide: getRepositoryToken(DistributionAttempt),
           useValue: createMockRepository(),
         },
         {
-          provide: Sequelize,
-          useValue: createMockSequelize(),
+          provide: DataSource,
+          useValue: createMockDataSource(),
         },
       ],
     }).compile();
@@ -61,12 +58,11 @@ describe('PostgresDistributionLogRepository', () => {
       OrmDistributionLogRepository,
     );
     distributionLogModel = module.get<MockRepository>(
-      getModelToken(DistributionLog),
+      getRepositoryToken(DistributionLog),
     );
     distributionAttemptModel = module.get<MockRepository>(
-      getModelToken(DistributionAttempt),
+      getRepositoryToken(DistributionAttempt),
     );
-    sequelize = module.get<MockSequelize>(Sequelize);
   });
 
   it('should be defined', () => {
@@ -75,13 +71,13 @@ describe('PostgresDistributionLogRepository', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      distributionLogModel.findAll.mockClear();
+      distributionLogModel.find.mockClear();
     });
 
     it('should yield a list of distribution logs', async () => {
       // Arrange.
       const expectedResult: DistributionLog[] = [log];
-      distributionLogModel.findAll.mockResolvedValue(expectedResult);
+      distributionLogModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findAll(null, null)).resolves.toEqual(
@@ -92,36 +88,36 @@ describe('PostgresDistributionLogRepository', () => {
     it('should yield a list of distribution logs filtered by eventType(s)', async () => {
       // Arrange.
       const eventTypes = ['unit-test'];
-      distributionLogModel.findAll.mockResolvedValue([log]);
+      distributionLogModel.find.mockResolvedValue([log]);
 
       // Act.
       await repository.findAll(eventTypes, null);
 
       //Assert.
-      expect(distributionLogModel.findAll).toHaveBeenCalledWith({
-        where: { eventType: { [Op.or]: eventTypes } },
-        include: [DistributionAttempt],
+      expect(distributionLogModel.find).toHaveBeenCalledWith({
+        where: { eventType: eventTypes },
+        relations: { attemptHistory: true },
       });
     });
 
     it('should yield a list of distribution logs filtered by state(s)', async () => {
       // Arrange.
       const states = ['unit-test'];
-      distributionLogModel.findAll.mockResolvedValue([log]);
+      distributionLogModel.find.mockResolvedValue([log]);
 
       // Act.
       await repository.findAll(null, states);
 
       //Assert.
-      expect(distributionLogModel.findAll).toHaveBeenCalledWith({
-        where: { state: { [Op.or]: states } },
-        include: [DistributionAttempt],
+      expect(distributionLogModel.find).toHaveBeenCalledWith({
+        where: { state: states },
+        relations: { attemptHistory: true },
       });
     });
 
     it('should throw an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      distributionLogModel.findAll.mockResolvedValue([]);
+      distributionLogModel.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(repository.findAll(null, null)).resolves.toHaveLength(0);
@@ -130,12 +126,12 @@ describe('PostgresDistributionLogRepository', () => {
 
   describe('findOne()', () => {
     afterEach(() => {
-      distributionLogModel.findByPk.mockClear();
+      distributionLogModel.findOne.mockClear();
     });
 
     it('should yield a distribution log', async () => {
       // Arrange.
-      distributionLogModel.findByPk.mockResolvedValue(log);
+      distributionLogModel.findOne.mockResolvedValue(log);
 
       // Act/Assert.
       await expect(repository.findOne('')).resolves.toEqual(log);
@@ -144,7 +140,7 @@ describe('PostgresDistributionLogRepository', () => {
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
       const id = '32641f47-785e-4f43-8249-fff97e5009d0';
-      distributionLogModel.findByPk.mockResolvedValue(null);
+      distributionLogModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.findOne(id)).resolves.toBeNull();
@@ -152,14 +148,9 @@ describe('PostgresDistributionLogRepository', () => {
   });
 
   describe('create()', () => {
-    beforeEach(() => {
-      sequelize.transaction.mockImplementation((callback) => callback());
-    });
-
     afterEach(() => {
-      distributionLogModel.findByPk.mockClear();
       distributionLogModel.create.mockClear();
-      distributionAttemptModel.create.mockClear();
+      distributionLogModel.save.mockClear();
     });
 
     it('should create a distribution log if the repository returns (no attempt)', async () => {
@@ -173,30 +164,27 @@ describe('PostgresDistributionLogRepository', () => {
         metadata: job.metadata,
         addedAt: job.addedAt,
         finishedAt: job.finishedAt,
+        attemptHistory: [],
       };
 
       // Act.
       await repository.create(job, MessageState.ACTIVE, null, null);
 
       // Assert.
-      expect(distributionLogModel.create).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
+      expect(distributionLogModel.create).toHaveBeenCalledWith(expectedResult);
       expect(distributionAttemptModel.create).not.toHaveBeenCalled();
     });
 
     it('should create a distribution log if the repository returns null/undefined (completed attempt)', async () => {
       // Arrange.
       const expectedResult = {
-        logId: job.id,
         result: {},
         error: null,
         attempt: job.attemptsMade,
-        processedOn: job.processedAt,
+        processedAt: job.processedAt,
       };
-      distributionLogModel.create.mockResolvedValue({
+      distributionLogModel.create.mockReturnValue({
         id: job.id,
-        reload: jest.fn(),
       });
 
       // Act.
@@ -206,7 +194,6 @@ describe('PostgresDistributionLogRepository', () => {
       expect(distributionLogModel.create).toHaveBeenCalled();
       expect(distributionAttemptModel.create).toHaveBeenCalledWith(
         expectedResult,
-        { transaction: undefined },
       );
     });
 
@@ -214,15 +201,13 @@ describe('PostgresDistributionLogRepository', () => {
       // Arrange.
       const error = errorToJson(new Error(''));
       const expectedResult = {
-        logId: job.id,
         result: null,
         error: error,
         attempt: job.attemptsMade,
-        processedOn: job.processedAt,
+        processedAt: job.processedAt,
       };
-      distributionLogModel.create.mockResolvedValue({
+      distributionLogModel.create.mockReturnValue({
         id: job.id,
-        reload: jest.fn(),
       });
 
       // Act.
@@ -232,16 +217,15 @@ describe('PostgresDistributionLogRepository', () => {
       expect(distributionLogModel.create).toHaveBeenCalled();
       expect(distributionAttemptModel.create).toHaveBeenCalledWith(
         expectedResult,
-        { transaction: undefined },
       );
     });
 
     it('should yield the distribution log (create)', async () => {
       // Arrange.
       const log = {
-        reload: jest.fn(() => log),
+        id: job.id,
       };
-      distributionLogModel.create.mockResolvedValue(log);
+      distributionLogModel.save.mockResolvedValue(log);
 
       // Act/Assert.
       await expect(
@@ -251,36 +235,27 @@ describe('PostgresDistributionLogRepository', () => {
   });
 
   describe('update()', () => {
-    beforeEach(() => {
-      sequelize.transaction.mockImplementation((callback) => callback());
-    });
-
     afterEach(() => {
-      distributionLogModel.findByPk.mockClear();
-      distributionLogModel.update.mockClear();
+      distributionLogModel.preload.mockClear();
+      distributionLogModel.save.mockClear();
       distributionAttemptModel.create.mockClear();
+      distributionAttemptModel.save.mockClear();
     });
 
     it('should update a distribution log (no attempt)', async () => {
       // Arrange.
-      const expectedResult = {
+      const log = {
         state: MessageState.ACTIVE,
         attempts: job.attemptsMade,
         finishedAt: job.finishedAt,
       };
-      const log = {
-        update: jest.fn(() => ({ id: job.id })),
-        reload: jest.fn(),
-      };
-      distributionLogModel.findByPk.mockResolvedValue(log);
+      distributionLogModel.preload.mockResolvedValue(log);
 
       // Act.
       await repository.update(job, MessageState.ACTIVE, null, null);
 
       // Assert.
-      expect(log.update).toHaveBeenCalledWith(expectedResult, {
-        transaction: undefined,
-      });
+      expect(distributionLogModel.save).toHaveBeenCalledWith(log);
       expect(distributionAttemptModel.create).not.toHaveBeenCalled();
     });
 
@@ -291,23 +266,24 @@ describe('PostgresDistributionLogRepository', () => {
         result: {},
         error: null,
         attempt: job.attemptsMade,
-        processedOn: job.processedAt,
+        processedAt: job.processedAt,
       };
       const log = {
         id: job.id,
-        update: jest.fn(),
-        reload: jest.fn(),
+        result: {},
+        error: null,
+        attempts: job.attemptsMade,
+        processedAt: job.processedAt,
       };
-      distributionLogModel.findByPk.mockResolvedValue(log);
+      distributionLogModel.preload.mockResolvedValue(log);
 
       // Act.
       await repository.update(job, MessageState.COMPLETED, {}, null);
 
       // Assert.
-      expect(log.update).toHaveBeenCalled();
+      expect(distributionLogModel.save).toHaveBeenCalledWith(log);
       expect(distributionAttemptModel.create).toHaveBeenCalledWith(
         expectedResult,
-        { transaction: undefined },
       );
     });
 
@@ -319,33 +295,29 @@ describe('PostgresDistributionLogRepository', () => {
         result: null,
         error: error,
         attempt: job.attemptsMade,
-        processedOn: job.processedAt,
+        processedAt: job.processedAt,
       };
       const log = {
         id: job.id,
-        update: jest.fn(),
-        reload: jest.fn(),
       };
-      distributionLogModel.findByPk.mockResolvedValue(log);
+      distributionLogModel.preload.mockResolvedValue(log);
 
       // Act.
       await repository.update(job, MessageState.FAILED, null, error);
 
       // Assert.
-      expect(log.update).toHaveBeenCalled();
+      expect(distributionLogModel.save).toHaveBeenCalledWith(log);
       expect(distributionAttemptModel.create).toHaveBeenCalledWith(
         expectedResult,
-        { transaction: undefined },
       );
     });
 
     it('should yield the distribution log (update)', async () => {
       // Arrange.
       const log = {
-        update: jest.fn(() => log),
-        reload: jest.fn(() => log),
+        logId: job.id,
       };
-      distributionLogModel.findByPk.mockResolvedValue(log);
+      distributionLogModel.save.mockResolvedValue(log);
 
       // Act/Assert.
       await expect(

@@ -1,6 +1,6 @@
 import { RabbitMQHealthIndicator, RedisHealthIndicator } from '@hermes/health';
 import { ConfigService } from '@nestjs/config';
-import { HealthCheckService, SequelizeHealthIndicator } from '@nestjs/terminus';
+import { HealthCheckService, TypeOrmHealthIndicator } from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigServiceMock } from '../../../test/helpers/provider.helper';
 import { HealthController } from './health.controller';
@@ -13,12 +13,12 @@ export const createHealthCheckServiceMock = (): MockHealthCheckService => ({
   check: jest.fn(),
 });
 
-export type MockSequelizeHealthIndicator = Partial<
-  Record<keyof SequelizeHealthIndicator, jest.Mock>
+export type MockTypeOrmHealthIndicator = Partial<
+  Record<keyof TypeOrmHealthIndicator, jest.Mock>
 >;
 
-export const createSequelizeHealthIndicatorMock =
-  (): MockSequelizeHealthIndicator => ({
+export const createTypeOrmHealthIndicatorMock =
+  (): MockTypeOrmHealthIndicator => ({
     pingCheck: jest.fn(),
   });
 
@@ -26,9 +26,10 @@ export type MockRabbitMQHealthIndicator = Partial<
   Record<keyof RabbitMQHealthIndicator, jest.Mock>
 >;
 
-export const createRabbitMQHealthIndicatorMock = (): MockRabbitMQHealthIndicator => ({
-  pingCheck: jest.fn(),
-});
+export const createRabbitMQHealthIndicatorMock =
+  (): MockRabbitMQHealthIndicator => ({
+    pingCheck: jest.fn(),
+  });
 
 export type MockRedisHealthIndicator = Partial<
   Record<keyof RedisHealthIndicator, jest.Mock>
@@ -37,7 +38,6 @@ export type MockRedisHealthIndicator = Partial<
 export const createRedisHealthIndicatorMock = (): MockRedisHealthIndicator => ({
   pingCheck: jest.fn(),
 });
-
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -56,8 +56,8 @@ describe('HealthController', () => {
           useValue: createHealthCheckServiceMock(),
         },
         {
-          provide: SequelizeHealthIndicator,
-          useValue: createSequelizeHealthIndicatorMock(),
+          provide: TypeOrmHealthIndicator,
+          useValue: createTypeOrmHealthIndicatorMock(),
         },
         {
           provide: RabbitMQHealthIndicator,

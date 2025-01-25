@@ -19,18 +19,17 @@ export class OrmSubscriptionRepository implements SubscriptionRepository {
   ) {}
 
   async findAll() {
-    return this.subscriptionModel.find({
-      relations: { filters: true },
-    });
+    // NOTE: SubscriptionFilters are eagerly loaded.
+    return this.subscriptionModel.find();
   }
 
   async findOne(eventType: string, subscriberId: string) {
+    // NOTE: SubscriptionFilters are eagerly loaded.
     return this.subscriptionModel.findOne({
       where: {
         subscriberId: subscriberId,
         distributionEventType: eventType,
       },
-      relations: { filters: true },
     });
   }
 

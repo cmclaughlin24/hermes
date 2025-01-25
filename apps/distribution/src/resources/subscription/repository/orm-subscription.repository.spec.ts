@@ -1,12 +1,9 @@
 import { ExistsException, MissingException } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Sequelize } from 'sequelize-typescript';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
-  MockSequelize,
   createMockRepository,
-  createMockSequelize,
 } from '../../../../test/helpers/database.helper';
 import { FilterJoinOps, FilterOps } from '../../../common/types/filter.type';
 import { SubscriptionType } from '../../../common/types/subscription-type.type';
@@ -21,7 +18,6 @@ describe('PostgresSubscriptionRepository', () => {
   let repository: OrmSubscriptionRepository;
   let subscriptionModel: MockRepository;
   let subscriptionFilterModel: MockRepository;
-  let sequelize: MockSequelize;
 
   const eventType = 'unit-test';
 
@@ -30,16 +26,12 @@ describe('PostgresSubscriptionRepository', () => {
       providers: [
         OrmSubscriptionRepository,
         {
-          provide: getModelToken(Subscription),
+          provide: getRepositoryToken(Subscription),
           useValue: createMockRepository<Subscription>(),
         },
         {
-          provide: getModelToken(SubscriptionFilter),
+          provide: getRepositoryToken(SubscriptionFilter),
           useValue: createMockRepository<SubscriptionFilter>(),
-        },
-        {
-          provide: Sequelize,
-          useValue: createMockSequelize(),
         },
       ],
     }).compile();
@@ -47,11 +39,12 @@ describe('PostgresSubscriptionRepository', () => {
     repository = module.get<OrmSubscriptionRepository>(
       OrmSubscriptionRepository,
     );
-    subscriptionModel = module.get<MockRepository>(getModelToken(Subscription));
-    subscriptionFilterModel = module.get<MockRepository>(
-      getModelToken(SubscriptionFilter),
+    subscriptionModel = module.get<MockRepository>(
+      getRepositoryToken(Subscription),
     );
-    sequelize = module.get<MockSequelize>(Sequelize);
+    subscriptionFilterModel = module.get<MockRepository>(
+      getRepositoryToken(SubscriptionFilter),
+    );
   });
 
   it('should be defined', () => {
@@ -60,7 +53,7 @@ describe('PostgresSubscriptionRepository', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      subscriptionModel.findAll.mockClear();
+      subscriptionModel.find.mockClear();
     });
 
     it('should yield a list of subscriptions', async () => {
@@ -72,7 +65,7 @@ describe('PostgresSubscriptionRepository', () => {
           data: { url: 'http://localhost:9999/subscriptions' },
         } as Subscription,
       ];
-      subscriptionModel.findAll.mockResolvedValue(expectedResult);
+      subscriptionModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(repository.findAll()).resolves.toEqual(expectedResult);
@@ -80,7 +73,7 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      subscriptionModel.findAll.mockResolvedValue([]);
+      subscriptionModel.find.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(repository.findAll()).resolves.toHaveLength(0);
@@ -89,7 +82,7 @@ describe('PostgresSubscriptionRepository', () => {
 
   describe('findOne()', () => {
     afterEach(() => {
-      subscriptionModel.findByPk.mockClear();
+      subscriptionModel.findOne.mockClear();
     });
 
     it('should yield a subscription', async () => {
@@ -137,11 +130,12 @@ describe('PostgresSubscriptionRepository', () => {
 
     afterEach(() => {
       subscriptionModel.create.mockClear();
+      subscriptionModel.save.mockClear();
     });
 
     it('should create a subscription', async () => {
       // Arrange.
-      subscriptionModel.findByPk.mockResolvedValue(null);
+      subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act.
       await repository.create(createSubscriptionDto);
@@ -152,8 +146,9 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should yield the created subscription', async () => {
       // Arrange.
-      subscriptionModel.findByPk.mockResolvedValue(null);
+      subscriptionModel.findOne.mockResolvedValue(null);
       subscriptionModel.create.mockResolvedValue(subscription);
+      subscriptionModel.save.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(repository.create(createSubscriptionDto)).resolves.toEqual(
@@ -176,35 +171,28 @@ describe('PostgresSubscriptionRepository', () => {
   });
 
   describe('update()', () => {
-    const subscription = { update: jest.fn() };
-
-    beforeEach(() => {
-      sequelize.transaction.mockImplementation((callback) => callback());
-    });
+    const subscription = {};
 
     afterEach(() => {
       subscriptionModel.findOne.mockClear();
-      subscription.update.mockClear();
+      subscriptionModel.save.mockClear();
     });
 
     it('should update a subscription (w/o filters)', async () => {
       // Arrange.
-      const subscription = { update: jest.fn() };
       subscriptionModel.findOne.mockResolvedValue(subscription);
 
       // Act.
       await repository.update(eventType, '', {} as UpdateSubscriptionDto);
 
       // Assert.
-      expect(subscription.update).toHaveBeenCalled();
+      expect(subscriptionModel.save).toHaveBeenCalled();
     });
 
     it('should update the subscription (w/filters)', async () => {
       // Arrange.
       const subscription = {
         filters: [],
-        update: jest.fn(() => subscription),
-        reload: jest.fn(),
       };
       const filters: SubscriptionFilterDto[] = [
         {
@@ -222,7 +210,7 @@ describe('PostgresSubscriptionRepository', () => {
       } as UpdateSubscriptionDto);
 
       // Assert.
-      expect(subscription.update).toHaveBeenCalled();
+      expect(subscriptionModel.save).toHaveBeenCalled();
       expect(subscriptionFilterModel.create).toHaveBeenCalled();
     });
 
@@ -238,10 +226,9 @@ describe('PostgresSubscriptionRepository', () => {
             destroy: jest.fn(),
           },
         ],
-        update: jest.fn(() => subscription),
-        reload: jest.fn(() => subscription),
       };
       subscriptionModel.findOne.mockResolvedValue(subscription);
+      subscriptionModel.save.mockResolvedValue(subscription);
 
       // Act/Assert.
       await expect(
@@ -271,18 +258,30 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should remove a subscription from all distribution event(s)', async () => {
       // Arrange.
-      subscriptionModel.findOne.mockResolvedValue({});
+      const expectedResult = [{} as Subscription];
+      subscriptionModel.find.mockResolvedValue(expectedResult);
 
       // Act.
       await repository.removeAll(subscriberId);
 
       // Assert.
-      expect(subscriptionModel.destroy).toHaveBeenCalledWith({
-        where: { subscriberId },
-      });
+      expect(subscriptionModel.remove).toHaveBeenCalledWith(expectedResult);
     });
 
-    it('should throw a "MissingException" if the repository does have at least one subscription', async () => {
+    it('should throw a "MissingException" if the repository does have at least one subscription (empty list)', async () => {
+      // Arrange.
+      const expectedResult = new MissingException(
+        `Subscription(s) with subscriberId=${subscriberId} not found!`,
+      );
+      subscriptionModel.findOne.mockResolvedValue([]);
+
+      // Act/Assert.
+      await expect(repository.removeAll(subscriberId)).rejects.toEqual(
+        expectedResult,
+      );
+    });
+
+    it('should throw a "MissingException" if the repository does have at least one subscription (null/undefined)', async () => {
       // Arrange.
       const expectedResult = new MissingException(
         `Subscription(s) with subscriberId=${subscriberId} not found!`,
@@ -298,10 +297,10 @@ describe('PostgresSubscriptionRepository', () => {
 
   describe('remove()', () => {
     const subscriberId = '8544f373-8442-4307-aaa0-f26d4f7b30b1';
-    const subscription = { destroy: jest.fn() };
+    const subscription = {};
 
     afterEach(() => {
-      subscription.destroy.mockClear();
+      subscriptionModel.remove.mockClear();
     });
 
     it('should remove a subscription', async () => {
@@ -312,7 +311,7 @@ describe('PostgresSubscriptionRepository', () => {
       await repository.remove(eventType, subscriberId);
 
       // Assert.
-      expect(subscription.destroy).toHaveBeenCalled();
+      expect(subscriptionModel.remove).toHaveBeenCalled();
     });
 
     it('should throw a "MissingException" if the repository returns null/undefined', async () => {
@@ -320,7 +319,7 @@ describe('PostgresSubscriptionRepository', () => {
       const expectedResult = new MissingException(
         `Subscription with eventType=${eventType} subscriberId=${subscriberId} not found!`,
       );
-      subscriptionModel.findByPk.mockResolvedValue(null);
+      subscriptionModel.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(repository.remove(eventType, subscriberId)).rejects.toEqual(

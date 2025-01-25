@@ -89,6 +89,10 @@ Responsible for compiling the notification template with the data and sending th
 
 ### Authentication & Authorization
 
+<div align="center">
+    <img src="./docs/images/authentication-authorization.png" alt="Hermes Architecture">
+</div>
+
 Coming Soon 🔜
 
 ### How is a notification sent?

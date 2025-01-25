@@ -3,8 +3,8 @@ import {
   ExistsException,
   MissingException,
 } from '@hermes/common';
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   createMockRepository,
@@ -23,7 +23,7 @@ describe('OrmPhoneTemplateRepository', () => {
       providers: [
         OrmPhoneTemplateRepository,
         {
-          provide: getModelToken(PhoneTemplate),
+          provide: getRepositoryToken(PhoneTemplate),
           useValue: createMockRepository(),
         },
       ],
@@ -33,7 +33,7 @@ describe('OrmPhoneTemplateRepository', () => {
       OrmPhoneTemplateRepository,
     );
     phoneTemplateModel = module.get<MockRepository>(
-      getModelToken(PhoneTemplate),
+      getRepositoryToken(PhoneTemplate),
     );
   });
 

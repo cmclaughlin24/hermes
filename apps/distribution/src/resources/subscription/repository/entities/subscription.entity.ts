@@ -52,6 +52,7 @@ export class Subscription {
 
   @OneToMany(() => SubscriptionFilter, (filter) => filter.subscription, {
     cascade: true,
+    eager: true,
   })
   filters: SubscriptionFilter[];
 }

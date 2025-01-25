@@ -190,11 +190,13 @@ describe('DistributionRuleService', () => {
     const distributionRule = {};
 
     afterEach(() => {
+      repository.findOne.mockClear();
       repository.update.mockClear();
     });
 
     it('should update a distribution rule', async () => {
       // Arrange.
+      repository.findOne.mockResolvedValue(distributionRule);
       repository.update.mockResolvedValue(distributionRule);
 
       // Act.
@@ -206,6 +208,7 @@ describe('DistributionRuleService', () => {
 
     it('should yield the updated distribution rule', async () => {
       // Arrange.
+      repository.findOne.mockResolvedValue(distributionRule);
       repository.update.mockResolvedValue(distributionRule);
 
       // Act/Assert.
@@ -218,7 +221,7 @@ describe('DistributionRuleService', () => {
       const expectedResult = new MissingException(
         `Distribution rule for id=${id} not found!`,
       );
-      repository.update.mockRejectedValue(expectedResult);
+      repository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.update(id, {})).rejects.toEqual(expectedResult);
@@ -229,7 +232,10 @@ describe('DistributionRuleService', () => {
       const expectedResult = new DefaultRuleException(
         'The metadata for a default distribution rule must be set to null',
       );
-      repository.update.mockRejectedValue(expectedResult);
+      repository.findOne.mockResolvedValue({
+        ...distributionRule,
+        metadata: null,
+      });
 
       // Act/Assert.
       await expect(

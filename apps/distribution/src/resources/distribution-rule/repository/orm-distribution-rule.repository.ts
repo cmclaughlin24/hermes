@@ -40,7 +40,7 @@ export class OrmDistributionRuleRepository
         },
       });
 
-      // Note: Because of the way constraints are handled, manually check if a default
+      // NOTE: Because of the way constraints are handled, manually check if a default
       //       distribution rule already exists if the CreateDistributionRuleDto has a
       //       metadata of null.
       if (existingRule) {

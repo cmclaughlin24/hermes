@@ -1,5 +1,5 @@
-import { getModelToken } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { JobState } from 'bullmq';
 import { DataSource, In } from 'typeorm';
 import {
@@ -33,11 +33,11 @@ describe('OrmNotificationLogRepository', () => {
       providers: [
         OrmNotificationLogRepository,
         {
-          provide: getModelToken(NotificationLog),
+          provide: getRepositoryToken(NotificationLog),
           useValue: createMockRepository<NotificationLog>(),
         },
         {
-          provide: getModelToken(NotificationAttempt),
+          provide: getRepositoryToken(NotificationAttempt),
           useValue: createMockRepository<NotificationAttempt>(),
         },
         {
@@ -51,10 +51,10 @@ describe('OrmNotificationLogRepository', () => {
       OrmNotificationLogRepository,
     );
     notificationLogRepository = module.get<MockRepository>(
-      getModelToken(NotificationLog),
+      getRepositoryToken(NotificationLog),
     );
     notificationAttemptRepository = module.get<MockRepository>(
-      getModelToken(NotificationAttempt),
+      getRepositoryToken(NotificationAttempt),
     );
     dataSource = module.get<MockDataSource>(DataSource);
   });
