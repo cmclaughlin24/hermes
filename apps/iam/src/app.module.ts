@@ -50,8 +50,8 @@ import { CoreModule } from './core/core.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    ResourcesModule,
     CoreModule.forRoot({ driver: 'postgres' }),
+    ResourcesModule,
   ],
 })
 export class AppModule {}
