@@ -101,8 +101,6 @@ Coming Soon 🔜
 
 ###### Permissions
 
-</div>
-
 |   Service    |       Resource       |    Actions     |
 | :----------: | :------------------: | :------------: |
 | Distribution |  distribution_event  |     create     |
@@ -144,6 +142,8 @@ Coming Soon 🔜
 | Notification |   notification_job   |  schedule_sms  |
 | Notification |   notification_job   | schedule_call  |
 | Notification |   notification_job   | schedule_push  |
+
+</div>
 
 _Designer's Note: The permissions can be seeded into the database with the **create_permissions.sql** in the scripts directory. You may need to adjust the generation of the random universal unique identifier (UUID)._
 
