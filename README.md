@@ -97,6 +97,56 @@ Responsible for compiling the notification template with the data and sending th
 
 Coming Soon 🔜
 
+<div align="center">
+
+###### Permissions
+
+</div>
+
+|   Service    |       Resource       |    Actions     |
+| :----------: | :------------------: | :------------: |
+| Distribution |  distribution_event  |     create     |
+| Distribution |  distribution_event  |     update     |
+| Distribution |  distribution_event  |     remove     |
+| Distribution |  distribution_rule   |     create     |
+| Distribution |  distribution_rule   |     update     |
+| Distribution |  distribution_rule   |     remove     |
+| Distribution |     subscription     |     create     |
+| Distribution |     subscription     |     update     |
+| Distribution |     subscription     |     remove     |
+| Distribution | distribution_message |    publish     |
+|     IAM      |         user         |      list      |
+|     IAM      |         user         |      get       |
+|     IAM      |         user         |     create     |
+|     IAM      |         user         |     update     |
+|     IAM      |         user         |     remove     |
+|     IAM      |      permission      |      list      |
+|     IAM      |      permission      |      get       |
+|     IAM      |      permission      |     create     |
+|     IAM      |      permission      |     update     |
+|     IAM      |      permission      |     remove     |
+|     IAM      |       api_key        |     create     |
+|     IAM      |       api_key        |     remove     |
+| Notification |    email_template    |     create     |
+| Notification |    email_template    |     update     |
+| Notification |    email_template    |     remove     |
+| Notification |    phone_template    |     create     |
+| Notification |    phone_template    |     update     |
+| Notification |    phone_template    |     remove     |
+| Notification |    push_template     |     create     |
+| Notification |    push_template     |     update     |
+| Notification |    push_template     |     remove     |
+| Notification |     notification     |   send_email   |
+| Notification |     notification     |    send_sms    |
+| Notification |     notification     |   send_call    |
+| Notification |     notification     |   send_push    |
+| Notification |   notification_job   | schedule_email |
+| Notification |   notification_job   |  schedule_sms  |
+| Notification |   notification_job   | schedule_call  |
+| Notification |   notification_job   | schedule_push  |
+
+_Designer's Note: The permissions can be seeded into the database with the **create_permissions.sql** in the scripts directory. You may need to adjust the generation of the random universal unique identifier (UUID)._
+
 ### How is a notification sent?
 
 <div align="center">
