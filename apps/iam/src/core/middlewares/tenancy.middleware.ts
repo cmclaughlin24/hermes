@@ -1,7 +1,15 @@
 import { NestMiddleware } from '@nestjs/common';
 
+export const TENANCY_KEY = 'tenantId';
+
 export class TenancyMiddleware implements NestMiddleware {
-  use(req: any, res: any, next: (error?: Error | any) => void) {
-    throw new Error('Method not implemented.');
+  use(req: any, _res: any, next: (error?: Error | any) => void) {
+    const tenantId = req.headers['x-tenant-id'];
+
+    if (tenantId) {
+      req[TENANCY_KEY] = tenantId.toString();
+    }
+
+    next();
   }
 }

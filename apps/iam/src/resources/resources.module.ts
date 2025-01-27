@@ -1,6 +1,6 @@
 import { IamModule } from '@hermes/iam';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { iamFactory } from '../config/iam.config';
@@ -11,6 +11,7 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { PermissionModule } from './permission/permission.module';
 import { UserModule } from './user/user.module';
 import { HealthModule } from './health/health.module';
+import { TenancyMiddleware } from '../core/middlewares/tenancy.middleware';
 
 @Module({
   imports: [
@@ -23,11 +24,15 @@ import { HealthModule } from './health/health.module';
       inject: [ConfigService, AuthenticationService, ApiKeyService],
       useFactory: iamFactory,
     }),
-    UserModule,
     AuthenticationModule,
-    PermissionModule,
     ApiKeyModule,
+    PermissionModule,
+    UserModule,
     HealthModule,
   ],
 })
-export class ResourcesModule {}
+export class ResourcesModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TenancyMiddleware).forRoutes('*');
+  }
+}
