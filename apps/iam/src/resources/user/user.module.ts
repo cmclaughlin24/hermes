@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 import { CommonModule } from '../../common/common.module';
 import { PermissionModule } from '../permission/permission.module';
 import { UserDeliveryWindowLoader } from './data-loaders/user-delivery-window.loader';
@@ -12,13 +11,10 @@ import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { UserRepository } from './repository/user.repository';
 import { OrmUserRepository } from './repository/orm-user.repository';
-import { DATA_SOURCE } from '../../core/core.module';
+import { OrmDataSourceService } from '../../core/services/orm-data-source.service';
 
 @Module({
-  imports: [
-    CommonModule,
-    PermissionModule,
-  ],
+  imports: [CommonModule, PermissionModule],
   providers: [
     UserResolver,
     UserService,
@@ -28,8 +24,8 @@ import { DATA_SOURCE } from '../../core/core.module';
     UserPermissionLoader,
     {
       provide: UserRepository,
-      inject: [DATA_SOURCE],
-      useFactory: (dataSource: DataSource) =>
+      inject: [OrmDataSourceService],
+      useFactory: (dataSource: OrmDataSourceService) =>
         new OrmUserRepository(
           dataSource.getRepository(User),
           dataSource.getRepository(DeliveryWindow),

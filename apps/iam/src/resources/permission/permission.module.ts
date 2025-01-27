@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 import { Permission } from './repository/entities/permission.entity';
 import { PermissionResolver } from './permission.resolver';
 import { PermissionService } from './permission.service';
 import { PermissionRepository } from './repository/permission.repository';
 import { OrmPermissionRepository } from './repository/orm-permission.repository';
-import { DATA_SOURCE } from '../../core/core.module';
+import { OrmDataSourceService } from '../../core/services/orm-data-source.service';
 
 @Module({
   imports: [],
@@ -14,8 +13,8 @@ import { DATA_SOURCE } from '../../core/core.module';
     PermissionService,
     {
       provide: PermissionRepository,
-      inject: [DATA_SOURCE],
-      useFactory: (dataSource: DataSource) =>
+      inject: [OrmDataSourceService],
+      useFactory: (dataSource: OrmDataSourceService) =>
         new OrmPermissionRepository(dataSource.getRepository(Permission)),
     },
   ],

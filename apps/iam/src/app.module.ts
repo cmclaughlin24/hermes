@@ -17,6 +17,7 @@ import { CoreModule } from './core/core.module';
         API_KEY_HEADER: Joi.required(),
         ENABLE_DEVTOOLS: Joi.boolean().default(false),
         DEVTOOLS_PORT: Joi.number().default(8002),
+        DB_DRIVER: Joi.required(),
         DB_HOST: Joi.required(),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),
@@ -50,7 +51,13 @@ import { CoreModule } from './core/core.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    CoreModule.forRoot({ driver: 'postgres' }),
+    CoreModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        driver: configService.get('DB_DRIVER'),
+      }),
+    }),
     ResourcesModule,
   ],
 })
