@@ -3,7 +3,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { iamFactory } from '../config/iam.config';
+import { iamMultiTenantFactory } from '../config/iam.config';
 import { ApiKeyModule } from './api-key/api-key.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { PermissionModule } from './permission/permission.module';
@@ -18,11 +18,10 @@ import { TenantTokenService } from '../core/services/tenant-token.service';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    // FIXME: Re-enable authentication once determined how to handle durable providers.
     IamModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService, TenantTokenService],
-      useFactory: iamFactory,
+      useFactory: iamMultiTenantFactory,
     }),
     AuthenticationModule,
     ApiKeyModule,

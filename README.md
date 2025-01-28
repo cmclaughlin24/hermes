@@ -254,12 +254,17 @@ Multi-tenancy can be achieved using several strategies:
 3.  Bridge Strategy: Each application shares a single database instance, but each tenant has their own schema. Each schema is identical, but are isolated.
 4.  Isolated Strategy: Each application runs has it's own instances.
 
-A bridge strategy was selected for this application to developer a deeper understanding of NestJS's durable providers, but this can be easily removed by:
+A bridge strategy was selected for this application to deepen my personal understanding of how NestJS' dependency injection behaves and durable providers.
 
-1. Disabling the `AggregateByTenantStrategy`.
-2. Removing the `TenancyMiddleware` from the `ResourcesModule`.
-3. Updating the `CoreModule` to remove the `scope: Scope.Request`, `durable: true`, and the injected `REQUEST` from the `OrmDataSourceService` provider.
-4. Removing the usage of the `tenantId` argument in the `OrmDataSourceService.initialize` method and update `database.config.ts` methods not to require a tenant.
+The multi-tenancy can be easily removed by:
+
+#### IAM Service
+
+1. Disabling the `AggregateByTenantStrategy` registered in the `AppModule`.
+2. Switching the `IamModule` factory method from `iamMultiTenantFactory` to `iamFactory` in the `ResourcesModule`.
+3. Removing the `TenancyMiddleware` registed in the `ResourcesModule`.
+4. Updating the `CoreModule` to remove the `scope: Scope.Request`, `durable: true`, and the injected `REQUEST` from the `OrmDataSourceService` provider.
+5. Removing the usage of the `tenantId` argument in the `OrmDataSourceService.initialize` method and update `database.config.ts` methods not to require a scheme name for the tenant.
 
 ## Getting Started
 
