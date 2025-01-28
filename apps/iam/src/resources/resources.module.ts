@@ -19,11 +19,12 @@ import { TenancyMiddleware } from '../core/middlewares/tenancy.middleware';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    IamModule.registerAsync({
-      imports: [ConfigModule, AuthenticationModule, ApiKeyModule],
-      inject: [ConfigService, AuthenticationService, ApiKeyService],
-      useFactory: iamFactory,
-    }),
+    // FIXME: Re-enable authentication once determined how to handle durable providers.
+    //IamModule.registerAsync({
+    //  imports: [ConfigModule, AuthenticationModule, ApiKeyModule],
+    //  inject: [ConfigService, AuthenticationService, ApiKeyService],
+    //  useFactory: iamFactory,
+    //}),
     AuthenticationModule,
     ApiKeyModule,
     PermissionModule,

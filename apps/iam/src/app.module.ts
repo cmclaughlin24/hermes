@@ -6,6 +6,10 @@ import * as Joi from 'joi';
 import { join } from 'path';
 import { ResourcesModule } from './resources/resources.module';
 import { CoreModule } from './core/core.module';
+import { ContextIdFactory } from '@nestjs/core';
+import { AggregateByTenantStrategy } from './core/strategies/aggregate-by-tenant.strategy';
+
+ContextIdFactory.apply(new AggregateByTenantStrategy());
 
 @Module({
   imports: [

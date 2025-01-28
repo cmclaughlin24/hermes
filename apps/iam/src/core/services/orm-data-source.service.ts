@@ -30,12 +30,13 @@ export class OrmDataSourceService implements OnApplicationShutdown {
     private readonly configService: ConfigService,
   ) {}
 
-  async initialize() {
+  async initialize(tenantId?: string) {
     let dataSourceOptsFactory: (
       configService: ConfigService,
-    ) => DataSourceOptions = postgresDatabaseFactory;
+    ) => DataSourceOptions = postgresDatabaseFactory(`hermes_${tenantId}`);
 
     if (this.options.driver === 'mariadb') {
+      // TODO: Implement a multi-tenancy set-up for mariadb since it doesn't support schemas.
       dataSourceOptsFactory = mariaDabaseFactory;
     }
 

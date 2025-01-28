@@ -1,6 +1,6 @@
 import { NestMiddleware } from '@nestjs/common';
 
-export const TENANCY_KEY = 'tenantId';
+export const TENANCY_KEY = Symbol('tenantId');
 
 export class TenancyMiddleware implements NestMiddleware {
   use(req: any, _res: any, next: (error?: Error | any) => void) {

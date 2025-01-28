@@ -2,18 +2,19 @@ import { ConfigService } from '@nestjs/config';
 import { DataSourceOptions } from 'typeorm';
 
 export function postgresDatabaseFactory(
-  configService: ConfigService,
-): DataSourceOptions {
-  return {
+  schema: string,
+): (configService: ConfigService) => DataSourceOptions {
+  return (configService: ConfigService) => ({
     type: 'postgres',
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
+    schema: schema,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
-  };
+  });
 }
 
 export function mariaDabaseFactory(

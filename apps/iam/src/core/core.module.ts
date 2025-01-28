@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   CORE_MODULE_OPTIONS,
@@ -6,17 +6,24 @@ import {
   CoreModuleDefinitionClass,
 } from './core.module-definition';
 import { OrmDataSourceService } from './services/orm-data-source.service';
+import { REQUEST } from '@nestjs/core';
 
 @Global()
 @Module({
   providers: [
     {
       provide: OrmDataSourceService,
-      inject: [CORE_MODULE_OPTIONS, ConfigService],
+      scope: Scope.REQUEST,
+      durable: true,
+      inject: [CORE_MODULE_OPTIONS, ConfigService, REQUEST],
       useFactory: async (
         options: typeof CORE_MODULE_OPTIONS_TYPE,
         configService: ConfigService,
-      ) => await new OrmDataSourceService(options, configService).initialize(),
+        request: { tenantId: string },
+      ) =>
+        await new OrmDataSourceService(options, configService).initialize(
+          request.tenantId,
+        ),
     },
   ],
   exports: [OrmDataSourceService],
