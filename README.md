@@ -245,6 +245,22 @@ Coming Soon 🔜
 
 Coming Soon 🔜
 
+### Multi-Tenancy
+
+Multi-tenancy can be achieved using several strategies:
+
+1.  Silo Strategy: Separate database per application; Provides strict database seperation, but at the expense of higher infrastructure and more complicated tenant set-up.
+2.  Pool Strategy/Shared Database: Each application shares a single database and data sits side-by-side and contains a partioning key (tenant id). Reduces infrastructure cost, but risk of customer data being leaked. Can implement this strategy with row-level-security to improve security.
+3.  Bridge Strategy: Each application shares a single database instance, but each tenant has their own schema. Each schema is identical, but are isolated.
+4.  Isolated Strategy: Each application runs has it's own instances.
+
+A bridge strategy was selected for this application to developer a deeper understanding of NestJS's durable providers, but this can be easily removed by:
+
+1. Disabling the `AggregateByTenantStrategy`.
+2. Removing the `TenancyMiddleware` from the `ResourcesModule`.
+3. Updating the `CoreModule` to remove the `scope: Scope.Request`, `durable: true`, and the injected `REQUEST` from the `OrmDataSourceService` provider.
+4. Removing the usage of the `tenantId` argument in the `OrmDataSourceService.initialize` method and update `database.config.ts` methods not to require a tenant.
+
 ## Getting Started
 
 ### Installation
