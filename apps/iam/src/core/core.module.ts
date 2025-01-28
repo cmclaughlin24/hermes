@@ -7,6 +7,7 @@ import {
 } from './core.module-definition';
 import { OrmDataSourceService } from './services/orm-data-source.service';
 import { REQUEST } from '@nestjs/core';
+import { TenantTokenService } from './services/tenant-token.service';
 
 @Global()
 @Module({
@@ -25,7 +26,8 @@ import { REQUEST } from '@nestjs/core';
           request.tenantId,
         ),
     },
+    TenantTokenService,
   ],
-  exports: [OrmDataSourceService],
+  exports: [OrmDataSourceService, TenantTokenService],
 })
 export class CoreModule extends CoreModuleDefinitionClass {}

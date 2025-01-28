@@ -9,7 +9,11 @@ import {
 import { TENANCY_KEY } from '../middlewares/tenancy.middleware';
 
 export class AggregateByTenantStrategy implements ContextIdStrategy {
-  private readonly tenants = new Map<string, ContextId>();
+  private static readonly tenants = new Map<string, ContextId>();
+
+  static get(tenantId: string) {
+    return AggregateByTenantStrategy.tenants.get(tenantId);
+  }
 
   attach(
     contextId: ContextId,
@@ -23,11 +27,11 @@ export class AggregateByTenantStrategy implements ContextIdStrategy {
 
     let tenantSubTreeId: ContextId;
 
-    if (this.tenants.has(tenantId)) {
-      tenantSubTreeId = this.tenants.get(tenantId);
+    if (AggregateByTenantStrategy.tenants.has(tenantId)) {
+      tenantSubTreeId = AggregateByTenantStrategy.tenants.get(tenantId);
     } else {
       tenantSubTreeId = ContextIdFactory.create();
-      this.tenants.set(tenantId, tenantSubTreeId);
+      AggregateByTenantStrategy.tenants.set(tenantId, tenantSubTreeId);
     }
 
     return {

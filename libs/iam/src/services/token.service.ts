@@ -4,14 +4,19 @@ export abstract class TokenService {
   /**
    * Yields an `ActiveEntityData` object if an access token is valid.
    * @param {string} token
+   * @param {any} req
    * @returns {Promise<ActiveEntityData>}
    */
-  verifyAccessToken?(token: string): Promise<ActiveEntityData>;
+  abstract verifyAccessToken?(
+    token: string,
+    req?: any,
+  ): Promise<ActiveEntityData>;
 
   /**
    * Yields an `ActiveEntityData` object if an api key is valid.
    * @param {string} apiKey
+   * @param {any} req
    * @returns {Promise<ActiveEntityData>}
    */
-  verifyApiKey?(apiKey: string): Promise<ActiveEntityData>;
+  abstract verifyApiKey?(apiKey: string, req?: any): Promise<ActiveEntityData>;
 }

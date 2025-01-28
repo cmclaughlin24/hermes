@@ -22,7 +22,7 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.tokenService.verifyAccessToken(token);
+      const payload = await this.tokenService.verifyAccessToken(token, request);
 
       request[IAM_ENTITY_KEY] = payload;
     } catch (error) {

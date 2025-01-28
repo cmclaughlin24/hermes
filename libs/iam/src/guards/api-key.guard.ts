@@ -34,7 +34,7 @@ export class ApiKeyGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.tokenService.verifyApiKey(apiKey);
+      const payload = await this.tokenService.verifyApiKey(apiKey, request);
 
       request[IAM_ENTITY_KEY] = payload;
     } catch (error) {
