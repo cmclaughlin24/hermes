@@ -118,6 +118,8 @@ The claims structure for both access tokens and API keys adheres to a similar fo
 
 _See the respective token classes for additional fields related to their specific use case._
 
+Once an entity has been authenticated with a valid token, each service evaluates the `authorization_details` within the claims object to determine whether the subjec has permission to perform the requested action on a resource. Below is a list of potential permissions associated with the service and resource.
+
 <div align="center">
 
 ###### Permissions
