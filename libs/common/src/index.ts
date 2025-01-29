@@ -1,5 +1,6 @@
 export * from './decorators/remove-cache.decorator';
 export * from './decorators/use-cache.decorator';
+export * from './decorators/tenant.decorator';
 export * from './dto/api-response.dto';
 export * from './dto/message.dto';
 export * from './dto/push-notification.dto';

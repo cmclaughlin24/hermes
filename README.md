@@ -254,7 +254,9 @@ Multi-tenancy can be achieved using several strategies:
 3.  Bridge Strategy: Each application shares a single database instance, but each tenant has their own schema. Each schema is identical, but are isolated.
 4.  Isolated Strategy: Each application runs has it's own instances.
 
-A bridge strategy was selected for this application to deepen my personal understanding of how NestJS' dependency injection behaves and durable providers.
+The notification service is intended to be ran in isolation, with a set of workers listening to each tenant's queue. This allows each tenant to choose a different set of email (e.g. SendGrid) and telecommunication products (e.g. Twilio). While this may have a slightly higher infrastructure cost, it allows for high configuration and independent scaling based on the tenant's usage.
+
+A bridge strategy was selected for the IAM service to deepen my personal understanding of how NestJS' dependency injection behaves and durable providers.
 
 The multi-tenancy can be easily removed by:
 
