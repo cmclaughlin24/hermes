@@ -1,3 +1,4 @@
+import { TENANCY_KEY } from '@hermes/common';
 import {
   ContextId,
   ContextIdFactory,
@@ -6,7 +7,6 @@ import {
   ContextIdStrategy,
   HostComponentInfo,
 } from '@nestjs/core';
-import { TENANCY_KEY } from '../middlewares/tenancy.middleware';
 
 export class AggregateByTenantStrategy implements ContextIdStrategy {
   private static readonly tenants = new Map<string, ContextId>();

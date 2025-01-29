@@ -1,3 +1,4 @@
+import { TenancyMiddleware } from '@hermes/common';
 import { IamModule } from '@hermes/iam';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
@@ -9,7 +10,6 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { PermissionModule } from './permission/permission.module';
 import { UserModule } from './user/user.module';
 import { HealthModule } from './health/health.module';
-import { TenancyMiddleware } from '../core/middlewares/tenancy.middleware';
 import { TenantTokenService } from '../core/services/tenant-token.service';
 
 @Module({

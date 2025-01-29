@@ -1,8 +1,8 @@
+import { TENANCY_KEY } from '@hermes/common';
 import { ActiveEntityData, TokenService } from '@hermes/iam';
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { AggregateByTenantStrategy } from '../strategies/aggregate-by-tenant.strategy';
-import { TENANCY_KEY } from '../middlewares/tenancy.middleware';
 import { AuthenticationService } from '../../resources/authentication/authentication.service';
 import { ApiKeyService } from '../../resources/api-key/api-key.service';
 
