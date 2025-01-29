@@ -55,13 +55,7 @@ ContextIdFactory.apply(new AggregateByTenantStrategy());
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    CoreModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        driver: configService.get('DB_DRIVER'),
-      }),
-    }),
+    CoreModule,
     ResourcesModule,
   ],
 })

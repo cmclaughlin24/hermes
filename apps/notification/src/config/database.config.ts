@@ -1,9 +1,9 @@
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 export function postgresDatabaseFactory(
   configService: ConfigService,
-): TypeOrmModuleOptions {
+): DataSourceOptions {
   return {
     type: 'postgres',
     host: configService.get('DB_HOST'),
@@ -11,7 +11,6 @@ export function postgresDatabaseFactory(
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
-    autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
   };
@@ -19,7 +18,7 @@ export function postgresDatabaseFactory(
 
 export function mariaDabaseFactory(
   configService: ConfigService,
-): TypeOrmModuleOptions {
+): DataSourceOptions {
   return {
     type: 'mariadb',
     host: configService.get('DB_HOST'),
@@ -27,7 +26,6 @@ export function mariaDabaseFactory(
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
-    autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
   };

@@ -3,18 +3,20 @@ import { ConfigService } from '@nestjs/config';
 import {
   DataSource,
   DataSourceOptions,
-  Repository,
   EntityTarget,
   ObjectLiteral,
+  Repository,
 } from 'typeorm';
 import {
   mariaDabaseFactory,
   postgresDatabaseFactory,
 } from '../../config/database.config';
-import { ApiKey } from '../../resources/api-key/entities/api-key.entity';
-import { User } from '../../resources/user/repository/entities/user.entity';
-import { Permission } from '../../resources/permission/repository/entities/permission.entity';
-import { DeliveryWindow } from '../../resources/user/repository/entities/delivery-window.entity';
+import { EmailTemplate } from '../../resources/email-template/repository/entities/email-template.entity';
+import { PhoneTemplate } from '../../resources/phone-template/repository/entities/phone-template.entity';
+import { PushTemplate } from '../../resources/push-template/repository/entities/push-template.entity';
+import { PushAction } from '../../resources/push-template/repository/entities/push-action.entity';
+import { NotificationLog } from '../../resources/notification-log/repository/entities/notification-log.entity';
+import { NotificationAttempt } from '../../resources/notification-log/repository/entities/notification-attempt.entity';
 
 @Injectable()
 export class OrmDataSourceService implements OnApplicationShutdown {
@@ -26,13 +28,12 @@ export class OrmDataSourceService implements OnApplicationShutdown {
     return this._dataSource;
   }
 
-  async initialize(tenantId?: string) {
+  async initialize(_tenantId?: string) {
     let dataSourceOptsFactory: (
       configService: ConfigService,
-    ) => DataSourceOptions = postgresDatabaseFactory(`hermes_${tenantId}`);
+    ) => DataSourceOptions = postgresDatabaseFactory;
 
     if (this.configService.get('DB_DRIVER') === 'mariadb') {
-      // TODO: Implement a multi-tenancy set-up for mariadb since it doesn't support schemas.
       dataSourceOptsFactory = mariaDabaseFactory;
     }
 
@@ -40,7 +41,14 @@ export class OrmDataSourceService implements OnApplicationShutdown {
       ...dataSourceOptsFactory(this.configService),
       // TODO: Investigate how to autoload entities (if possible) since webpack compiles to a
       // main.js file instead of *.entity.{ts|js}.
-      entities: [ApiKey, DeliveryWindow, Permission, User],
+      entities: [
+        EmailTemplate,
+        PhoneTemplate,
+        PushTemplate,
+        PushAction,
+        NotificationLog,
+        NotificationAttempt,
+      ],
     });
 
     return await this._dataSource.initialize();
