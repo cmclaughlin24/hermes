@@ -1,10 +1,6 @@
-import {
-  IamClientModule,
-  IamClientService,
-  RequestLoggerMiddleware,
-} from '@hermes/common';
+import { IamClientModule, IamClientService } from '@hermes/common';
 import { IamModule } from '@hermes/iam';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { iamFactory } from '../config/iam.config';
 import { EmailTemplateModule } from './email-template/email-template.module';
@@ -31,8 +27,4 @@ import { PushTemplateModule } from './push-template/push-template.module';
     }),
   ],
 })
-export class ResourcesModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
-  }
-}
+export class ResourcesModule {}

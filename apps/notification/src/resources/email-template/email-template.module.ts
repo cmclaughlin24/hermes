@@ -6,11 +6,12 @@ import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
 import { EmailTemplateRepository } from './repository/email-template.repository';
 import { OrmEmailTemplateRepository } from './repository/orm-email-template.repository';
-import { OrmDataSourceService } from '../../core/services/orm-data-source.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailTemplate } from './repository/entities/email-template.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([EmailTemplate]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -22,9 +23,7 @@ import { EmailTemplate } from './repository/entities/email-template.entity';
     EmailTemplateService,
     {
       provide: EmailTemplateRepository,
-      inject: [OrmDataSourceService],
-      useFactory: (dataSource: OrmDataSourceService) =>
-        new OrmEmailTemplateRepository(dataSource.getRepository(EmailTemplate)),
+      useClass: OrmEmailTemplateRepository,
     },
   ],
   exports: [EmailTemplateService],

@@ -83,7 +83,7 @@ import { CoreModule } from './core/core.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    CoreModule,
+    CoreModule.forRoot({ driver: 'postgres' }),
     ConsumerModule,
     ResourcesModule,
   ],
