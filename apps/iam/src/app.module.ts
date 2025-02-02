@@ -2,11 +2,10 @@ import { OpenTelemetryModule } from '@hermes/open-telemetry';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { join } from 'path';
-import { databaseFactory } from './config/database.config';
 import { ResourcesModule } from './resources/resources.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -36,11 +35,6 @@ import { ResourcesModule } from './resources/resources.module';
         ENABLE_OPEN_TELEMETRY: Joi.boolean().default(false),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseFactory,
-    }),
     OpenTelemetryModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -57,6 +51,7 @@ import { ResourcesModule } from './resources/resources.module';
       }),
     }),
     ResourcesModule,
+    CoreModule.forRoot({ driver: 'postgres' }),
   ],
 })
 export class AppModule {}

@@ -1,13 +1,13 @@
 import { TokenService } from '@hermes/iam';
-import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
 import { HashingService } from '../../src/common/services/hashing.service';
 import { TokenStorage } from '../../src/common/storage/token.storage';
 import { PermissionService } from '../../src/resources/permission/permission.service';
 import { UserService } from '../../src/resources/user/user.service';
 
-export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
+export type MockCacheStore = Partial<Record<keyof Cache, jest.Mock>>;
 
 export const createCacheStoreMock = (): MockCacheStore => ({
   get: jest.fn(),

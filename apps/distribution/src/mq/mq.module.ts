@@ -2,6 +2,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BullMQOtel } from 'bullmq-otel';
 import { CommonModule } from '../common/common.module';
 import { rabbitmqFactory } from '../config/rabbitmq.config';
 import { DistributionEventModule } from '../resources/distribution-event/distribution-event.module';
@@ -11,7 +12,7 @@ import { DistributionConsumer } from './consumers/distribution-consumer/distribu
 
 @Module({
   imports: [
-    RabbitMQModule.forRootAsync(RabbitMQModule, {
+    RabbitMQModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: rabbitmqFactory,
@@ -23,6 +24,7 @@ import { DistributionConsumer } from './consumers/distribution-consumer/distribu
       // Note: Bullmq requires the prefix option as a cluster "hash tag". See
       //       https://docs.bullmq.io/bull/patterns/redis-cluster for more information.
       prefix: process.env.BULLMQ_NOTIFICATION_QUEUE_PREFIX,
+      telemetry: new BullMQOtel(process.env.BULLMQ_NOTIFICATION_QUEUE),
     }),
     CommonModule,
     DistributionEventModule,

@@ -9,7 +9,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
-import { Permission } from './entities/permission.entity';
+import { Permission } from './repository/entities/permission.entity';
 import { PermissionResolver } from './permission.resolver';
 import { PermissionService } from './permission.service';
 

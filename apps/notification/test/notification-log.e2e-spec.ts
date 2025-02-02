@@ -14,7 +14,7 @@ describe('[Feature] Notification Log', () => {
   let notificationLogService: NotificationLogService;
 
   const jobName = 'e2e-test__notification-log';
-  let logId;
+  let logId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

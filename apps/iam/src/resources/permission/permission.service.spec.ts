@@ -1,37 +1,43 @@
-import {
-  ExistsException,
-  MissingException,
-  PostgresError,
-} from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import {
-  MockRepository,
-  createMockRepository,
-} from '../../../test/helpers/database.helper';
 import { CreatePermissionInput } from './dto/create-permission.input';
 import { UpdatePermissionInput } from './dto/update-permission.input';
-import { Permission } from './entities/permission.entity';
+import { Permission } from './repository/entities/permission.entity';
 import { PermissionService } from './permission.service';
+import { PermissionRepository } from './repository/permission.repository';
+
+type MockPermissionRepository = Partial<
+  Record<keyof PermissionRepository, jest.Mock>
+>;
+
+const createPermissionRepositoryMock = (): MockPermissionRepository => ({
+  findAll: jest.fn(),
+  findById: jest.fn(),
+  findByResourceAction: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  remove: jest.fn(),
+});
 
 describe('PermissionService', () => {
   let service: PermissionService;
-  let repository: MockRepository;
+  let permissionRepository: MockPermissionRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PermissionService,
         {
-          provide: getRepositoryToken(Permission),
-          useValue: createMockRepository<Permission>(),
+          provide: PermissionRepository,
+          useValue: createPermissionRepositoryMock(),
         },
       ],
     }).compile();
 
     service = module.get<PermissionService>(PermissionService);
-    repository = module.get<MockRepository>(getRepositoryToken(Permission));
+    permissionRepository =
+      module.get<MockPermissionRepository>(PermissionRepository);
   });
 
   it('should be defined', () => {
@@ -40,7 +46,7 @@ describe('PermissionService', () => {
 
   describe('findAll()', () => {
     afterEach(() => {
-      repository.find.mockClear();
+      permissionRepository.findAll.mockClear();
     });
 
     it('should yield a list of permissions', async () => {
@@ -54,7 +60,7 @@ describe('PermissionService', () => {
           updatedAt: new Date(),
         },
       ];
-      repository.find.mockResolvedValue(expectedResult);
+      permissionRepository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toEqual(expectedResult);
@@ -62,7 +68,7 @@ describe('PermissionService', () => {
 
     it('should yield an empty list if the repository returns an empty list', async () => {
       // Arrange.
-      repository.find.mockResolvedValue([]);
+      permissionRepository.findAll.mockResolvedValue([]);
 
       // Act/Assert.
       await expect(service.findAll()).resolves.toEqual([]);
@@ -73,7 +79,7 @@ describe('PermissionService', () => {
     const permissionId = randomUUID();
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
+      permissionRepository.findById.mockClear();
     });
 
     it('should yield a permission', async () => {
@@ -85,7 +91,7 @@ describe('PermissionService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      repository.findOneBy.mockResolvedValue(expectedResult);
+      permissionRepository.findById.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.findById(permissionId)).resolves.toEqual(
@@ -95,7 +101,7 @@ describe('PermissionService', () => {
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(null);
+      permissionRepository.findById.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(service.findById(permissionId)).resolves.toBeNull();
@@ -107,7 +113,7 @@ describe('PermissionService', () => {
     const action = 'get';
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
+      permissionRepository.findByResourceAction.mockClear();
     });
 
     it('should yield a permission', async () => {
@@ -119,7 +125,9 @@ describe('PermissionService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      repository.findOneBy.mockResolvedValue(expectedResult);
+      permissionRepository.findByResourceAction.mockResolvedValue(
+        expectedResult,
+      );
 
       // Act/Assert.
       await expect(
@@ -129,7 +137,7 @@ describe('PermissionService', () => {
 
     it('should yield null if the repository returns null/undefined', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue(null);
+      permissionRepository.findByResourceAction.mockResolvedValue(null);
 
       // Act/Assert.
       await expect(
@@ -145,20 +153,18 @@ describe('PermissionService', () => {
     };
 
     afterEach(() => {
-      repository.create.mockClear();
-      repository.save.mockClear();
+      permissionRepository.create.mockClear();
     });
 
     it('should create a permission', async () => {
       // Arrange.
-      repository.create.mockResolvedValue({});
-      repository.save.mockResolvedValue(null);
+      permissionRepository.create.mockResolvedValue({});
 
       // Act.
       await service.create(createPermissionInput);
 
       // Assert.
-      expect(repository.create).toHaveBeenCalled();
+      expect(permissionRepository.create).toHaveBeenCalled();
     });
 
     it('should yield the created permission', async () => {
@@ -170,7 +176,7 @@ describe('PermissionService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      repository.save.mockResolvedValue(expectedResult);
+      permissionRepository.create.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createPermissionInput)).resolves.toEqual(
@@ -183,9 +189,7 @@ describe('PermissionService', () => {
       const expectedResult = new ExistsException(
         `Permission for resource=${createPermissionInput.resource} action=${createPermissionInput.action} already exists!`,
       );
-      repository.save.mockRejectedValue({
-        code: PostgresError.UNIQUE_VIOLATION,
-      });
+      permissionRepository.create.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createPermissionInput)).rejects.toEqual(
@@ -202,20 +206,18 @@ describe('PermissionService', () => {
     };
 
     afterEach(() => {
-      repository.preload.mockClear();
-      repository.save.mockClear();
+      permissionRepository.update.mockClear();
     });
 
     it('should update a permission', async () => {
       // Arrange.
-      repository.preload.mockResolvedValue({});
-      repository.save.mockResolvedValue(null);
+      permissionRepository.update.mockResolvedValue(null);
 
       // Act.
       await service.update(permissionId, updatePermissionInput);
 
       // Assert.
-      expect(repository.preload).toHaveBeenCalled();
+      expect(permissionRepository.update).toHaveBeenCalled();
     });
 
     it('should yield the updated permission', async () => {
@@ -227,8 +229,7 @@ describe('PermissionService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      repository.preload.mockResolvedValue({});
-      repository.save.mockResolvedValue(expectedResult);
+      permissionRepository.update.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -241,7 +242,7 @@ describe('PermissionService', () => {
       const expectedResult = new MissingException(
         `Permission id=${permissionId} not found!`,
       );
-      repository.preload.mockResolvedValue(null);
+      permissionRepository.update.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -254,10 +255,7 @@ describe('PermissionService', () => {
       const expectedResult = new ExistsException(
         `Permission for resource=${updatePermissionInput.resource} action=${updatePermissionInput.action} already exists!`,
       );
-      repository.preload.mockResolvedValue({});
-      repository.save.mockRejectedValue({
-        code: PostgresError.UNIQUE_VIOLATION,
-      });
+      permissionRepository.update.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -270,19 +268,18 @@ describe('PermissionService', () => {
     const permissionId = randomUUID();
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
-      repository.remove.mockClear();
+      permissionRepository.remove.mockClear();
     });
 
     it('should remove a permission', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue({});
+      permissionRepository.remove.mockResolvedValue({});
 
       // Act.
       await service.remove(permissionId);
 
       // Assert.
-      expect(repository.remove).toHaveBeenCalled();
+      expect(permissionRepository.remove).toHaveBeenCalled();
     });
 
     it('should yield the removed permission', async () => {
@@ -294,8 +291,7 @@ describe('PermissionService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      repository.findOneBy.mockResolvedValue({});
-      repository.remove.mockResolvedValue(expectedResult);
+      permissionRepository.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(permissionId)).resolves.toEqual(
@@ -308,7 +304,7 @@ describe('PermissionService', () => {
       const expectedResult = new MissingException(
         `Permission id=${permissionId} not found!`,
       );
-      repository.findOneBy.mockResolvedValue(null);
+      permissionRepository.remove.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(permissionId)).rejects.toEqual(

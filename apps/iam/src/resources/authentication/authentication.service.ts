@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { HashingService } from '../../common/services/hashing.service';
 import { TokenStorage } from '../../common/storage/token.storage';
-import { User } from '../user/entities/user.entity';
+import { User } from '../user/repository/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SignInInput } from './dto/sign-in.input';
 import { SignUpInput } from './dto/sign-up.input';

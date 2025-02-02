@@ -1,7 +1,7 @@
 import {
   IamClientModule,
   IamClientService,
-  RequestLoggerMiddleware
+  RequestLoggerMiddleware,
 } from '@hermes/common';
 import { IamModule } from '@hermes/iam';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';

@@ -5,14 +5,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
-import { databaseFactory } from './config/database.config';
 import { ConsumerModule } from './consumers/consumer.module';
 import { ResourcesModule } from './resources/resources.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -22,6 +21,7 @@ import { ResourcesModule } from './resources/resources.module';
       isGlobal: true,
       validationSchema: Joi.object({
         API_KEY_HEADER: Joi.required(),
+        DB_DRIVER: Joi.string().default('postgres'),
         DB_HOST: Joi.required(),
         DB_PORT: Joi.number().required(),
         DB_USERNAME: Joi.required(),
@@ -59,11 +59,6 @@ import { ResourcesModule } from './resources/resources.module';
         VAPID_PRIVATE_KEY: Joi.required(),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseFactory,
-    }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -88,6 +83,7 @@ import { ResourcesModule } from './resources/resources.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
+    CoreModule.forRoot({ driver: 'postgres' }),
     ConsumerModule,
     ResourcesModule,
   ],

@@ -8,7 +8,7 @@ import {
   createUserServiceMock,
 } from '../../../test/helpers/provider.helper';
 import { CreateUserInput } from './dto/create-user.input';
-import { User } from './entities/user.entity';
+import { User } from './repository/entities/user.entity';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 

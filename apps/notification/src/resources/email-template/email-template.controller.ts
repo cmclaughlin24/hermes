@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from './entities/email-template.entity';
+import { EmailTemplate } from './repository/entities/email-template.entity';
 
 @ApiTags('Email Template')
 @Controller('email-template')

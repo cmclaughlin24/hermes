@@ -12,7 +12,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from './entities/phone-template.entity';
+import { PhoneTemplate } from './repository/entities/phone-template.entity';
 import { PhoneTemplateController } from './phone-template.controller';
 import { PhoneTemplateService } from './phone-template.service';
 

@@ -1,16 +1,7 @@
-import {
-  ExistsException,
-  MissingException,
-  PostgresError,
-} from '@hermes/common';
+import { ExistsException, MissingException } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import {
-  MockRepository,
-  createMockRepository,
-} from '../../../test/helpers/database.helper';
 import {
   MockHashingService,
   MockPermissionService,
@@ -25,10 +16,19 @@ import { ApiKeyService } from './api-key.service';
 import { CreateApiKeyInput } from './dto/create-api-key.input';
 import { ApiKey } from './entities/api-key.entity';
 import { InvalidApiKeyException } from './errors/invalid-api-key.exception';
+import { ApiKeyRepository } from './repository/api-key.repository';
+
+type MockApiKeyRepository = Partial<Record<keyof ApiKeyRepository, jest.Mock>>;
+
+const createApiKeyRepositoryMock = (): MockApiKeyRepository => ({
+  findById: jest.fn(),
+  create: jest.fn(),
+  remove: jest.fn(),
+});
 
 describe('ApiKeyService', () => {
   let service: ApiKeyService;
-  let repository: MockRepository;
+  let repository: MockApiKeyRepository;
   let hashingService: MockHashingService;
   let permissionService: MockPermissionService;
 
@@ -37,8 +37,8 @@ describe('ApiKeyService', () => {
       providers: [
         ApiKeyService,
         {
-          provide: getRepositoryToken(ApiKey),
-          useValue: createMockRepository<ApiKey>(),
+          provide: ApiKeyRepository,
+          useValue: createApiKeyRepositoryMock(),
         },
         {
           provide: HashingService,
@@ -56,7 +56,7 @@ describe('ApiKeyService', () => {
     }).compile();
 
     service = module.get<ApiKeyService>(ApiKeyService);
-    repository = module.get<MockRepository>(getRepositoryToken(ApiKey));
+    repository = module.get<MockApiKeyRepository>(ApiKeyRepository);
     hashingService = module.get<MockHashingService>(HashingService);
     permissionService = module.get<MockPermissionService>(PermissionService);
   });
@@ -78,7 +78,6 @@ describe('ApiKeyService', () => {
 
     afterEach(() => {
       repository.create.mockClear();
-      repository.save.mockClear();
       hashingService.hash.mockClear();
       permissionService.findByResourceAction.mockClear();
     });
@@ -113,9 +112,7 @@ describe('ApiKeyService', () => {
         `Api key with name=${createApiKeyInput.name} already exists!`,
       );
       permissionService.findByResourceAction.mockResolvedValue(permission);
-      repository.save.mockRejectedValue({
-        code: PostgresError.UNIQUE_VIOLATION,
-      });
+      repository.create.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.create(createApiKeyInput, userId)).rejects.toEqual(
@@ -142,29 +139,7 @@ describe('ApiKeyService', () => {
     const userId = randomUUID();
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
-      repository.save.mockClear();
-    });
-
-    it('should soft (paranoid) remove the api key', async () => {
-      // Arrange.
-      const expectedResult: ApiKey = {
-        id,
-        name: 'disney-epic-mickey',
-        apiKey: '$2b$10$7KoJXuChWGyP0z4YlhwBt.5HjGbuZF5T7vL0a51KBV.ulO9p.pPFG',
-        expiresAt: new Date(),
-        createdBy: userId,
-        createdAt: new Date(),
-        deletedBy: userId,
-        deletedAt: new Date(),
-      };
-      repository.findOneBy.mockResolvedValue(expectedResult);
-
-      // Act.
-      await service.remove(id, userId);
-
-      // Assert.
-      expect(repository.save).toHaveBeenCalledWith(expectedResult);
+      repository.remove.mockClear();
     });
 
     it('should yield the removed api key', async () => {
@@ -179,8 +154,7 @@ describe('ApiKeyService', () => {
         deletedBy: userId,
         deletedAt: new Date(),
       };
-      repository.findOneBy.mockResolvedValue(expectedResult);
-      repository.save.mockResolvedValue(expectedResult);
+      repository.remove.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(id, userId)).resolves.toEqual(expectedResult);
@@ -191,7 +165,7 @@ describe('ApiKeyService', () => {
       const expectedResult = new MissingException(
         `Api key id=${id} not found!`,
       );
-      repository.findOneBy.mockResolvedValue(null);
+      repository.remove.mockRejectedValue(expectedResult);
 
       // Act/Assert.
       await expect(service.remove(id, userId)).rejects.toEqual(expectedResult);
@@ -203,7 +177,7 @@ describe('ApiKeyService', () => {
       'eyJzdWIiOiJmNzkyOGQyYi1mNDJjLTQzOTYtODlhYy1mZmZmN2EwYWYwZjciLCJhdXRob3JpemF0aW9uX2RldGFpbHMiOlsiZW1haWxfdGVtcGxhdGU9Y3JlYXRlIl19';
 
     afterEach(() => {
-      repository.findOneBy.mockClear();
+      repository.findById.mockClear();
       hashingService.compare.mockClear();
     });
 
@@ -213,7 +187,7 @@ describe('ApiKeyService', () => {
         sub: 'f7928d2b-f42c-4396-89ac-ffff7a0af0f7',
         authorization_details: ['email_template=create'],
       };
-      repository.findOneBy.mockResolvedValue({
+      repository.findById.mockResolvedValue({
         id: expectedResult.sub,
       });
       hashingService.compare.mockResolvedValue(true);
@@ -226,7 +200,7 @@ describe('ApiKeyService', () => {
 
     it('should throw an "InvalidApiKeyException" if the api key is invalid (invalid hash)', async () => {
       // Arrange.
-      repository.findOneBy.mockResolvedValue({
+      repository.findById.mockResolvedValue({
         id: 'f7928d2b-f42c-4396-89ac-ffff7a0af0f7',
       });
       hashingService.compare.mockResolvedValue(false);

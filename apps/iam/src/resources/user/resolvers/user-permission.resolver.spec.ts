@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
-import { Permission } from '../../permission/entities/permission.entity';
+import { Permission } from '../../permission/repository/entities/permission.entity';
 import { UserPermissionLoader } from '../data-loaders/user-permission.loader';
-import { User } from '../entities/user.entity';
+import { User } from '../repository/entities/user.entity';
 import { UserPermissionResolver } from './user-permission.resolver';
 
 type MockUserPermissionLoader = Partial<
@@ -29,7 +29,8 @@ describe('UserPermissionResolver', () => {
     }).compile();
 
     resolver = module.get<UserPermissionResolver>(UserPermissionResolver);
-    loader = await module.resolve<MockUserPermissionLoader>(UserPermissionLoader);
+    loader =
+      await module.resolve<MockUserPermissionLoader>(UserPermissionLoader);
   });
 
   it('should be defined', () => {
