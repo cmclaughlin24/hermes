@@ -1,8 +1,9 @@
-import { CACHE_MANAGER, CacheStore } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 import { UseCache } from './use-cache.decorator';
 
-export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
+export type MockCacheStore = Partial<Record<keyof Cache, jest.Mock>>;
 
 export const createCacheStoreMock = (): MockCacheStore => ({
   get: jest.fn(),

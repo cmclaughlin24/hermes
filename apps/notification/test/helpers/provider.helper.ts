@@ -1,6 +1,6 @@
 import { TokenService } from '@hermes/iam';
-import { CacheStore } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { Cache } from 'cache-manager';
 import { EmailService } from '../../src/common/services/email/email.service';
 import { PhoneService } from '../../src/common/services/phone/phone.service';
 import { PushNotificationService } from '../../src/common/services/push-notification/push-notification.service';
@@ -9,7 +9,7 @@ import { NotificationLogService } from '../../src/resources/notification-log/not
 import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
 import { PushTemplateService } from '../../src/resources/push-template/push-template.service';
 
-export type MockCacheStore = Partial<Record<keyof CacheStore, jest.Mock>>;
+export type MockCacheStore = Partial<Record<keyof Cache, jest.Mock>>;
 
 export const createCacheStoreMock = (): MockCacheStore => ({
   get: jest.fn(),

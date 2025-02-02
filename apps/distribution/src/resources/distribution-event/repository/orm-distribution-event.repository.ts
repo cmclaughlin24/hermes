@@ -52,7 +52,6 @@ export class OrmDistributionEventRepository
     });
 
     return this.distributionEventModel.save(event).catch((error) => {
-      console.log(error);
       if (error.code === PostgresError.UNIQUE_VIOLATION) {
         throw new ExistsException(
           `Distribution Event for eventType=${createDistributionEventDto.eventType} already exists!`,
