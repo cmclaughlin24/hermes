@@ -1,28 +1,38 @@
 import { CacheModuleOptions } from '@nestjs/cache-manager';
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { redisStore } from 'cache-manager-ioredis-yet';
+import KeyvRedis, { createCluster, Keyv } from '@keyv/redis';
 
 export async function cacheFactory(
   configService: ConfigService,
 ): Promise<CacheModuleOptions> {
-  const host = configService.get('REDIS_HOST');
-  const port = configService.get('REDIS_PORT');
+  const url = `redis://${configService.get('REDIS_HOST')}:${configService.get('REDIS_PORT')}`;
   const commandTimeout = configService.get('CACHE_COMMAND_TIMEOUT');
-  let options: any = { host, port, commandTimeout, enableOfflineQueue: false };
+  let store = new KeyvRedis({
+    url,
+    disableOfflineQueue: true,
+  });
 
   if (configService.get('ENABLE_REDIS_CLUSTER')) {
-    options = {
-      clusterConfig: {
-        nodes: [{ host, port }],
-        options: {
-          enableOfflineQueue: false,
-          redisOptions: { commandTimeout },
-        },
+    const cluster = createCluster({
+      rootNodes: [{ url }],
+      defaults: {
+        disableOfflineQueue: true,
       },
-    };
+      useReplicas: true,
+    });
+
+    store = new KeyvRedis(cluster);
   }
 
+  const keyv = new Keyv({ store });
+  const logger = new Logger(Keyv.name);
+
+  keyv.on('error', (error) => {
+    logger.error(error.toString());
+  });
+
   return {
-    store: await redisStore(options),
+    stores: [keyv],
   };
 }
