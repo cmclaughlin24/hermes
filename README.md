@@ -215,6 +215,37 @@ _Designer's Note: The permissions can be seeded into the database with the **cre
     - `dataType`: The data type of value being evaluated
     - `value`: The value to be compared
 
+    Below is an example of a `REQUEST` subscriber to the `order-confirmation` event.
+
+    ```javasscript
+        {
+            "id": "34e37416-87ed-496c-b55e-6189b7a383ef",
+            "subscriberId: "070c7f18-71e4-42ab-89ec-da4137af3535"
+            "distributionEventType": "order-confirmation",
+            "subscriptionType": "request",
+            "data": {},
+            "filterJoin": "and",
+            "filters": [
+                {
+                   "subscriptionId": "34e37416-87ed-496c-b55e-6189b7a383ef",
+                   "field": "address.city",
+                   "operator": "equals",
+                   "dataType: "string",
+                   "value": "Austin",
+                },
+                {
+                   "subscriptionId": "34e37416-87ed-496c-b55e-6189b7a383ef",
+                   "field": "surname",
+                   "operator": "or",
+                   "dataType: "array",
+                   "value": ["Smith", "Doe"]
+                },
+            ],
+        }
+    ```
+
+    The subscriber's contact information and preferences would be requested by the distribution service if an `order-confirmation` event with a nested field `address.city` equals Austin **AND** the field `surname` is either Smith or Doe.
+
     After filtering subscriptions, the service requests data for any **request** subscribers that should receive a notification. All subscriber types are rehydrated and validated. If a subscriber is deemed invalid, it is discarded, and error message is logged to the console.
 
     _Designer's Note: A distribution rule can set the `bypassSubscriptions` flag to `true`. This indicate the subscriptions for a distribution event should not be retreived and instead the message's `recipients` property contains a list of user's who should be notified instead._
