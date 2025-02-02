@@ -295,4 +295,5 @@ _Note: The end-to-end test automation **requires** [Docker](https://www.docker.c
 
 ## References
 
+- [NestJS](https://docs.nestjs.com/)
 - [RabbitMQ Exchange Types](https://www.cloudamqp.com/blog/part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html)
