@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: pass123
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
   pgadmin:
     image: dpage/pgadmin4
     ports:

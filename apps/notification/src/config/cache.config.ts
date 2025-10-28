@@ -25,14 +25,13 @@ export async function cacheFactory(
     store = new KeyvRedis(cluster);
   }
 
-  const keyv = new Keyv({ store });
   const logger = new Logger(Keyv.name);
 
-  keyv.on('error', (error) => {
+  store.on('error', (error) => {
     logger.error(error.toString());
   });
 
   return {
-    stores: [keyv],
+    stores: [store],
   };
 }
