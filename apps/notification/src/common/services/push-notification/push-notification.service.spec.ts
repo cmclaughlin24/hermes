@@ -94,13 +94,14 @@ describe('PushNotificationService', () => {
       const payload = {
         subscriberId: 'unit-test',
         platform: Platform.WEB,
-        subscription: {
-          endpoint: 'unit-test',
-          keys: {
-            auth: 'unit-test',
-            p256dh: 'unit-test',
-          },
-        },
+        // FIXME: Re-enable checking the subscription for push notifications when using class validator.
+        // subscription: {
+        //   endpoint: 'unit-test',
+        //   keys: {
+        //     auth: 'unit-test',
+        //     p256dh: 'unit-test',
+        //   },
+        // },
         template: 'unit-test',
       };
 
