@@ -9,6 +9,8 @@ import { PushTemplateEntity } from './repository/entities/push-template.entity';
 import { PushActionEntity } from './repository/entities/push-action.entity';
 import { PushTemplateRepository } from './repository/push-template.repository';
 import { OrmPushTemplateRepository } from './repository/orm-push-template.repository';
+import { PushActionProfile } from './profiles/push-action.profile';
+import { PushTemplateProfile } from './profiles/push-template.profile';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { OrmPushTemplateRepository } from './repository/orm-push-template.reposi
   controllers: [PushTemplateController],
   providers: [
     PushTemplateService,
+    PushActionProfile,
+    PushTemplateProfile,
     {
       provide: PushTemplateRepository,
       useClass: OrmPushTemplateRepository,

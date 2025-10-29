@@ -15,7 +15,7 @@ export class NotificationLog {
   attempts: number;
 
   @AutoMap()
-  data: Record<string, any>;
+  data: { [key: string]: any };
 
   @AutoMap()
   addedAt: Date;

@@ -8,6 +8,7 @@ import { PhoneTemplateService } from './phone-template.service';
 import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 import { OrmPhoneTemplateRepository } from './repository/orm-phone-template.repository';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
+import { PhoneTemplateProfile } from './profiles/phone-template.profile';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PhoneTemplateRepository } from './repository/phone-template.repository'
   controllers: [PhoneTemplateController],
   providers: [
     PhoneTemplateService,
+    PhoneTemplateProfile,
     {
       provide: PhoneTemplateRepository,
       useClass: OrmPhoneTemplateRepository,

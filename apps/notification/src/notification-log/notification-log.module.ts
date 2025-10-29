@@ -6,12 +6,21 @@ import { OrmNotificationLogRepository } from './repository/orm-notification-log.
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationLogEntity } from './repository/entities/notification-log.entity';
 import { NotificationAttemptEntity } from './repository/entities/notification-attempt.entity';
+import { NotificationLogProfile } from './profiles/notification-log.profile';
+import { NotificationAttemptProfile } from './profiles/notification-attempt.profile';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NotificationLogEntity, NotificationAttemptEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      NotificationLogEntity,
+      NotificationAttemptEntity,
+    ]),
+  ],
   controllers: [NotificationLogController],
   providers: [
     NotificationLogService,
+    NotificationLogProfile,
+    NotificationAttemptProfile,
     {
       provide: NotificationLogRepository,
       useClass: OrmNotificationLogRepository,
