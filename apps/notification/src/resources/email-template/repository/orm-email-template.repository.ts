@@ -6,22 +6,30 @@ import { EmailTemplateRepository } from './email-template.repository';
 import { EmailTemplateEntity } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
+import { InjectMapper } from '@automapper/nestjs';
+import { Mapper } from '@automapper/core';
+import { EmailTemplate } from '../domain/email-template';
 
 @Injectable()
-export class OrmEmailTemplateRepository
-  implements EmailTemplateRepository
-{
+export class OrmEmailTemplateRepository implements EmailTemplateRepository {
   constructor(
     @InjectRepository(EmailTemplateEntity)
     private readonly emailTemplateModel: Repository<EmailTemplateEntity>,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   async findAll() {
-    return this.emailTemplateModel.find();
+    return this.emailTemplateModel
+      .find()
+      .then((entities) =>
+        this.mapper.mapArray(entities, EmailTemplateEntity, EmailTemplate),
+      );
   }
 
   async findOne(name: string) {
-    return this.emailTemplateModel.findOneBy({ name });
+    return this.emailTemplateModel
+      .findOneBy({ name })
+      .then((entity) => this._toDomain(entity));
   }
 
   async create(createEmailTemplateDto: CreateEmailTemplateDto) {
@@ -39,7 +47,9 @@ export class OrmEmailTemplateRepository
       createEmailTemplateDto,
     );
 
-    return this.emailTemplateModel.save(emailTemplate);
+    return this.emailTemplateModel
+      .save(emailTemplate)
+      .then((entity) => this._toDomain(entity));
   }
 
   async update(name: string, updateEmailTemplateDto: UpdateEmailTemplateDto) {
@@ -52,7 +62,9 @@ export class OrmEmailTemplateRepository
       throw new MissingException(`Email Template ${name} not found!`);
     }
 
-    return this.emailTemplateModel.save(emailTemplate);
+    return this.emailTemplateModel
+      .save(emailTemplate)
+      .then((entity) => this._toDomain(entity));
   }
 
   async remove(name: string) {
@@ -66,5 +78,8 @@ export class OrmEmailTemplateRepository
 
     await this.emailTemplateModel.remove(emailTemplate);
   }
-}
 
+  private _toDomain(entity: EmailTemplateEntity): EmailTemplate {
+    return this.mapper.map(entity, EmailTemplateEntity, EmailTemplate);
+  }
+}

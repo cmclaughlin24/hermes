@@ -1,11 +1,12 @@
 import { AutoMap } from '@automapper/classes';
+import { PhoneMethods } from '@hermes/common';
 
-export class EmailTemplate {
+export class PhoneTemplate {
   @AutoMap()
   name: string;
 
   @AutoMap()
-  subject: string;
+  deliveryMethod: PhoneMethods;
 
   @AutoMap()
   template: string;

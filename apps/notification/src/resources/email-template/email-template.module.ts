@@ -8,6 +8,7 @@ import { EmailTemplateRepository } from './repository/email-template.repository'
 import { OrmEmailTemplateRepository } from './repository/orm-email-template.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailTemplateEntity } from './repository/entities/email-template.entity';
+import { EmailTemplateProfile } from './profiles/email-template.profile';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EmailTemplateEntity } from './repository/entities/email-template.entity
       provide: EmailTemplateRepository,
       useClass: OrmEmailTemplateRepository,
     },
+    EmailTemplateProfile,
   ],
   exports: [EmailTemplateService],
 })

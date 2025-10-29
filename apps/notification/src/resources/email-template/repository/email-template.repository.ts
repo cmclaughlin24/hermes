@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { EmailTemplateEntity } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
+import { EmailTemplate } from '../domain/email-template';
 
 @Injectable()
 export abstract class EmailTemplateRepository {
-  abstract findAll(): Promise<EmailTemplateEntity[]>;
-  abstract findOne(name: string): Promise<EmailTemplateEntity>;
+  abstract findAll(): Promise<EmailTemplate[]>;
+  abstract findOne(name: string): Promise<EmailTemplate>;
   abstract create(
     createEmailTemplateDto: CreateEmailTemplateDto,
-  ): Promise<EmailTemplateEntity>;
+  ): Promise<EmailTemplate>;
   abstract update(
     name: string,
     updateEmailTemplateDto: UpdateEmailTemplateDto,
-  ): Promise<EmailTemplateEntity>;
+  ): Promise<EmailTemplate>;
   abstract remove(name: string): Promise<void>;
 }
