@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { SentMessageInfo } from 'nodemailer';
-import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
+import { EmailTemplateService } from '../../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 

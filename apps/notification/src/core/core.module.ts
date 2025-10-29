@@ -1,12 +1,25 @@
 import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import {
+  DynamicModule,
+  Global,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   mariaDabaseFactory,
   postgresDatabaseFactory,
 } from '../config/database.config';
+import { IamModule } from '@hermes/iam';
+import {
+  IamClientModule,
+  IamClientService,
+  RequestLoggerMiddleware,
+} from '@hermes/common';
+import { iamFactory } from '../config/iam.config';
 
 export interface CoreModuleOptions {
   driver: 'postgres' | 'mariadb';
@@ -14,7 +27,11 @@ export interface CoreModuleOptions {
 
 @Global()
 @Module({})
-export class CoreModule {
+export class CoreModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+
   static forRoot(options: CoreModuleOptions): DynamicModule {
     const persistanceFactory = CoreModule.getDatabaseFactory(options.driver);
 
@@ -23,6 +40,11 @@ export class CoreModule {
       imports: [
         AutomapperModule.forRoot({
           strategyInitializer: classes(),
+        }),
+        IamModule.registerAsync({
+          imports: [ConfigModule, IamClientModule],
+          inject: [ConfigService, IamClientService],
+          useFactory: iamFactory,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],

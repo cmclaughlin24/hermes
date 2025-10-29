@@ -6,7 +6,7 @@ import Handlebars from 'handlebars';
 import { TwilioService } from 'nestjs-twilio';
 import { CallInstance } from 'twilio/lib/rest/api/v2010/account/call';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
-import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
+import { PhoneTemplateService } from '../../../phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 

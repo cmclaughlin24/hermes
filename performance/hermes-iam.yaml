@@ -1,0 +1,64 @@
+# Resources:
+#   - https://www.artillery.io/docs
+# Useful Commands:
+#   - artillery run -o <filename>.json artillery.yaml
+#   - artillery report <filename>.json
+#   - artillery --help
+config:
+  http:
+    extendedMetrics: true
+    maxSockets: 10
+  plugins:
+    apdex: {}
+  environments:
+    docker:
+      target: 'http://localhost:3002'
+      phases:
+        - duration: 60
+          arrivalRate: 5
+          name: 'Warm-up (5 arrivals/sec)'
+        - duration: 60
+          arrivalRate: 5
+          rampTo: 20
+          name: 'Ramp-up to Sustained Load (20 arrivals/sec)'
+        - duration: 180
+          arrivalRate: 20
+          name: 'Sustained Load (20 arrivals/sec)'
+        - duration: 60
+          arrivalRate: 20
+          rampTo: 100
+          name: 'Ramp-up to Heavy Load (100 arrivals/sec)'
+        - duration: 180
+          arrivalRate: 100
+          name: 'Heavy Load (100 arrivals/sec)'
+        - duration: 60
+          arrivalRate: 100
+          rampTo: 200
+          name: 'Ramp-up to Stress Load (200 arrivals/sec)'
+        - duration: 180
+          arrivalRate: 200
+          name: 'Stress Load (200 arrivals/sec)'
+        - duration: 60
+          arrivalRate: 200
+          rampTo: 400
+          name: 'Ramp-up to Max Load (400 arrivals/sec)'
+        - duration: 180
+          arrivalRate: 400
+          name: 'Max Load (400 arrivals/sec)'
+scenarios:
+  - name: 'Verify Json Web Token (JWT)'
+    flow:
+      - post:
+          url: '/graphql'
+          headers:
+            Content-Type: 'application/json'
+          json:
+            query: |
+              mutation {
+                verifyAccessToken(token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYTViYmUzNC1hYTI3LTQ0Y2MtYmEwOC01MWUyMjg5MDc3OGUiLCJuYW1lIjoiV2lsbGlhbSBDdXJ0aXMgTWNMYXVnaGxpbiIsImF1dGhvcml6YXRpb25fZGV0YWlscyI6WyJkaXN0cmlidXRpb25fZXZlbnQ9Y3JlYXRlLHVwZGF0ZSxyZW1vdmUiLCJkaXN0cmlidXRpb25fcnVsZT1jcmVhdGUsdXBkYXRlLHJlbW92ZSIsInN1YnNjcmlwdGlvbj1jcmVhdGUsdXBkYXRlLHJlbW92ZSIsImRpc3RyaWJ1dGlvbl9tZXNzYWdlPXB1Ymxpc2giLCJ1c2VyPWxpc3QsZ2V0LGNyZWF0ZSx1cGRhdGUscmVtb3ZlIiwicGVybWlzc2lvbj1saXN0LGdldCxjcmVhdGUsdXBkYXRlLHJlbW92ZSIsImFwaV9rZXk9Y3JlYXRlLHJlbW92ZSIsImVtYWlsX3RlbXBsYXRlPWNyZWF0ZSx1cGRhdGUscmVtb3ZlIiwicGhvbmVfdGVtcGxhdGU9Y3JlYXRlLHVwZGF0ZSxyZW1vdmUiLCJwdXNoX3RlbXBsYXRlPWNyZWF0ZSx1cGRhdGUscmVtb3ZlIiwibm90aWZpY2F0aW9uPXNlbmRfZW1haWwsc2VuZF9zbXMsc2VuZF9jYWxsLHNlbmRfcHVzaCIsIm5vdGlmaWNhdGlvbl9qb2I9c2NoZWR1bGVfZW1haWwsc2NoZWR1bGVfc21zLHNjaGVkdWxlX2NhbGwsc2NoZWR1bGVfcHVzaCJdLCJqdGkiOiI4MmY5N2UyNi00ZDc5LTQ5Y2MtYWEwNi00NzVmYmQ0ZTQ5M2IiLCJpYXQiOjE3MTMwMjc1NzEsImV4cCI6MTcxMzAzMTE3MSwiYXVkIjoibG9jYWxob3N0OjMwMDIiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMiJ9.mUrJMq2dI5w7JP-z1bKhO6YsIN-iOhrY0jNFeqaY4Ro") {
+                  sub
+                  name
+                  authorization_details
+                }
+              }
+    weight: 1

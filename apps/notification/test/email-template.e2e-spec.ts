@@ -10,6 +10,8 @@ import { useGlobalPipes } from '../src/config/use-global.config';
 import { CreateEmailTemplateDto } from '../src/resources/email-template/dto/create-email-template.dto';
 import { EmailTemplateModule } from '../src/resources/email-template/email-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
+import { AutomapperModule } from '@automapper/nestjs';
+import { classes } from '@automapper/classes';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
 
@@ -22,6 +24,9 @@ describe('[Feature] Email Template', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        AutomapperModule.forRoot({
+          strategyInitializer: classes(),
+        }),
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,

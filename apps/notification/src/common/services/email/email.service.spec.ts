@@ -8,7 +8,7 @@ import {
     createConfigServiceMock,
     createEmailTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { EmailTemplateService } from '../../../resources/email-template/email-template.service';
+import { EmailTemplateService } from '../../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { EmailService } from './email.service';
 

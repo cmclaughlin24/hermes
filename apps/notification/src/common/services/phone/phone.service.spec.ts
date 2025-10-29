@@ -8,7 +8,7 @@ import {
   createConfigServiceMock,
   createPhoneTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { PhoneTemplateService } from '../../../resources/phone-template/phone-template.service';
+import { PhoneTemplateService } from '../../../phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { PhoneService } from './phone.service';
 

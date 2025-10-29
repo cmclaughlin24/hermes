@@ -14,7 +14,7 @@ import {
   createConfigServiceMock,
   createPushTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { PushTemplateService } from '../../../resources/push-template/push-template.service';
+import { PushTemplateService } from '../../../push-template/push-template.service';
 import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
 import { PushNotificationService } from './push-notification.service';
 
