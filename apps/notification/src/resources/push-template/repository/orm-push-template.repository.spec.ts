@@ -6,8 +6,8 @@ import {
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
 import { OrmPushTemplateRepository } from './orm-push-template.repository';
-import { PushTemplate } from './entities/push-template.entity';
-import { PushAction } from './entities/push-action.entity';
+import { PushTemplateEntity } from './entities/push-template.entity';
+import { PushActionEntity } from './entities/push-action.entity';
 import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 
 describe('OrmPushTemplateRepository', () => {
@@ -19,11 +19,11 @@ describe('OrmPushTemplateRepository', () => {
       providers: [
         OrmPushTemplateRepository,
         {
-          provide: getRepositoryToken(PushTemplate),
+          provide: getRepositoryToken(PushTemplateEntity),
           useValue: createMockRepository(),
         },
         {
-          provide: getRepositoryToken(PushAction),
+          provide: getRepositoryToken(PushActionEntity),
           useValue: createMockRepository(),
         },
       ],
@@ -33,7 +33,7 @@ describe('OrmPushTemplateRepository', () => {
       OrmPushTemplateRepository,
     );
     pushTemplateModel = module.get<MockRepository>(
-      getRepositoryToken(PushTemplate),
+      getRepositoryToken(PushTemplateEntity),
     );
   });
 
@@ -48,10 +48,10 @@ describe('OrmPushTemplateRepository', () => {
 
     it('should yield a list of push notification templates', async () => {
       // Arrange.
-      const expectedResult: PushTemplate[] = [
+      const expectedResult: PushTemplateEntity[] = [
         {
           title: 'unit-test',
-        } as PushTemplate,
+        } as PushTemplateEntity,
       ];
       pushTemplateModel.find.mockResolvedValue(expectedResult);
 
@@ -75,10 +75,10 @@ describe('OrmPushTemplateRepository', () => {
 
     it('should yield a push notification template', async () => {
       // Arrange.
-      const expectedResult: PushTemplate = {
+      const expectedResult: PushTemplateEntity = {
         name: 'unit-test',
         title: 'Unit Test',
-      } as PushTemplate;
+      } as PushTemplateEntity;
       pushTemplateModel.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -104,7 +104,7 @@ describe('OrmPushTemplateRepository', () => {
     const pushTemplate = {
       name: 'unit-test',
       title: 'Unit Test',
-    } as PushTemplate;
+    } as PushTemplateEntity;
 
     afterEach(() => {
       pushTemplateModel.findOneBy.mockClear();

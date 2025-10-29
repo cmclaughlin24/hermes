@@ -8,8 +8,8 @@ import {
   createMockDataSource,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { NotificationAttempt } from './entities/notification-attempt.entity';
-import { NotificationLog } from './entities/notification-log.entity';
+import { NotificationAttemptEntity } from './entities/notification-attempt.entity';
+import { NotificationLogEntity } from './entities/notification-log.entity';
 import { OrmNotificationLogRepository } from './orm-notification-log.repository';
 
 describe('OrmNotificationLogRepository', () => {
@@ -18,7 +18,7 @@ describe('OrmNotificationLogRepository', () => {
   let notificationAttemptRepository: MockRepository;
   let dataSource: MockDataSource;
 
-  const notificationLog: NotificationLog = {
+  const notificationLog: NotificationLogEntity = {
     id: 'test1',
     job: JSON.stringify({}),
     state: 'completed',
@@ -26,19 +26,19 @@ describe('OrmNotificationLogRepository', () => {
     data: JSON.stringify({}),
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as NotificationLog;
+  } as NotificationLogEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrmNotificationLogRepository,
         {
-          provide: getRepositoryToken(NotificationLog),
-          useValue: createMockRepository<NotificationLog>(),
+          provide: getRepositoryToken(NotificationLogEntity),
+          useValue: createMockRepository<NotificationLogEntity>(),
         },
         {
-          provide: getRepositoryToken(NotificationAttempt),
-          useValue: createMockRepository<NotificationAttempt>(),
+          provide: getRepositoryToken(NotificationAttemptEntity),
+          useValue: createMockRepository<NotificationAttemptEntity>(),
         },
         {
           provide: DataSource,
@@ -51,10 +51,10 @@ describe('OrmNotificationLogRepository', () => {
       OrmNotificationLogRepository,
     );
     notificationLogRepository = module.get<MockRepository>(
-      getRepositoryToken(NotificationLog),
+      getRepositoryToken(NotificationLogEntity),
     );
     notificationAttemptRepository = module.get<MockRepository>(
-      getRepositoryToken(NotificationAttempt),
+      getRepositoryToken(NotificationAttemptEntity),
     );
     dataSource = module.get<MockDataSource>(DataSource);
   });
@@ -70,7 +70,7 @@ describe('OrmNotificationLogRepository', () => {
 
     it('should yield a list of notification logs', async () => {
       // Arrange.
-      const expectedResult: NotificationLog[] = [notificationLog];
+      const expectedResult: NotificationLogEntity[] = [notificationLog];
       notificationLogRepository.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.

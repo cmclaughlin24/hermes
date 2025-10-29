@@ -11,7 +11,7 @@ import {
 } from '../../../../test/helpers/database.helper';
 import { CreatePhoneTemplateDto } from '../../../resources/phone-template/dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from '../../../resources/phone-template/dto/update-phone-template.dto';
-import { PhoneTemplate } from './entities/phone-template.entity';
+import { PhoneTemplateEntity } from './entities/phone-template.entity';
 import { OrmPhoneTemplateRepository } from './orm-phone-template.repository';
 
 describe('OrmPhoneTemplateRepository', () => {
@@ -23,7 +23,7 @@ describe('OrmPhoneTemplateRepository', () => {
       providers: [
         OrmPhoneTemplateRepository,
         {
-          provide: getRepositoryToken(PhoneTemplate),
+          provide: getRepositoryToken(PhoneTemplateEntity),
           useValue: createMockRepository(),
         },
       ],
@@ -33,7 +33,7 @@ describe('OrmPhoneTemplateRepository', () => {
       OrmPhoneTemplateRepository,
     );
     phoneTemplateModel = module.get<MockRepository>(
-      getRepositoryToken(PhoneTemplate),
+      getRepositoryToken(PhoneTemplateEntity),
     );
   });
 
@@ -46,7 +46,7 @@ describe('OrmPhoneTemplateRepository', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplate;
+    } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateModel.find.mockClear();
@@ -75,7 +75,7 @@ describe('OrmPhoneTemplateRepository', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplate;
+    } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateModel.findOneBy.mockClear();
@@ -109,7 +109,7 @@ describe('OrmPhoneTemplateRepository', () => {
       template: '<Response><Say>Hello There!</Say></Response>',
       context: null,
     };
-    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplate;
+    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateModel.findOneBy.mockClear();
@@ -148,7 +148,7 @@ describe('OrmPhoneTemplateRepository', () => {
       );
       phoneTemplateModel.findOneBy.mockResolvedValue({
         name: 'test',
-      } as PhoneTemplate);
+      } as PhoneTemplateEntity);
 
       // Act/Assert.
       await expect(repository.create(createPhoneTemplateDto)).rejects.toEqual(

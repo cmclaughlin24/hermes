@@ -2,22 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { PhoneMethods } from '@hermes/common';
 import { CreatePhoneTemplateDto } from '../dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
-import { PhoneTemplate } from './entities/phone-template.entity';
+import { PhoneTemplateEntity } from './entities/phone-template.entity';
 
 @Injectable()
 export abstract class PhoneTemplateRepository {
-  abstract findAll(): Promise<PhoneTemplate[]>;
+  abstract findAll(): Promise<PhoneTemplateEntity[]>;
   abstract findOne(
     deliveryMethod: PhoneMethods,
     name: string,
-  ): Promise<PhoneTemplate>;
+  ): Promise<PhoneTemplateEntity>;
   abstract create(
     createPhoneTemplateDto: CreatePhoneTemplateDto,
-  ): Promise<PhoneTemplate>;
+  ): Promise<PhoneTemplateEntity>;
   abstract update(
     deliveryMethod: PhoneMethods,
     name: string,
     updatePhoneTemplateDto: UpdatePhoneTemplateDto,
-  ): Promise<PhoneTemplate>;
+  ): Promise<PhoneTemplateEntity>;
   abstract remove(deliveryMethod: PhoneMethods, name: string): Promise<void>;
 }

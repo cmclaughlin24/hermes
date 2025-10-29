@@ -9,6 +9,7 @@ export * from './errors/missing.exception';
 export * from './iam-client/iam-client.module';
 export * from './iam-client/services/iam-client.service';
 export * from './middleware/request-logger.middleware';
+export * from './strategies/custom-database-naming.strategy';
 export * from './types/cache-options.type';
 export * from './types/delivery-methods.type';
 export * from './types/platform.type';

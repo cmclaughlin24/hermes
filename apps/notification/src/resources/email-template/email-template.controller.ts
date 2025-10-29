@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplate } from './repository/entities/email-template.entity';
+import { EmailTemplateEntity } from './repository/entities/email-template.entity';
 
 @ApiTags('Email Template')
 @Controller('email-template')
@@ -73,7 +73,7 @@ export class EmailTemplateController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successful Operation',
-    type: ApiResponseDto<EmailTemplate>,
+    type: ApiResponseDto<EmailTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -89,7 +89,7 @@ export class EmailTemplateController {
         createEmailTemplateDto,
       );
 
-      return new ApiResponseDto<EmailTemplate>(
+      return new ApiResponseDto<EmailTemplateEntity>(
         `Successfully created email template ${emailTemplate.name}!`,
         emailTemplate,
       );
@@ -110,7 +110,7 @@ export class EmailTemplateController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successful Operation',
-    type: ApiResponseDto<EmailTemplate>,
+    type: ApiResponseDto<EmailTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -131,7 +131,7 @@ export class EmailTemplateController {
         updateEmailTemplateDto,
       );
 
-      return new ApiResponseDto<EmailTemplate>(
+      return new ApiResponseDto<EmailTemplateEntity>(
         `Successfully updated email template ${emailTemplate.name}!`,
         emailTemplate,
       );

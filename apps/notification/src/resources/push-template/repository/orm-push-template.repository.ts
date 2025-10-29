@@ -6,8 +6,8 @@ import {
   PushNotificationActionDto,
 } from '@hermes/common';
 import { Repository } from 'typeorm';
-import { PushTemplate } from './entities/push-template.entity';
-import { PushAction } from './entities/push-action.entity';
+import { PushTemplateEntity } from './entities/push-template.entity';
+import { PushActionEntity } from './entities/push-action.entity';
 import { PushTemplateRepository } from './push-template.repository';
 import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
@@ -15,10 +15,10 @@ import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
 @Injectable()
 export class OrmPushTemplateRepository implements PushTemplateRepository {
   constructor(
-    @InjectRepository(PushTemplate)
-    private readonly pushTemplateModel: Repository<PushTemplate>,
-    @InjectRepository(PushAction)
-    private readonly pushActionModel: Repository<PushAction>,
+    @InjectRepository(PushTemplateEntity)
+    private readonly pushTemplateModel: Repository<PushTemplateEntity>,
+    @InjectRepository(PushActionEntity)
+    private readonly pushActionModel: Repository<PushActionEntity>,
   ) {}
 
   async findAll() {

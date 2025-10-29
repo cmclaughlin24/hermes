@@ -20,7 +20,7 @@ import * as _ from 'lodash';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplateService } from './phone-template.service';
-import { PhoneTemplate } from './repository/entities/phone-template.entity';
+import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 
 @ApiTags('Phone Template')
 @Controller('phone-template')
@@ -85,7 +85,7 @@ export class PhoneTemplateController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successful Operation',
-    type: ApiResponseDto<PhoneTemplate>,
+    type: ApiResponseDto<PhoneTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -101,7 +101,7 @@ export class PhoneTemplateController {
         createPhoneTemplateDto,
       );
 
-      return new ApiResponseDto<PhoneTemplate>(
+      return new ApiResponseDto<PhoneTemplateEntity>(
         `Successfully created phone template ${phoneTemplate.name}!`,
         phoneTemplate,
       );
@@ -122,7 +122,7 @@ export class PhoneTemplateController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successful Operation',
-    type: ApiResponseDto<PhoneTemplate>,
+    type: ApiResponseDto<PhoneTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -145,7 +145,7 @@ export class PhoneTemplateController {
         updatePhoneTemplateDto,
       );
 
-      return new ApiResponseDto<PhoneTemplate>(
+      return new ApiResponseDto<PhoneTemplateEntity>(
         `Successfully updated phone template ${phoneTemplate.name}!`,
         phoneTemplate,
       );

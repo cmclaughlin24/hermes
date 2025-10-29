@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { NotificationLog } from './notification-log.entity';
+import { NotificationLogEntity } from './notification-log.entity';
 
 @Entity()
-export class NotificationAttempt {
+export class NotificationAttemptEntity {
   @PrimaryColumn()
   logId: string;
 
@@ -18,7 +18,7 @@ export class NotificationAttempt {
   @Column({ type: 'simple-json', nullable: true })
   error: any;
 
-  @ManyToOne(() => NotificationLog, (log) => log.attemptHistory)
+  @ManyToOne(() => NotificationLogEntity, (log) => log.attemptHistory)
   @JoinColumn({ name: 'logId' })
-  log: NotificationLog;
+  log: NotificationLogEntity;
 }

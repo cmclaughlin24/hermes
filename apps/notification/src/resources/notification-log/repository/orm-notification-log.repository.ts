@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
 import { DataSource, In, Repository } from 'typeorm';
-import { NotificationLog } from './entities/notification-log.entity';
-import { NotificationAttempt } from './entities/notification-attempt.entity';
+import { NotificationLogEntity } from './entities/notification-log.entity';
+import { NotificationAttemptEntity } from './entities/notification-attempt.entity';
 import { Job, JobState } from 'bullmq';
 import { NotificationLogRepository } from './notification-log.repository';
 
@@ -12,10 +12,10 @@ export class OrmNotificationLogRepository
   implements NotificationLogRepository
 {
   constructor(
-    @InjectRepository(NotificationLog)
-    private readonly notificationLogModel: Repository<NotificationLog>,
-    @InjectRepository(NotificationAttempt)
-    private readonly notificationAttemptModel: Repository<NotificationAttempt>,
+    @InjectRepository(NotificationLogEntity)
+    private readonly notificationLogModel: Repository<NotificationLogEntity>,
+    @InjectRepository(NotificationAttemptEntity)
+    private readonly notificationAttemptModel: Repository<NotificationAttemptEntity>,
     private readonly dataSource: DataSource,
   ) {}
 

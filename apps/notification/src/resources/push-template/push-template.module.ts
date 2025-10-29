@@ -5,14 +5,14 @@ import { cacheFactory } from '../../config/cache.config';
 import { PushTemplateController } from './push-template.controller';
 import { PushTemplateService } from './push-template.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PushTemplate } from './repository/entities/push-template.entity';
-import { PushAction } from './repository/entities/push-action.entity';
+import { PushTemplateEntity } from './repository/entities/push-template.entity';
+import { PushActionEntity } from './repository/entities/push-action.entity';
 import { PushTemplateRepository } from './repository/push-template.repository';
 import { OrmPushTemplateRepository } from './repository/orm-push-template.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PushTemplate, PushAction]),
+    TypeOrmModule.forFeature([PushTemplateEntity, PushActionEntity]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -7,11 +7,11 @@ import { EmailTemplateService } from './email-template.service';
 import { EmailTemplateRepository } from './repository/email-template.repository';
 import { OrmEmailTemplateRepository } from './repository/orm-email-template.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmailTemplate } from './repository/entities/email-template.entity';
+import { EmailTemplateEntity } from './repository/entities/email-template.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EmailTemplate]),
+    TypeOrmModule.forFeature([EmailTemplateEntity]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

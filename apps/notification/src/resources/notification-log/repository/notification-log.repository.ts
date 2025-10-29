@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Job, JobState } from 'bullmq';
-import { NotificationLog } from './entities/notification-log.entity';
+import { NotificationLogEntity } from './entities/notification-log.entity';
 
 @Injectable()
 export abstract class NotificationLogRepository {
   abstract findAll(
     jobs: string[],
     states: JobState[],
-  ): Promise<NotificationLog[]>;
-  abstract findOne(id: string): Promise<NotificationLog>;
+  ): Promise<NotificationLogEntity[]>;
+  abstract findOne(id: string): Promise<NotificationLogEntity>;
   abstract create(
     job: Job,
     state: JobState,

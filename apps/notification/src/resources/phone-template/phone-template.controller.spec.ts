@@ -12,7 +12,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from './repository/entities/phone-template.entity';
+import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 import { PhoneTemplateController } from './phone-template.controller';
 import { PhoneTemplateService } from './phone-template.service';
 
@@ -24,7 +24,7 @@ describe('PhoneTemplateController', () => {
     name: 'unit-test',
     deliveryMethod: DeliveryMethods.SMS,
     template: '<Response><Say>Hello There!</Say></Response>',
-  } as PhoneTemplate;
+  } as PhoneTemplateEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

@@ -5,7 +5,7 @@ import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { PushTemplateService } from './push-template.service';
 import { PushTemplateRepository } from './repository/push-template.repository';
-import { PushTemplate } from './repository/entities/push-template.entity';
+import { PushTemplateEntity } from './repository/entities/push-template.entity';
 
 type MockPushTemplateRepository = Partial<
   Record<keyof PushTemplateRepository, jest.Mock>
@@ -55,10 +55,10 @@ describe('PushTemplateService', () => {
 
     it('should yield a list of push notification templates', async () => {
       // Arrange.
-      const expectedResult: PushTemplate[] = [
+      const expectedResult: PushTemplateEntity[] = [
         {
           title: 'unit-test',
-        } as PushTemplate,
+        } as PushTemplateEntity,
       ];
       pushTemplateRepository.findAll.mockResolvedValue(expectedResult);
 
@@ -82,10 +82,10 @@ describe('PushTemplateService', () => {
 
     it('should yield a push notification template', async () => {
       // Arrange.
-      const expectedResult: PushTemplate = {
+      const expectedResult: PushTemplateEntity = {
         name: 'unit-test',
         title: 'Unit Test',
-      } as PushTemplate;
+      } as PushTemplateEntity;
       pushTemplateRepository.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -111,7 +111,7 @@ describe('PushTemplateService', () => {
     const pushTemplate = {
       name: 'unit-test',
       title: 'Unit Test',
-    } as PushTemplate;
+    } as PushTemplateEntity;
 
     afterEach(() => {
       pushTemplateRepository.create.mockClear();

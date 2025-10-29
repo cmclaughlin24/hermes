@@ -5,7 +5,7 @@ import {
   MissingException,
   PhoneMethods,
 } from '@hermes/common';
-import { PhoneTemplate } from './entities/phone-template.entity';
+import { PhoneTemplateEntity } from './entities/phone-template.entity';
 import { Repository } from 'typeorm';
 import { CreatePhoneTemplateDto } from '../dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
@@ -16,8 +16,8 @@ export class OrmPhoneTemplateRepository
   implements PhoneTemplateRepository
 {
   constructor(
-    @InjectRepository(PhoneTemplate)
-    private readonly phoneTemplateModel: Repository<PhoneTemplate>,
+    @InjectRepository(PhoneTemplateEntity)
+    private readonly phoneTemplateModel: Repository<PhoneTemplateEntity>,
   ) {}
 
   findAll() {

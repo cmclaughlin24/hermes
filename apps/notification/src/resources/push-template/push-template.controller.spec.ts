@@ -13,16 +13,16 @@ import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplateController } from './push-template.controller';
 import { PushTemplateService } from './push-template.service';
-import { PushTemplate } from './repository/entities/push-template.entity';
+import { PushTemplateEntity } from './repository/entities/push-template.entity';
 
 describe('PushTemplateController', () => {
   let controller: PushTemplateController;
   let service: MockPushTemplateService;
 
-  const pushTemplate: PushTemplate = {
+  const pushTemplate: PushTemplateEntity = {
     name: 'test',
     title: 'Unit Test',
-  } as PushTemplate;
+  } as PushTemplateEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,7 +50,7 @@ describe('PushTemplateController', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: PushTemplate[] = [pushTemplate];
+      const expectedResult: PushTemplateEntity[] = [pushTemplate];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -116,7 +116,7 @@ describe('PushTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<PushTemplate>(
+      const expectedResult = new ApiResponseDto<PushTemplateEntity>(
         `Successfully created push notification template ${pushTemplate.name}!`,
         pushTemplate,
       );
@@ -148,7 +148,7 @@ describe('PushTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<PushTemplate>(
+      const expectedResult = new ApiResponseDto<PushTemplateEntity>(
         `Successfully updated push notification template ${pushTemplate.name}!`,
         pushTemplate,
       );
@@ -180,7 +180,7 @@ describe('PushTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<PushTemplate>(
+      const expectedResult = new ApiResponseDto<PushTemplateEntity>(
         `Successfully deleted push notification template ${pushTemplate.name}!`,
       );
       service.remove.mockResolvedValue(null);

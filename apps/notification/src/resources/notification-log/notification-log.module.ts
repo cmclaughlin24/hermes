@@ -4,11 +4,11 @@ import { NotificationLogService } from './notification-log.service';
 import { NotificationLogRepository } from './repository/notification-log.repository';
 import { OrmNotificationLogRepository } from './repository/orm-notification-log.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NotificationLog } from './repository/entities/notification-log.entity';
-import { NotificationAttempt } from './repository/entities/notification-attempt.entity';
+import { NotificationLogEntity } from './repository/entities/notification-log.entity';
+import { NotificationAttemptEntity } from './repository/entities/notification-attempt.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NotificationLog, NotificationAttempt])],
+  imports: [TypeOrmModule.forFeature([NotificationLogEntity, NotificationAttemptEntity])],
   controllers: [NotificationLogController],
   providers: [
     NotificationLogService,

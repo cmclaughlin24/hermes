@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class PhoneTemplate {
+export class PhoneTemplateEntity {
   @PrimaryColumn()
   name: string;
 

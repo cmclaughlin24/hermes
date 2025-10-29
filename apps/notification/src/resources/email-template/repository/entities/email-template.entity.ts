@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class EmailTemplate {
+export class EmailTemplateEntity {
   @PrimaryColumn()
   name: string;
 

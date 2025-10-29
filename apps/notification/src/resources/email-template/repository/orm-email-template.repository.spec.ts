@@ -7,7 +7,7 @@ import {
   createMockRepository,
   MockRepository,
 } from '../../../../test/helpers/database.helper';
-import { EmailTemplate } from './entities/email-template.entity';
+import { EmailTemplateEntity } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
@@ -20,8 +20,8 @@ describe('OrmEmailTemplateRepository', () => {
       providers: [
         OrmEmailTemplateRepository,
         {
-          provide: getRepositoryToken(EmailTemplate),
-          useValue: createMockRepository<EmailTemplate>(),
+          provide: getRepositoryToken(EmailTemplateEntity),
+          useValue: createMockRepository<EmailTemplateEntity>(),
         },
       ],
     }).compile();
@@ -30,7 +30,7 @@ describe('OrmEmailTemplateRepository', () => {
       OrmEmailTemplateRepository,
     );
     emailTemplateModel = module.get<MockRepository>(
-      getRepositoryToken(EmailTemplate),
+      getRepositoryToken(EmailTemplateEntity),
     );
   });
 
@@ -45,12 +45,12 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: EmailTemplate[] = [
+      const expectedResult: EmailTemplateEntity[] = [
         {
           name: 'test',
           template: '<h1>Unit Testing</h1>',
           context: null,
-        } as EmailTemplate,
+        } as EmailTemplateEntity,
       ];
       emailTemplateModel.find.mockResolvedValue(expectedResult);
 
@@ -74,11 +74,11 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should yield an email template', async () => {
       // Arrange.
-      const expectedResult: EmailTemplate = {
+      const expectedResult: EmailTemplateEntity = {
         name: 'test',
         template: '<h1>Unit Testing</h1>',
         context: null,
-      } as EmailTemplate;
+      } as EmailTemplateEntity;
       emailTemplateModel.findOneBy.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -106,7 +106,7 @@ describe('OrmEmailTemplateRepository', () => {
         title: 'string',
       },
     };
-    const emailTemplate = { ...createEmailTemplateDto } as EmailTemplate;
+    const emailTemplate = { ...createEmailTemplateDto } as EmailTemplateEntity;
 
     afterEach(() => {
       emailTemplateModel.create.mockClear();
@@ -145,7 +145,7 @@ describe('OrmEmailTemplateRepository', () => {
       );
       emailTemplateModel.findOneBy.mockResolvedValue({
         name: 'test',
-      } as EmailTemplate);
+      } as EmailTemplateEntity);
 
       // Act.
       const func = repository.create.bind(repository, createEmailTemplateDto);

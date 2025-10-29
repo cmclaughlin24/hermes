@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from './dto/update-push-template.dto';
 import { PushTemplateService } from './push-template.service';
-import { PushTemplate } from './repository/entities/push-template.entity';
+import { PushTemplateEntity } from './repository/entities/push-template.entity';
 
 @ApiTags('Push Template')
 @Controller('push-template')
@@ -75,7 +75,7 @@ export class PushTemplateController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Successful Operation',
-    type: ApiResponseDto<PushTemplate>,
+    type: ApiResponseDto<PushTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -91,7 +91,7 @@ export class PushTemplateController {
         createPushTemplateDto,
       );
 
-      return new ApiResponseDto<PushTemplate>(
+      return new ApiResponseDto<PushTemplateEntity>(
         `Successfully created push notification template ${pushTemplate.name}!`,
         pushTemplate,
       );
@@ -112,7 +112,7 @@ export class PushTemplateController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successful Operation',
-    type: ApiResponseDto<PushTemplate>,
+    type: ApiResponseDto<PushTemplateEntity>,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -133,7 +133,7 @@ export class PushTemplateController {
         updatePushTemplateDto,
       );
 
-      return new ApiResponseDto<PushTemplate>(
+      return new ApiResponseDto<PushTemplateEntity>(
         `Successfully updated push notification template ${pushTemplate.name}!`,
         pushTemplate,
       );

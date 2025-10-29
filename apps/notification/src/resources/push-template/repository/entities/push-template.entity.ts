@@ -7,10 +7,10 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PushAction } from './push-action.entity';
+import { PushActionEntity } from './push-action.entity';
 
 @Entity()
-export class PushTemplate {
+export class PushTemplateEntity {
   @PrimaryColumn()
   name: string;
 
@@ -70,8 +70,8 @@ export class PushTemplate {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => PushAction, (action) => action.template, {
+  @OneToMany(() => PushActionEntity, (action) => action.template, {
     cascade: true,
   })
-  actions: PushAction[];
+  actions: PushActionEntity[];
 }

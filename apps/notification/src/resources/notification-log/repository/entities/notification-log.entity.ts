@@ -6,10 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { NotificationAttempt } from './notification-attempt.entity';
+import { NotificationAttemptEntity } from './notification-attempt.entity';
 
 @Entity()
-export class NotificationLog {
+export class NotificationLogEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,9 +37,9 @@ export class NotificationLog {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => NotificationAttempt, (attempt) => attempt.log, {
+  @OneToMany(() => NotificationAttemptEntity, (attempt) => attempt.log, {
     cascade: true,
   })
-  attemptHistory: NotificationAttempt[];
+  attemptHistory: NotificationAttemptEntity[];
 }
 

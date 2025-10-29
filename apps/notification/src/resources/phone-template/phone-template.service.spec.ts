@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
-import { PhoneTemplate } from './repository/entities/phone-template.entity';
+import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 import { PhoneTemplateService } from './phone-template.service';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
 
@@ -58,7 +58,7 @@ describe('PhoneTemplateService', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplate;
+    } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateRepository.findAll.mockClear();
@@ -87,7 +87,7 @@ describe('PhoneTemplateService', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplate;
+    } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateRepository.findOne.mockClear();
@@ -121,7 +121,7 @@ describe('PhoneTemplateService', () => {
       template: '<Response><Say>Hello There!</Say></Response>',
       context: null,
     };
-    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplate;
+    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplateEntity;
 
     afterEach(() => {
       phoneTemplateRepository.create.mockClear();

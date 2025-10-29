@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { PushTemplate } from './push-template.entity';
+import { PushTemplateEntity } from './push-template.entity';
 
 @Entity()
-export class PushAction {
+export class PushActionEntity {
   @PrimaryColumn()
   action: string;
 
@@ -12,10 +12,10 @@ export class PushAction {
   @Column({ nullable: true })
   icon: string;
 
-  @ManyToOne(() => PushTemplate, (template) => template.actions, {
+  @ManyToOne(() => PushTemplateEntity, (template) => template.actions, {
     onDelete: 'CASCADE',
   })
-  template: PushTemplate;
+  template: PushTemplateEntity;
 }
 
 

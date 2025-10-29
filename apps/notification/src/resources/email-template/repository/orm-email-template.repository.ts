@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ExistsException, MissingException } from '@hermes/common';
 import { Repository } from 'typeorm';
 import { EmailTemplateRepository } from './email-template.repository';
-import { EmailTemplate } from './entities/email-template.entity';
+import { EmailTemplateEntity } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
 
@@ -12,8 +12,8 @@ export class OrmEmailTemplateRepository
   implements EmailTemplateRepository
 {
   constructor(
-    @InjectRepository(EmailTemplate)
-    private readonly emailTemplateModel: Repository<EmailTemplate>,
+    @InjectRepository(EmailTemplateEntity)
+    private readonly emailTemplateModel: Repository<EmailTemplateEntity>,
   ) {}
 
   async findAll() {

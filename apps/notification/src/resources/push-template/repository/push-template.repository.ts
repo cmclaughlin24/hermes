@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PushTemplate } from './entities/push-template.entity';
+import { PushTemplateEntity } from './entities/push-template.entity';
 import { CreatePushTemplateDto } from '../dto/create-push-template.dto';
 import { UpdatePushTemplateDto } from '../dto/update-push-template.dto';
 
 @Injectable()
 export abstract class PushTemplateRepository {
-  abstract findAll(): Promise<PushTemplate[]>;
-  abstract findOne(name: string): Promise<PushTemplate>;
+  abstract findAll(): Promise<PushTemplateEntity[]>;
+  abstract findOne(name: string): Promise<PushTemplateEntity>;
   abstract create(
     createPushTemplateDto: CreatePushTemplateDto,
-  ): Promise<PushTemplate>;
+  ): Promise<PushTemplateEntity>;
   abstract update(
     name: string,
     updatePushTemplateDto: UpdatePushTemplateDto,
-  ): Promise<PushTemplate>;
+  ): Promise<PushTemplateEntity>;
   abstract remove(name: string): Promise<void>;
 }

@@ -6,13 +6,13 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { NotificationLogController } from './notification-log.controller';
 import { NotificationLogService } from './notification-log.service';
-import { NotificationLog } from './repository/entities/notification-log.entity';
+import { NotificationLogEntity } from './repository/entities/notification-log.entity';
 
 describe('NotificationLogController', () => {
   let controller: NotificationLogController;
   let service: MockNotificationLogService;
 
-  const notificationLog: NotificationLog = {
+  const notificationLog: NotificationLogEntity = {
     id: 'test1',
     job: JSON.stringify({}),
     state: 'completed',
@@ -20,7 +20,7 @@ describe('NotificationLogController', () => {
     data: JSON.stringify({}),
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as NotificationLog;
+  } as NotificationLogEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,7 +50,7 @@ describe('NotificationLogController', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: NotificationLog[] = [notificationLog];
+      const expectedResult: NotificationLogEntity[] = [notificationLog];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.

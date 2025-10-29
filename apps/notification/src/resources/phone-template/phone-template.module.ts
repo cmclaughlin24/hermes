@@ -7,11 +7,11 @@ import { PhoneTemplateService } from './phone-template.service';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
 import { OrmPhoneTemplateRepository } from './repository/orm-phone-template.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PhoneTemplate } from './repository/entities/phone-template.entity';
+import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PhoneTemplate]),
+    TypeOrmModule.forFeature([PhoneTemplateEntity]),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
