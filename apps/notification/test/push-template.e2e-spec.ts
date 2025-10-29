@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
-import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
+import { PushTemplateModule } from '../src/push-template/push-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();

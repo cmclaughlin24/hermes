@@ -8,8 +8,8 @@ import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
-import { CreatePhoneTemplateDto } from '../src/resources/phone-template/dto/create-phone-template.dto';
-import { PhoneTemplateModule } from '../src/resources/phone-template/phone-template.module';
+import { CreatePhoneTemplateDto } from '../src/phone-template/dto/create-phone-template.dto';
+import { PhoneTemplateModule } from '../src/phone-template/phone-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();

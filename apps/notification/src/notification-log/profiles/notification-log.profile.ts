@@ -1,12 +1,8 @@
-import {
-  type Mapper,
-  MappingProfile,
-  createMap,
-  forMember,
-  mapFrom,
-} from '@automapper/core';
+import { type Mapper, MappingProfile, createMap } from '@automapper/core';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
+import { NotificationLog } from '../domain/notification-log';
+import { NotificationLogEntity } from '../repository/entities/notification-log.entity';
 
 @Injectable()
 export class NotificationLogProfile extends AutomapperProfile {
@@ -15,6 +11,12 @@ export class NotificationLogProfile extends AutomapperProfile {
   }
 
   get profile(): MappingProfile {
-    return (mapper) => {};
+    return (mapper) => {
+      // NOTE: Map NotificationLog -> NotificationLogEntity
+      createMap(mapper, NotificationLog, NotificationLogEntity);
+
+      // NOTE: Map NotificationLogEntity -> NotificationLog
+      createMap(mapper, NotificationLogEntity, NotificationLog);
+    };
   }
 }

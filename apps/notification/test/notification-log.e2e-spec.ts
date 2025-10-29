@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
-import { NotificationLogModule } from '../src/resources/notification-log/notification-log.module';
-import { NotificationLogService } from '../src/resources/notification-log/notification-log.service';
+import { NotificationLogModule } from '../src/notification-log/notification-log.module';
+import { NotificationLogService } from '../src/notification-log/notification-log.service';
 
 describe('[Feature] Notification Log', () => {
   let app: INestApplication;

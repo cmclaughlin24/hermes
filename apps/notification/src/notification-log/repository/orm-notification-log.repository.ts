@@ -1,3 +1,5 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as _ from 'lodash';
@@ -6,31 +8,37 @@ import { NotificationLogEntity } from './entities/notification-log.entity';
 import { NotificationAttemptEntity } from './entities/notification-attempt.entity';
 import { Job, JobState } from 'bullmq';
 import { NotificationLogRepository } from './notification-log.repository';
+import { NotificationLog } from '../domain/notification-log';
 
 @Injectable()
-export class OrmNotificationLogRepository
-  implements NotificationLogRepository
-{
+export class OrmNotificationLogRepository implements NotificationLogRepository {
   constructor(
     @InjectRepository(NotificationLogEntity)
     private readonly notificationLogModel: Repository<NotificationLogEntity>,
     @InjectRepository(NotificationAttemptEntity)
     private readonly notificationAttemptModel: Repository<NotificationAttemptEntity>,
     private readonly dataSource: DataSource,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   async findAll(jobs: string[], states: JobState[]) {
-    return this.notificationLogModel.find({
-      where: this._buildWhereClause(jobs, states),
-      relations: { attemptHistory: true },
-    });
+    return this.notificationLogModel
+      .find({
+        where: this._buildWhereClause(jobs, states),
+        relations: { attemptHistory: true },
+      })
+      .then((entities) =>
+        this.mapper.mapArray(entities, NotificationLogEntity, NotificationLog),
+      );
   }
 
   async findOne(id: string) {
-    return this.notificationLogModel.findOne({
-      where: { id },
-      relations: { attemptHistory: true },
-    });
+    return this.notificationLogModel
+      .findOne({
+        where: { id },
+        relations: { attemptHistory: true },
+      })
+      .then((entity) => this._toDomain(entity));
   }
 
   async create(
@@ -130,5 +138,9 @@ export class OrmNotificationLogRepository
     }
 
     return Object.keys(where).length > 0 ? where : null;
+  }
+
+  private _toDomain(entity: NotificationLogEntity): NotificationLog {
+    return this.mapper.map(entity, NotificationLogEntity, NotificationLog);
   }
 }
