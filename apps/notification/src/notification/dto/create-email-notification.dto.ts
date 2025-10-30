@@ -8,7 +8,7 @@ import {
   IsString,
   IsTimeZone,
 } from 'class-validator';
-import { EmailTemplateExists } from '../decorators/email-template-exists.decorator';
+import { EmailTemplateExists } from '../../common/decorators/email-template-exists.decorator';
 
 export class CreateEmailNotificationDto {
   @ApiProperty({

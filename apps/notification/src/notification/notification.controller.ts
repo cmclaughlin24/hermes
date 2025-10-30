@@ -2,9 +2,9 @@ import { ApiResponseDto, errorToHttpException } from '@hermes/common';
 import { IamPermission } from '@hermes/iam';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('Notification')

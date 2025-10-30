@@ -1,11 +1,11 @@
 import { DeliveryMethods } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
 import { EmailService } from '../common/services/email/email.service';
 import { PhoneService } from '../common/services/phone/phone.service';
 import { PushNotificationService } from '../common/services/push-notification/push-notification.service';
+import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 
 @Injectable()
 export class NotificationService {

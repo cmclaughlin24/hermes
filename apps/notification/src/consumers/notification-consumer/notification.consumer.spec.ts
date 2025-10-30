@@ -11,9 +11,9 @@ import {
   createPhoneServiceMock,
   createPushNotificationServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from '../../notification/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../../notification/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../../notification/dto/create-push-notification.dto';
 import { EmailService } from '../../common/services/email/email.service';
 import { PhoneService } from '../../common/services/phone/phone.service';
 import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';

@@ -8,9 +8,9 @@ import {
   createConfigServiceMock,
   createEmailTemplateServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { EmailStrategy } from './email.strategy';
 import { EmailTemplateService } from '../../email-template/email-template.service';
-import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
+import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
+import { EmailStrategy } from './email.strategy';
 
 export type MockMailerService = Partial<Record<keyof MailerService, jest.Mock>>;
 

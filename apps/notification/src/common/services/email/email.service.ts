@@ -6,8 +6,8 @@ import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { SentMessageInfo } from 'nodemailer';
 import { EmailTemplateService } from '../../../email-template/email-template.service';
-import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
+import { CreateEmailNotificationDto } from '../../../notification/dto/create-email-notification.dto';
 
 @Injectable()
 export class EmailService implements CreateNotificationDto {

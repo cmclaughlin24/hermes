@@ -7,9 +7,9 @@ import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
-import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
 import { PushTemplateService } from '../../push-template/push-template.service';
-import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
+import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
+import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
 
 @Injectable()
 export class PushNotificationStrategy
@@ -119,7 +119,7 @@ export class PushNotificationStrategy
       });
     }
 
-    // Note: Nullish keys removed from the notification object so that Angular and other frameworks
+    // NOTE: Nullish keys removed from the notification object so that Angular and other frameworks
     //       with out the box service worker offerings do not attempt to convert properties.
     for (const key in notification) {
       !notification[key] && delete notification[key];

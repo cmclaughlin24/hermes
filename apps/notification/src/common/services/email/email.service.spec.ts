@@ -3,14 +3,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockConfigService,
-    MockEmailTemplateService,
-    createConfigServiceMock,
-    createEmailTemplateServiceMock,
+  MockConfigService,
+  MockEmailTemplateService,
+  createConfigServiceMock,
+  createEmailTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { EmailTemplateService } from '../../../email-template/email-template.service';
-import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
 import { EmailService } from './email.service';
+import { CreateEmailNotificationDto } from '../../../notification/dto/create-email-notification.dto';
 
 export type MockMailerService = Partial<Record<keyof MailerService, jest.Mock>>;
 

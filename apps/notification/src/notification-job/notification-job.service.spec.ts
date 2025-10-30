@@ -6,9 +6,9 @@ import {
   MockQueue,
   createQueueMock,
 } from '../../../notification/test/helpers/queue.helper';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from '../notification/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../notification/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../notification/dto/create-push-notification.dto';
 import { NotificationJobService } from './notification-job.service';
 
 describe('NotificationJobService', () => {

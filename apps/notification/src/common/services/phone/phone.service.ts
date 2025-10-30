@@ -7,8 +7,8 @@ import { TwilioService } from 'nestjs-twilio';
 import { CallInstance } from 'twilio/lib/rest/api/v2010/account/call';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import { PhoneTemplateService } from '../../../phone-template/phone-template.service';
-import { CreatePhoneNotificationDto } from '../../dto/create-phone-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
+import { CreatePhoneNotificationDto } from '../../../notification/dto/create-phone-notification.dto';
 
 @Injectable()
 export class PhoneService implements CreateNotificationDto {

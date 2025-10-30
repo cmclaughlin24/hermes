@@ -15,7 +15,7 @@ import {
   createPushTemplateServiceMock,
 } from '../../../../test/helpers/provider.helper';
 import { PushTemplateService } from '../../../push-template/push-template.service';
-import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
+import { CreatePushNotificationDto } from '../../../notification/dto/create-push-notification.dto';
 import { PushNotificationService } from './push-notification.service';
 
 jest.mock('web-push');

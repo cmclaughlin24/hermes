@@ -7,10 +7,11 @@ import {
   MockPhoneTemplateService,
   createConfigServiceMock,
   createPhoneTemplateServiceMock,
-} from '../../../../test/helpers/provider.helper';
-import { PhoneTemplateService } from '../../../phone-template/phone-template.service';
-import { CreatePhoneNotificationDto } from '../../../notification/dto/create-phone-notification.dto';
-import { PhoneService } from './phone.service';
+} from '../../../test/helpers/provider.helper';
+import { PhoneStrategy as BasePhoneStrategy } from './phone.strategy';
+import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto';
+import { PhoneTemplateService } from '../../phone-template/phone-template.service';
+import { Injectable } from '@nestjs/common';
 
 const createTwilioServiceMock = () => ({
   client: {
@@ -23,8 +24,23 @@ const createTwilioServiceMock = () => ({
   },
 });
 
-describe('PhoneService', () => {
-  let service: PhoneService;
+@Injectable()
+class PhoneStrategy extends BasePhoneStrategy {
+  type: DeliveryMethods.CALL | DeliveryMethods.SMS = DeliveryMethods.CALL;
+
+  constructor(
+    twilioService: TwilioService,
+    configService: ConfigService,
+    phoneTemplateService: PhoneTemplateService,
+  ) {
+    super(twilioService, configService, phoneTemplateService);
+  }
+
+  async notify(_dto: CreatePhoneNotificationDto): Promise<any> {}
+}
+
+describe('PhoneStrategy', () => {
+  let strategy: PhoneStrategy;
   let twilioService: any;
   let configService: MockConfigService;
   let phoneTemplateService: MockPhoneTemplateService;
@@ -32,7 +48,7 @@ describe('PhoneService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PhoneService,
+        PhoneStrategy,
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
@@ -48,7 +64,7 @@ describe('PhoneService', () => {
       ],
     }).compile();
 
-    service = module.get<PhoneService>(PhoneService);
+    strategy = module.get<PhoneStrategy>(PhoneStrategy);
     twilioService = module.get<any>(TwilioService);
     configService = module.get<MockConfigService>(ConfigService);
     phoneTemplateService =
@@ -56,113 +72,7 @@ describe('PhoneService', () => {
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  describe('sendText()', () => {
-    afterEach(() => {
-      twilioService.client.messages.create.mockClear();
-    });
-
-    it('should send a text notification', async () => {
-      // Arrange.
-      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-        to: '+12818071479',
-        from: '+12818071479',
-        body: 'Unit Testing',
-      };
-
-      // Act.
-      await service.sendText(createPhoneNotificationDto);
-
-      // Assert.
-      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
-        createPhoneNotificationDto,
-      );
-    });
-
-    it("should use the environment's phone number if not included in CreatePhoneNotificationDto", async () => {
-      // Arrange.
-      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-        to: '+12818071479',
-        body: 'Unit Testing',
-      };
-      const from = '+12918071478';
-      const expectedResult = {
-        ...createPhoneNotificationDto,
-        from,
-      };
-      configService.get.mockReturnValue(from);
-
-      // Act.
-      await service.sendText(createPhoneNotificationDto);
-
-      // Assert.
-      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
-        expectedResult,
-      );
-    });
-
-    it('should throw an error otherwise', async () => {
-      // Arrange.
-      twilioService.client.messages.create.mockRejectedValue(new Error());
-
-      // Act/Assert.
-      await expect(
-        service.sendText({} as CreatePhoneNotificationDto),
-      ).rejects.toBeInstanceOf(Error);
-    });
-  });
-
-  describe('sendCall()', () => {
-    afterEach(() => {
-      twilioService.client.calls.create.mockClear();
-    });
-
-    it('should send a call notification', async () => {
-      // Arrange.
-      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-        to: '+12818071479',
-        from: '+12818071479',
-        body: 'Unit Testing',
-      };
-      const expectedResult = {
-        to: createPhoneNotificationDto.to,
-        from: createPhoneNotificationDto.from,
-        twiml: createPhoneNotificationDto.body,
-      };
-
-      // Act.
-      await service.sendCall(createPhoneNotificationDto);
-
-      // Assert.
-      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
-        expectedResult,
-      );
-    });
-
-    it("should use the environment's phone number if not included in CreatePhoneNotificationDto", async () => {
-      // Arrange.
-      const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-        to: '+12818071479',
-        body: 'Unit Testing',
-      };
-      const from = '+12918071478';
-      const expectedResult = {
-        to: createPhoneNotificationDto.to,
-        twiml: createPhoneNotificationDto.body,
-        from,
-      };
-      configService.get.mockReturnValue(from);
-
-      // Act.
-      await service.sendCall(createPhoneNotificationDto);
-
-      // Assert.
-      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
-        expectedResult,
-      );
-    });
+    expect(strategy).toBeDefined();
   });
 
   describe('createNotificationDto()', () => {
@@ -176,7 +86,7 @@ describe('PhoneService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).resolves.toBeInstanceOf(CreatePhoneNotificationDto);
     });
 
@@ -185,7 +95,7 @@ describe('PhoneService', () => {
       const expectedResult = new Error('Payload cannot be null/undefined');
 
       // Act/Assert.
-      await expect(service.createNotificationDto(null)).rejects.toEqual(
+      await expect(strategy.createNotificationDto(null)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -195,7 +105,7 @@ describe('PhoneService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto('test')).rejects.toEqual(
+      await expect(strategy.createNotificationDto('test')).rejects.toEqual(
         expectedResult,
       );
     });
@@ -205,7 +115,7 @@ describe('PhoneService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto([])).rejects.toEqual(
+      await expect(strategy.createNotificationDto([])).rejects.toEqual(
         expectedResult,
       );
     });
@@ -218,7 +128,7 @@ describe('PhoneService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).rejects.toBeInstanceOf(Error);
     });
   });
@@ -250,10 +160,7 @@ describe('PhoneService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPhoneTemplate(
-          DeliveryMethods.SMS,
-          createPhoneNotificationDto,
-        ),
+        strategy.createTemplate(createPhoneNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -274,10 +181,7 @@ describe('PhoneService', () => {
       });
 
       // Act.
-      await service.createPhoneTemplate(
-        DeliveryMethods.CALL,
-        createPhoneNotificationDto,
-      );
+      await strategy.createTemplate(createPhoneNotificationDto);
 
       // Assert.
       expect(phoneTemplateService.findOne).toHaveBeenCalledWith(
@@ -305,10 +209,7 @@ describe('PhoneService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPhoneTemplate(
-          DeliveryMethods.CALL,
-          createPhoneNotificationDto,
-        ),
+        strategy.createTemplate(createPhoneNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
 
@@ -327,10 +228,7 @@ describe('PhoneService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPhoneTemplate(
-          DeliveryMethods.SMS,
-          createPhoneNotificationDto,
-        ),
+        strategy.createTemplate(createPhoneNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
   });

@@ -5,9 +5,9 @@ import { ConfigService } from '@nestjs/config';
 import { validateOrReject } from 'class-validator';
 import Handlebars from 'handlebars';
 import { SentMessageInfo } from 'nodemailer';
-import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
-import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
 import { EmailTemplateService } from '../../email-template/email-template.service';
+import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
+import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
 
 @Injectable()
 export class EmailStrategy

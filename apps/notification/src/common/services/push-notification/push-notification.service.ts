@@ -8,7 +8,7 @@ import Handlebars from 'handlebars';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
 import { PushTemplateService } from '../../../push-template/push-template.service';
-import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
+import { CreatePushNotificationDto } from '../../../notification/dto/create-push-notification.dto';
 import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
 
 @Injectable()
