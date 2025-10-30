@@ -7,7 +7,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { EmailTemplateService } from '../../resources/email-template/email-template.service';
+import { EmailTemplateService } from '../../email-template/email-template.service';
 
 @ValidatorConstraint({ name: 'EmailTemplateExists', async: true })
 @Injectable()

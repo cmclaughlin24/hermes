@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { CommonModule } from '../common/common.module';
-import { NotificationLogModule } from '../resources/notification-log/notification-log.module';
+import { NotificationLogModule } from '../notification-log/notification-log.module';
 import { NotificationConsumer } from './notification-consumer/notification.consumer';
 
 @Module({

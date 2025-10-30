@@ -11,7 +11,7 @@ import { CreatePushNotificationDto } from '../../common/dto/create-push-notifica
 import { EmailService } from '../../common/services/email/email.service';
 import { PhoneService } from '../../common/services/phone/phone.service';
 import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';
-import { NotificationLogService } from '../../resources/notification-log/notification-log.service';
+import { NotificationLogService } from '../../notification-log/notification-log.service';
 
 const KEEP_JOB_OPTIONS: KeepJobs = {
   age: +process.env.BULLMQ_NOTIFICATION_JOB_AGE,

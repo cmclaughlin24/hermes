@@ -10,8 +10,14 @@ import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
 import { ConsumerModule } from './consumers/consumer.module';
-import { ResourcesModule } from './resources/resources.module';
 import { CoreModule } from './core/core.module';
+import { EmailTemplateModule } from './email-template/email-template.module';
+import { HealthModule } from './health/health.module';
+import { NotificationJobModule } from './notification-job/notification-job.module';
+import { NotificationLogModule } from './notification-log/notification-log.module';
+import { NotificationModule } from './notification/notification.module';
+import { PhoneTemplateModule } from './phone-template/phone-template.module';
+import { PushTemplateModule } from './push-template/push-template.module';
 
 @Module({
   imports: [
@@ -85,7 +91,13 @@ import { CoreModule } from './core/core.module';
     }),
     CoreModule.forRoot({ driver: 'postgres' }),
     ConsumerModule,
-    ResourcesModule,
+    HealthModule,
+    EmailTemplateModule,
+    NotificationModule,
+    NotificationJobModule,
+    NotificationLogModule,
+    PhoneTemplateModule,
+    PushTemplateModule,
   ],
   providers: [],
 })

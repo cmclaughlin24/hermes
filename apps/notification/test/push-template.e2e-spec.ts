@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -7,7 +9,7 @@ import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
-import { PushTemplateModule } from '../src/resources/push-template/push-template.module';
+import { PushTemplateModule } from '../src/push-template/push-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
@@ -21,6 +23,9 @@ describe('[Feature] Push Template', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        AutomapperModule.forRoot({
+          strategyInitializer: classes(),
+        }),
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,

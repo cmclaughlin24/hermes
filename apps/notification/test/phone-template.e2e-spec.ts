@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { DeliveryMethods } from '@hermes/common';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -8,8 +10,8 @@ import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { useGlobalPipes } from '../src/config/use-global.config';
-import { CreatePhoneTemplateDto } from '../src/resources/phone-template/dto/create-phone-template.dto';
-import { PhoneTemplateModule } from '../src/resources/phone-template/phone-template.module';
+import { CreatePhoneTemplateDto } from '../src/phone-template/dto/create-phone-template.dto';
+import { PhoneTemplateModule } from '../src/phone-template/phone-template.module';
 import { createTokenServiceMock } from './helpers/provider.helper';
 
 const [tokenService, setActiveEntityData] = createTokenServiceMock();
@@ -23,6 +25,9 @@ describe('[Feature] Phone Template', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        AutomapperModule.forRoot({
+          strategyInitializer: classes(),
+        }),
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,

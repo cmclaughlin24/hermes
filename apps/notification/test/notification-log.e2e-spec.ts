@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -5,8 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
-import { NotificationLogModule } from '../src/resources/notification-log/notification-log.module';
-import { NotificationLogService } from '../src/resources/notification-log/notification-log.service';
+import { NotificationLogModule } from '../src/notification-log/notification-log.module';
+import { NotificationLogService } from '../src/notification-log/notification-log.service';
 
 describe('[Feature] Notification Log', () => {
   let app: INestApplication;
@@ -19,6 +21,9 @@ describe('[Feature] Notification Log', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        AutomapperModule.forRoot({
+          strategyInitializer: classes(),
+        }),
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,
