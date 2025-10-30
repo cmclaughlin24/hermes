@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { ExistsException, MissingException } from '@hermes/common';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,15 +12,35 @@ import {
 import { EmailTemplateEntity } from './entities/email-template.entity';
 import { CreateEmailTemplateDto } from '../dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from '../dto/update-email-template.dto';
+import { EmailTemplate } from '../domain/email-template';
+import { EmailTemplateProfile } from '../profiles/email-template.profile';
 
 describe('OrmEmailTemplateRepository', () => {
   let repository: OrmEmailTemplateRepository;
   let emailTemplateModel: MockRepository;
 
+  const entity = new EmailTemplateEntity();
+  entity.name = 'test';
+  entity.subject = '';
+  entity.template = '<h1>Unit Testing</h1>';
+  entity.context = null;
+  entity.createdAt = new Date();
+  entity.updatedAt = new Date();
+
+  const template = new EmailTemplate();
+  template.name = entity.name;
+  template.subject = entity.subject;
+  template.template = entity.template;
+  template.context = entity.context;
+  template.createdAt = entity.createdAt;
+  template.updatedAt = entity.updatedAt;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [AutomapperModule.forRoot({ strategyInitializer: classes() })],
       providers: [
         OrmEmailTemplateRepository,
+        EmailTemplateProfile,
         {
           provide: getRepositoryToken(EmailTemplateEntity),
           useValue: createMockRepository<EmailTemplateEntity>(),
@@ -45,14 +67,8 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: EmailTemplateEntity[] = [
-        {
-          name: 'test',
-          template: '<h1>Unit Testing</h1>',
-          context: null,
-        } as EmailTemplateEntity,
-      ];
-      emailTemplateModel.find.mockResolvedValue(expectedResult);
+      const expectedResult: EmailTemplate[] = [template];
+      emailTemplateModel.find.mockResolvedValue([entity]);
 
       // Act/Assert.
       await expect(repository.findAll()).resolves.toEqual(expectedResult);
@@ -74,17 +90,10 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should yield an email template', async () => {
       // Arrange.
-      const expectedResult: EmailTemplateEntity = {
-        name: 'test',
-        template: '<h1>Unit Testing</h1>',
-        context: null,
-      } as EmailTemplateEntity;
-      emailTemplateModel.findOneBy.mockResolvedValue(expectedResult);
+      emailTemplateModel.findOneBy.mockResolvedValue(entity);
 
       // Act/Assert.
-      await expect(repository.findOne(expectedResult.name)).resolves.toEqual(
-        expectedResult,
-      );
+      await expect(repository.findOne(entity.name)).resolves.toEqual(template);
     });
 
     it('should yield null if the repository returns null/undefined', async () => {
@@ -106,7 +115,6 @@ describe('OrmEmailTemplateRepository', () => {
         title: 'string',
       },
     };
-    const emailTemplate = { ...createEmailTemplateDto } as EmailTemplateEntity;
 
     afterEach(() => {
       emailTemplateModel.create.mockClear();
@@ -116,7 +124,8 @@ describe('OrmEmailTemplateRepository', () => {
     it('should create an email template', async () => {
       // Arrange.
       emailTemplateModel.findOneBy.mockResolvedValue(null);
-      emailTemplateModel.create.mockResolvedValue(emailTemplate);
+      emailTemplateModel.create.mockResolvedValue(entity);
+      emailTemplateModel.save.mockResolvedValue(template);
 
       // Act.
       await repository.create(createEmailTemplateDto);
@@ -128,14 +137,14 @@ describe('OrmEmailTemplateRepository', () => {
     it('should yield the created email template', async () => {
       // Arrange.
       emailTemplateModel.findOneBy.mockResolvedValue(null);
-      emailTemplateModel.create.mockResolvedValue(emailTemplate);
-      emailTemplateModel.save.mockResolvedValue(emailTemplate);
+      emailTemplateModel.create.mockResolvedValue(entity);
+      emailTemplateModel.save.mockResolvedValue(template);
 
       // Act.
       const func = repository.create.bind(repository, createEmailTemplateDto);
 
       // Assert.
-      await expect(func()).resolves.toEqual(emailTemplate);
+      await expect(func()).resolves.toEqual(template);
     });
 
     it('should throw an "ExistsException" if an email template already exists', async () => {
@@ -143,9 +152,7 @@ describe('OrmEmailTemplateRepository', () => {
       const expectedResult = new ExistsException(
         `Email Template ${createEmailTemplateDto.name} already exists!`,
       );
-      emailTemplateModel.findOneBy.mockResolvedValue({
-        name: 'test',
-      } as EmailTemplateEntity);
+      emailTemplateModel.findOneBy.mockResolvedValue(entity);
 
       // Act.
       const func = repository.create.bind(repository, createEmailTemplateDto);
@@ -163,9 +170,6 @@ describe('OrmEmailTemplateRepository', () => {
         title: 'string',
       },
     };
-    const emailTemplate = {
-      ...updateEmailTemplateDto,
-    };
 
     afterEach(() => {
       emailTemplateModel.preload.mockClear();
@@ -174,7 +178,8 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should update an email template', async () => {
       // Arrange.
-      emailTemplateModel.preload.mockResolvedValue(emailTemplate);
+      emailTemplateModel.preload.mockResolvedValue(entity);
+      emailTemplateModel.save.mockResolvedValue(entity);
 
       // Act.
       await repository.update(name, updateEmailTemplateDto);
@@ -185,8 +190,8 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should yield the updated email template', async () => {
       // Arrange.
-      emailTemplateModel.preload.mockResolvedValue(emailTemplate);
-      emailTemplateModel.save.mockResolvedValue(emailTemplate);
+      emailTemplateModel.preload.mockResolvedValue(entity);
+      emailTemplateModel.save.mockResolvedValue(entity);
 
       // Act.
       const func = repository.update.bind(
@@ -196,7 +201,7 @@ describe('OrmEmailTemplateRepository', () => {
       );
 
       // Assert.
-      await expect(func()).resolves.toEqual(emailTemplate);
+      await expect(func()).resolves.toEqual(template);
     });
 
     it('should throw a "MissingException" if the repository return null/undefined', async () => {
@@ -216,7 +221,6 @@ describe('OrmEmailTemplateRepository', () => {
 
   describe('remove()', () => {
     const name = 'test';
-    const emailTemplate = {};
 
     afterEach(() => {
       emailTemplateModel.remove.mockClear();
@@ -224,7 +228,7 @@ describe('OrmEmailTemplateRepository', () => {
 
     it('should remove an email template', async () => {
       // Arrange.
-      emailTemplateModel.findOneBy.mockResolvedValue(emailTemplate);
+      emailTemplateModel.findOneBy.mockResolvedValue(entity);
       emailTemplateModel.remove.mockResolvedValue(null);
 
       // Act.

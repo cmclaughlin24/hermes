@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../../test/helpers/database.helper';
+} from '../../../test/helpers/database.helper';
 import { OrmPushTemplateRepository } from './orm-push-template.repository';
 import { PushTemplateEntity } from './entities/push-template.entity';
 import { PushActionEntity } from './entities/push-action.entity';

@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JobState } from 'bullmq';
@@ -7,10 +9,12 @@ import {
   MockRepository,
   createMockDataSource,
   createMockRepository,
-} from '../../../../test/helpers/database.helper';
+} from '../../../test/helpers/database.helper';
 import { NotificationAttemptEntity } from './entities/notification-attempt.entity';
 import { NotificationLogEntity } from './entities/notification-log.entity';
 import { OrmNotificationLogRepository } from './orm-notification-log.repository';
+import { NotificationLogProfile } from '../profiles/notification-log.profile';
+import { NotificationLog } from '../domain/notification-log';
 
 describe('OrmNotificationLogRepository', () => {
   let repository: OrmNotificationLogRepository;
@@ -18,20 +22,37 @@ describe('OrmNotificationLogRepository', () => {
   let notificationAttemptRepository: MockRepository;
   let dataSource: MockDataSource;
 
-  const notificationLog: NotificationLogEntity = {
-    id: 'test1',
-    job: JSON.stringify({}),
-    state: 'completed',
-    attempts: 0,
-    data: JSON.stringify({}),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as NotificationLogEntity;
+  const entity = new NotificationLogEntity();
+  entity.id = 'test1';
+  entity.job = JSON.stringify({});
+  entity.state = 'completed';
+  entity.attempts = 0;
+  entity.data = JSON.stringify({});
+  entity.addedAt = new Date();
+  entity.finishedAt = new Date();
+  entity.createdAt = new Date();
+  entity.updatedAt = new Date();
+  entity.attemptHistory = [];
+
+  const log = new NotificationLog();
+  log.id = entity.id;
+  log.job = entity.job;
+  log.state = entity.state;
+  log.attempts = entity.attempts;
+  log.data = JSON.parse(entity.data);
+  log.addedAt = entity.addedAt;
+  log.finishedAt = entity.finishedAt;
+  entity.finishedAt = new Date();
+  log.createdAt = entity.createdAt;
+  log.updatedAt = entity.updatedAt;
+  log.attemptHistory = [];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [AutomapperModule.forRoot({ strategyInitializer: classes() })],
       providers: [
         OrmNotificationLogRepository,
+        NotificationLogProfile,
         {
           provide: getRepositoryToken(NotificationLogEntity),
           useValue: createMockRepository<NotificationLogEntity>(),
@@ -70,8 +91,8 @@ describe('OrmNotificationLogRepository', () => {
 
     it('should yield a list of notification logs', async () => {
       // Arrange.
-      const expectedResult: NotificationLogEntity[] = [notificationLog];
-      notificationLogRepository.find.mockResolvedValue(expectedResult);
+      const expectedResult = [log];
+      notificationLogRepository.find.mockResolvedValue([entity]);
 
       // Act/Assert.
       await expect(repository.findAll([], [])).resolves.toEqual(expectedResult);
@@ -84,7 +105,7 @@ describe('OrmNotificationLogRepository', () => {
         where: { job: In(jobs) },
         relations: { attemptHistory: true },
       };
-      notificationLogRepository.find.mockResolvedValue([notificationLog]);
+      notificationLogRepository.find.mockResolvedValue([entity]);
 
       // Act.
       await repository.findAll(jobs, []);
@@ -102,7 +123,7 @@ describe('OrmNotificationLogRepository', () => {
         where: { state: In(states) },
         relations: { attemptHistory: true },
       };
-      notificationLogRepository.find.mockResolvedValue([notificationLog]);
+      notificationLogRepository.find.mockResolvedValue([entity]);
 
       // Act.
       await repository.findAll([], states);
@@ -129,12 +150,10 @@ describe('OrmNotificationLogRepository', () => {
 
     it('should yield a notification log', async () => {
       // Arrange.
-      notificationLogRepository.findOne.mockResolvedValue(notificationLog);
+      notificationLogRepository.findOne.mockResolvedValue(entity);
 
       // Act/Assert.
-      await expect(repository.findOne(notificationLog.id)).resolves.toEqual(
-        notificationLog,
-      );
+      await expect(repository.findOne(entity.id)).resolves.toEqual(log);
     });
 
     it('should yield null if the repository return null/undefined', async () => {
@@ -142,7 +161,7 @@ describe('OrmNotificationLogRepository', () => {
       notificationLogRepository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
-      await expect(repository.findOne(notificationLog.id)).resolves.toBeNull();
+      await expect(repository.findOne(entity.id)).resolves.toBeNull();
     });
   });
 
