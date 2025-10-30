@@ -4,10 +4,10 @@ import { Cache } from 'cache-manager';
 import { EmailService } from '../../src/common/services/email/email.service';
 import { PhoneService } from '../../src/common/services/phone/phone.service';
 import { PushNotificationService } from '../../src/common/services/push-notification/push-notification.service';
-import { EmailTemplateService } from '../../src/resources/email-template/email-template.service';
-import { NotificationLogService } from '../../src/resources/notification-log/notification-log.service';
-import { PhoneTemplateService } from '../../src/resources/phone-template/phone-template.service';
-import { PushTemplateService } from '../../src/resources/push-template/push-template.service';
+import { EmailTemplateService } from '../../src/email-template/email-template.service';
+import { NotificationLogService } from '../../src/notification-log/notification-log.service';
+import { PhoneTemplateService } from '../../src/phone-template/phone-template.service';
+import { PushTemplateService } from '../../src/push-template/push-template.service';
 
 export type MockCacheStore = Partial<Record<keyof Cache, jest.Mock>>;
 

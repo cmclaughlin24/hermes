@@ -13,17 +13,17 @@ import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateController } from './email-template.controller';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplateEntity } from './repository/entities/email-template.entity';
+import { EmailTemplate } from './domain/email-template';
 
 describe('EmailTemplateController', () => {
   let controller: EmailTemplateController;
   let service: MockEmailTemplateService;
 
-  const emailTemplate: EmailTemplateEntity = {
+  const emailTemplate: EmailTemplate = {
     name: 'test',
     template: '<h1>Unit Testing</h1>',
     context: null,
-  } as EmailTemplateEntity;
+  } as EmailTemplate;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,7 +51,7 @@ describe('EmailTemplateController', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: EmailTemplateEntity[] = [emailTemplate];
+      const expectedResult: EmailTemplate[] = [emailTemplate];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -117,7 +117,7 @@ describe('EmailTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<EmailTemplateEntity>(
+      const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully created email template ${emailTemplate.name}!`,
         emailTemplate,
       );
@@ -149,7 +149,7 @@ describe('EmailTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<EmailTemplateEntity>(
+      const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully updated email template ${emailTemplate.name}!`,
         emailTemplate,
       );
@@ -181,7 +181,7 @@ describe('EmailTemplateController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<EmailTemplateEntity>(
+      const expectedResult = new ApiResponseDto<EmailTemplate>(
         `Successfully deleted email template ${emailTemplate.name}!`,
       );
       service.remove.mockResolvedValue(null);

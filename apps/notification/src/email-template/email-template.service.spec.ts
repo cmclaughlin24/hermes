@@ -6,8 +6,8 @@ import { createCacheStoreMock } from '../../test/helpers/provider.helper';
 import { CreateEmailTemplateDto } from './dto/create-email-template.dto';
 import { UpdateEmailTemplateDto } from './dto/update-email-template.dto';
 import { EmailTemplateService } from './email-template.service';
-import { EmailTemplateEntity } from './repository/entities/email-template.entity';
 import { EmailTemplateRepository } from './repository/email-template.repository';
+import { EmailTemplate } from './domain/email-template';
 
 type MockEmailTemplateRepository = Partial<
   Record<keyof EmailTemplateRepository, jest.Mock>
@@ -57,12 +57,12 @@ describe('EmailTemplateService', () => {
 
     it('should yield a list of email templates', async () => {
       // Arrange.
-      const expectedResult: EmailTemplateEntity[] = [
+      const expectedResult: EmailTemplate[] = [
         {
           name: 'test',
           template: '<h1>Unit Testing</h1>',
           context: null,
-        } as EmailTemplateEntity,
+        } as EmailTemplate,
       ];
       emailTemplateRepository.findAll.mockResolvedValue(expectedResult);
 
@@ -86,11 +86,11 @@ describe('EmailTemplateService', () => {
 
     it('should yield an email template', async () => {
       // Arrange.
-      const expectedResult: EmailTemplateEntity = {
+      const expectedResult: EmailTemplate = {
         name: 'test',
         template: '<h1>Unit Testing</h1>',
         context: null,
-      } as EmailTemplateEntity;
+      } as EmailTemplate;
       emailTemplateRepository.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -118,7 +118,7 @@ describe('EmailTemplateService', () => {
         title: 'string',
       },
     };
-    const emailTemplate = { ...createEmailTemplateDto } as EmailTemplateEntity;
+    const emailTemplate = { ...createEmailTemplateDto } as EmailTemplate;
 
     afterEach(() => {
       emailTemplateRepository.create.mockClear();

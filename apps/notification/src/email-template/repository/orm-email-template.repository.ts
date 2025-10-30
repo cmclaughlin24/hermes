@@ -78,7 +78,6 @@ export class OrmEmailTemplateRepository implements EmailTemplateRepository {
   }
 
   private _toDomain(entity: EmailTemplateEntity): EmailTemplate {
-    console.log(entity);
     return this.mapper.map(entity, EmailTemplateEntity, EmailTemplate);
   }
 }

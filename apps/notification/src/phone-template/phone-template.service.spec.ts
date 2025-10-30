@@ -9,8 +9,8 @@ import { createCacheStoreMock } from '../../test/helpers/provider.helper';
 import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplateService } from './phone-template.service';
-import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
 import { PhoneTemplateRepository } from './repository/phone-template.repository';
+import { PhoneTemplate } from './domain/phone-template';
 
 type MockPhoneTemplateRepository = Partial<
   Record<keyof PhoneTemplateRepository, jest.Mock>
@@ -58,7 +58,7 @@ describe('PhoneTemplateService', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplateEntity;
+    } as PhoneTemplate;
 
     afterEach(() => {
       phoneTemplateRepository.findAll.mockClear();
@@ -87,7 +87,7 @@ describe('PhoneTemplateService', () => {
       name: 'unit-test',
       deliveryMethod: DeliveryMethods.SMS,
       template: '<Response><Say>Hello There!</Say></Response>',
-    } as PhoneTemplateEntity;
+    } as PhoneTemplate;
 
     afterEach(() => {
       phoneTemplateRepository.findOne.mockClear();
@@ -121,7 +121,7 @@ describe('PhoneTemplateService', () => {
       template: '<Response><Say>Hello There!</Say></Response>',
       context: null,
     };
-    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplateEntity;
+    const phoneTemplate = { ...createPhoneTemplateDto } as PhoneTemplate;
 
     afterEach(() => {
       phoneTemplateRepository.create.mockClear();

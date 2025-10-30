@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { IamModule, IamModuleOptions } from '@hermes/iam';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,6 +23,9 @@ describe('[Feature] Push Template', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        AutomapperModule.forRoot({
+          strategyInitializer: classes(),
+        }),
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: `${process.cwd()}/env/e2e.env`,

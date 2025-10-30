@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bullmq';
 import { NotificationLogService } from './notification-log.service';
-import { NotificationLogEntity } from './repository/entities/notification-log.entity';
 import { NotificationLogRepository } from './repository/notification-log.repository';
+import { NotificationLog } from './domain/notification-log';
 
 type MockNotificationLogRepository = Partial<
   Record<keyof NotificationLogRepository, jest.Mock>
@@ -20,15 +20,15 @@ describe('NotificationLogService', () => {
   let service: NotificationLogService;
   let notificationLogRepository: MockNotificationLogRepository;
 
-  const notificationLog: NotificationLogEntity = {
+  const notificationLog: NotificationLog = {
     id: 'test1',
     job: JSON.stringify({}),
     state: 'completed',
     attempts: 0,
-    data: JSON.stringify({}),
+    data: {},
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as NotificationLogEntity;
+  } as NotificationLog;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -58,7 +58,7 @@ describe('NotificationLogService', () => {
 
     it('should yield a list of notification logs', async () => {
       // Arrange.
-      const expectedResult: NotificationLogEntity[] = [notificationLog];
+      const expectedResult: NotificationLog[] = [notificationLog];
       notificationLogRepository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.

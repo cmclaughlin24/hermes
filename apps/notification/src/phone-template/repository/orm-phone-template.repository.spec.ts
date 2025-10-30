@@ -8,9 +8,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   MockRepository,
   createMockRepository,
-} from '../../../../test/helpers/database.helper';
-import { CreatePhoneTemplateDto } from '../../../resources/phone-template/dto/create-phone-template.dto';
-import { UpdatePhoneTemplateDto } from '../../../resources/phone-template/dto/update-phone-template.dto';
+} from '../../../test/helpers/database.helper';
+import { CreatePhoneTemplateDto } from '../dto/create-phone-template.dto';
+import { UpdatePhoneTemplateDto } from '../dto/update-phone-template.dto';
 import { PhoneTemplateEntity } from './entities/phone-template.entity';
 import { OrmPhoneTemplateRepository } from './orm-phone-template.repository';
 

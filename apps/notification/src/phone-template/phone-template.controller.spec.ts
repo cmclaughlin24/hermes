@@ -14,7 +14,7 @@ import { CreatePhoneTemplateDto } from './dto/create-phone-template.dto';
 import { UpdatePhoneTemplateDto } from './dto/update-phone-template.dto';
 import { PhoneTemplateController } from './phone-template.controller';
 import { PhoneTemplateService } from './phone-template.service';
-import { PhoneTemplateEntity } from './repository/entities/phone-template.entity';
+import { PhoneTemplate } from './domain/phone-template';
 
 describe('PhoneTemplateController', () => {
   let controller: PhoneTemplateController;
@@ -24,7 +24,7 @@ describe('PhoneTemplateController', () => {
     name: 'unit-test',
     deliveryMethod: DeliveryMethods.SMS,
     template: '<Response><Say>Hello There!</Say></Response>',
-  } as PhoneTemplateEntity;
+  } as PhoneTemplate;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

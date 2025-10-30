@@ -1,11 +1,11 @@
 import { ExistsException, MissingException } from '@hermes/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCacheStoreMock } from '../../../test/helpers/provider.helper';
+import { createCacheStoreMock } from '../../test/helpers/provider.helper';
 import { CreatePushTemplateDto } from './dto/create-push-template.dto';
 import { PushTemplateService } from './push-template.service';
 import { PushTemplateRepository } from './repository/push-template.repository';
-import { PushTemplateEntity } from './repository/entities/push-template.entity';
+import { PushTemplate } from './domain/push-template';
 
 type MockPushTemplateRepository = Partial<
   Record<keyof PushTemplateRepository, jest.Mock>
@@ -55,10 +55,10 @@ describe('PushTemplateService', () => {
 
     it('should yield a list of push notification templates', async () => {
       // Arrange.
-      const expectedResult: PushTemplateEntity[] = [
+      const expectedResult: PushTemplate[] = [
         {
           title: 'unit-test',
-        } as PushTemplateEntity,
+        } as PushTemplate,
       ];
       pushTemplateRepository.findAll.mockResolvedValue(expectedResult);
 
@@ -82,10 +82,10 @@ describe('PushTemplateService', () => {
 
     it('should yield a push notification template', async () => {
       // Arrange.
-      const expectedResult: PushTemplateEntity = {
+      const expectedResult: PushTemplate = {
         name: 'unit-test',
         title: 'Unit Test',
-      } as PushTemplateEntity;
+      } as PushTemplate;
       pushTemplateRepository.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -111,7 +111,7 @@ describe('PushTemplateService', () => {
     const pushTemplate = {
       name: 'unit-test',
       title: 'Unit Test',
-    } as PushTemplateEntity;
+    } as PushTemplate;
 
     afterEach(() => {
       pushTemplateRepository.create.mockClear();

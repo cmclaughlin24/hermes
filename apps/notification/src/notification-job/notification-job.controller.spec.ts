@@ -2,9 +2,9 @@ import { ApiResponseDto } from '@hermes/common';
 import { HttpException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job } from 'bullmq';
-import { CreateEmailNotificationDto } from '../../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
 import { NotificationJobController } from './notification-job.controller';
 import { NotificationJobService } from './notification-job.service';
 
