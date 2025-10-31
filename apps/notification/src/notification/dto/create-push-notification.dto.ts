@@ -13,8 +13,9 @@ import {
   IsTimeZone,
   ValidateNested,
 } from 'class-validator';
+import { NotificationDto } from '../interfaces/notification-dto.interface';
 
-export class CreatePushNotificationDto {
+export class CreatePushNotificationDto implements NotificationDto {
   @ApiProperty({
     description:
       'A unique identifier that can be sent to remove subscription endpoint ' +

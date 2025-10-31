@@ -9,7 +9,6 @@ import * as Joi from 'joi';
 import { join } from 'path';
 import './common/helpers/handlebar.helpers';
 import { bullFactory } from './config/bull.config';
-import { ConsumerModule } from './consumers/consumer.module';
 import { CoreModule } from './core/core.module';
 import { EmailTemplateModule } from './email-template/email-template.module';
 import { HealthModule } from './health/health.module';
@@ -90,7 +89,6 @@ import { PushTemplateModule } from './push-template/push-template.module';
       }),
     }),
     CoreModule.forRoot({ driver: 'postgres' }),
-    ConsumerModule,
     HealthModule,
     EmailTemplateModule,
     NotificationModule,

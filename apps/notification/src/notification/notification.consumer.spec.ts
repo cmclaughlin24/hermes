@@ -10,15 +10,15 @@ import {
   createNotificationLogServiceMock,
   createPhoneServiceMock,
   createPushNotificationServiceMock,
-} from '../../../test/helpers/provider.helper';
-import { CreateEmailNotificationDto } from '../../notification/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../../notification/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../../notification/dto/create-push-notification.dto';
-import { EmailService } from '../../common/services/email/email.service';
-import { PhoneService } from '../../common/services/phone/phone.service';
-import { PushNotificationService } from '../../common/services/push-notification/push-notification.service';
-import { NotificationLogService } from '../../notification-log/notification-log.service';
+} from '../../test/helpers/provider.helper';
+import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationConsumer } from './notification.consumer';
+import { EmailService } from '../common/services/email/email.service';
+import { PhoneService } from '../common/services/phone/phone.service';
+import { NotificationLogService } from '../notification-log/notification-log.service';
+import { PushNotificationService } from '../common/services/push-notification/push-notification.service';
 
 describe('NotificationConsumer', () => {
   let service: NotificationConsumer;

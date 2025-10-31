@@ -1,4 +1,4 @@
-import { DeliveryMethods, MissingException, Platform } from '@hermes/common';
+import { MissingException, Platform } from '@hermes/common';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,12 +10,12 @@ import * as webpush from 'web-push';
 import { PushTemplateService } from '../../push-template/push-template.service';
 import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
 import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 @Injectable()
 export class PushNotificationStrategy
   implements NotifierStrategy<CreatePushNotificationDto>
 {
-  readonly type: DeliveryMethods = DeliveryMethods.PUSH;
   private readonly logger = new Logger(PushNotificationStrategy.name);
   private removeSubscriberUrl: string;
   private subscriberApiKeyHeader: string;
@@ -72,7 +72,7 @@ export class PushNotificationStrategy
       const validationErrors = errors
         .map((error) => error.toString())
         .join(', ');
-      throw new Error(validationErrors);
+      throw new DtoValidationException(validationErrors);
     }
 
     return dto;

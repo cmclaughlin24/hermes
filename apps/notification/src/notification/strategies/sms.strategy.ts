@@ -8,7 +8,7 @@ import { PhoneTemplateService } from '../../phone-template/phone-template.servic
 
 @Injectable()
 export class SmsStrategy extends PhoneStrategy {
-  type: DeliveryMethods.CALL | DeliveryMethods.SMS = DeliveryMethods.SMS;
+  readonly type: DeliveryMethods.SMS = DeliveryMethods.SMS;
 
   constructor(
     twilioService: TwilioService,

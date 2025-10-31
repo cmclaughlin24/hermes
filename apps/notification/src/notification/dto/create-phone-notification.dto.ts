@@ -5,10 +5,11 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
-  IsTimeZone
+  IsTimeZone,
 } from 'class-validator';
+import { NotificationDto } from '../interfaces/notification-dto.interface';
 
-export class CreatePhoneNotificationDto {
+export class CreatePhoneNotificationDto implements NotificationDto {
   @ApiProperty({
     description: 'Recipient of the notification',
     example: '+19999999999',
@@ -48,7 +49,8 @@ export class CreatePhoneNotificationDto {
   body?: string;
 
   @ApiProperty({
-    description: 'Name of phone template (overrides "body" property if provided)',
+    description:
+      'Name of phone template (overrides "body" property if provided)',
     example: 'order-confirmation',
     required: false,
   })

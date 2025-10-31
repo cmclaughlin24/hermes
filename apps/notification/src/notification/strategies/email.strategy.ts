@@ -1,4 +1,4 @@
-import { DeliveryMethods, MissingException } from '@hermes/common';
+import { MissingException } from '@hermes/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -8,12 +8,12 @@ import { SentMessageInfo } from 'nodemailer';
 import { EmailTemplateService } from '../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
 import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 @Injectable()
 export class EmailStrategy
   implements NotifierStrategy<CreateEmailNotificationDto>
 {
-  readonly type: DeliveryMethods = DeliveryMethods.EMAIL;
   private readonly logger = new Logger(EmailStrategy.name);
 
   constructor(
@@ -54,7 +54,7 @@ export class EmailStrategy
       const validationErrors = errors
         .map((error) => error.toString())
         .join(', ');
-      throw new Error(validationErrors);
+      throw new DtoValidationException(validationErrors);
     }
 
     return createEmailNotificationDto;

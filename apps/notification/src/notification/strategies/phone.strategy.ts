@@ -7,6 +7,7 @@ import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
 import { validateOrReject } from 'class-validator';
 import { Logger } from '@nestjs/common';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 export abstract class PhoneStrategy
   implements NotifierStrategy<CreatePhoneNotificationDto>
@@ -43,7 +44,7 @@ export abstract class PhoneStrategy
       const validationErrors = errors
         .map((error) => error.toString())
         .join(', ');
-      throw new Error(validationErrors);
+      throw new DtoValidationException(validationErrors);
     }
 
     return createPhoneNotificationDto;
