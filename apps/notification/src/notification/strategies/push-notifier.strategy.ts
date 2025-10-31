@@ -3,17 +3,16 @@ import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UnrecoverableError } from 'bullmq';
-import { validateOrReject } from 'class-validator';
-import Handlebars from 'handlebars';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
-import { PushTemplateService } from '../../../push-template/push-template.service';
-import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
-import { CreateNotificationDto } from '../../interfaces/create-notification-dto.interface';
+import { PushTemplateService } from '../../push-template/push-template.service';
+import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
+import { BaseNotifierStrategy } from './base-notifier.strategy';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 @Injectable()
-export class PushNotificationService implements CreateNotificationDto {
-  private readonly logger = new Logger(PushNotificationService.name);
+export class PushNotifierStrategy extends BaseNotifierStrategy<CreatePushNotificationDto> {
+  private readonly logger = new Logger(PushNotifierStrategy.name);
   private removeSubscriberUrl: string;
   private subscriberApiKeyHeader: string;
   private subscriberApiKey: string;
@@ -23,6 +22,7 @@ export class PushNotificationService implements CreateNotificationDto {
     private readonly httpService: HttpService,
     configService: ConfigService,
   ) {
+    super();
     webpush.setVapidDetails(
       configService.get('VAPID_SUBJECT'),
       configService.get('VAPID_PUBLIC_KEY'),
@@ -35,15 +35,13 @@ export class PushNotificationService implements CreateNotificationDto {
     this.subscriberApiKey = configService.get('SUBSCRIBER_API_KEY');
   }
 
-  async sendPushNotification(
-    createPushNotificationDto: CreatePushNotificationDto,
-  ) {
-    switch (createPushNotificationDto.platform) {
+  async notify(dto: CreatePushNotificationDto) {
+    switch (dto.platform) {
       case Platform.WEB:
-        return this._webPushNotification(createPushNotificationDto);
+        return this._webPushNotification(dto);
       default:
         throw new UnrecoverableError(
-          `Invalid Platform: ${createPushNotificationDto.platform} is not an avaliable platform`,
+          `Invalid Platform: ${dto.platform} is not an avaliable platform`,
         );
     }
   }
@@ -57,36 +55,27 @@ export class PushNotificationService implements CreateNotificationDto {
       throw new Error('Payload must be an object');
     }
 
-    const createPushNotificationDto = new CreatePushNotificationDto();
-    createPushNotificationDto.subscriberId = data.subscriberId;
-    createPushNotificationDto.subscription = data.subscription;
-    createPushNotificationDto.notification = data.notification;
-    createPushNotificationDto.template = data.template;
-    createPushNotificationDto.platform = data.platform;
-    createPushNotificationDto.context = data.context;
+    const dto = new CreatePushNotificationDto();
+    dto.subscriberId = data.subscriberId;
+    dto.subscription = data.subscription;
+    dto.notification = data.notification;
+    dto.template = data.template;
+    dto.platform = data.platform;
+    dto.context = data.context;
 
-    try {
-      await validateOrReject(createPushNotificationDto);
-    } catch (errors) {
-      const validationErrors = errors
-        .map((error) => error.toString())
-        .join(', ');
-      throw new Error(validationErrors);
-    }
+    await this.validateOrReject(dto);
 
-    return createPushNotificationDto;
+    return dto;
   }
 
-  async createPushNotificationTemplate(
-    createPushNotificationDto: CreatePushNotificationDto,
-  ) {
+  async createTemplate(createPushNotificationDto: CreatePushNotificationDto) {
     const templateName = createPushNotificationDto.template;
     let notification = createPushNotificationDto.notification;
 
     if (templateName) {
       notification &&
         this.logger.warn(
-          `[${this.createPushNotificationTemplate.name}] ${CreatePushNotificationDto.name} contains both 'notification' and 'template' keys, default to 'template' key`,
+          `[${this.createTemplate.name}] ${CreatePushNotificationDto.name} contains both 'notification' and 'template' keys, default to 'template' key`,
         );
 
       const pushTemplate = await this.pushTemplateService.findOne(templateName);
@@ -101,26 +90,24 @@ export class PushNotificationService implements CreateNotificationDto {
     }
 
     if (!notification) {
-      throw new Error(
+      throw new DtoValidationException(
         `Invalid Argument: ${CreatePushNotificationDto.name} must have either 'notification' or 'template' keys present`,
       );
     }
 
-    const titleTemplate = Handlebars.compile(notification.title);
-    notification.title = titleTemplate({
+    notification.title = this.compileTemplate(notification.title, {
       timeZone: createPushNotificationDto.timeZone,
       ...createPushNotificationDto.context,
     });
 
     if (notification.body) {
-      const bodyTemplate = Handlebars.compile(notification.body);
-      notification.body = bodyTemplate({
+      notification.body = this.compileTemplate(notification.body, {
         timeZone: createPushNotificationDto.timeZone,
         ...createPushNotificationDto.context,
       });
     }
 
-    // Note: Nullish keys removed from the notification object so that Angular and other frameworks
+    // NOTE: Nullish keys removed from the notification object so that Angular and other frameworks
     //       with out the box service worker offerings do not attempt to convert properties.
     for (const key in notification) {
       !notification[key] && delete notification[key];

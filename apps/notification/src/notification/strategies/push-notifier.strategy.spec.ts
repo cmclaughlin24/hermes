@@ -13,21 +13,21 @@ import {
   MockPushTemplateService,
   createConfigServiceMock,
   createPushTemplateServiceMock,
-} from '../../../../test/helpers/provider.helper';
-import { PushTemplateService } from '../../../push-template/push-template.service';
-import { CreatePushNotificationDto } from '../../dto/create-push-notification.dto';
-import { PushNotificationService } from './push-notification.service';
+} from '../../../test/helpers/provider.helper';
+import { PushTemplateService } from '../../push-template/push-template.service';
+import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
+import { PushNotifierStrategy } from './push-notifier.strategy';
 
 jest.mock('web-push');
 
-describe('PushNotificationService', () => {
-  let service: PushNotificationService;
+describe('PushNotifierStrategy', () => {
+  let strategy: PushNotifierStrategy;
   let pushTemplateService: MockPushTemplateService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PushNotificationService,
+        PushNotifierStrategy,
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
@@ -43,16 +43,16 @@ describe('PushNotificationService', () => {
       ],
     }).compile();
 
-    service = module.get<PushNotificationService>(PushNotificationService);
+    strategy = module.get<PushNotifierStrategy>(PushNotifierStrategy);
     pushTemplateService =
       module.get<MockPushTemplateService>(PushTemplateService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(strategy).toBeDefined();
   });
 
-  describe('sendPushNotification()', () => {
+  describe('notify()', () => {
     it('should send a push notification (web)', async () => {
       // Arrange.
       const createPushNotificationDto: CreatePushNotificationDto = {
@@ -63,7 +63,7 @@ describe('PushNotificationService', () => {
       };
 
       // Act.
-      await service.sendPushNotification(createPushNotificationDto);
+      await strategy.notify(createPushNotificationDto);
 
       // Assert.
       expect(webpush.sendNotification).toHaveBeenCalled();
@@ -82,9 +82,9 @@ describe('PushNotificationService', () => {
       );
 
       // Act/Assert.
-      await expect(
-        service.sendPushNotification(createPushNotificationDto),
-      ).rejects.toEqual(expectedResult);
+      await expect(strategy.notify(createPushNotificationDto)).rejects.toEqual(
+        expectedResult,
+      );
     });
   });
 
@@ -107,7 +107,7 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).resolves.toBeInstanceOf(CreatePushNotificationDto);
     });
 
@@ -116,7 +116,7 @@ describe('PushNotificationService', () => {
       const expectedResult = new Error('Payload cannot be null/undefined');
 
       // Act/Assert.
-      await expect(service.createNotificationDto(null)).rejects.toEqual(
+      await expect(strategy.createNotificationDto(null)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -126,7 +126,7 @@ describe('PushNotificationService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto('unit-test')).rejects.toEqual(
+      await expect(strategy.createNotificationDto('unit-test')).rejects.toEqual(
         expectedResult,
       );
     });
@@ -136,7 +136,7 @@ describe('PushNotificationService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto([])).rejects.toEqual(
+      await expect(strategy.createNotificationDto([])).rejects.toEqual(
         expectedResult,
       );
     });
@@ -156,12 +156,12 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).rejects.toBeInstanceOf(Error);
     });
   });
 
-  describe('createPushNotificationTemplate()', () => {
+  describe('createTemplate()', () => {
     afterEach(() => {
       pushTemplateService.findOne.mockClear();
     });
@@ -194,7 +194,7 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPushNotificationTemplate(createPushNotificationDto),
+        strategy.createTemplate(createPushNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -230,7 +230,7 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPushNotificationTemplate(createPushNotificationDto),
+        strategy.createTemplate(createPushNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -252,7 +252,7 @@ describe('PushNotificationService', () => {
       });
 
       // Act.
-      await service.createPushNotificationTemplate(createPushNotificationDto);
+      await strategy.createTemplate(createPushNotificationDto);
 
       // Assert.
       expect(pushTemplateService.findOne).toHaveBeenCalledWith(template);
@@ -277,7 +277,7 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPushNotificationTemplate(createPushNotificationDto),
+        strategy.createTemplate(createPushNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
 
@@ -294,7 +294,7 @@ describe('PushNotificationService', () => {
 
       // Act/Assert.
       await expect(
-        service.createPushNotificationTemplate(createPushNotificationDto),
+        strategy.createTemplate(createPushNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
   });
