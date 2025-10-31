@@ -71,11 +71,11 @@ export class NotificationConsumer extends WorkerHost {
     } catch (error) {
       if (error instanceof NotifierStrategyException) {
         throw new UnrecoverableError(
-          `Invalid Delivery Method: ${job.name} is not an available delievery method`,
+          `${logPrefix}: ${job.name} is not an available delievery method`,
         );
       } else if (error instanceof DtoValidationException) {
         throw new UnrecoverableError(
-          `Invalid payload (validation errors) ${error.message}`,
+          `${logPrefix}: Invalid payload (validation errors) ${error.message}`,
         );
       }
 
