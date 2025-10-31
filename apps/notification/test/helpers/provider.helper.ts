@@ -5,10 +5,11 @@ import { EmailTemplateService } from '../../src/email-template/email-template.se
 import { NotificationLogService } from '../../src/notification-log/notification-log.service';
 import { PhoneTemplateService } from '../../src/phone-template/phone-template.service';
 import { PushTemplateService } from '../../src/push-template/push-template.service';
-import { EmailNotifierStrategy } from 'apps/notification/src/notification/strategies/email-notifier.strategy';
-import { CallNotifierStrategy } from 'apps/notification/src/notification/strategies/call-notifier.strategy';
-import { PushNotifierStrategy } from 'apps/notification/src/notification/strategies/push-notifier.strategy';
-import { SmsNotifierStrategy } from 'apps/notification/src/notification/strategies/sms-notifier.strategy';
+import { EmailNotifierStrategy } from '../..//src/notification/strategies/email-notifier.strategy';
+import { CallNotifierStrategy } from '../..//src/notification/strategies/call-notifier.strategy';
+import { PushNotifierStrategy } from '../..//src/notification/strategies/push-notifier.strategy';
+import { SmsNotifierStrategy } from '../..//src/notification/strategies/sms-notifier.strategy';
+import { NotifierStrategyService } from '../..//src/notification/notifier-strategy.service';
 
 export type MockCacheStore = Partial<Record<keyof Cache, jest.Mock>>;
 
@@ -59,6 +60,15 @@ export const createPushTemplateServiceMock = (): MockPushTemplateService => ({
   update: jest.fn(),
   remove: jest.fn(),
 });
+
+export type MockNotifierStrategyService = Partial<
+  Record<keyof NotifierStrategyService, jest.Mock>
+>;
+
+export const createNotifierStrategyServiceMock =
+  (): MockNotifierStrategyService => ({
+    get: jest.fn(),
+  });
 
 export type MockEmailNotifierStrategy = Partial<
   Record<keyof EmailNotifierStrategy, jest.Mock>

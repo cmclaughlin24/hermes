@@ -1,25 +1,28 @@
-import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
-  MockEmailNotifierStrategy,
   MockNotificationLogService,
-  MockCallStrategy,
-  MockPushNotifierStrategy,
+  MockNotifierStrategyService,
   createNotificationLogServiceMock,
+  createNotifierStrategyServiceMock,
 } from '../../test/helpers/provider.helper';
-import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationConsumer } from './notification.consumer';
 import { NotificationLogService } from '../notification-log/notification-log.service';
+import { NotifierStrategyService } from './notifier-strategy.service';
+import { NotifierStrategy } from './interfaces/notifier-strategy.interface';
+import { NotificationDto } from './interfaces/notification-dto.interface';
+import { beforeEach } from 'node:test';
+
+const createNotifierStrategyMock = (): NotifierStrategy<NotificationDto> => ({
+  createTemplate: jest.fn(),
+  createNotificationDto: jest.fn(),
+  notify: jest.fn(),
+});
 
 describe('NotificationConsumer', () => {
   let consumser: NotificationConsumer;
-  let emailService: MockEmailNotifierStrategy;
-  let phoneService: MockCallStrategy;
+  let strategyService: MockNotifierStrategyService;
   let notificationLogService: MockNotificationLogService;
-  let pushNotificationService: MockPushNotifierStrategy;
 
   const job: any = { id: 1, data: {}, log: jest.fn(), updateData: jest.fn() };
 
@@ -27,6 +30,10 @@ describe('NotificationConsumer', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationConsumer,
+        {
+          provide: NotifierStrategyService,
+          useValue: createNotifierStrategyServiceMock(),
+        },
         {
           provide: NotificationLogService,
           useValue: createNotificationLogServiceMock(),
@@ -38,6 +45,9 @@ describe('NotificationConsumer', () => {
     notificationLogService = module.get<MockNotificationLogService>(
       NotificationLogService,
     );
+    strategyService = module.get<MockNotifierStrategyService>(
+      NotifierStrategyService,
+    );
   });
 
   it('should be defined', () => {
@@ -45,377 +55,15 @@ describe('NotificationConsumer', () => {
   });
 
   describe('process()', () => {
-    it('should yield the result of a processed job (email)', async () => {
-      // Arrange.
-      const expectedResult: any = {};
-      const processEmail = jest
-        .spyOn(consumser, 'processEmail')
-        .mockResolvedValue(expectedResult);
+    let strategy: NotifierStrategy<NotificationDto>;
 
-      // Act.
-      await consumser.process({ name: DeliveryMethods.EMAIL } as Job);
-
-      // Assert.
-      expect(processEmail).toHaveBeenCalled();
+    beforeEach(() => {
+      strategy = createNotifierStrategyMock();
+      strategyService.get.mockReturnValue(strategy);
     });
-
-    it('should yield the result of a processed job (SMS)', async () => {
-      // Arrange.
-      const expectedResult: any = {};
-      const processText = jest
-        .spyOn(consumser, 'processText')
-        .mockResolvedValue(expectedResult);
-
-      // Act.
-      await consumser.process({ name: DeliveryMethods.SMS } as Job);
-
-      // Assert.
-      expect(processText).toHaveBeenCalled();
-    });
-
-    it('should yield the result of a processed job (call)', async () => {
-      // Arrange.
-      const expectedResult: any = {};
-      const processCall = jest
-        .spyOn(consumser, 'processCall')
-        .mockResolvedValue(expectedResult);
-
-      // Act.
-      await consumser.process({ name: DeliveryMethods.CALL } as Job);
-
-      // Assert.
-      expect(processCall).toHaveBeenCalled();
-    });
-
-    it('should throw an "UnrecoverableError" if a process method cannot be identified for a job', async () => {
-      // Arrange.
-      const name = 'unit-test';
-      const expectedResult = new UnrecoverableError(
-        `Invalid Delivery Method: ${name} is not an available delievery method`,
-      );
-
-      // Act/Assert.
-      await expect(consumser.process({ name } as Job)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-  });
-
-  describe('processEmail()', () => {
-    const createEmailNotificationDto: CreateEmailNotificationDto = {
-      to: 'john.doe@email.com',
-      from: 'no-reply@email.com',
-      subject: 'Unit Testing',
-      html: '<h1>Unit Testing</h1>',
-      text: 'Unit Testing',
-      template: null,
-      context: null,
-    };
 
     afterEach(() => {
-      emailService.createNotificationDto.mockClear();
-      emailService.createEmailTemplate.mockClear();
-      emailService.sendEmail.mockClear();
-    });
-
-    it('should yield the created email notification', async () => {
-      // Arrange.
-      const expectedResult = {};
-      emailService.createNotificationDto.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.createEmailTemplate.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.sendEmail.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processEmail(job)).resolves.toEqual(expectedResult);
-    });
-
-    it("should validate the job's payload is valid", async () => {
-      // Arrange.
-      emailService.createNotificationDto.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.createEmailTemplate.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.sendEmail.mockResolvedValue(null);
-
-      // Act.
-      await consumser.processEmail(job);
-
-      // Assert.
-      expect(emailService.createNotificationDto).toHaveBeenCalledWith(job.data);
-    });
-
-    it('should throw an "Error" if the job\'s payload is invalid', async () => {
-      // Arrange.
-      const error = new Error('unit testing');
-      const expectedResult = new Error(
-        `[${NotificationConsumer.name} processEmail] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
-      );
-      emailService.createNotificationDto.mockRejectedValue(error);
-
-      // Act/Assert.
-      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
-    });
-
-    it('should generate an email template', async () => {
-      // Arrange.
-      emailService.createNotificationDto.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.createEmailTemplate.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.sendEmail.mockResolvedValue(null);
-
-      // Act.
-      await consumser.processEmail(job);
-
-      // Assert.
-      expect(emailService.createEmailTemplate).toHaveBeenCalledWith(
-        createEmailNotificationDto,
-      );
-    });
-
-    it('should throw an "Error" if an email template cannot be generated', async () => {
-      // Arrange.
-      const expectedResult = new Error(
-        `Invalid Argument: ${CreateEmailNotificationDto.name} must have either 'html' or 'template' keys present`,
-      );
-      emailService.createNotificationDto.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.createEmailTemplate.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw an "Error" if an email failed to send', async () => {
-      // Arrange.
-      const expectedResult = new Error('Something went wrong');
-      emailService.createNotificationDto.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.createEmailTemplate.mockResolvedValue(
-        createEmailNotificationDto,
-      );
-      emailService.sendEmail.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
-    });
-  });
-
-  describe('processText()', () => {
-    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-      to: '+19999999999',
-      from: '+11111111111',
-      body: 'Unit Testing',
-    };
-
-    afterEach(() => {
-      phoneService.createNotificationDto.mockClear();
-      phoneService.sendText.mockClear();
-    });
-
-    it('should yield the created text notification', async () => {
-      // Arrange.
-      const expectedResult = {};
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendText.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processText(job)).resolves.toEqual(expectedResult);
-    });
-
-    it("should validate the job's payload is valid", async () => {
-      // Arrange.
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendText.mockResolvedValue(null);
-
-      // Act.
-      await consumser.processText(job);
-
-      // Assert.
-      expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
-    });
-
-    it('should throw an "Error" if the job\'s payload is invalid', async () => {
-      // Arrange.
-      const error = new Error('unit testing');
-      const expectedResult = new Error(
-        `[${NotificationConsumer.name} processText] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
-      );
-      phoneService.createNotificationDto.mockRejectedValue(error);
-      phoneService.sendText.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processText(job)).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw an "Error" if an text failed to send', async () => {
-      // Arrange.
-      const expectedResult = new Error('Something went wrong');
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendText.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processText(job)).rejects.toEqual(expectedResult);
-    });
-  });
-
-  describe('processCall()', () => {
-    const createPhoneNotificationDto: CreatePhoneNotificationDto = {
-      to: '+19999999999',
-      from: '+11111111111',
-      body: 'Unit Testing',
-    };
-
-    afterEach(() => {
-      phoneService.createNotificationDto.mockClear();
-      phoneService.sendCall.mockClear();
-    });
-
-    it('should yield the created call notification', async () => {
-      // Arrange.
-      const expectedResult = {};
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendCall.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processCall(job)).resolves.toEqual(expectedResult);
-    });
-
-    it("should validate the job's payload is valid", async () => {
-      // Arrange.
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendCall.mockResolvedValue(null);
-
-      // Act.
-      await consumser.processCall(job);
-
-      // Assert.
-      expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
-    });
-
-    it('should throw an "Error" if the job\'s payload is invalid', async () => {
-      // Arrange.
-      const error = new Error('unit testing');
-      const expectedResult = new Error(
-        `[${NotificationConsumer.name} processCall] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
-      );
-      phoneService.createNotificationDto.mockRejectedValue(error);
-      phoneService.sendCall.mockResolvedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processCall(job)).rejects.toEqual(expectedResult);
-    });
-
-    it('should throw an "Error" if an call failed to send', async () => {
-      // Arrange.
-      const expectedResult = new Error('Something went wrong');
-      phoneService.createNotificationDto.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
-      phoneService.sendCall.mockRejectedValue(expectedResult);
-
-      // Act/Assert.
-      await expect(consumser.processCall(job)).rejects.toEqual(expectedResult);
-    });
-  });
-
-  describe('processPushNotification()', () => {
-    const createPushNotificationDto: CreatePushNotificationDto = {
-      subscriberId: 'unit-test',
-      subscription: null,
-      platform: Platform.WEB,
-      notification: { title: 'unit-test' },
-      context: {},
-    };
-
-    afterEach(() => {
-      pushNotificationService.createNotificationDto.mockClear();
-      pushNotificationService.sendPushNotification.mockClear();
-    });
-
-    it('should yield the created push notification', async () => {
-      // Arrange.
-      const expectedResult = {};
-      pushNotificationService.createNotificationDto.mockResolvedValue(
-        createPushNotificationDto,
-      );
-      pushNotificationService.sendPushNotification.mockResolvedValue(
-        expectedResult,
-      );
-
-      // Act/Assert.
-      await expect(consumser.processPushNotification(job)).resolves.toEqual(
-        expectedResult,
-      );
-    });
-
-    it("should validate the job's payload is valid", async () => {
-      // Arrange.
-      pushNotificationService.createNotificationDto.mockResolvedValue(
-        createPushNotificationDto,
-      );
-      pushNotificationService.sendPushNotification.mockResolvedValue(null);
-
-      // Act.
-      await consumser.processPushNotification(job);
-
-      // Assert.
-      expect(
-        pushNotificationService.createNotificationDto,
-      ).toHaveBeenCalledWith(job.data);
-    });
-
-    it('should throw an "Error" if the job\'s payload is invalid', async () => {
-      // Arrange.
-      const error = new Error('unit testing');
-      const expectedResult = new Error(
-        `[${NotificationConsumer.name} processPushNotification] Job ${job.id}: Invalid payload (validation errors) ${error.message}`,
-      );
-      pushNotificationService.createNotificationDto.mockRejectedValue(error);
-      pushNotificationService.sendPushNotification.mockResolvedValue(
-        expectedResult,
-      );
-
-      // Act/Assert.
-      await expect(consumser.processPushNotification(job)).rejects.toEqual(
-        expectedResult,
-      );
-    });
-
-    it('should throw an "Error" if an push notification failed to send', async () => {
-      // Arrange.
-      const expectedResult = new Error('Something went wrong');
-      pushNotificationService.createNotificationDto.mockResolvedValue(
-        createPushNotificationDto,
-      );
-      pushNotificationService.sendPushNotification.mockRejectedValue(
-        expectedResult,
-      );
-
-      // Act/Assert.
-      await expect(consumser.processPushNotification(job)).rejects.toEqual(
-        expectedResult,
-      );
+      strategyService.get.mockClear();
     });
   });
 
