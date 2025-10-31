@@ -5,7 +5,7 @@ import { JobState, Queue } from 'bullmq';
 import { CreateEmailNotificationDto } from '../notification/dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from '../notification/dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from '../notification/dto/create-push-notification.dto';
-import { NotificationDto } from '../common/interfaces/create-notification-dto.interface';
+import { NotificationDto } from '../notification/interfaces/notification-dto.interface';
 
 @Injectable()
 export class NotificationJobService {

@@ -2,30 +2,27 @@ import { DeliveryMethods, Platform } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Job, UnrecoverableError } from 'bullmq';
 import {
-  MockEmailService,
+  MockEmailNotifierStrategy,
   MockNotificationLogService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
+  MockCallStrategy,
+  MockPushNotifierStrategy,
+  createEmailNotifierStrategyMock,
   createNotificationLogServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
+  createCallNotifierStrategyMock,
+  createPushNotifierStrategyMock,
 } from '../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationConsumer } from './notification.consumer';
-import { EmailService } from '../common/services/email/email.service';
-import { PhoneService } from '../common/services/phone/phone.service';
 import { NotificationLogService } from '../notification-log/notification-log.service';
-import { PushNotificationService } from '../common/services/push-notification/push-notification.service';
 
 describe('NotificationConsumer', () => {
   let service: NotificationConsumer;
-  let emailService: MockEmailService;
-  let phoneService: MockPhoneService;
+  let emailService: MockEmailNotifierStrategy;
+  let phoneService: MockCallStrategy;
   let notificationLogService: MockNotificationLogService;
-  let pushNotificationService: MockPushNotificationService;
+  let pushNotificationService: MockPushNotifierStrategy;
 
   const job: any = { id: 1, data: {}, log: jest.fn(), updateData: jest.fn() };
 
@@ -35,11 +32,11 @@ describe('NotificationConsumer', () => {
         NotificationConsumer,
         {
           provide: EmailService,
-          useValue: createEmailServiceMock(),
+          useValue: createEmailNotifierStrategyMock(),
         },
         {
           provide: PhoneService,
-          useValue: createPhoneServiceMock(),
+          useValue: createCallNotifierStrategyMock(),
         },
         {
           provide: NotificationLogService,
@@ -47,18 +44,18 @@ describe('NotificationConsumer', () => {
         },
         {
           provide: PushNotificationService,
-          useValue: createPushNotificationServiceMock(),
+          useValue: createPushNotifierStrategyMock(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationConsumer>(NotificationConsumer);
-    emailService = module.get<MockEmailService>(EmailService);
-    phoneService = module.get<MockPhoneService>(PhoneService);
+    emailService = module.get<MockEmailNotifierStrategy>(EmailService);
+    phoneService = module.get<MockCallStrategy>(PhoneService);
     notificationLogService = module.get<MockNotificationLogService>(
       NotificationLogService,
     );
-    pushNotificationService = module.get<MockPushNotificationService>(
+    pushNotificationService = module.get<MockPushNotifierStrategy>(
       PushNotificationService,
     );
   });

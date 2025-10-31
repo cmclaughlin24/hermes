@@ -2,52 +2,62 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CallInstance } from 'twilio/lib/rest/api/v2010/account/call';
 import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message';
 import {
-  MockEmailService,
-  MockPhoneService,
-  MockPushNotificationService,
-  createEmailServiceMock,
-  createPhoneServiceMock,
-  createPushNotificationServiceMock,
+  MockEmailNotifierStrategy,
+  MockCallStrategy,
+  MockPushNotifierStrategy,
+  createEmailNotifierStrategyMock,
+  createCallNotifierStrategyMock,
+  createPushNotifierStrategyMock,
+  createSmsNotifierStrategyMock,
+  MockSmsNotifierStrategy,
 } from '../../test/helpers/provider.helper';
-import { EmailService } from '../common/services/email/email.service';
-import { PhoneService } from '../common/services/phone/phone.service';
-import { PushNotificationService } from '../common/services/push-notification/push-notification.service';
 import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
 import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationService } from './notification.service';
+import { EmailNotifierStrategy } from './strategies/email-notifier.strategy';
+import { CallNotifierStrategy } from './strategies/call-notifier.strategy';
+import { PushNotifierStrategy } from './strategies/push-notifier.strategy';
+import { SmsNotifierStrategy } from './strategies/sms-notifier.strategy';
+import { NotifierStrategyService } from './notifier-strategy.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
-  let emailService: MockEmailService;
-  let phoneService: MockPhoneService;
-  let pushNotificationService: MockPushNotificationService;
+  let emailStrategy: MockEmailNotifierStrategy;
+  let callStrategy: MockCallStrategy;
+  let smsStrategy: MockSmsNotifierStrategy;
+  let pushStrategy: MockPushNotifierStrategy;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationService,
+        NotifierStrategyService,
         {
-          provide: EmailService,
-          useValue: createEmailServiceMock(),
+          provide: EmailNotifierStrategy,
+          useValue: createEmailNotifierStrategyMock(),
         },
         {
-          provide: PhoneService,
-          useValue: createPhoneServiceMock(),
+          provide: CallNotifierStrategy,
+          useValue: createCallNotifierStrategyMock(),
         },
         {
-          provide: PushNotificationService,
-          useValue: createPushNotificationServiceMock(),
+          provide: SmsNotifierStrategy,
+          useValue: createSmsNotifierStrategyMock(),
+        },
+        {
+          provide: PushNotifierStrategy,
+          useValue: createPushNotifierStrategyMock(),
         },
       ],
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);
-    emailService = module.get<MockEmailService>(EmailService);
-    phoneService = module.get<MockPhoneService>(PhoneService);
-    pushNotificationService = module.get<MockPushNotificationService>(
-      PushNotificationService,
-    );
+    emailStrategy = module.get<MockEmailNotifierStrategy>(EmailNotifierStrategy);
+    callStrategy = module.get<MockCallStrategy>(CallNotifierStrategy);
+    smsStrategy = module.get<MockSmsNotifierStrategy>(SmsNotifierStrategy);
+    pushStrategy =
+      module.get<MockPushNotifierStrategy>(PushNotifierStrategy);
   });
 
   it('should be defined', () => {
@@ -66,14 +76,12 @@ describe('NotificationService', () => {
     };
 
     beforeEach(() => {
-      emailService.createEmailTemplate.mockResolvedValue(
-        createEmailNotificationDto,
-      );
+      emailStrategy.createTemplate.mockResolvedValue(createEmailNotificationDto);
     });
 
     afterEach(() => {
-      emailService.sendEmail.mockClear();
-      emailService.createEmailTemplate.mockClear();
+      emailStrategy.notify.mockClear();
+      emailStrategy.createTemplate.mockClear();
     });
 
     it('should send an email notification', async () => {
@@ -81,7 +89,7 @@ describe('NotificationService', () => {
       await service.createEmailNotification(createEmailNotificationDto);
 
       // Assert.
-      expect(emailService.sendEmail).toHaveBeenCalledWith(
+      expect(emailStrategy.notify).toHaveBeenCalledWith(
         createEmailNotificationDto,
       );
     });
@@ -89,7 +97,7 @@ describe('NotificationService', () => {
     it('should yield a "SentMessageInfo" object', async () => {
       // Arrange.
       const expectedResult = {};
-      emailService.sendEmail.mockResolvedValue(expectedResult);
+      emailStrategy.notify.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -106,14 +114,12 @@ describe('NotificationService', () => {
     };
 
     beforeEach(() => {
-      phoneService.createPhoneTemplate.mockResolvedValue(
-        createPhoneNotificationDto,
-      );
+      smsStrategy.createTemplate.mockResolvedValue(createPhoneNotificationDto);
     });
 
     afterEach(() => {
-      phoneService.createPhoneTemplate.mockClear();
-      phoneService.sendText.mockClear();
+      smsStrategy.createTemplate.mockClear();
+      smsStrategy.notify.mockClear();
     });
 
     it('should send a text notification', async () => {
@@ -121,7 +127,7 @@ describe('NotificationService', () => {
       await service.createTextNotification(createPhoneNotificationDto);
 
       // Assert.
-      expect(phoneService.sendText).toHaveBeenCalledWith(
+      expect(smsStrategy.notify).toHaveBeenCalledWith(
         createPhoneNotificationDto,
       );
     });
@@ -129,7 +135,7 @@ describe('NotificationService', () => {
     it('should yield a "MessageInstance" object', async () => {
       // Arrange.
       const expectedResult = {} as MessageInstance;
-      phoneService.sendText.mockResolvedValue(expectedResult);
+      smsStrategy.notify.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -146,14 +152,14 @@ describe('NotificationService', () => {
     };
 
     beforeEach(() => {
-      phoneService.createPhoneTemplate.mockResolvedValue(
+      callStrategy.createTemplate.mockResolvedValue(
         createPhoneNotificationDto,
       );
     });
 
     afterEach(() => {
-      phoneService.createPhoneTemplate.mockClear();
-      phoneService.sendCall.mockClear();
+      callStrategy.createTemplate.mockClear();
+      callStrategy.notify.mockClear();
     });
 
     it('should send a call notification', async () => {
@@ -161,7 +167,7 @@ describe('NotificationService', () => {
       await service.createCallNotification(createPhoneNotificationDto);
 
       // Assert.
-      expect(phoneService.sendCall).toHaveBeenCalledWith(
+      expect(callStrategy.notify).toHaveBeenCalledWith(
         createPhoneNotificationDto,
       );
     });
@@ -169,7 +175,7 @@ describe('NotificationService', () => {
     it('should yield a "CallInstance" object', async () => {
       // Arrange.
       const expectedResult = {} as CallInstance;
-      phoneService.sendCall.mockResolvedValue(expectedResult);
+      callStrategy.notify.mockResolvedValue(expectedResult);
 
       // Act/Assert.
       await expect(
@@ -185,14 +191,14 @@ describe('NotificationService', () => {
     } as CreatePushNotificationDto;
 
     beforeEach(() => {
-      pushNotificationService.createPushNotificationTemplate.mockResolvedValue(
+      pushStrategy.createTemplate.mockResolvedValue(
         createPushNotificationDto,
       );
     });
 
     afterEach(() => {
-      pushNotificationService.createPushNotificationTemplate.mockClear();
-      pushNotificationService.sendPushNotification.mockClear();
+      pushStrategy.createTemplate.mockClear();
+      pushStrategy.notify.mockClear();
     });
 
     it('should send a push notification', async () => {
@@ -200,7 +206,7 @@ describe('NotificationService', () => {
       await service.createPushNotification(createPushNotificationDto);
 
       // Assert.
-      expect(pushNotificationService.sendPushNotification).toHaveBeenCalledWith(
+      expect(pushStrategy.notify).toHaveBeenCalledWith(
         createPushNotificationDto,
       );
     });
@@ -208,7 +214,7 @@ describe('NotificationService', () => {
     it('should yield an object', async () => {
       // Arrange.
       const expectedResult = {};
-      pushNotificationService.sendPushNotification.mockResolvedValue(
+      pushStrategy.notify.mockResolvedValue(
         expectedResult,
       );
 
