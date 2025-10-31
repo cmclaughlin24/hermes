@@ -6,10 +6,7 @@ import {
   MockNotificationLogService,
   MockCallStrategy,
   MockPushNotifierStrategy,
-  createEmailNotifierStrategyMock,
   createNotificationLogServiceMock,
-  createCallNotifierStrategyMock,
-  createPushNotifierStrategyMock,
 } from '../../test/helpers/provider.helper';
 import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
 import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
@@ -18,7 +15,7 @@ import { NotificationConsumer } from './notification.consumer';
 import { NotificationLogService } from '../notification-log/notification-log.service';
 
 describe('NotificationConsumer', () => {
-  let service: NotificationConsumer;
+  let consumser: NotificationConsumer;
   let emailService: MockEmailNotifierStrategy;
   let phoneService: MockCallStrategy;
   let notificationLogService: MockNotificationLogService;
@@ -31,37 +28,20 @@ describe('NotificationConsumer', () => {
       providers: [
         NotificationConsumer,
         {
-          provide: EmailService,
-          useValue: createEmailNotifierStrategyMock(),
-        },
-        {
-          provide: PhoneService,
-          useValue: createCallNotifierStrategyMock(),
-        },
-        {
           provide: NotificationLogService,
           useValue: createNotificationLogServiceMock(),
-        },
-        {
-          provide: PushNotificationService,
-          useValue: createPushNotifierStrategyMock(),
         },
       ],
     }).compile();
 
-    service = module.get<NotificationConsumer>(NotificationConsumer);
-    emailService = module.get<MockEmailNotifierStrategy>(EmailService);
-    phoneService = module.get<MockCallStrategy>(PhoneService);
+    consumser = module.get<NotificationConsumer>(NotificationConsumer);
     notificationLogService = module.get<MockNotificationLogService>(
       NotificationLogService,
-    );
-    pushNotificationService = module.get<MockPushNotifierStrategy>(
-      PushNotificationService,
     );
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(consumser).toBeDefined();
   });
 
   describe('process()', () => {
@@ -69,11 +49,11 @@ describe('NotificationConsumer', () => {
       // Arrange.
       const expectedResult: any = {};
       const processEmail = jest
-        .spyOn(service, 'processEmail')
+        .spyOn(consumser, 'processEmail')
         .mockResolvedValue(expectedResult);
 
       // Act.
-      await service.process({ name: DeliveryMethods.EMAIL } as Job);
+      await consumser.process({ name: DeliveryMethods.EMAIL } as Job);
 
       // Assert.
       expect(processEmail).toHaveBeenCalled();
@@ -83,11 +63,11 @@ describe('NotificationConsumer', () => {
       // Arrange.
       const expectedResult: any = {};
       const processText = jest
-        .spyOn(service, 'processText')
+        .spyOn(consumser, 'processText')
         .mockResolvedValue(expectedResult);
 
       // Act.
-      await service.process({ name: DeliveryMethods.SMS } as Job);
+      await consumser.process({ name: DeliveryMethods.SMS } as Job);
 
       // Assert.
       expect(processText).toHaveBeenCalled();
@@ -97,11 +77,11 @@ describe('NotificationConsumer', () => {
       // Arrange.
       const expectedResult: any = {};
       const processCall = jest
-        .spyOn(service, 'processCall')
+        .spyOn(consumser, 'processCall')
         .mockResolvedValue(expectedResult);
 
       // Act.
-      await service.process({ name: DeliveryMethods.CALL } as Job);
+      await consumser.process({ name: DeliveryMethods.CALL } as Job);
 
       // Assert.
       expect(processCall).toHaveBeenCalled();
@@ -115,7 +95,7 @@ describe('NotificationConsumer', () => {
       );
 
       // Act/Assert.
-      await expect(service.process({ name } as Job)).rejects.toEqual(
+      await expect(consumser.process({ name } as Job)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -150,7 +130,7 @@ describe('NotificationConsumer', () => {
       emailService.sendEmail.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processEmail(job)).resolves.toEqual(expectedResult);
+      await expect(consumser.processEmail(job)).resolves.toEqual(expectedResult);
     });
 
     it("should validate the job's payload is valid", async () => {
@@ -164,7 +144,7 @@ describe('NotificationConsumer', () => {
       emailService.sendEmail.mockResolvedValue(null);
 
       // Act.
-      await service.processEmail(job);
+      await consumser.processEmail(job);
 
       // Assert.
       expect(emailService.createNotificationDto).toHaveBeenCalledWith(job.data);
@@ -179,7 +159,7 @@ describe('NotificationConsumer', () => {
       emailService.createNotificationDto.mockRejectedValue(error);
 
       // Act/Assert.
-      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
     });
 
     it('should generate an email template', async () => {
@@ -193,7 +173,7 @@ describe('NotificationConsumer', () => {
       emailService.sendEmail.mockResolvedValue(null);
 
       // Act.
-      await service.processEmail(job);
+      await consumser.processEmail(job);
 
       // Assert.
       expect(emailService.createEmailTemplate).toHaveBeenCalledWith(
@@ -212,7 +192,7 @@ describe('NotificationConsumer', () => {
       emailService.createEmailTemplate.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
     });
 
     it('should throw an "Error" if an email failed to send', async () => {
@@ -227,7 +207,7 @@ describe('NotificationConsumer', () => {
       emailService.sendEmail.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processEmail(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processEmail(job)).rejects.toEqual(expectedResult);
     });
   });
 
@@ -252,7 +232,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendText.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processText(job)).resolves.toEqual(expectedResult);
+      await expect(consumser.processText(job)).resolves.toEqual(expectedResult);
     });
 
     it("should validate the job's payload is valid", async () => {
@@ -263,7 +243,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendText.mockResolvedValue(null);
 
       // Act.
-      await service.processText(job);
+      await consumser.processText(job);
 
       // Assert.
       expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
@@ -279,7 +259,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendText.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processText(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processText(job)).rejects.toEqual(expectedResult);
     });
 
     it('should throw an "Error" if an text failed to send', async () => {
@@ -291,7 +271,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendText.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processText(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processText(job)).rejects.toEqual(expectedResult);
     });
   });
 
@@ -316,7 +296,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendCall.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processCall(job)).resolves.toEqual(expectedResult);
+      await expect(consumser.processCall(job)).resolves.toEqual(expectedResult);
     });
 
     it("should validate the job's payload is valid", async () => {
@@ -327,7 +307,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendCall.mockResolvedValue(null);
 
       // Act.
-      await service.processCall(job);
+      await consumser.processCall(job);
 
       // Assert.
       expect(phoneService.createNotificationDto).toHaveBeenCalledWith(job.data);
@@ -343,7 +323,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendCall.mockResolvedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processCall(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processCall(job)).rejects.toEqual(expectedResult);
     });
 
     it('should throw an "Error" if an call failed to send', async () => {
@@ -355,7 +335,7 @@ describe('NotificationConsumer', () => {
       phoneService.sendCall.mockRejectedValue(expectedResult);
 
       // Act/Assert.
-      await expect(service.processCall(job)).rejects.toEqual(expectedResult);
+      await expect(consumser.processCall(job)).rejects.toEqual(expectedResult);
     });
   });
 
@@ -384,7 +364,7 @@ describe('NotificationConsumer', () => {
       );
 
       // Act/Assert.
-      await expect(service.processPushNotification(job)).resolves.toEqual(
+      await expect(consumser.processPushNotification(job)).resolves.toEqual(
         expectedResult,
       );
     });
@@ -397,7 +377,7 @@ describe('NotificationConsumer', () => {
       pushNotificationService.sendPushNotification.mockResolvedValue(null);
 
       // Act.
-      await service.processPushNotification(job);
+      await consumser.processPushNotification(job);
 
       // Assert.
       expect(
@@ -417,7 +397,7 @@ describe('NotificationConsumer', () => {
       );
 
       // Act/Assert.
-      await expect(service.processPushNotification(job)).rejects.toEqual(
+      await expect(consumser.processPushNotification(job)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -433,7 +413,7 @@ describe('NotificationConsumer', () => {
       );
 
       // Act/Assert.
-      await expect(service.processPushNotification(job)).rejects.toEqual(
+      await expect(consumser.processPushNotification(job)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -455,7 +435,7 @@ describe('NotificationConsumer', () => {
       const result = {};
 
       // Act.
-      await service.onQueueCompleted(job, result);
+      await consumser.onQueueCompleted(job, result);
 
       // Assert.
       expect(notificationLogService.log).toHaveBeenCalledWith(
@@ -476,7 +456,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockResolvedValue(id);
 
       // Act.
-      await service.onQueueCompleted(job, null);
+      await consumser.onQueueCompleted(job, null);
 
       // Assert.
       expect(job.updateData).toHaveBeenCalledWith(expectedResult);
@@ -489,7 +469,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockResolvedValue(id);
 
       // Act.
-      await service.onQueueCompleted(job, null);
+      await consumser.onQueueCompleted(job, null);
 
       // Assert.
       expect(job.log).toHaveBeenCalledWith(expectedResult);
@@ -501,7 +481,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockRejectedValue(new Error());
 
       // Act.
-      await service.onQueueCompleted(job, null);
+      await consumser.onQueueCompleted(job, null);
 
       // Assert.
       expect(job.log).toHaveBeenCalledWith(expectedResult);
@@ -520,7 +500,7 @@ describe('NotificationConsumer', () => {
       const error = new Error();
 
       // Act.
-      await service.onQueueFailed(job, error);
+      await consumser.onQueueFailed(job, error);
 
       // Assert.
       expect(notificationLogService.log).toHaveBeenCalledWith(
@@ -541,7 +521,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockResolvedValue(id);
 
       // Act.
-      await service.onQueueFailed(job, null);
+      await consumser.onQueueFailed(job, null);
 
       // Assert.
       expect(job.updateData).toHaveBeenCalledWith(expectedResult);
@@ -554,7 +534,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockResolvedValue(id);
 
       // Act.
-      await service.onQueueFailed(job, null);
+      await consumser.onQueueFailed(job, null);
 
       // Assert.
       expect(job.log).toHaveBeenCalledWith(expectedResult);
@@ -566,7 +546,7 @@ describe('NotificationConsumer', () => {
       notificationLogService.log.mockRejectedValue(new Error());
 
       // Act.
-      await service.onQueueFailed(job, null);
+      await consumser.onQueueFailed(job, null);
 
       // Assert.
       expect(job.log).toHaveBeenCalledWith(expectedResult);
