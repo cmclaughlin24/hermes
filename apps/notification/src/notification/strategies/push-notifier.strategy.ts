@@ -8,6 +8,7 @@ import * as webpush from 'web-push';
 import { PushTemplateService } from '../../push-template/push-template.service';
 import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
 import { BaseNotifierStrategy } from './base-notifier.strategy';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 @Injectable()
 export class PushNotifierStrategy extends BaseNotifierStrategy<CreatePushNotificationDto> {
@@ -89,7 +90,7 @@ export class PushNotifierStrategy extends BaseNotifierStrategy<CreatePushNotific
     }
 
     if (!notification) {
-      throw new Error(
+      throw new DtoValidationException(
         `Invalid Argument: ${CreatePushNotificationDto.name} must have either 'notification' or 'template' keys present`,
       );
     }

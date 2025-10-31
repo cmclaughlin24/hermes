@@ -6,6 +6,7 @@ import { SentMessageInfo } from 'nodemailer';
 import { EmailTemplateService } from '../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
 import { BaseNotifierStrategy } from './base-notifier.strategy';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 @Injectable()
 export class EmailNotifierStrategy extends BaseNotifierStrategy<CreateEmailNotificationDto> {
@@ -73,7 +74,7 @@ export class EmailNotifierStrategy extends BaseNotifierStrategy<CreateEmailNotif
     }
 
     if (!html) {
-      throw new Error(
+      throw new DtoValidationException(
         `Invalid Argument: ${CreateEmailNotificationDto.name} must have either 'html' or 'template' keys present`,
       );
     }

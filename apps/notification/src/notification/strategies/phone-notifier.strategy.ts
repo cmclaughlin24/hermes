@@ -5,6 +5,7 @@ import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
 import { Logger } from '@nestjs/common';
 import { BaseNotifierStrategy } from './base-notifier.strategy';
+import { DtoValidationException } from '../../common/errors/dto-validation.error';
 
 export abstract class PhoneNotifierStrategy extends BaseNotifierStrategy<CreatePhoneNotificationDto> {
   abstract type: DeliveryMethods.CALL | DeliveryMethods.SMS;
@@ -67,7 +68,7 @@ export abstract class PhoneNotifierStrategy extends BaseNotifierStrategy<CreateP
     }
 
     if (!body) {
-      throw new Error(
+      throw new DtoValidationException(
         `Invalid Argument: ${CreatePhoneNotificationDto.name} must have either 'body' or 'template' keys present`,
       );
     }
