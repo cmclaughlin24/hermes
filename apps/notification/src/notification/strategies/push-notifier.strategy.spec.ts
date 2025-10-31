@@ -16,18 +16,18 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { PushTemplateService } from '../../push-template/push-template.service';
 import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
-import { PushNotificationStrategy } from './push-notification.strategy';
+import { PushNotifierStrategy } from './push-notifier.strategy';
 
 jest.mock('web-push');
 
-describe('PushNotificationStrategy', () => {
-  let strategy: PushNotificationStrategy;
+describe('PushNotifierStrategy', () => {
+  let strategy: PushNotifierStrategy;
   let pushTemplateService: MockPushTemplateService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PushNotificationStrategy,
+        PushNotifierStrategy,
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
@@ -43,7 +43,7 @@ describe('PushNotificationStrategy', () => {
       ],
     }).compile();
 
-    strategy = module.get<PushNotificationStrategy>(PushNotificationStrategy);
+    strategy = module.get<PushNotifierStrategy>(PushNotifierStrategy);
     pushTemplateService =
       module.get<MockPushTemplateService>(PushTemplateService);
   });

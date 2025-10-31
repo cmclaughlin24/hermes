@@ -6,9 +6,9 @@ import {
   createConfigServiceMock,
   createPhoneTemplateServiceMock,
 } from '../../../test/helpers/provider.helper';
+import { CallNotifierStrategy } from './call-notifier.strategy';
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
 import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto';
-import { SmsStrategy } from './sms.strategy';
 
 const createTwilioServiceMock = () => ({
   client: {
@@ -21,15 +21,15 @@ const createTwilioServiceMock = () => ({
   },
 });
 
-describe('SmsStrategy', () => {
-  let strategy: SmsStrategy;
+describe('CallNotifierStrategy', () => {
+  let strategy: CallNotifierStrategy;
   let twilioService: any;
   let configService: MockConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SmsStrategy,
+        CallNotifierStrategy,
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
@@ -45,7 +45,7 @@ describe('SmsStrategy', () => {
       ],
     }).compile();
 
-    strategy = module.get<SmsStrategy>(SmsStrategy);
+    strategy = module.get<CallNotifierStrategy>(CallNotifierStrategy);
     twilioService = module.get<any>(TwilioService);
     configService = module.get<MockConfigService>(ConfigService);
   });
@@ -56,23 +56,28 @@ describe('SmsStrategy', () => {
 
   describe('notify()', () => {
     afterEach(() => {
-      twilioService.client.messages.create.mockClear();
+      twilioService.client.calls.create.mockClear();
     });
 
-    it('should send a text notification', async () => {
+    it('should send a call notification', async () => {
       // Arrange.
       const createPhoneNotificationDto: CreatePhoneNotificationDto = {
         to: '+12818071479',
         from: '+12818071479',
         body: 'Unit Testing',
       };
+      const expectedResult = {
+        to: createPhoneNotificationDto.to,
+        from: createPhoneNotificationDto.from,
+        twiml: createPhoneNotificationDto.body,
+      };
 
       // Act.
       await strategy.notify(createPhoneNotificationDto);
 
       // Assert.
-      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
-        createPhoneNotificationDto,
+      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
+        expectedResult,
       );
     });
 
@@ -84,7 +89,8 @@ describe('SmsStrategy', () => {
       };
       const from = '+12918071478';
       const expectedResult = {
-        ...createPhoneNotificationDto,
+        to: createPhoneNotificationDto.to,
+        twiml: createPhoneNotificationDto.body,
         from,
       };
       configService.get.mockReturnValue(from);
@@ -93,19 +99,9 @@ describe('SmsStrategy', () => {
       await strategy.notify(createPhoneNotificationDto);
 
       // Assert.
-      expect(twilioService.client.messages.create).toHaveBeenCalledWith(
+      expect(twilioService.client.calls.create).toHaveBeenCalledWith(
         expectedResult,
       );
-    });
-
-    it('should throw an error otherwise', async () => {
-      // Arrange.
-      twilioService.client.messages.create.mockRejectedValue(new Error());
-
-      // Act/Assert.
-      await expect(
-        strategy.notify({} as CreatePhoneNotificationDto),
-      ).rejects.toBeInstanceOf(Error);
     });
   });
 });

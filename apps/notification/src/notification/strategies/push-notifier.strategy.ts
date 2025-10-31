@@ -3,20 +3,15 @@ import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UnrecoverableError } from 'bullmq';
-import { validateOrReject } from 'class-validator';
-import Handlebars from 'handlebars';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import * as webpush from 'web-push';
 import { PushTemplateService } from '../../push-template/push-template.service';
 import { CreatePushNotificationDto } from '../dto/create-push-notification.dto';
-import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
-import { DtoValidationException } from '../../common/errors/dto-validation.error';
+import { BaseNotifierStrategy } from './base-notifier.strategy';
 
 @Injectable()
-export class PushNotificationStrategy
-  implements NotifierStrategy<CreatePushNotificationDto>
-{
-  private readonly logger = new Logger(PushNotificationStrategy.name);
+export class PushNotifierStrategy extends BaseNotifierStrategy<CreatePushNotificationDto> {
+  private readonly logger = new Logger(PushNotifierStrategy.name);
   private removeSubscriberUrl: string;
   private subscriberApiKeyHeader: string;
   private subscriberApiKey: string;
@@ -26,6 +21,7 @@ export class PushNotificationStrategy
     private readonly httpService: HttpService,
     configService: ConfigService,
   ) {
+    super();
     webpush.setVapidDetails(
       configService.get('VAPID_SUBJECT'),
       configService.get('VAPID_PUBLIC_KEY'),
@@ -66,14 +62,7 @@ export class PushNotificationStrategy
     dto.platform = data.platform;
     dto.context = data.context;
 
-    try {
-      await validateOrReject(dto);
-    } catch (errors) {
-      const validationErrors = errors
-        .map((error) => error.toString())
-        .join(', ');
-      throw new DtoValidationException(validationErrors);
-    }
+    await this.validateOrReject(dto);
 
     return dto;
   }
@@ -105,15 +94,13 @@ export class PushNotificationStrategy
       );
     }
 
-    const titleTemplate = Handlebars.compile(notification.title);
-    notification.title = titleTemplate({
+    notification.title = this.compileTemplate(notification.title, {
       timeZone: createPushNotificationDto.timeZone,
       ...createPushNotificationDto.context,
     });
 
     if (notification.body) {
-      const bodyTemplate = Handlebars.compile(notification.body);
-      notification.body = bodyTemplate({
+      notification.body = this.compileTemplate(notification.body, {
         timeZone: createPushNotificationDto.timeZone,
         ...createPushNotificationDto.context,
       });

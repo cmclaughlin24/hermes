@@ -8,7 +8,7 @@ import {
   createConfigServiceMock,
   createPhoneTemplateServiceMock,
 } from '../../../test/helpers/provider.helper';
-import { PhoneStrategy as BasePhoneStrategy } from './phone.strategy';
+import { PhoneNotifierStrategy as BasePhoneStrategy } from './phone-notifier.strategy';
 import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto';
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
 import { Injectable } from '@nestjs/common';
@@ -25,7 +25,7 @@ const createTwilioServiceMock = () => ({
 });
 
 @Injectable()
-class PhoneStrategy extends BasePhoneStrategy {
+class PhoneNotifierStrategy extends BasePhoneStrategy {
   type: DeliveryMethods.CALL | DeliveryMethods.SMS = DeliveryMethods.CALL;
 
   constructor(
@@ -39,8 +39,8 @@ class PhoneStrategy extends BasePhoneStrategy {
   async notify(_dto: CreatePhoneNotificationDto): Promise<any> {}
 }
 
-describe('PhoneStrategy', () => {
-  let strategy: PhoneStrategy;
+describe('PhoneNotifierStrategy', () => {
+  let strategy: PhoneNotifierStrategy;
   let twilioService: any;
   let configService: MockConfigService;
   let phoneTemplateService: MockPhoneTemplateService;
@@ -48,7 +48,7 @@ describe('PhoneStrategy', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        PhoneStrategy,
+        PhoneNotifierStrategy,
         {
           provide: ConfigService,
           useValue: createConfigServiceMock(),
@@ -64,7 +64,7 @@ describe('PhoneStrategy', () => {
       ],
     }).compile();
 
-    strategy = module.get<PhoneStrategy>(PhoneStrategy);
+    strategy = module.get<PhoneNotifierStrategy>(PhoneNotifierStrategy);
     twilioService = module.get<any>(TwilioService);
     configService = module.get<MockConfigService>(ConfigService);
     phoneTemplateService =

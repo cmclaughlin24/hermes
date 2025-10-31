@@ -10,7 +10,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { EmailTemplateService } from '../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
-import { EmailStrategy } from './email.strategy';
+import { EmailNotifierStrategy } from './email-notifier.strategy';
 
 export type MockMailerService = Partial<Record<keyof MailerService, jest.Mock>>;
 
@@ -18,8 +18,8 @@ export const createMailerServiceMock = (): MockMailerService => ({
   sendMail: jest.fn(),
 });
 
-describe('EmailStrategy', () => {
-  let strategy: EmailStrategy;
+describe('EmailNotifierStrategy', () => {
+  let strategy: EmailNotifierStrategy;
   let mailerService: MockMailerService;
   let configService: MockConfigService;
   let emailTemplateService: MockEmailTemplateService;
@@ -27,7 +27,7 @@ describe('EmailStrategy', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        EmailStrategy,
+        EmailNotifierStrategy,
         {
           provide: MailerService,
           useValue: createMailerServiceMock(),
@@ -43,7 +43,7 @@ describe('EmailStrategy', () => {
       ],
     }).compile();
 
-    strategy = module.get<EmailStrategy>(EmailStrategy);
+    strategy = module.get<EmailNotifierStrategy>(EmailNotifierStrategy);
     mailerService = module.get<MockMailerService>(MailerService);
     configService = module.get<MockConfigService>(ConfigService);
     emailTemplateService =

@@ -1,13 +1,13 @@
 import { DeliveryMethods } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
 import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto';
-import { PhoneStrategy } from './phone.strategy';
+import { PhoneNotifierStrategy } from './phone-notifier.strategy';
 import { TwilioService } from 'nestjs-twilio';
 import { ConfigService } from '@nestjs/config';
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
 
 @Injectable()
-export class SmsStrategy extends PhoneStrategy {
+export class SmsNotifierStrategy extends PhoneNotifierStrategy {
   readonly type: DeliveryMethods.SMS = DeliveryMethods.SMS;
 
   constructor(

@@ -1,25 +1,22 @@
 import { DeliveryMethods, MissingException } from '@hermes/common';
 import { ConfigService } from '@nestjs/config';
 import { TwilioService } from 'nestjs-twilio';
-import Handlebars from 'handlebars';
 import { CreatePhoneNotificationDto } from '../dto/create-phone-notification.dto';
-import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
 import { PhoneTemplateService } from '../../phone-template/phone-template.service';
-import { validateOrReject } from 'class-validator';
 import { Logger } from '@nestjs/common';
-import { DtoValidationException } from '../../common/errors/dto-validation.error';
+import { BaseNotifierStrategy } from './base-notifier.strategy';
 
-export abstract class PhoneStrategy
-  implements NotifierStrategy<CreatePhoneNotificationDto>
-{
+export abstract class PhoneNotifierStrategy extends BaseNotifierStrategy<CreatePhoneNotificationDto> {
   abstract type: DeliveryMethods.CALL | DeliveryMethods.SMS;
-  protected readonly logger = new Logger(PhoneStrategy.name);
+  protected readonly logger = new Logger(PhoneNotifierStrategy.name);
 
   constructor(
     protected readonly twilioService: TwilioService,
     protected readonly configService: ConfigService,
     protected readonly phoneTemplateService: PhoneTemplateService,
-  ) {}
+  ) {
+    super();
+  }
 
   async createNotificationDto(data: any): Promise<CreatePhoneNotificationDto> {
     if (!data) {
@@ -30,24 +27,17 @@ export abstract class PhoneStrategy
       throw new Error('Payload must be an object');
     }
 
-    const createPhoneNotificationDto = new CreatePhoneNotificationDto();
-    createPhoneNotificationDto.to = data.to;
-    createPhoneNotificationDto.from = data.from;
-    createPhoneNotificationDto.timeZone = data.timeZone;
-    createPhoneNotificationDto.body = data.body;
-    createPhoneNotificationDto.template = data.template;
-    createPhoneNotificationDto.context = data.context;
+    const dto = new CreatePhoneNotificationDto();
+    dto.to = data.to;
+    dto.from = data.from;
+    dto.timeZone = data.timeZone;
+    dto.body = data.body;
+    dto.template = data.template;
+    dto.context = data.context;
 
-    try {
-      await validateOrReject(createPhoneNotificationDto);
-    } catch (errors) {
-      const validationErrors = errors
-        .map((error) => error.toString())
-        .join(', ');
-      throw new DtoValidationException(validationErrors);
-    }
+    await this.validateOrReject(dto);
 
-    return createPhoneNotificationDto;
+    return dto;
   }
 
   async createTemplate(
@@ -82,8 +72,7 @@ export abstract class PhoneStrategy
       );
     }
 
-    const template = Handlebars.compile(body);
-    dto.body = template({
+    dto.body = this.compileTemplate(body, {
       timeZone: dto.timeZone,
       ...dto.context,
     });

@@ -7,10 +7,10 @@ import { TwilioModule } from 'nestjs-twilio';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 import { NotifierStrategyService } from './notifier-strategy.service';
-import { EmailStrategy } from './strategies/email.strategy';
-import { CallStrategy } from './strategies/call.strategy';
-import { SmsStrategy } from './strategies/sms.strategy';
-import { PushNotificationStrategy } from './strategies/push-notification.strategy';
+import { EmailNotifierStrategy } from './strategies/email-notifier.strategy';
+import { CallNotifierStrategy } from './strategies/call-notifier.strategy';
+import { SmsNotifierStrategy } from './strategies/sms-notifier.strategy';
+import { PushNotifierStrategy } from './strategies/push-notifier.strategy';
 import { EmailTemplateModule } from '../email-template/email-template.module';
 import { PhoneTemplateModule } from '../phone-template/phone-template.module';
 import { PushTemplateModule } from '../push-template/push-template.module';
@@ -61,10 +61,10 @@ import { NotificationLogModule } from '../notification-log/notification-log.modu
     NotificationConsumer,
     NotificationService,
     NotifierStrategyService,
-    EmailStrategy,
-    CallStrategy,
-    SmsStrategy,
-    PushNotificationStrategy,
+    EmailNotifierStrategy,
+    CallNotifierStrategy,
+    SmsNotifierStrategy,
+    PushNotifierStrategy,
   ],
   controllers: [NotificationController],
 })

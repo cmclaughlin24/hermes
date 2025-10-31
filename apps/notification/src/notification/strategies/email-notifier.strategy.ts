@@ -2,25 +2,22 @@ import { MissingException } from '@hermes/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { validateOrReject } from 'class-validator';
-import Handlebars from 'handlebars';
 import { SentMessageInfo } from 'nodemailer';
 import { EmailTemplateService } from '../../email-template/email-template.service';
 import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
-import { NotifierStrategy } from '../interfaces/notifier-strategy.interface';
-import { DtoValidationException } from '../../common/errors/dto-validation.error';
+import { BaseNotifierStrategy } from './base-notifier.strategy';
 
 @Injectable()
-export class EmailStrategy
-  implements NotifierStrategy<CreateEmailNotificationDto>
-{
-  private readonly logger = new Logger(EmailStrategy.name);
+export class EmailNotifierStrategy extends BaseNotifierStrategy<CreateEmailNotificationDto> {
+  private readonly logger = new Logger(EmailNotifierStrategy.name);
 
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
     private readonly emailTemplateService: EmailTemplateService,
-  ) {}
+  ) {
+    super();
+  }
 
   async notify(dto: CreateEmailNotificationDto): Promise<SentMessageInfo> {
     return this.mailerService.sendMail({
@@ -38,26 +35,19 @@ export class EmailStrategy
       throw new Error('Payload must be an object');
     }
 
-    const createEmailNotificationDto = new CreateEmailNotificationDto();
-    createEmailNotificationDto.to = data.to;
-    createEmailNotificationDto.from = data.from;
-    createEmailNotificationDto.timeZone = data.timeZone;
-    createEmailNotificationDto.subject = data.subject;
-    createEmailNotificationDto.text = data.text;
-    createEmailNotificationDto.template = data.template;
-    createEmailNotificationDto.html = data.html;
-    createEmailNotificationDto.context = data.context;
+    const dto = new CreateEmailNotificationDto();
+    dto.to = data.to;
+    dto.from = data.from;
+    dto.timeZone = data.timeZone;
+    dto.subject = data.subject;
+    dto.text = data.text;
+    dto.template = data.template;
+    dto.html = data.html;
+    dto.context = data.context;
 
-    try {
-      await validateOrReject(createEmailNotificationDto);
-    } catch (errors) {
-      const validationErrors = errors
-        .map((error) => error.toString())
-        .join(', ');
-      throw new DtoValidationException(validationErrors);
-    }
+    await this.validateOrReject(dto);
 
-    return createEmailNotificationDto;
+    return dto;
   }
 
   async createTemplate(createEmailNotificationDto: CreateEmailNotificationDto) {
@@ -88,15 +78,13 @@ export class EmailStrategy
       );
     }
 
-    const htmlTemplate = Handlebars.compile(html);
-    const subjectTemplate = Handlebars.compile(subject);
     const context = {
       timeZone: createEmailNotificationDto.timeZone,
       ...createEmailNotificationDto.context,
     };
 
-    createEmailNotificationDto.subject = subjectTemplate(context);
-    createEmailNotificationDto.html = htmlTemplate(context);
+    createEmailNotificationDto.subject = this.compileTemplate(subject, context);
+    createEmailNotificationDto.html = this.compileTemplate(html, context);
     delete createEmailNotificationDto.template;
     delete createEmailNotificationDto.context;
 
