@@ -3,11 +3,11 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullMQOtel } from 'bullmq-otel';
+import { DistributionLogModule } from '..//distribution-log/distribution-log.module';
 import { CommonModule } from '../common/common.module';
 import { rabbitmqFactory } from '../config/rabbitmq.config';
-import { DistributionEventModule } from '../resources/distribution-event/distribution-event.module';
-import { DistributionLogModule } from '../resources/distribution-log/distribution-log.module';
-import { SubscriptionModule } from '../resources/subscription/subscription.module';
+import { DistributionEventModule } from '../distribution-event/distribution-event.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 import { DistributionConsumer } from './consumers/distribution-consumer/distribution.consumer';
 
 @Module({

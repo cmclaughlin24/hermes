@@ -2,7 +2,7 @@ import { DeliveryMethods } from '@hermes/common';
 import { BulkJobOptions } from 'bullmq';
 import * as _ from 'lodash';
 import { DateTime, WeekdayNumbers } from 'luxon';
-import { DistributionRule } from '../../resources/distribution-rule/repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
@@ -19,13 +19,13 @@ const MILLISECONDS_PER_SECOND = 1000;
  *       templates will be displayed in this time zone instead of the recipient's time
  *       zone. This can be disabled by setting the messageDto time zone property to null.
  *
- * @param {DistributionRule} distributionRule
+ * @param {DistributionRuleEntity} distributionRule
  * @param {SubscriberDto[]} subscriberDtos
  * @param {DistributionMessageDto} messageDto
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
  */
 export function createNotificationJobs(
-  distributionRule: DistributionRule,
+  distributionRule: DistributionRuleEntity,
   subscriberDtos: SubscriberDto[],
   messageDto: DistributionMessageDto,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {
@@ -74,12 +74,12 @@ export function hasDeliveryMethods(
  * Yields true if the current day and time falls within a SubscriberDto's delivery window settings,
  * the dto is instance of DeviceSubscriberDto subclass, or if the distribution rule does not check
  * the delivery window. Yields false otherwise.
- * @param {DistributionRule} distributionRule
+ * @param {DistributionRuleEntity} distributionRule
  * @param {SubscriberDto} dto
  * @returns {boolean}
  */
 export function hasDeliveryWindow(
-  distributionRule: DistributionRule,
+  distributionRule: DistributionRuleEntity,
   dto: SubscriberDto,
 ): boolean {
   if (
@@ -174,7 +174,7 @@ export function reduceToDeliveryMethodsMap(
  * Yields a list of notification jobs for a delivery method's recipients.
  * @param {DeliveryMethods} method
  * @param {Recipient[]} recipients
- * @param {DistributionRule} distributionRule
+ * @param {DistributionRuleEntity} distributionRule
  * @param {any} payload
  * @param {string} overrideTimeZone
  * @returns {{ name: string; data: any; opts?: BulkJobOptions }[]}
@@ -182,7 +182,7 @@ export function reduceToDeliveryMethodsMap(
 export function mapToNotificationJobs(
   method: DeliveryMethods,
   recipients: Recipient[],
-  distributionRule: DistributionRule,
+  distributionRule: DistributionRuleEntity,
   payload: any,
   overrideTimeZone: string,
 ): { name: string; data: any; opts?: BulkJobOptions }[] {

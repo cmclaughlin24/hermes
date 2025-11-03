@@ -7,7 +7,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { DistributionEventService } from '../../resources/distribution-event/distribution-event.service';
+import { DistributionEventService } from '../../distribution-event/distribution-event.service';
 
 @ValidatorConstraint({ name: 'DistributionEventExists', async: true })
 @Injectable()

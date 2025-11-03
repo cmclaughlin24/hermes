@@ -17,7 +17,7 @@ import {
   map,
   throwError,
 } from 'rxjs';
-import { Subscription } from '../../../resources/subscription/repository/entities/subscription.entity';
+import { SubscriptionEntity } from '../../../subscription/repository/entities/subscription.entity';
 import { DeviceSubscriberDto } from '../../dto/device-subscriber.dto';
 import { RequestSubscriberDto } from '../../dto/request-subscriber.dto';
 import { SubscriberDto } from '../../dto/subscriber.dto';
@@ -45,7 +45,7 @@ export class SubscriberService {
     private readonly configService: ConfigService,
   ) {}
 
-  async get(subscriptions: Subscription[]): Promise<SubscriberDto[]> {
+  async get(subscriptions: SubscriptionEntity[]): Promise<SubscriberDto[]> {
     const map = new Map<SubscriptionType, SubscriptionData[]>();
 
     for (const subscription of subscriptions) {
@@ -89,7 +89,7 @@ export class SubscriberService {
       .value();
   }
 
-  async createDto(subscription: Subscription): Promise<SubscriptionData> {
+  async createDto(subscription: SubscriptionEntity): Promise<SubscriptionData> {
     let dto: SubscriptionData;
 
     switch (subscription.subscriptionType) {

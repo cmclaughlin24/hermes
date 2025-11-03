@@ -1,5 +1,5 @@
-import { SubscriptionFilter } from '../../resources/subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../../resources/subscription/repository/entities/subscription.entity';
+import { SubscriptionFilterEntity } from '../../subscription/repository/entities/subscription-filter.entity';
+import { SubscriptionEntity } from '../../subscription/repository/entities/subscription.entity';
 import { SubscriptionQuery } from '../classes/subscription-query.class';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 import {
@@ -55,15 +55,15 @@ describe('subscription-filter.utils.ts', () => {
               operator: FilterOps.EQUALS,
               dataType: 'string',
               value: 'Nintendo',
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
             {
               field: 'console',
               operator: FilterOps.MATCHES,
               dataType: 'string',
               value: 'Game',
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
           ],
-        } as Subscription,
+        } as SubscriptionEntity,
         {
           filterJoin: FilterJoinOps.AND,
           filters: [
@@ -72,19 +72,19 @@ describe('subscription-filter.utils.ts', () => {
               operator: FilterOps.EQUALS,
               dataType: 'number',
               value: 1999,
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
             {
               field: 'games.*.name',
               operator: FilterOps.OR,
               dataType: 'array',
               value: ['Scooby-Doo: Night of 100 Frights', 'Sonic Riders'],
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
           ],
-        } as Subscription,
+        } as SubscriptionEntity,
         {
           filterJoin: FilterJoinOps.AND,
           filters: [],
-        } as Subscription,
+        } as SubscriptionEntity,
       ];
       const expectedResult = [subscriptions[0], subscriptions[2]];
 
@@ -114,19 +114,19 @@ describe('subscription-filter.utils.ts', () => {
               operator: FilterOps.EQUALS,
               dataType: 'string',
               value: 'Nintendo',
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
             {
               field: 'console',
               operator: FilterOps.MATCHES,
               dataType: 'string',
               value: 'Game',
-            } as SubscriptionFilter,
+            } as SubscriptionFilterEntity,
           ],
-        } as Subscription,
+        } as SubscriptionEntity,
         {
           filterJoin: FilterJoinOps.AND,
           filters: [],
-        } as Subscription,
+        } as SubscriptionEntity,
       ];
 
       // Act.
@@ -171,15 +171,15 @@ describe('subscription-filter.utils.ts', () => {
             operator: FilterOps.EQUALS,
             dataType: 'string',
             value: 'Nintendo Switch',
-          } as SubscriptionFilter,
+          } as SubscriptionFilterEntity,
           {
             field: 'consoles.*.games.*',
             operator: FilterOps.OR,
             dataType: 'array',
             value: ['Legend of Zelda: Breath of the Wild'],
-          } as SubscriptionFilter,
+          } as SubscriptionFilterEntity,
         ],
-      } as Subscription;
+      } as SubscriptionEntity;
 
       // Act.
       const result = shouldNotify(subscription, payload);
@@ -190,7 +190,7 @@ describe('subscription-filter.utils.ts', () => {
 
     it('should yield true if a subscription does not have any filters', () => {
       // Act.
-      const result = shouldNotify({} as Subscription, payload);
+      const result = shouldNotify({} as SubscriptionEntity, payload);
 
       // Assert.
       expect(result).toBeTruthy();
@@ -206,15 +206,15 @@ describe('subscription-filter.utils.ts', () => {
             operator: FilterOps.MATCHES,
             dataType: 'string',
             value: 'Xbox',
-          } as SubscriptionFilter,
+          } as SubscriptionFilterEntity,
           {
             field: 'consoles.*.games.*',
             operator: FilterOps.EQUALS,
             dataType: 'string',
             value: 'Titanfall',
-          } as SubscriptionFilter,
+          } as SubscriptionFilterEntity,
         ],
-      } as Subscription;
+      } as SubscriptionEntity;
 
       // Act.
       const result = shouldNotify(subscription, payload);
@@ -240,7 +240,7 @@ describe('subscription-filter.utils.ts', () => {
         dataType: 'string',
         value: 'Xbox Series X',
         field: 'console',
-      } as SubscriptionFilter;
+      } as SubscriptionFilterEntity;
 
       // Act.
       const result = evaluateFilter(filter, payload);
@@ -256,7 +256,7 @@ describe('subscription-filter.utils.ts', () => {
         dataType: 'string',
         value: ['Tales of Arise'],
         field: 'games.*',
-      } as SubscriptionFilter;
+      } as SubscriptionFilterEntity;
 
       // Act.
       const result = evaluateFilter(filter, payload);
@@ -272,7 +272,7 @@ describe('subscription-filter.utils.ts', () => {
         dataType: 'number',
         value: 2020,
         field: 'releaseDate.year',
-      } as SubscriptionFilter;
+      } as SubscriptionFilterEntity;
 
       // Act.
       const result = evaluateFilter(filter, payload);
@@ -288,7 +288,7 @@ describe('subscription-filter.utils.ts', () => {
         dataType: 'string',
         value: 'Gears of War',
         field: 'games.*',
-      } as SubscriptionFilter;
+      } as SubscriptionFilterEntity;
 
       // Act.
       const result = evaluateFilter(filter, payload);

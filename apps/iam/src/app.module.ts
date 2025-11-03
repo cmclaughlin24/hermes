@@ -4,8 +4,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import * as Joi from 'joi';
 import { join } from 'path';
-import { ResourcesModule } from './resources/resources.module';
+import { ApiKeyModule } from './api-key/api-key.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 import { CoreModule } from './core/core.module';
+import { HealthModule } from './health/health.module';
+import { PermissionModule } from './permission/permission.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -50,8 +54,12 @@ import { CoreModule } from './core/core.module';
         port: configService.get('DEVTOOLS_PORT'),
       }),
     }),
-    ResourcesModule,
     CoreModule.forRoot({ driver: 'postgres' }),
+    ApiKeyModule,
+    AuthenticationModule,
+    PermissionModule,
+    HealthModule,
+    UserModule,
   ],
 })
 export class AppModule {}

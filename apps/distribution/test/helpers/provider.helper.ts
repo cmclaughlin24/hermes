@@ -1,9 +1,9 @@
 import { TokenService } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
-import { DistributionEventService } from '../../src/resources/distribution-event/distribution-event.service';
-import { DistributionLogService } from '../../src/resources/distribution-log/distribution-log.service';
-import { DistributionRuleService } from '../../src/resources/distribution-rule/distribution-rule.service';
-import { SubscriptionService } from '../../src/resources/subscription/subscription.service';
+import { DistributionEventService } from '../../src/distribution-event/distribution-event.service';
+import { DistributionLogService } from '../../src/distribution-log/distribution-log.service';
+import { DistributionRuleService } from '../../src/distribution-rule/distribution-rule.service';
+import { SubscriptionService } from '../../src/subscription/subscription.service';
 
 export type MockConfigService = Partial<Record<keyof ConfigService, jest.Mock>>;
 

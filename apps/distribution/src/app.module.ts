@@ -7,9 +7,14 @@ import * as Joi from 'joi';
 import { join } from 'path';
 import { CommonModule } from './common/common.module';
 import { bullFactory } from './config/bull.config';
-import { MqModule } from './mq/mq.module';
-import { ResourcesModule } from './resources/resources.module';
 import { CoreModule } from './core/core.module';
+import { DistributionEventModule } from './distribution-event/distribution-event.module';
+import { DistributionLogModule } from './distribution-log/distribution-log.module';
+import { DistributionRuleModule } from './distribution-rule/distribution-rule.module';
+import { HealthModule } from './health/health.module';
+import { MessageModule } from './message/message.module';
+import { MqModule } from './mq/mq.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -66,7 +71,12 @@ import { CoreModule } from './core/core.module';
       }),
     }),
     CoreModule.forRoot({ driver: 'postgres' }),
-    ResourcesModule,
+    DistributionLogModule,
+    DistributionRuleModule,
+    SubscriptionModule,
+    MessageModule,
+    DistributionEventModule,
+    HealthModule,
     CommonModule,
     MqModule,
   ],
