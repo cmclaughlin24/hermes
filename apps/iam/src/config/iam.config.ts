@@ -1,7 +1,7 @@
 import { AuthType, IamModuleOptions } from '@hermes/iam';
 import { ConfigService } from '@nestjs/config';
-import { ApiKeyService } from '../resources/api-key/api-key.service';
-import { AuthenticationService } from '../resources/authentication/authentication.service';
+import { ApiKeyService } from '../api-key/api-key.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 export function iamFactory(
   configService: ConfigService,

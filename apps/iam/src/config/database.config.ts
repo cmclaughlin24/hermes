@@ -1,3 +1,4 @@
+import { CustomDatabaseNamingStrategy } from '@hermes/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -14,6 +15,7 @@ export function postgresDatabaseFactory(
     autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
+    namingStrategy: new CustomDatabaseNamingStrategy(),
   };
 }
 
@@ -30,5 +32,6 @@ export function mariaDabaseFactory(
     autoLoadEntities: true,
     synchronize: configService.get('DB_SYNC'),
     ssl: configService.get('DB_SSL'),
+    namingStrategy: new CustomDatabaseNamingStrategy(),
   };
 }
