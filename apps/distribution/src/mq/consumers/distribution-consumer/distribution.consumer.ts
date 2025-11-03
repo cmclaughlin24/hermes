@@ -14,9 +14,9 @@ import { SubscriberService } from '../../../common/services/subscriber/subscribe
 import { createNotificationJobs } from '../../../common/utils/notification-job.utils';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
 import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
-import { DistributionEvent } from '../../../resources/distribution-event/repository/entities/distribution-event.entity';
-import { DistributionRule } from '../../../resources/distribution-rule/repository/entities/distribution-rule.entity';
-import { Subscription } from '../../../resources/subscription/repository/entities/subscription.entity';
+import { DistributionEventEntity } from '../../../resources/distribution-event/repository/entities/distribution-event.entity';
+import { DistributionRuleEntity } from '../../../resources/distribution-rule/repository/entities/distribution-rule.entity';
+import { SubscriptionEntity } from '../../../resources/subscription/repository/entities/subscription.entity';
 import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';
@@ -145,14 +145,14 @@ export class DistributionConsumer extends MqConsumer {
    * Yields a DistributionRule that should be applied for an event based on the selectors
    * in a message's metadata. All selectors must match for a rule to be selected, otherwise,
    * the default rule will be choosen.
-   * @param {DistributionEvent} distributionEvent
+   * @param {DistributionEventEntity} distributionEvent
    * @param {any} metadata
-   * @returns {DistributionRule}
+   * @returns {DistributionRuleEntity}
    */
   private _getDistributionRule(
-    distributionEvent: DistributionEvent,
+    distributionEvent: DistributionEventEntity,
     metadata: any,
-  ): DistributionRule {
+  ): DistributionRuleEntity {
     let rule = distributionEvent.rules.find((rule) =>
       hasSelectors(
         distributionEvent.metadataLabels,
@@ -177,13 +177,13 @@ export class DistributionConsumer extends MqConsumer {
   /**
    * Yields a list of SubscriberDtos that should receive a notification for an event.
    * @param {DistributionMessageDto} message
-   * @param {Subscription[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
+   * @param {SubscriptionEntity[]} subscriptions List of Subscriptions for a DistributionEvent (ignored if bypassSubscriptions is true)
    * @param {boolean} bypassSubscriptions Ignore the Subscriptions and use the MessageDto "recipients" property
    * @returns {Promise<SubscriberDto[]>}
    */
   private async _getSubscribers(
     message: DistributionMessageDto,
-    subscriptions: Subscription[],
+    subscriptions: SubscriptionEntity[],
     bypassSubscriptions: boolean,
   ): Promise<SubscriberDto[]> {
     if (bypassSubscriptions) {

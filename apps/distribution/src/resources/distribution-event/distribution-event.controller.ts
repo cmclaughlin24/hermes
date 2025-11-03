@@ -19,7 +19,7 @@ import { DefaultRuleException } from '../../common/errors/default-rule.exception
 import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
-import { DistributionEvent } from './repository/entities/distribution-event.entity';
+import { DistributionEventEntity } from './repository/entities/distribution-event.entity';
 
 @ApiTags('Distribution Event')
 @Controller('distribution-event')
@@ -135,7 +135,7 @@ export class DistributionEventController {
         createDistributionEventDto,
       );
 
-      return new ApiResponseDto<DistributionEvent>(
+      return new ApiResponseDto<DistributionEventEntity>(
         `Successfully created distribution rule for eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
@@ -180,7 +180,7 @@ export class DistributionEventController {
         updateDistributionEventDto,
       );
 
-      return new ApiResponseDto<DistributionEvent>(
+      return new ApiResponseDto<DistributionEventEntity>(
         `Successfully updated distribution event for eventType=${eventType}!`,
         distributionEvent,
       );

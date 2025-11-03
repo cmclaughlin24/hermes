@@ -7,7 +7,7 @@ import {
 import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
-import { DistributionLog } from './repository/entities/distribution-log.entity';
+import { DistributionLogEntity } from './repository/entities/distribution-log.entity';
 
 describe('DistributionLogController', () => {
   let controller: DistributionLogController;
@@ -18,7 +18,7 @@ describe('DistributionLogController', () => {
     state: MessageState.COMPLETED,
     data: {},
     attempts: 2,
-  } as DistributionLog;
+  } as DistributionLogEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -48,7 +48,7 @@ describe('DistributionLogController', () => {
 
     it('should yield a list of distribution logs', async () => {
       // Arrange.
-      const expectedResult: DistributionLog[] = [log];
+      const expectedResult: DistributionLogEntity[] = [log];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.

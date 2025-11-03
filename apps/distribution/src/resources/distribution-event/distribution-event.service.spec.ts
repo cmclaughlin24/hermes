@@ -1,13 +1,10 @@
 import { ExistsException, MissingException } from '@hermes/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DefaultRuleException } from '../../common/errors/default-rule.exception';
-import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
-import { SubscriptionFilter } from '../subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../subscription/repository/entities/subscription.entity';
 import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
-import { DistributionEvent } from './repository/entities/distribution-event.entity';
+import { DistributionEventEntity } from './repository/entities/distribution-event.entity';
 import { DistributionEventRepository } from './repository/distribution-event.repository';
 
 type MockDistributionEventRepository = Partial<
@@ -51,7 +48,7 @@ describe('DistributionEventService', () => {
   describe('findAll', () => {
     const distributionEvent = {
       eventType: 'unit-test',
-    } as DistributionEvent;
+    } as DistributionEventEntity;
 
     afterEach(() => {
       repository.findAll.mockClear();
@@ -113,7 +110,7 @@ describe('DistributionEventService', () => {
   describe('findOne()', () => {
     const distributionEvent = {
       eventType: 'unit-test',
-    } as DistributionEvent;
+    } as DistributionEventEntity;
 
     afterEach(() => {
       repository.findOne.mockClear();

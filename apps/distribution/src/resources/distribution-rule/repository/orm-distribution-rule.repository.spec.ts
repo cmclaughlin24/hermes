@@ -11,7 +11,7 @@ import {
 } from '../../../../test/helpers/database.helper';
 import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
-import { DistributionRule } from './entities/distribution-rule.entity';
+import { DistributionRuleEntity } from './entities/distribution-rule.entity';
 import { OrmDistributionRuleRepository } from './orm-distribution-rule.repository';
 
 describe('PostgresDistributionRuleRepository', () => {
@@ -23,7 +23,7 @@ describe('PostgresDistributionRuleRepository', () => {
       providers: [
         OrmDistributionRuleRepository,
         {
-          provide: getRepositoryToken(DistributionRule),
+          provide: getRepositoryToken(DistributionRuleEntity),
           useValue: createMockRepository(),
         },
       ],
@@ -33,7 +33,7 @@ describe('PostgresDistributionRuleRepository', () => {
       OrmDistributionRuleRepository,
     );
     distributionRuleModel = module.get<MockRepository>(
-      getRepositoryToken(DistributionRule),
+      getRepositoryToken(DistributionRuleEntity),
     );
   });
 
@@ -46,7 +46,7 @@ describe('PostgresDistributionRuleRepository', () => {
       deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
       emailTemplate: 'unit-test',
       checkDeliveryWindow: false,
-    } as DistributionRule;
+    } as DistributionRuleEntity;
 
     afterEach(() => {
       distributionRuleModel.find.mockClear();
@@ -54,7 +54,7 @@ describe('PostgresDistributionRuleRepository', () => {
 
     it('should yield a list of distribution rules (w/o query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [distributionRule];
+      const expectedResult: DistributionRuleEntity[] = [distributionRule];
       distributionRuleModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -63,7 +63,7 @@ describe('PostgresDistributionRuleRepository', () => {
 
     it('should yield a filtered list of distribution rules (w/query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [distributionRule];
+      const expectedResult: DistributionRuleEntity[] = [distributionRule];
       distributionRuleModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -82,13 +82,13 @@ describe('PostgresDistributionRuleRepository', () => {
   });
 
   describe('findOne()', () => {
-    const expectedResult: DistributionRule = {
+    const expectedResult: DistributionRuleEntity = {
       id: 'unit-test',
       metadata: null,
       deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
       emailTemplate: 'unit-test',
       checkDeliveryWindow: false,
-    } as DistributionRule;
+    } as DistributionRuleEntity;
 
     afterEach(() => {
       distributionRuleModel.findOne.mockClear();

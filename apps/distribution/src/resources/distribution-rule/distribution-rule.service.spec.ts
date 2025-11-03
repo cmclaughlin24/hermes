@@ -8,7 +8,7 @@ import { DefaultRuleException } from '../../common/errors/default-rule.exception
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
-import { DistributionRule } from './repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from './repository/entities/distribution-rule.entity';
 import { DistributionRuleRepository } from './repository/distribution-rule.repository';
 
 type MockDistributionRuleRepository = Partial<
@@ -62,7 +62,7 @@ describe('DistributionRuleService', () => {
       deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
       emailTemplate: 'unit-test',
       checkDeliveryWindow: false,
-    } as DistributionRule;
+    } as DistributionRuleEntity;
 
     afterEach(() => {
       repository.findAll.mockClear();
@@ -70,7 +70,7 @@ describe('DistributionRuleService', () => {
 
     it('should yield a list of distribution rules (w/o query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [distributionRule];
+      const expectedResult: DistributionRuleEntity[] = [distributionRule];
       repository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -79,7 +79,7 @@ describe('DistributionRuleService', () => {
 
     it('should yield a filtered list of distribution rules (w/query params)', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [distributionRule];
+      const expectedResult: DistributionRuleEntity[] = [distributionRule];
       repository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -98,13 +98,13 @@ describe('DistributionRuleService', () => {
   });
 
   describe('findOne()', () => {
-    const expectedResult: DistributionRule = {
+    const expectedResult: DistributionRuleEntity = {
       id: 'unit-test',
       metadata: null,
       deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
       emailTemplate: 'unit-test',
       checkDeliveryWindow: false,
-    } as DistributionRule;
+    } as DistributionRuleEntity;
 
     afterEach(() => {
       repository.findOne.mockClear();

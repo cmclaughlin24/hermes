@@ -12,12 +12,12 @@ import {
   SubscriptionData,
   SubscriptionType,
 } from '../../../../common/types/subscription-type.type';
-import { DistributionEvent } from '../../../distribution-event/repository/entities/distribution-event.entity';
-import { SubscriptionFilter } from './subscription-filter.entity';
+import { DistributionEventEntity } from '../../../distribution-event/repository/entities/distribution-event.entity';
+import { SubscriptionFilterEntity } from './subscription-filter.entity';
 
 @Entity()
 @Unique(['subscriberId', 'distributionEventType'])
-export class Subscription {
+export class SubscriptionEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -44,15 +44,15 @@ export class Subscription {
   })
   filterJoin: FilterJoinOps;
 
-  @ManyToOne(() => DistributionEvent, (event) => event.subscriptions, {
+  @ManyToOne(() => DistributionEventEntity, (event) => event.subscriptions, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'distributionEventType' })
-  distributionEvent: DistributionEvent;
+  distributionEvent: DistributionEventEntity;
 
-  @OneToMany(() => SubscriptionFilter, (filter) => filter.subscription, {
+  @OneToMany(() => SubscriptionFilterEntity, (filter) => filter.subscription, {
     cascade: true,
     eager: true,
   })
-  filters: SubscriptionFilter[];
+  filters: SubscriptionFilterEntity[];
 }

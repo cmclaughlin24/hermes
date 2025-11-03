@@ -7,10 +7,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MessageState } from '../../../../common/types/message-state.type';
-import { DistributionAttempt } from './distribution-attempt.entity';
+import { DistributionAttemptEntity } from './distribution-attempt.entity';
 
 @Entity()
-export class DistributionLog {
+export class DistributionLogEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -45,8 +45,8 @@ export class DistributionLog {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => DistributionAttempt, (attempt) => attempt.log, {
+  @OneToMany(() => DistributionAttemptEntity, (attempt) => attempt.log, {
     cascade: true,
   })
-  attemptHistory: DistributionAttempt[];
+  attemptHistory: DistributionAttemptEntity[];
 }

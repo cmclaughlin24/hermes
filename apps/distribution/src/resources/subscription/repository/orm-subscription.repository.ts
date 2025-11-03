@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubscriptionRepository } from './subscription.repository';
-import { Subscription } from './entities/subscription.entity';
-import { SubscriptionFilter } from './entities/subscription-filter.entity';
+import { SubscriptionEntity } from './entities/subscription.entity';
+import { SubscriptionFilterEntity } from './entities/subscription-filter.entity';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { ExistsException, MissingException } from '@hermes/common';
 import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
@@ -12,10 +12,10 @@ import { SubscriptionFilterDto } from '../dto/subscription-filter.dto';
 @Injectable()
 export class OrmSubscriptionRepository implements SubscriptionRepository {
   constructor(
-    @InjectRepository(Subscription)
-    private readonly subscriptionModel: Repository<Subscription>,
-    @InjectRepository(SubscriptionFilter)
-    private readonly subscriptionFilterModel: Repository<SubscriptionFilter>,
+    @InjectRepository(SubscriptionEntity)
+    private readonly subscriptionModel: Repository<SubscriptionEntity>,
+    @InjectRepository(SubscriptionFilterEntity)
+    private readonly subscriptionFilterModel: Repository<SubscriptionFilterEntity>,
   ) {}
 
   async findAll() {

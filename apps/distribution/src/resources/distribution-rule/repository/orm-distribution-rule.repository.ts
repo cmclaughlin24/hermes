@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as _ from 'lodash';
 import { ExistsException, MissingException } from '@hermes/common';
 import { DistributionRuleRepository } from './distribution-rule.repository';
-import { DistributionRule } from './entities/distribution-rule.entity';
+import { DistributionRuleEntity } from './entities/distribution-rule.entity';
 import { CreateDistributionRuleDto } from '../dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from '../dto/update-distribution-rule.dto';
 import { DefaultRuleException } from '../../../common/errors/default-rule.exception';
@@ -14,8 +14,8 @@ export class OrmDistributionRuleRepository
   implements DistributionRuleRepository
 {
   constructor(
-    @InjectRepository(DistributionRule)
-    private readonly distributionRuleModel: Repository<DistributionRule>,
+    @InjectRepository(DistributionRuleEntity)
+    private readonly distributionRuleModel: Repository<DistributionRuleEntity>,
   ) {}
 
   async findAll(eventTypes: string[]) {

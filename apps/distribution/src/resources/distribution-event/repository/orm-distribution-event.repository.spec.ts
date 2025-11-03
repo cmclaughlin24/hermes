@@ -8,11 +8,11 @@ import {
   MockRepository,
   createMockRepository,
 } from '../../../../test/helpers/database.helper';
-import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
 import { OrmDistributionEventRepository } from './orm-distribution-event.repository';
-import { DistributionEvent } from './entities/distribution-event.entity';
+import { DistributionEventEntity } from './entities/distribution-event.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('OrmDistributionEventRepository', () => {
@@ -24,11 +24,11 @@ describe('OrmDistributionEventRepository', () => {
       providers: [
         OrmDistributionEventRepository,
         {
-          provide: getRepositoryToken(DistributionEvent),
+          provide: getRepositoryToken(DistributionEventEntity),
           useValue: createMockRepository(),
         },
         {
-          provide: getRepositoryToken(DistributionRule),
+          provide: getRepositoryToken(DistributionRuleEntity),
           useValue: createMockRepository(),
         },
       ],
@@ -38,7 +38,7 @@ describe('OrmDistributionEventRepository', () => {
       OrmDistributionEventRepository,
     );
     distributionEventModel = module.get<MockRepository>(
-      getRepositoryToken(DistributionEvent),
+      getRepositoryToken(DistributionEventEntity),
     );
   });
 
@@ -49,7 +49,7 @@ describe('OrmDistributionEventRepository', () => {
   describe('findAll', () => {
     const distributionEvent = {
       eventType: 'unit-test',
-    } as DistributionEvent;
+    } as DistributionEventEntity;
 
     afterEach(() => {
       distributionEventModel.find.mockClear();
@@ -120,7 +120,7 @@ describe('OrmDistributionEventRepository', () => {
   describe('findOne()', () => {
     const distributionEvent = {
       eventType: 'unit-test',
-    } as DistributionEvent;
+    } as DistributionEventEntity;
 
     afterEach(() => {
       distributionEventModel.findOne.mockClear();

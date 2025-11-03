@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionEntity } from './entities/subscription.entity';
 
 @Injectable()
 export abstract class SubscriptionRepository {
-  abstract findAll(): Promise<Subscription[]>;
+  abstract findAll(): Promise<SubscriptionEntity[]>;
   abstract findOne(
     eventType: string,
     subscriberId: string,
-  ): Promise<Subscription>;
+  ): Promise<SubscriptionEntity>;
   abstract create(
     createSubscriptionDto: CreateSubscriptionDto,
-  ): Promise<Subscription>;
+  ): Promise<SubscriptionEntity>;
   abstract update(
     eventType: string,
     subscriberId: string,
     updateSubscriptionDto: UpdateSubscriptionDto,
-  ): Promise<Subscription>;
+  ): Promise<SubscriptionEntity>;
   abstract removeAll(subscriberId: string): Promise<void>;
   abstract remove(eventType: string, subscriberId: string): Promise<void>;
 }

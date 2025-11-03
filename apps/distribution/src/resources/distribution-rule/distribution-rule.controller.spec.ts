@@ -15,19 +15,19 @@ import { DistributionRuleController } from './distribution-rule.controller';
 import { DistributionRuleService } from './distribution-rule.service';
 import { CreateDistributionRuleDto } from './dto/create-distribution-rule.dto';
 import { UpdateDistributionRuleDto } from './dto/update-distribution-rule.dto';
-import { DistributionRule } from './repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from './repository/entities/distribution-rule.entity';
 
 describe('DistributionRuleController', () => {
   let controller: DistributionRuleController;
   let service: MockDistributionRuleService;
 
-  const distributionRule: DistributionRule = {
+  const distributionRule: DistributionRuleEntity = {
     id: '',
     distributionEventType: '',
     emailTemplate: 'unit-test',
     deliveryMethods: [DeliveryMethods.EMAIL, DeliveryMethods.SMS],
     checkDeliveryWindow: false,
-  } as DistributionRule;
+  } as DistributionRuleEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,7 +57,7 @@ describe('DistributionRuleController', () => {
 
     it('should yield a list of distribution rules', async () => {
       // Arrange.
-      const expectedResult: DistributionRule[] = [distributionRule];
+      const expectedResult: DistributionRuleEntity[] = [distributionRule];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -94,7 +94,7 @@ describe('DistributionRuleController', () => {
 
     it('should yield a distribution rule', async () => {
       // Arrange.
-      const expectedResult: DistributionRule = distributionRule;
+      const expectedResult: DistributionRuleEntity = distributionRule;
       service.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -125,7 +125,7 @@ describe('DistributionRuleController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionRule>(
+      const expectedResult = new ApiResponseDto<DistributionRuleEntity>(
         `Successfully created distribution rule for eventType=${createDistributionRuleDto.eventType}!`,
         distributionRule,
       );
@@ -170,7 +170,7 @@ describe('DistributionRuleController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionRule>(
+      const expectedResult = new ApiResponseDto<DistributionRuleEntity>(
         `Successfully updated distribution rule!`,
         distributionRule,
       );

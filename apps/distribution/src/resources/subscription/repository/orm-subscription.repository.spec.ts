@@ -10,8 +10,8 @@ import { SubscriptionType } from '../../../common/types/subscription-type.type';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { SubscriptionFilterDto } from '../dto/subscription-filter.dto';
 import { UpdateSubscriptionDto } from '../dto/update-subscription.dto';
-import { SubscriptionFilter } from './entities/subscription-filter.entity';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionFilterEntity } from './entities/subscription-filter.entity';
+import { SubscriptionEntity } from './entities/subscription.entity';
 import { OrmSubscriptionRepository } from './orm-subscription.repository';
 
 describe('PostgresSubscriptionRepository', () => {
@@ -26,12 +26,12 @@ describe('PostgresSubscriptionRepository', () => {
       providers: [
         OrmSubscriptionRepository,
         {
-          provide: getRepositoryToken(Subscription),
-          useValue: createMockRepository<Subscription>(),
+          provide: getRepositoryToken(SubscriptionEntity),
+          useValue: createMockRepository<SubscriptionEntity>(),
         },
         {
-          provide: getRepositoryToken(SubscriptionFilter),
-          useValue: createMockRepository<SubscriptionFilter>(),
+          provide: getRepositoryToken(SubscriptionFilterEntity),
+          useValue: createMockRepository<SubscriptionFilterEntity>(),
         },
       ],
     }).compile();
@@ -40,10 +40,10 @@ describe('PostgresSubscriptionRepository', () => {
       OrmSubscriptionRepository,
     );
     subscriptionModel = module.get<MockRepository>(
-      getRepositoryToken(Subscription),
+      getRepositoryToken(SubscriptionEntity),
     );
     subscriptionFilterModel = module.get<MockRepository>(
-      getRepositoryToken(SubscriptionFilter),
+      getRepositoryToken(SubscriptionFilterEntity),
     );
   });
 
@@ -58,12 +58,12 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should yield a list of subscriptions', async () => {
       // Arrange.
-      const expectedResult: Subscription[] = [
+      const expectedResult: SubscriptionEntity[] = [
         {
           id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
           filterJoin: FilterJoinOps.AND,
           data: { url: 'http://localhost:9999/subscriptions' },
-        } as Subscription,
+        } as SubscriptionEntity,
       ];
       subscriptionModel.find.mockResolvedValue(expectedResult);
 
@@ -87,11 +87,11 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should yield a subscription', async () => {
       // Arrange.
-      const expectedResult: Subscription = {
+      const expectedResult: SubscriptionEntity = {
         id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
         filterJoin: FilterJoinOps.AND,
         data: { url: 'http://localhost:9999/subscriptions' },
-      } as Subscription;
+      } as SubscriptionEntity;
       subscriptionModel.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -126,7 +126,7 @@ describe('PostgresSubscriptionRepository', () => {
       distributionEventType: '',
       filterJoin: createSubscriptionDto.filterJoin,
       data: { url: 'http://localhost:9999/subscriptions' },
-    } as Subscription;
+    } as SubscriptionEntity;
 
     afterEach(() => {
       subscriptionModel.create.mockClear();
@@ -161,7 +161,7 @@ describe('PostgresSubscriptionRepository', () => {
       const expectedResult = new ExistsException(
         `Subscription ${createSubscriptionDto.subscriberId} already exists!`,
       );
-      subscriptionModel.findOne.mockResolvedValue({} as Subscription);
+      subscriptionModel.findOne.mockResolvedValue({} as SubscriptionEntity);
 
       // Act/Assert.
       await expect(repository.create(createSubscriptionDto)).rejects.toEqual(
@@ -258,7 +258,7 @@ describe('PostgresSubscriptionRepository', () => {
 
     it('should remove a subscription from all distribution event(s)', async () => {
       // Arrange.
-      const expectedResult = [{} as Subscription];
+      const expectedResult = [{} as SubscriptionEntity];
       subscriptionModel.find.mockResolvedValue(expectedResult);
 
       // Act.

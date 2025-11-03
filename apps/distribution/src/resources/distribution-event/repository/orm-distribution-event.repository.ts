@@ -6,21 +6,21 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DistributionEvent } from './entities/distribution-event.entity';
+import { DistributionEventEntity } from './entities/distribution-event.entity';
 import { DistributionEventRepository } from './distribution-event.repository';
 import { CreateDistributionEventDto } from '../dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from '../dto/update-distribution-event.dto';
-import { DistributionRule } from '../../distribution-rule/repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from '../../distribution-rule/repository/entities/distribution-rule.entity';
 
 @Injectable()
 export class OrmDistributionEventRepository
   implements DistributionEventRepository
 {
   constructor(
-    @InjectRepository(DistributionEvent)
-    private readonly distributionEventModel: Repository<DistributionEvent>,
-    @InjectRepository(DistributionRule)
-    private readonly distributionRuleModel: Repository<DistributionRule>,
+    @InjectRepository(DistributionEventEntity)
+    private readonly distributionEventModel: Repository<DistributionEventEntity>,
+    @InjectRepository(DistributionRuleEntity)
+    private readonly distributionRuleModel: Repository<DistributionRuleEntity>,
   ) {}
 
   async findAll(includeRules: boolean, includeSubscriptions: boolean) {

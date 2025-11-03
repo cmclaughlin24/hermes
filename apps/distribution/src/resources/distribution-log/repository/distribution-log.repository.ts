@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { MessageState } from '../../../common/types/message-state.type';
 import { DistributionJob } from '../../../common/types/distribution-job.type';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionLogEntity } from './entities/distribution-log.entity';
 
 @Injectable()
 export abstract class DistributionLogRepository {
   abstract findAll(
     eventTypes: string[],
     states: string[],
-  ): Promise<DistributionLog[]>;
-  abstract findOne(id: string): Promise<DistributionLog>;
+  ): Promise<DistributionLogEntity[]>;
+  abstract findOne(id: string): Promise<DistributionLogEntity>;
   abstract create(
     distributionJob: DistributionJob,
     state: MessageState,
     result: any,
     error: Record<string, any>,
-  ): Promise<DistributionLog>;
+  ): Promise<DistributionLogEntity>;
   abstract update(
     distributionJob: DistributionJob,
     state: MessageState,
     result: any,
     error: Record<string, any>,
-  ): Promise<DistributionLog>;
+  ): Promise<DistributionLogEntity>;
 }

@@ -13,23 +13,30 @@ export interface CoreModuleOptions {
 @Module({})
 export class CoreModule {
   static forRoot(options: CoreModuleOptions): DynamicModule {
-    let persistanceModule = TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: postgresDatabaseFactory,
-    });
-
-    if (options.driver === 'mariadb') {
-      persistanceModule = TypeOrmModule.forRootAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: mariaDabaseFactory,
-      });
-    }
+    const persistanceFactory = CoreModule.getDatabaseFactory(options.driver);
 
     return {
       module: CoreModule,
-      imports: [persistanceModule],
+      imports: [
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: persistanceFactory,
+        }),
+      ],
     };
+  }
+
+  static getDatabaseFactory(driver: 'postgres' | 'mariadb') {
+    switch (driver) {
+      case 'mariadb':
+        return mariaDabaseFactory;
+      case 'postgres':
+        return postgresDatabaseFactory;
+      default:
+        throw new Error(
+          `Unknown database driver ${driver}; expected postgres or mariadb`,
+        );
+    }
   }
 }

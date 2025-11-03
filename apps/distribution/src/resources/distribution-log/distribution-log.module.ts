@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistributionLogController } from './distribution-log.controller';
 import { DistributionLogService } from './distribution-log.service';
-import { DistributionAttempt } from './repository/entities/distribution-attempt.entity';
-import { DistributionLog } from './repository/entities/distribution-log.entity';
+import { DistributionAttemptEntity } from './repository/entities/distribution-attempt.entity';
+import { DistributionLogEntity } from './repository/entities/distribution-log.entity';
 import { DistributionLogRepository } from './repository/distribution-log.repository';
 import { OrmDistributionLogRepository } from './repository/orm-distribution-log.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DistributionLog, DistributionAttempt])],
+  imports: [TypeOrmModule.forFeature([DistributionLogEntity, DistributionAttemptEntity])],
   controllers: [DistributionLogController],
   providers: [
     DistributionLogService,

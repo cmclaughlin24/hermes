@@ -11,7 +11,7 @@ import {
 } from '../../../test/helpers/provider.helper';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { Subscription } from './repository/entities/subscription.entity';
+import { SubscriptionEntity } from './repository/entities/subscription.entity';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 
@@ -19,11 +19,11 @@ describe('SubscriptionController', () => {
   let controller: SubscriptionController;
   let service: MockSubscriptionService;
 
-  const subscription: Subscription = {
+  const subscription: SubscriptionEntity = {
     subscriberId: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
     data: { url: 'http://localhost:9999/subscriptions' },
     filterJoin: 'and',
-  } as Subscription;
+  } as SubscriptionEntity;
   const eventType = 'unit-test';
 
   beforeEach(async () => {
@@ -52,7 +52,7 @@ describe('SubscriptionController', () => {
 
     it('should yield a list of subscriptions', async () => {
       // Arrange.
-      const expectedResult: Subscription[] = [subscription];
+      const expectedResult: SubscriptionEntity[] = [subscription];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -114,7 +114,7 @@ describe('SubscriptionController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<Subscription>(
+      const expectedResult = new ApiResponseDto<SubscriptionEntity>(
         `Successfully created subscription!`,
         subscription,
       );
@@ -162,7 +162,7 @@ describe('SubscriptionController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<Subscription>(
+      const expectedResult = new ApiResponseDto<SubscriptionEntity>(
         `Successfully updated subscription!`,
         subscription,
       );

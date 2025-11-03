@@ -7,11 +7,11 @@ import {
 import { FilterJoinOps, FilterOps } from '../../common/types/filter.type';
 import { SubscriptionType } from '../../common/types/subscription-type.type';
 import { DistributionEventService } from '../distribution-event/distribution-event.service';
-import { DistributionEvent } from '../distribution-event/repository/entities/distribution-event.entity';
-import { DistributionRule } from '../distribution-rule/repository/entities/distribution-rule.entity';
+import { DistributionEventEntity } from '../distribution-event/repository/entities/distribution-event.entity';
+import { DistributionRuleEntity } from '../distribution-rule/repository/entities/distribution-rule.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { Subscription } from './repository/entities/subscription.entity';
+import { SubscriptionEntity } from './repository/entities/subscription.entity';
 import { SubscriptionService } from './subscription.service';
 import { SubscriptionRepository } from './repository/subscription.repository';
 
@@ -68,12 +68,12 @@ describe('SubscriptionService', () => {
 
     it('should yield a list of subscriptions', async () => {
       // Arrange.
-      const expectedResult: Subscription[] = [
+      const expectedResult: SubscriptionEntity[] = [
         {
           id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
           filterJoin: FilterJoinOps.AND,
           data: { url: 'http://localhost:9999/subscriptions' },
-        } as Subscription,
+        } as SubscriptionEntity,
       ];
       repository.findAll.mockResolvedValue(expectedResult);
 
@@ -98,14 +98,14 @@ describe('SubscriptionService', () => {
 
     it('should yield a subscription', async () => {
       // Arrange.
-      const expectedResult: Subscription = {
+      const expectedResult: SubscriptionEntity = {
         id: '8544f373-8442-4307-aaa0-f26d4f7b30b1',
         filterJoin: FilterJoinOps.AND,
         data: { url: 'http://localhost:9999/subscriptions' },
-      } as Subscription;
+      } as SubscriptionEntity;
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
-      } as DistributionRule);
+      } as DistributionRuleEntity);
       repository.findOne.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -120,7 +120,7 @@ describe('SubscriptionService', () => {
 
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
-      } as DistributionRule);
+      } as DistributionRuleEntity);
       repository.findOne.mockResolvedValue(null);
 
       // Act/Assert.
@@ -156,7 +156,7 @@ describe('SubscriptionService', () => {
       distributionEventType: '',
       filterJoin: createSubscriptionDto.filterJoin,
       data: { url: 'http://localhost:9999/subscriptions' },
-    } as Subscription;
+    } as SubscriptionEntity;
 
     afterEach(() => {
       repository.create.mockClear();
@@ -167,7 +167,7 @@ describe('SubscriptionService', () => {
       // Arrange.
       distributionEventService.findOne.mockResolvedValue({
         eventType: 'test',
-      } as DistributionEvent);
+      } as DistributionEventEntity);
 
       // Act.
       await service.create(createSubscriptionDto);
@@ -180,7 +180,7 @@ describe('SubscriptionService', () => {
       // Arrange.
       distributionEventService.findOne.mockResolvedValue({
         eventType: 'test',
-      } as DistributionEvent);
+      } as DistributionEventEntity);
       repository.create.mockResolvedValue(subscription);
 
       // Act/Assert.
@@ -209,7 +209,7 @@ describe('SubscriptionService', () => {
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
-      } as DistributionRule);
+      } as DistributionRuleEntity);
       repository.create.mockRejectedValue(expectedResult);
 
       // Act/Assert.
@@ -332,7 +332,7 @@ describe('SubscriptionService', () => {
       repository.findOne.mockResolvedValue(subscription);
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
-      } as DistributionRule);
+      } as DistributionRuleEntity);
 
       // Act.
       await service.remove(eventType, subscriberId);
@@ -348,7 +348,7 @@ describe('SubscriptionService', () => {
       );
       distributionEventService.findOne.mockResolvedValue({
         id: 'test',
-      } as DistributionRule);
+      } as DistributionRuleEntity);
       repository.remove.mockRejectedValue(expectedResult);
 
       // Act/Assert.

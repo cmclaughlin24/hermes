@@ -14,7 +14,7 @@ import { DistributionEventController } from './distribution-event.controller';
 import { DistributionEventService } from './distribution-event.service';
 import { CreateDistributionEventDto } from './dto/create-distribution-event.dto';
 import { UpdateDistributionEventDto } from './dto/update-distribution-event.dto';
-import { DistributionEvent } from './repository/entities/distribution-event.entity';
+import { DistributionEventEntity } from './repository/entities/distribution-event.entity';
 
 describe('DistributionEventController', () => {
   let controller: DistributionEventController;
@@ -23,7 +23,7 @@ describe('DistributionEventController', () => {
   const distributionEvent = {
     eventType: 'unit-test',
     metadataLabels: ['unit-test'],
-  } as DistributionEvent;
+  } as DistributionEventEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -55,7 +55,7 @@ describe('DistributionEventController', () => {
 
     it('should yield a list of distribution events', async () => {
       // Arrange.
-      const expectedResult: DistributionEvent[] = [distributionEvent];
+      const expectedResult: DistributionEventEntity[] = [distributionEvent];
       service.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.
@@ -127,7 +127,7 @@ describe('DistributionEventController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionEvent>(
+      const expectedResult = new ApiResponseDto<DistributionEventEntity>(
         `Successfully created distribution rule for eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
@@ -175,7 +175,7 @@ describe('DistributionEventController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionEvent>(
+      const expectedResult = new ApiResponseDto<DistributionEventEntity>(
         `Successfully updated distribution event for eventType=${distributionEvent.eventType}!`,
         distributionEvent,
       );
@@ -213,7 +213,7 @@ describe('DistributionEventController', () => {
 
     it('should yield an "ApiResponseDto" object', async () => {
       // Arrange.
-      const expectedResult = new ApiResponseDto<DistributionEvent>(
+      const expectedResult = new ApiResponseDto<DistributionEventEntity>(
         `Successfully deleted distribution event for eventType=${distributionEvent.eventType}!`,
       );
       service.remove.mockResolvedValue(expectedResult);

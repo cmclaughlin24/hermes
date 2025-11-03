@@ -7,11 +7,11 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { DistributionEvent } from '../../../distribution-event/repository/entities/distribution-event.entity';
+import { DistributionEventEntity } from '../../../distribution-event/repository/entities/distribution-event.entity';
 
 @Entity()
 @Unique(['distributionEventType', 'metadata'])
-export class DistributionRule {
+export class DistributionRuleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -55,9 +55,9 @@ export class DistributionRule {
   @Column({ default: false })
   bypassSubscriptions: boolean;
 
-  @ManyToOne(() => DistributionEvent, (event) => event.rules, {
+  @ManyToOne(() => DistributionEventEntity, (event) => event.rules, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'distributionEventType' })
-  event: DistributionEvent;
+  event: DistributionEventEntity;
 }

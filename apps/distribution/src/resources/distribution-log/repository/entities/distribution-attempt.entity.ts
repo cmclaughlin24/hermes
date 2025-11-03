@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { DistributionLog } from './distribution-log.entity';
+import { DistributionLogEntity } from './distribution-log.entity';
 
 @Entity()
-export class DistributionAttempt {
+export class DistributionAttemptEntity {
   @PrimaryColumn('uuid')
   logId: string;
 
@@ -18,8 +18,8 @@ export class DistributionAttempt {
   @Column({ type: 'simple-json', nullable: true })
   error: any;
 
-  @ManyToOne(() => DistributionLog, (log) => log.attemptHistory, {
+  @ManyToOne(() => DistributionLogEntity, (log) => log.attemptHistory, {
     onDelete: 'CASCADE',
   })
-  log: DistributionLog;
+  log: DistributionLogEntity;
 }

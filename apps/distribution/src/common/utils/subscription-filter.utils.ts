@@ -1,20 +1,20 @@
 import * as flatten from 'flat';
 import * as _ from 'lodash';
-import { SubscriptionFilter } from '../../resources/subscription/repository/entities/subscription-filter.entity';
-import { Subscription } from '../../resources/subscription/repository/entities/subscription.entity';
+import { SubscriptionFilterEntity } from '../../resources/subscription/repository/entities/subscription-filter.entity';
+import { SubscriptionEntity } from '../../resources/subscription/repository/entities/subscription.entity';
 import { SubscriptionQuery } from '../classes/subscription-query.class';
 import { FilterJoinOps, FilterOps } from '../types/filter.type';
 
 /**
  * Yields a list of Subscriptions that should recieve a notification.
- * @param {Subscription[]} subscriptions
+ * @param {SubscriptionEntity[]} subscriptions
  * @param {any} payload
- * @returns {Subscription[]}
+ * @returns {SubscriptionEntity[]}
  */
 export function filterSubscriptions(
-  subscriptions: Subscription[],
+  subscriptions: SubscriptionEntity[],
   payload: any,
-): Subscription[] {
+): SubscriptionEntity[] {
   if (_.isEmpty(subscriptions)) {
     return [];
   }
@@ -33,12 +33,12 @@ export function filterSubscriptions(
 /**
  * Yields a boolean that indicates whether or not a subscription should recieve a
  * notification.
- * @param {Subscription} subscription
+ * @param {SubscriptionEntity} subscription
  * @param {Payload} payload
  * @returns {boolean}
  */
 export function shouldNotify(
-  subscription: Subscription,
+  subscription: SubscriptionEntity,
   payload: any,
 ): boolean {
   // Note: If a subscription does not have filters, assume the subscription should
@@ -60,12 +60,12 @@ export function shouldNotify(
 /**
  * Yields a boolean that indicates whether or not the filter criteria exists in
  * a payload.
- * @param {SubscriptionFilter} filter
+ * @param {SubscriptionFilterEntity} filter
  * @param {any} payload
  * @returns {boolean}
  */
 export function evaluateFilter(
-  filter: SubscriptionFilter,
+  filter: SubscriptionFilterEntity,
   payload: any,
 ): boolean {
   const flatPayload = flatten(payload);

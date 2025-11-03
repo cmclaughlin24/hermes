@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DistributionJob } from '../../common/types/distribution-job.type';
 import { MessageState } from '../../common/types/message-state.type';
 import { DistributionLogService } from './distribution-log.service';
-import { DistributionLog } from './repository/entities/distribution-log.entity';
+import { DistributionLogEntity } from './repository/entities/distribution-log.entity';
 import { DistributionLogRepository } from './repository/distribution-log.repository';
 
 type MockDistributionLogRepository = Partial<
@@ -25,7 +25,7 @@ describe('DistributionLogService', () => {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
     state: MessageState.COMPLETED,
     attempts: 2,
-  } as DistributionLog;
+  } as DistributionLogEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -55,7 +55,7 @@ describe('DistributionLogService', () => {
 
     it('should yield a list of distribution logs', async () => {
       // Arrange.
-      const expectedResult: DistributionLog[] = [log];
+      const expectedResult: DistributionLogEntity[] = [log];
       repository.findAll.mockResolvedValue(expectedResult);
 
       // Act/Assert.

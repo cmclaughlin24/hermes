@@ -4,17 +4,17 @@ import { DataSource, Repository } from 'typeorm';
 import * as _ from 'lodash';
 import { DistributionJob } from 'apps/distribution/src/common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
-import { DistributionAttempt } from './entities/distribution-attempt.entity';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionAttemptEntity } from './entities/distribution-attempt.entity';
+import { DistributionLogEntity } from './entities/distribution-log.entity';
 import { DistributionLogRepository } from './distribution-log.repository';
 
 @Injectable()
 export class OrmDistributionLogRepository implements DistributionLogRepository {
   constructor(
-    @InjectRepository(DistributionLog)
-    private readonly distributionLogModel: Repository<DistributionLog>,
-    @InjectRepository(DistributionAttempt)
-    private readonly distributionAttemptModel: Repository<DistributionAttempt>,
+    @InjectRepository(DistributionLogEntity)
+    private readonly distributionLogModel: Repository<DistributionLogEntity>,
+    @InjectRepository(DistributionAttemptEntity)
+    private readonly distributionAttemptModel: Repository<DistributionAttemptEntity>,
     private readonly dataSource: DataSource,
   ) {}
 

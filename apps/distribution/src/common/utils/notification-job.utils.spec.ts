@@ -1,6 +1,6 @@
 import { DeliveryMethods, Platform, PushSubscriptionDto } from '@hermes/common';
 import { DateTime } from 'luxon';
-import { DistributionRule } from '../../resources/distribution-rule/repository/entities/distribution-rule.entity';
+import { DistributionRuleEntity } from '../../resources/distribution-rule/repository/entities/distribution-rule.entity';
 import { Recipient } from '../classes/recipient.class';
 import { DeviceSubscriberDto } from '../dto/device-subscriber.dto';
 import { DistributionMessageDto } from '../dto/distribution-message.dto';
@@ -30,7 +30,7 @@ describe('notification-job.utils.ts', () => {
         emailTemplate: 'super-mario-kart',
         smsTemplate: 'super-mario-kart',
         pushTemplate: 'super-mario-kart',
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const subscription1 = new UserSubscriberDto();
       subscription1.deliveryMethods = [
         DeliveryMethods.EMAIL,
@@ -153,7 +153,7 @@ describe('notification-job.utils.ts', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: true,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const SubscriberDto = new UserSubscriberDto();
       SubscriberDto.deliveryWindows = [
         { dayOfWeek: 4, atHour: 4, atMinute: 30, duration: 120 },
@@ -171,7 +171,7 @@ describe('notification-job.utils.ts', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: false,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
 
       // Act.
       const result = hasDeliveryWindow(
@@ -187,7 +187,7 @@ describe('notification-job.utils.ts', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: true,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const SubscriberDto = new DeviceSubscriberDto();
 
       // Act.
@@ -201,7 +201,7 @@ describe('notification-job.utils.ts', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: true,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const SubscriberDto = new UserSubscriberDto();
       SubscriberDto.deliveryWindows = [
         { dayOfWeek: 4, atHour: 12, atMinute: 30, duration: 120 },
@@ -219,7 +219,7 @@ describe('notification-job.utils.ts', () => {
       // Arrange.
       const distributionRule = {
         checkDeliveryWindow: true,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const SubscriberDto = new UserSubscriberDto();
       SubscriberDto.deliveryWindows = [
         { dayOfWeek: 6, atHour: 9, atMinute: 30, duration: 120 },
@@ -369,7 +369,7 @@ describe('notification-job.utils.ts', () => {
         text: 'A meeting between PlayStation characters and developers.',
         emailTemplate: 'playstation-characters',
         html: null,
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const payload = {};
       const expectedResult = recipients.map((recipient) => ({
         name: DeliveryMethods.EMAIL,
@@ -428,7 +428,7 @@ describe('notification-job.utils.ts', () => {
       ];
       const distributionRule = {
         smsTemplate: 'did-you-know-pac-man-was-originally-puckman?',
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const payload = {};
       const expectedResult = recipients.map((recipient) => ({
         name: DeliveryMethods.SMS,
@@ -485,7 +485,7 @@ describe('notification-job.utils.ts', () => {
       ];
       const distributionRule = {
         callTemplate: 'nintendo-was-founded-in-1889',
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const payload = {};
       const expectedResult = recipients.map((recipient) => ({
         name: DeliveryMethods.CALL,
@@ -530,7 +530,7 @@ describe('notification-job.utils.ts', () => {
       const distributionRule = {
         pushTemplate:
           'sonic-the-hedgehog-was-the-first-video-game-character-in-macys-parade',
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const payload = {};
       const expectedResult = recipients.map((recipient) => ({
         name: DeliveryMethods.PUSH,
@@ -570,7 +570,7 @@ describe('notification-job.utils.ts', () => {
         text: 'Did you know the creator of the Game Boy was a janitor at Nintendo?',
         emailTemplate: null,
         html: '<p>He was first asked to develop toys for Nintendo after the president visited his factory, and saw a prototype he had developed.</p>',
-      } as DistributionRule;
+      } as DistributionRuleEntity;
       const payload = {};
       const overrideTimeZone = 'America/Detroit';
       const expectedResult = recipients.map((recipient) => ({

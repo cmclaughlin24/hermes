@@ -8,8 +8,8 @@ import {
 } from '../../../../test/helpers/database.helper';
 import { DistributionJob } from '../../../common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
-import { DistributionAttempt } from './entities/distribution-attempt.entity';
-import { DistributionLog } from './entities/distribution-log.entity';
+import { DistributionAttemptEntity } from './entities/distribution-attempt.entity';
+import { DistributionLogEntity } from './entities/distribution-log.entity';
 import { OrmDistributionLogRepository } from './orm-distribution-log.repository';
 import { DataSource } from 'typeorm';
 
@@ -22,7 +22,7 @@ describe('OrmDistributionLogRepository', () => {
     id: '32641f47-785e-4f43-8249-fff97e5009d0',
     state: MessageState.COMPLETED,
     attempts: 2,
-  } as DistributionLog;
+  } as DistributionLogEntity;
 
   const job: DistributionJob = {
     id: 'unit-test',
@@ -40,11 +40,11 @@ describe('OrmDistributionLogRepository', () => {
       providers: [
         OrmDistributionLogRepository,
         {
-          provide: getRepositoryToken(DistributionLog),
+          provide: getRepositoryToken(DistributionLogEntity),
           useValue: createMockRepository(),
         },
         {
-          provide: getRepositoryToken(DistributionAttempt),
+          provide: getRepositoryToken(DistributionAttemptEntity),
           useValue: createMockRepository(),
         },
         {
@@ -58,10 +58,10 @@ describe('OrmDistributionLogRepository', () => {
       OrmDistributionLogRepository,
     );
     distributionLogModel = module.get<MockRepository>(
-      getRepositoryToken(DistributionLog),
+      getRepositoryToken(DistributionLogEntity),
     );
     distributionAttemptModel = module.get<MockRepository>(
-      getRepositoryToken(DistributionAttempt),
+      getRepositoryToken(DistributionAttemptEntity),
     );
   });
 
@@ -76,7 +76,7 @@ describe('OrmDistributionLogRepository', () => {
 
     it('should yield a list of distribution logs', async () => {
       // Arrange.
-      const expectedResult: DistributionLog[] = [log];
+      const expectedResult: DistributionLogEntity[] = [log];
       distributionLogModel.find.mockResolvedValue(expectedResult);
 
       // Act/Assert.
