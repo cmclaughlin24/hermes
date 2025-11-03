@@ -12,7 +12,7 @@ import {
   createConfigServiceMock,
   createDistributionLogServiceMock,
 } from '../../../../test/helpers/provider.helper';
-import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
+import { DistributionLogService } from '../../../distribution-log/distribution-log.service';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from './mq.interceptor';
 

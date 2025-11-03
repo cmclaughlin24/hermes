@@ -13,7 +13,7 @@ import { DistributionMessageDto } from '../../../common/dto/distribution-message
 import { SubscriberService } from '../../../common/services/subscriber/subscriber.service';
 import { SubscriptionType } from '../../../common/types/subscription-type.type';
 import { filterSubscriptions } from '../../../common/utils/subscription-filter.utils';
-import { DistributionEventService } from '../../../resources/distribution-event/distribution-event.service';
+import { DistributionEventService } from '../../../distribution-event/distribution-event.service';
 import { MqResponse } from '../../classes/mq-response.class';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 import { MqInterceptor } from '../../interceptors/mq/mq.interceptor';

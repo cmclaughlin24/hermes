@@ -17,7 +17,7 @@ import {
   map,
   throwError,
 } from 'rxjs';
-import { SubscriptionEntity } from '../../../resources/subscription/repository/entities/subscription.entity';
+import { SubscriptionEntity } from '../../../subscription/repository/entities/subscription.entity';
 import { DeviceSubscriberDto } from '../../dto/device-subscriber.dto';
 import { RequestSubscriberDto } from '../../dto/request-subscriber.dto';
 import { SubscriberDto } from '../../dto/subscriber.dto';

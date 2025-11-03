@@ -20,7 +20,7 @@ import { Observable, catchError, map } from 'rxjs';
 import { DistributionJob } from '../../../common/types/distribution-job.type';
 import { MessageState } from '../../../common/types/message-state.type';
 import { getAttempts } from '../../../common/utils/amqp.utils';
-import { DistributionLogService } from '../../../resources/distribution-log/distribution-log.service';
+import { DistributionLogService } from '../../../distribution-log/distribution-log.service';
 import { MqUnrecoverableError } from '../../classes/mq-unrecoverable-error.class';
 
 @Injectable()
