@@ -3,14 +3,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-    MockConfigService,
-    MockEmailTemplateService,
-    createConfigServiceMock,
-    createEmailTemplateServiceMock,
-} from '../../../../test/helpers/provider.helper';
-import { EmailTemplateService } from '../../../email-template/email-template.service';
-import { CreateEmailNotificationDto } from '../../dto/create-email-notification.dto';
-import { EmailService } from './email.service';
+  MockConfigService,
+  MockEmailTemplateService,
+  createConfigServiceMock,
+  createEmailTemplateServiceMock,
+} from '../../../test/helpers/provider.helper';
+import { EmailTemplateService } from '../../email-template/email-template.service';
+import { CreateEmailNotificationDto } from '../dto/create-email-notification.dto';
+import { EmailNotifierStrategy } from './email-notifier.strategy';
 
 export type MockMailerService = Partial<Record<keyof MailerService, jest.Mock>>;
 
@@ -18,8 +18,8 @@ export const createMailerServiceMock = (): MockMailerService => ({
   sendMail: jest.fn(),
 });
 
-describe('EmailService', () => {
-  let service: EmailService;
+describe('EmailNotifierStrategy', () => {
+  let strategy: EmailNotifierStrategy;
   let mailerService: MockMailerService;
   let configService: MockConfigService;
   let emailTemplateService: MockEmailTemplateService;
@@ -27,7 +27,7 @@ describe('EmailService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        EmailService,
+        EmailNotifierStrategy,
         {
           provide: MailerService,
           useValue: createMailerServiceMock(),
@@ -43,7 +43,7 @@ describe('EmailService', () => {
       ],
     }).compile();
 
-    service = module.get<EmailService>(EmailService);
+    strategy = module.get<EmailNotifierStrategy>(EmailNotifierStrategy);
     mailerService = module.get<MockMailerService>(MailerService);
     configService = module.get<MockConfigService>(ConfigService);
     emailTemplateService =
@@ -51,10 +51,10 @@ describe('EmailService', () => {
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(strategy).toBeDefined();
   });
 
-  describe('sendEmail()', () => {
+  describe('notify()', () => {
     afterEach(() => {
       mailerService.sendMail.mockClear();
     });
@@ -72,7 +72,7 @@ describe('EmailService', () => {
       };
 
       // Act.
-      await service.sendEmail(createEmailNotificationDto);
+      await strategy.notify(createEmailNotificationDto);
 
       // Assert.
       expect(mailerService.sendMail).toHaveBeenCalledWith(
@@ -98,7 +98,7 @@ describe('EmailService', () => {
       configService.get.mockReturnValue(from);
 
       // Act.
-      await service.sendEmail(createEmailNotificationDto);
+      await strategy.notify(createEmailNotificationDto);
 
       // Assert.
       expect(mailerService.sendMail).toHaveBeenCalledWith(expectedResult);
@@ -110,7 +110,7 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.sendEmail({} as CreateEmailNotificationDto),
+        strategy.notify({} as CreateEmailNotificationDto),
       ).rejects.toBeInstanceOf(Error);
     });
   });
@@ -130,7 +130,7 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).resolves.toBeInstanceOf(CreateEmailNotificationDto);
     });
 
@@ -139,7 +139,7 @@ describe('EmailService', () => {
       const expectedResult = new Error('Payload cannot be null/undefined');
 
       // Act/Assert.
-      await expect(service.createNotificationDto(null)).rejects.toEqual(
+      await expect(strategy.createNotificationDto(null)).rejects.toEqual(
         expectedResult,
       );
     });
@@ -149,7 +149,7 @@ describe('EmailService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto('test')).rejects.toEqual(
+      await expect(strategy.createNotificationDto('test')).rejects.toEqual(
         expectedResult,
       );
     });
@@ -159,7 +159,7 @@ describe('EmailService', () => {
       const expectedResult = new Error('Payload must be an object');
 
       // Act/Assert.
-      await expect(service.createNotificationDto([])).rejects.toEqual(
+      await expect(strategy.createNotificationDto([])).rejects.toEqual(
         expectedResult,
       );
     });
@@ -177,12 +177,12 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.createNotificationDto(payload),
+        strategy.createNotificationDto(payload),
       ).rejects.toBeInstanceOf(Error);
     });
   });
 
-  describe('createEmailTemplate()', () => {
+  describe('createTemplate()', () => {
     afterEach(() => {
       emailTemplateService.findOne.mockClear();
     });
@@ -208,7 +208,7 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.createEmailTemplate(createEmailNotificationDto),
+        strategy.createTemplate(createEmailNotificationDto),
       ).resolves.toEqual(expectedResult);
     });
 
@@ -230,7 +230,7 @@ describe('EmailService', () => {
       });
 
       // Act.
-      await service.createEmailTemplate(createEmailNotificationDto);
+      await strategy.createTemplate(createEmailNotificationDto);
 
       // Assert.
       expect(emailTemplateService.findOne).toHaveBeenCalledWith(template);
@@ -255,7 +255,7 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.createEmailTemplate(createEmailNotificationDto),
+        strategy.createTemplate(createEmailNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
 
@@ -273,7 +273,7 @@ describe('EmailService', () => {
 
       // Act/Assert.
       await expect(
-        service.createEmailTemplate(createEmailNotificationDto),
+        strategy.createTemplate(createEmailNotificationDto),
       ).rejects.toEqual(expectedResult);
     });
   });

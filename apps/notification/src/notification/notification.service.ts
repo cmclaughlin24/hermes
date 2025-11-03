@@ -1,19 +1,14 @@
 import { DeliveryMethods } from '@hermes/common';
 import { Injectable } from '@nestjs/common';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
-import { EmailService } from '../common/services/email/email.service';
-import { PhoneService } from '../common/services/phone/phone.service';
-import { PushNotificationService } from '../common/services/push-notification/push-notification.service';
+import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
+import { NotifierStrategyService } from './notifier-strategy.service';
+import { NotificationDto } from './interfaces/notification-dto.interface';
 
 @Injectable()
 export class NotificationService {
-  constructor(
-    private readonly emailService: EmailService,
-    private readonly phoneService: PhoneService,
-    private readonly pushNotificationService: PushNotificationService,
-  ) {}
+  constructor(private readonly notifierStrategies: NotifierStrategyService) {}
 
   /**
    * Sends an email notification.
@@ -23,11 +18,7 @@ export class NotificationService {
   async createEmailNotification(
     createEmailNotificationDto: CreateEmailNotificationDto,
   ) {
-    const emailNotificationDto = await this.emailService.createEmailTemplate(
-      createEmailNotificationDto,
-    );
-
-    return this.emailService.sendEmail(emailNotificationDto);
+    return this._notify(DeliveryMethods.EMAIL, createEmailNotificationDto);
   }
 
   /**
@@ -38,12 +29,7 @@ export class NotificationService {
   async createTextNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
-      DeliveryMethods.SMS,
-      createPhoneNotificationDto,
-    );
-
-    return this.phoneService.sendText(phoneNotificationDto);
+    return this._notify(DeliveryMethods.SMS, createPhoneNotificationDto);
   }
 
   /**
@@ -54,12 +40,7 @@ export class NotificationService {
   async createCallNotification(
     createPhoneNotificationDto: CreatePhoneNotificationDto,
   ) {
-    const phoneNotificationDto = await this.phoneService.createPhoneTemplate(
-      DeliveryMethods.CALL,
-      createPhoneNotificationDto,
-    );
-
-    return this.phoneService.sendCall(phoneNotificationDto);
+    return this._notify(DeliveryMethods.CALL, createPhoneNotificationDto);
   }
 
   /**
@@ -70,13 +51,15 @@ export class NotificationService {
   async createPushNotification(
     createPushNotificationDto: CreatePushNotificationDto,
   ) {
-    const pushNotificationDto =
-      await this.pushNotificationService.createPushNotificationTemplate(
-        createPushNotificationDto,
-      );
+    return this._notify(DeliveryMethods.PUSH, createPushNotificationDto);
+  }
 
-    return this.pushNotificationService.sendPushNotification(
-      pushNotificationDto,
-    );
+  private async _notify(
+    type: DeliveryMethods,
+    notificationDto: NotificationDto,
+  ) {
+    const strategy = this.notifierStrategies.get(type);
+    const dto = await strategy.createTemplate(notificationDto);
+    return strategy.notify(dto);
   }
 }

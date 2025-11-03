@@ -2,10 +2,10 @@ import { DeliveryMethods } from '@hermes/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { JobState, Queue } from 'bullmq';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
-import { NotificationDto } from '../common/interfaces/create-notification-dto.interface';
+import { CreateEmailNotificationDto } from '../notification/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../notification/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../notification/dto/create-push-notification.dto';
+import { NotificationDto } from '../notification/interfaces/notification-dto.interface';
 
 @Injectable()
 export class NotificationJobService {

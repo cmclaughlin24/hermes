@@ -1,9 +1,9 @@
 import { ApiResponseDto } from '@hermes/common';
 import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from './dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from './dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from './dto/create-push-notification.dto';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 

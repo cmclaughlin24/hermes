@@ -18,9 +18,9 @@ import {
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Job, JobState } from 'bullmq';
 import * as _ from 'lodash';
-import { CreateEmailNotificationDto } from '../common/dto/create-email-notification.dto';
-import { CreatePhoneNotificationDto } from '../common/dto/create-phone-notification.dto';
-import { CreatePushNotificationDto } from '../common/dto/create-push-notification.dto';
+import { CreateEmailNotificationDto } from '../notification/dto/create-email-notification.dto';
+import { CreatePhoneNotificationDto } from '../notification/dto/create-phone-notification.dto';
+import { CreatePushNotificationDto } from '../notification/dto/create-push-notification.dto';
 import { NotificationJobService } from './notification-job.service';
 
 @ApiTags('Notification Job')
